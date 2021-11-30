@@ -11,8 +11,10 @@ set(SRCFILES
     include/fmic_public.h
     include/fmic_private.h
     include/fmic_types.h
+    include/fmic_types_fmi1.h
     include/fmic_types_fmi2.h
     include/fmic_types_fmi3.h
+    include/fmic_functions_fmi1.h
     include/fmic_functions_fmi2.h
     include/fmic_functions_fmi3.h
     3rdparty/minizip/miniunz.c
