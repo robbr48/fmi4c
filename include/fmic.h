@@ -21,6 +21,7 @@ extern "C" {
 
 FMIQUICK_DLLEXPORT fmiHandle* unzipFmu(const char *fmufile, const char* instanceName);
 FMIQUICK_DLLEXPORT fmiVersion_t getFmiVersion(fmiHandle *fmu);
+FMIQUICK_DLLEXPORT fmi1Handle* loadFmu1(fmiHandle* fmu);
 FMIQUICK_DLLEXPORT fmi2Handle* loadFmu2(fmiHandle* fmu);
 FMIQUICK_DLLEXPORT fmi3Handle* loadFmu3(fmiHandle* fmu);
 FMIQUICK_DLLEXPORT void *freeFmu2(fmi2Handle* fmuContents);

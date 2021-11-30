@@ -56,6 +56,239 @@ fmiHandle* unzipFmu(const char* fmuFile, const char* instanceName)
 }
 
 
+bool parseModelDescriptionFmi1(fmi1Handle *fmu)
+{
+    fmu->defaultStartTimeDefined = false;
+    fmu->defaultStopTimeDefined = false;
+    fmu->defaultToleranceDefined = false;
+
+    fmu->defaultStartTimeDefined = false;
+    fmu->defaultStopTimeDefined = false;
+    fmu->defaultToleranceDefined = false;
+
+    fmu->canHandleVariableCommunicationStepSize = false;
+    fmu->canInterpolateInputs = false;
+    fmu->canRunAsynchronuously = false;
+    fmu->canBeInstantiatedOnlyOncePerProcess = false;
+    fmu->canNotUseMemoryManagementFunctions = false;
+
+    fmu->type = fmi1ModelExchange;
+
+    char cwd[FILENAME_MAX];
+    _getcwd(cwd, FILENAME_MAX);
+    printf("Current working dir: %s\n", cwd);
+
+    xmlKeepBlanksDefault(0);
+
+    xmlDoc *doc = NULL;
+    xmlNode *rootElement = NULL;
+
+    doc = xmlReadFile("modelDescription.xml", NULL, 0);
+    if(NULL == doc){
+       printf("Failed to read modelDescription.xml");
+       return false;
+    }
+
+    rootElement = xmlDocGetRootElement(doc);
+    if(!strcmp(rootElement->name, "fmiModelDescription")) {
+        printf("Correct root element: %s\n", rootElement->name);
+    }
+    else {
+        printf("Wrong root element: %s\n", rootElement->name);
+    }
+
+    //Parse attributes in <fmiModelDescription>
+    for(xmlAttr *attr = rootElement->properties; attr != NULL; attr = attr->next) {
+        if(!strcmp(attr->name, "modelName")) {
+            fmu->modelName = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "modelIdentifier")) {
+            fmu->modelIdentifier = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "guid")) {
+            fmu->guid = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "description")) {
+            fmu->description = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "author")) {
+            fmu->author = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "version")) {
+            fmu->version = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "generationtool")) {
+            fmu->generationTool = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "generationDateAndTime")) {
+            fmu->generationDateAndTime = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "variableNamingConvention")) {
+            fmu->variableNamingConvention = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "numberOfContinuousStates")) {
+            fmu->numberOfContinuousStates = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+        if(!strcmp(attr->name, "numberOfEventIndicators")) {
+            fmu->numberOfEventIndicators = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+        }
+    }
+
+    xmlNode *node = rootElement->children;
+    for(; node != NULL; node = node->next) {
+
+        if(!strcmp(node->name, "CoSimulation_Tool")) {
+            fmu->type = fmi1CoSimulationTool;
+        }
+        else if(!strcmp(node->name, "CoSimulation_StandAlone")) {
+            fmu->type = fmi1CoSimulationStandAlone;
+        }
+        if(!strcmp(node->name, "CoSimulation_StandAlone") || !strcmp(node->name, "CoSimulation_Tool")) {
+            xmlNode *cosimNode = node->children;
+            for(; cosimNode!= NULL; cosimNode = cosimNode->next) {
+                if(!strcmp(node->name, "Capabilities")) {
+                    for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
+                        if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
+                            fmu->canHandleVariableCommunicationStepSize = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                        }
+                        else if(!strcmp(attr->name, "canHandleEvents")) {
+                            fmu->canHandleEvents = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                        }
+                        else if(!strcmp(attr->name, "canRejectSteps")) {
+                            fmu->canRejectSteps = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                        }
+                        else if(!strcmp(attr->name, "canInterpolateInputs")) {
+                            fmu->canInterpolateInputs = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                        }
+                        else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
+                            fmu->maxOutputDerivativeOrder = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        }
+                        else if(!strcmp(attr->name, "canRunAsynchronuously")) {
+                            fmu->canRunAsynchronuously = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                        }
+                        else if(!strcmp(attr->name, "canSignalEvents")) {
+                            fmu->canSignalEvents = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                        }
+                        else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
+                            fmu->canBeInstantiatedOnlyOncePerProcess = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                        }
+                        else if(!strcmp(attr->name, "canNotUseMemoryManagementFunctions")) {
+                            fmu->canNotUseMemoryManagementFunctions = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                        }
+                    }
+                }
+            }
+        }
+        //Parse arguments in <DefaultExperiment>
+        if(!strcmp(node->name, "DefaultExperiment")) {
+            for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
+                if(!strcmp(attr->name, "startTime")) {
+                    fmu->defaultStartTime = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStartTimeDefined = true;
+                }
+                if(!strcmp(attr->name, "stopTime")) {
+                    fmu->defaultStartTime = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStartTimeDefined = true;
+                }
+                if(!strcmp(attr->name, "tolerance")) {
+                    fmu->defaultTolerance = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultToleranceDefined = true;
+                }
+            }
+        }
+
+        //Parse model variables
+        if(!strcmp(node->name, "ModelVariables")) {
+            xmlNode *varNode = node->children;
+            for(; varNode != NULL; varNode = varNode->next) {
+                printf("Variable Element: %s\n",varNode->name);
+                fmi1VariableHandle var;
+
+                //Parse variable attributes
+                for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
+                    if(!strcmp(attr->name, "name")) {
+                        var.name = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    }
+                    if(!strcmp(attr->name, "valueReference")) {
+                        var.valueReference = atol(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    }
+                    if(!strcmp(attr->name, "description")) {
+                        var.description = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    }
+                    if(!strcmp(attr->name, "causality")) {
+                        xmlChar *value = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+                        if(!strcmp(value, "input")) {
+                            var.causality = fmi1CausalityInput;
+                        }
+                        else if(!strcmp(value, "output")) {
+                            var.causality = fmi1CausalityOutput;
+                        }
+                        else if(!strcmp(value, "internal")) {
+                            var.causality = fmi1CausalityInternal;
+                        }
+                        else if(!strcmp(value, "none")) {
+                            var.causality = fmi1CausalityNone;
+                        }
+                        else {
+                            printf("Unknown causality: %s\n",value);
+                            return false;
+                        }
+                    }
+                    if(!strcmp(attr->name, "variability")) {
+                        xmlChar *value = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+                        if(!strcmp(value, "parameter")) {
+                            var.variability = fmi1VariabilityParameter;
+                        }
+                        else if(!strcmp(value, "constant")) {
+                            var.variability = fmi1VariabilityConstant;
+                        }
+                        else if(!strcmp(value, "discrete")) {
+                            var.variability = fmi1VariabilityDiscrete;
+                        }
+                        else if(!strcmp(value, "continuous")) {
+                            var.variability = fmi1VariabilityContinuous;
+                        }
+                         else {
+                          printf("Unknown variability: %s\n", value);
+                            return false;
+                        }
+                    }
+                    xmlNode *dataNode = varNode->children;
+                    if(dataNode && !strcmp(dataNode->name, "Real")) {
+                        printf("Found a real variable!\n");
+
+                        //Parse variable attributes
+                        for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
+                            if(!strcmp(attr->name, "start")) {
+                                var.startReal = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                            }
+                            if(!strcmp(attr->name, "start")) {
+                                var.fixed = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                            }
+                        }
+                    }
+                }
+
+                if(fmu->numberOfVariables >= fmu->variablesSize) {
+                    fmu->variablesSize *= 2;
+                    fmu->variables = realloc(fmu->variables, fmu->variablesSize*sizeof(fmi1VariableHandle));
+                }
+
+                fmu->variables[fmu->numberOfVariables] = var;
+                fmu->numberOfVariables++;
+            }
+        }
+    }
+
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+
+    chdir(cwd);
+
+    return true;
+}
+
+
 //! @brief Parses modelDescription.xml for FMI 2
 bool parseModelDescriptionFmi2(fmi2Handle *fmu)
 {
@@ -138,7 +371,7 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
             fmu->variableNamingConvention = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
         }
         if(!strcmp(attr->name, "numberOfEventIndicators")) {
-            fmu->numberOfEventIndicators = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->numberOfEventIndicators = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
         }
     }
 
@@ -733,6 +966,115 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     return true;
 }
 
+
+//! @brief Loads all DLL functions for FMI 2
+bool loadFunctionsFmi1(fmi1Handle *fmu)
+{
+    TRACEFUNC
+
+    char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
+    _getcwd(dllPath, sizeof(char)*FILENAME_MAX);
+    chdir(dllPath);
+    strcat(dllPath,"\\binaries\\win64\\");
+    strcat(dllPath,fmu->modelIdentifier);
+    strcat(dllPath,".dll");
+    HINSTANCE dll = LoadLibraryA(dllPath);
+    if(NULL == dll) {
+        printf("Loading DLL failed: %s\n",dllPath);
+        return false;
+    }
+    printf("Load successful!\n",dllPath);
+
+    fmu->dll = dll;
+
+    fmu->fmi1GetTypesPlatform = LOADFUNCTION(fmi1GetTypesPlatform);
+    fmu->fmi1GetVersion = LOADFUNCTION(fmi1GetVersion);
+    fmu->fmi1SetDebugLogging = LOADFUNCTION(fmi1SetDebugLogging);
+    fmu->fmi1GetReal = LOADFUNCTION(fmi1GetReal);
+    fmu->fmi1GetInteger = LOADFUNCTION(fmi1GetInteger);
+    fmu->fmi1GetBoolean = LOADFUNCTION(fmi1GetBoolean);
+    fmu->fmi1GetString = LOADFUNCTION(fmi1GetString);
+    fmu->fmi1SetReal = LOADFUNCTION(fmi1SetReal);
+    fmu->fmi1SetInteger = LOADFUNCTION(fmi1SetInteger);
+    fmu->fmi1SetBoolean = LOADFUNCTION(fmi1SetBoolean);
+    fmu->fmi1SetString = LOADFUNCTION(fmi1SetString);
+    fmu->fmi1InstantiateSlave = LOADFUNCTION(fmi1InstantiateSlave);
+    fmu->fmi1InitializeSlave = LOADFUNCTION(fmi1InitializeSlave);
+    fmu->fmi1TerminateSlave = LOADFUNCTION(fmi1TerminateSlave);
+    fmu->fmi1ResetSlave = LOADFUNCTION(fmi1ResetSlave);
+    fmu->fmi1FreeSlaveInstance = LOADFUNCTION(fmi1FreeSlaveInstance);
+    fmu->fmi1SetRealInputDerivatives = LOADFUNCTION(fmi1SetRealInputDerivatives);
+    fmu->fmi1GetRealOutputDerivatives = LOADFUNCTION(fmi1GetRealOutputDerivatives);
+    fmu->fmi1CancelStep = LOADFUNCTION(fmi1CancelStep);
+    fmu->fmi1DoStep = LOADFUNCTION(fmi1DoStep);
+    fmu->fmi1GetStatus = LOADFUNCTION(fmi1GetStatus);
+    fmu->fmi1GetRealStatus = LOADFUNCTION(fmi1GetRealStatus);
+    fmu->fmi1GetIntegerStatus = LOADFUNCTION(fmi1GetIntegerStatus);
+    fmu->fmi1GetBooleanStatus = LOADFUNCTION(fmi1GetBooleanStatus);
+    fmu->fmi1GetStringStatus = LOADFUNCTION(fmi1GetStringStatus);
+    fmu->fmi1GetModelTypesPlatform = LOADFUNCTION(fmi1GetModelTypesPlatform);
+    fmu->fmi1InstantiateModel = LOADFUNCTION(fmi1InstantiateModel);
+    fmu->fmi1FreeModelInstance = LOADFUNCTION(fmi1FreeModelInstance);
+    fmu->fmi1SetTime = LOADFUNCTION(fmi1SetTime);
+    fmu->fmi1SetContinuousStates = LOADFUNCTION(fmi1SetContinuousStates);
+    fmu->fmi1CompletedIntegratorStep = LOADFUNCTION(fmi1CompletedIntegratorStep);
+    fmu->fmi1Initialize = LOADFUNCTION(fmi1Initialize);
+    fmu->fmi1GetDerivatives = LOADFUNCTION(fmi1GetDerivatives);
+    fmu->fmi1GetEventIndicators = LOADFUNCTION(fmi1GetEventIndicators);
+    fmu->fmi1EventUpdate = LOADFUNCTION(fmi1EventUpdate);
+    fmu->fmi1GetContinuousStates = LOADFUNCTION(fmi1GetContinuousStates);
+    fmu->fmi1GetNominalContinuousStates = LOADFUNCTION(fmi1GetNominalContinuousStates);
+    fmu->fmi1GetStateValueReferences = LOADFUNCTION(fmi1GetStateValueReferences);
+    fmu->fmi1Terminate = LOADFUNCTION(fmi1Terminate);
+
+    CHECKFUNCTION(fmi1GetVersion);
+    CHECKFUNCTION(fmi1SetDebugLogging);
+    CHECKFUNCTION(fmi1GetReal);
+    CHECKFUNCTION(fmi1GetInteger);
+    CHECKFUNCTION(fmi1GetBoolean);
+    CHECKFUNCTION(fmi1GetString);
+    CHECKFUNCTION(fmi1SetReal);
+    CHECKFUNCTION(fmi1SetInteger);
+    CHECKFUNCTION(fmi1SetBoolean);
+    CHECKFUNCTION(fmi1SetString);
+
+    if(fmu->type == fmi1ModelExchange) {
+        CHECKFUNCTION(fmi1InstantiateModel);
+        CHECKFUNCTION(fmi1FreeModelInstance);
+        CHECKFUNCTION(fmi1Initialize);
+        CHECKFUNCTION(fmi1GetDerivatives);
+        CHECKFUNCTION(fmi1Terminate);
+        CHECKFUNCTION(fmi1SetTime);
+        CHECKFUNCTION(fmi1GetModelTypesPlatform);
+        CHECKFUNCTION(fmi1SetContinuousStates);
+        CHECKFUNCTION(fmi1CompletedIntegratorStep);
+        CHECKFUNCTION(fmi1GetEventIndicators);
+        CHECKFUNCTION(fmi1EventUpdate);
+        CHECKFUNCTION(fmi1GetContinuousStates);
+        CHECKFUNCTION(fmi1GetNominalContinuousStates);
+        CHECKFUNCTION(fmi1GetStateValueReferences);
+    }
+
+    if(fmu->type == fmi1CoSimulationStandAlone || fmu->type == fmi1CoSimulationTool) {
+        CHECKFUNCTION(fmi1GetTypesPlatform);
+        CHECKFUNCTION(fmi1InstantiateSlave);
+        CHECKFUNCTION(fmi1InitializeSlave);
+        CHECKFUNCTION(fmi1TerminateSlave);
+        CHECKFUNCTION(fmi1ResetSlave);
+        CHECKFUNCTION(fmi1FreeSlaveInstance);
+        CHECKFUNCTION(fmi1SetRealInputDerivatives);
+        CHECKFUNCTION(fmi1GetRealOutputDerivatives);
+        CHECKFUNCTION(fmi1DoStep);
+        CHECKFUNCTION(fmi1CancelStep);
+        CHECKFUNCTION(fmi1GetStatus);
+        CHECKFUNCTION(fmi1GetRealStatus);
+        CHECKFUNCTION(fmi1GetIntegerStatus);
+        CHECKFUNCTION(fmi1GetBooleanStatus);
+        CHECKFUNCTION(fmi1GetStringStatus);
+    }
+
+    return true;
+}
 
 //! @brief Loads all DLL functions for FMI 2
 bool loadFunctionsFmi2(fmi2Handle *fmu)
@@ -2411,4 +2753,26 @@ bool fmi3GetCompletedIntegratorStepNotNeeded(fmi3Handle *fmu)
 {
     TRACEFUNC
     return fmu->completedIntegratorStepNotNeeded;
+}
+
+fmi1Handle *loadFmu1(fmiHandle *fmu)
+{
+    fmi1Handle *fmu1 = malloc(sizeof(fmi1Handle));
+    fmu1->instanceName = fmu->instanceName;
+    fmu1->unzippedLocation = fmu->unzippedLocation;
+    fmu1->resourcesLocation = fmu->resourcesLocation;
+    fmu1->variables = malloc(100*sizeof(fmi1VariableHandle));
+    fmu1->variablesSize = 100;
+    fmu1->numberOfVariables = 0;
+    if(!parseModelDescriptionFmi1(fmu1)) {
+        printf("Failed to parse modelDescription.xml\n");
+        return NULL;
+    }
+    if(!loadFunctionsFmi1(fmu1)) {
+        return NULL;
+    }
+
+    printf("Returning FMU handle\n");
+
+    return fmu1;
 }

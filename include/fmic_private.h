@@ -6,8 +6,10 @@
 #include <stdint.h>
 
 #include "fmic_types.h"
+#include "fmic_types_fmi1.h"
 #include "fmic_types_fmi2.h"
 #include "fmic_types_fmi3.h"
+#include "fmic_functions_fmi1.h"
 #include "fmic_functions_fmi2.h"
 #include "fmic_functions_fmi3.h"
 
@@ -22,6 +24,17 @@
         return NULL; \
     } \
 })
+
+typedef struct {
+    fmi1DataType datatype;
+    char *name;
+    char *description;
+    long valueReference;
+    fmi1Real startReal;
+    fmi1Causality causality;
+    fmi1Variability variability;
+    bool fixed;
+} fmi1VariableHandle;
 
 typedef struct {
     fmi2DataType datatype;
@@ -59,6 +72,192 @@ typedef struct {
     const char* instanceName;
 } fmiHandle;
 
+
+// Handle for FMI 1
+typedef struct {
+    HINSTANCE dll;
+
+    const char* instanceName;
+    const char* unzippedLocation;
+    const char* resourcesLocation;
+    const char* modelName;
+    const char* modelIdentifier;
+    const char* guid;
+    const char* description;
+    const char* author;
+    const char* version;
+    const char* generationTool;
+    const char* generationDateAndTime;
+    const char* variableNamingConvention;
+    int numberOfContinuousStates;
+    int numberOfEventIndicators;
+
+    bool canHandleVariableCommunicationStepSize;
+    bool canHandleEvents;
+    bool canRejectSteps;
+    bool canInterpolateInputs;
+    int maxOutputDerivativeOrder;
+    bool canRunAsynchronuously;
+    bool canSignalEvents;
+    bool canBeInstantiatedOnlyOncePerProcess;
+    bool canNotUseMemoryManagementFunctions;
+
+    fmi1Type type;
+
+    int numberOfVariables;
+    fmi1VariableHandle *variables;
+    int variablesSize;
+
+    bool defaultStartTimeDefined;
+    bool defaultStopTimeDefined;
+    bool defaultToleranceDefined;
+
+    double defaultStartTime;
+    double defaultStopTime;
+    double defaultTolerance;
+
+    fmi1Component _fmi1Component;
+
+    fmi1GetTypesPlatform_t fmi1GetTypesPlatform;
+    fmi1GetVersion_t fmi1GetVersion;
+    fmi1SetDebugLogging_t fmi1SetDebugLogging;
+    fmi1GetReal_t fmi1GetReal;
+    fmi1GetInteger_t fmi1GetInteger;
+    fmi1GetBoolean_t fmi1GetBoolean;
+    fmi1GetString_t fmi1GetString;
+    fmi1SetReal_t fmi1SetReal;
+    fmi1SetInteger_t fmi1SetInteger;
+    fmi1SetBoolean_t fmi1SetBoolean;
+    fmi1SetString_t fmi1SetString;
+    fmi1InstantiateSlave_t fmi1InstantiateSlave;
+    fmi1InitializeSlave_t fmi1InitializeSlave;
+    fmi1TerminateSlave_t fmi1TerminateSlave;
+    fmi1ResetSlave_t fmi1ResetSlave;
+    fmi1FreeSlaveInstance_t fmi1FreeSlaveInstance;
+    fmi1SetRealInputDerivatives_t fmi1SetRealInputDerivatives;
+    fmi1GetRealOutputDerivatives_t fmi1GetRealOutputDerivatives;
+    fmi1CancelStep_t fmi1CancelStep;
+    fmi1DoStep_t fmi1DoStep;
+    fmi1GetStatus_t fmi1GetStatus;
+    fmi1GetRealStatus_t fmi1GetRealStatus;
+    fmi1GetIntegerStatus_t fmi1GetIntegerStatus;
+    fmi1GetBooleanStatus_t fmi1GetBooleanStatus;
+    fmi1GetStringStatus_t fmi1GetStringStatus;
+    fmi1GetModelTypesPlatform_t fmi1GetModelTypesPlatform;
+    fmi1InstantiateModel_t fmi1InstantiateModel;
+    fmi1FreeModelInstance_t fmi1FreeModelInstance;
+    fmi1SetTime_t fmi1SetTime;
+    fmi1SetContinuousStates_t fmi1SetContinuousStates;
+    fmi1CompletedIntegratorStep_t fmi1CompletedIntegratorStep;
+    fmi1Initialize_t fmi1Initialize;
+    fmi1GetDerivatives_t fmi1GetDerivatives;
+    fmi1GetEventIndicators_t fmi1GetEventIndicators;
+    fmi1EventUpdate_t fmi1EventUpdate;
+    fmi1GetContinuousStates_t fmi1GetContinuousStates;
+    fmi1GetNominalContinuousStates_t fmi1GetNominalContinuousStates;
+    fmi1GetStateValueReferences_t fmi1GetStateValueReferences;
+    fmi1Terminate_t fmi1Terminate;
+} fmi1Handle;
+
+
+// Handle for FMI 2
+typedef struct {
+    HINSTANCE dll;
+
+    const char* instanceName;
+    const char* unzippedLocation;
+    const char* resourcesLocation;
+    const char* modelName;
+    const char* guid;
+    const char* description;
+    const char* author;
+    const char* version;
+    const char* copyright;
+    const char* license;
+    const char* generationTool;
+    const char* generationDateAndTime;
+    const char* variableNamingConvention;
+    int numberOfEventIndicators;
+
+    bool supportsCoSimulation;
+    bool supportsModelExchange;
+
+    const char* modelIdentifier;
+    bool needsExecutionTool;
+    bool canHandleVariableCommunicationStepSize;
+    bool canInterpolateInputs;
+    int maxOutputDerivativeOrder;
+    bool canRunAsynchronuously;
+    bool canBeInstantiatedOnlyOncePerProcess;
+    bool canNotUseMemoryManagementFunctions;
+    bool canGetAndSetFMUState;
+    bool canSerializeFMUState;
+    bool providesDirectionalDerivative;
+
+    int numberOfVariables;
+    fmi2VariableHandle *variables;
+    int variablesSize;
+
+    bool defaultStartTimeDefined;
+    bool defaultStopTimeDefined;
+    bool defaultToleranceDefined;
+    bool defaultStepSizeDefined;
+
+    double defaultStartTime;
+    double defaultStopTime;
+    double defaultTolerance;
+    double defaultStepSize;
+
+    fmi2Component _fmi2Component;
+    fmi2GetTypesPlatform_t fmi2GetTypesPlatform;
+    fmi2GetVersion_t fmi2GetVersion;
+    fmi2SetDebugLogging_t fmi2SetDebugLogging;
+    fmi2Instantiate_t fmi2Instantiate;
+    fmi2FreeInstance_t fmi2FreeInstance;
+    fmi2SetupExperiment_t fmi2SetupExperiment;
+    fmi2EnterInitializationMode_t fmi2EnterInitializationMode;
+    fmi2ExitInitializationMode_t fmi2ExitInitializationMode;
+    fmi2Terminate_t fmi2Terminate;
+    fmi2Reset_t fmi2Reset;
+    fmi2GetReal_t fmi2GetReal;
+    fmi2GetInteger_t fmi2GetInteger;
+    fmi2GetBoolean_t fmi2GetBoolean;
+    fmi2GetString_t fmi2GetString;
+    fmi2SetReal_t fmi2SetReal;
+    fmi2SetInteger_t fmi2SetInteger;
+    fmi2SetBoolean_t fmi2SetBoolean;
+    fmi2SetString_t fmi2SetString;
+    fmi2GetFMUstate_t fmi2GetFMUstate;
+    fmi2SetFMUstate_t fmi2SetFMUstate;
+    fmi2FreeFMUstate_t fmi2FreeFMUstate;
+    fmi2SerializedFMUstateSize_t fmi2SerializedFMUstateSize;
+    fmi2SerializeFMUstate_t fmi2SerializeFMUstate;
+    fmi2DeSerializeFMUstate_t fmi2DeSerializeFMUstate;
+    fmi2GetDirectionalDerivative_t fmi2GetDirectionalDerivative;
+    fmi2EnterEventMode_t fmi2EnterEventMode;
+    fmi2NewDiscreteStates_t fmi2NewDiscreteStates;
+    fmi2EnterContinuousTimeMode_t fmi2EnterContinuousTimeMode;
+    fmi2CompletedIntegratorStep_t fmi2CompletedIntegratorStep;
+    fmi2SetTime_t fmi2SetTime;
+    fmi2SetContinuousStates_t fmi2SetContinuousStates;
+    fmi2GetDerivatives_t fmi2GetDerivatives;
+    fmi2GetEventIndicators_t fmi2GetEventIndicators;
+    fmi2GetContinuousStates_t fmi2GetContinuousStates;
+    fmi2GetNominalsOfContinuousStates_t fmi2GetNominalsOfContinuousStates;
+    fmi2SetRealInputDerivatives_t fmi2SetRealInputDerivatives;
+    fmi2GetRealOutputDerivatives_t fmi2GetRealOutputDerivatives;
+    fmi2DoStep_t fmi2DoStep;
+    fmi2CancelStep_t fmi2CancelStep;
+    fmi2GetStatus_t fmi2GetStatus;
+    fmi2GetRealStatus_t fmi2GetRealStatus;
+    fmi2GetIntegerStatus_t fmi2GetIntegerStatus;
+    fmi2GetBooleanStatus_t fmi2GetBooleanStatus;
+    fmi2GetStringStatus_t fmi2GetStringStatus;
+
+    fmi2CallbackFunctions callbacks;
+} fmi2Handle;
+
+// Handle for FMI 3
 typedef struct {
     HINSTANCE dll;
 
@@ -199,105 +398,11 @@ typedef struct {
     fmi3ActivateModelPartition_t fmi3ActivateModelPartition;
 } fmi3Handle;
 
-typedef struct {
-    HINSTANCE dll;
-
-    const char* instanceName;
-    const char* unzippedLocation;
-    const char* resourcesLocation;
-    const char* modelName;
-    const char* guid;
-    const char* description;
-    const char* author;
-    const char* version;
-    const char* copyright;
-    const char* license;
-    const char* generationTool;
-    const char* generationDateAndTime;
-    const char* variableNamingConvention;
-    const char* numberOfEventIndicators;
-
-    bool supportsCoSimulation;
-    bool supportsModelExchange;
-
-    const char* modelIdentifier;
-    bool needsExecutionTool;
-    bool canHandleVariableCommunicationStepSize;
-    bool canInterpolateInputs;
-    int maxOutputDerivativeOrder;
-    bool canRunAsynchronuously;
-    bool canBeInstantiatedOnlyOncePerProcess;
-    bool canNotUseMemoryManagementFunctions;
-    bool canGetAndSetFMUState;
-    bool canSerializeFMUState;
-    bool providesDirectionalDerivative;
-
-    int numberOfVariables;
-    fmi2VariableHandle *variables;
-    int variablesSize;
-
-    bool defaultStartTimeDefined;
-    bool defaultStopTimeDefined;
-    bool defaultToleranceDefined;
-    bool defaultStepSizeDefined;
-
-    double defaultStartTime;
-    double defaultStopTime;
-    double defaultTolerance;
-    double defaultStepSize;
-
-    fmi2Component _fmi2Component;
-    fmi2GetTypesPlatform_t fmi2GetTypesPlatform;
-    fmi2GetVersion_t fmi2GetVersion;
-    fmi2SetDebugLogging_t fmi2SetDebugLogging;
-    fmi2Instantiate_t fmi2Instantiate;
-    fmi2FreeInstance_t fmi2FreeInstance;
-    fmi2SetupExperiment_t fmi2SetupExperiment;
-    fmi2EnterInitializationMode_t fmi2EnterInitializationMode;
-    fmi2ExitInitializationMode_t fmi2ExitInitializationMode;
-    fmi2Terminate_t fmi2Terminate;
-    fmi2Reset_t fmi2Reset;
-    fmi2GetReal_t fmi2GetReal;
-    fmi2GetInteger_t fmi2GetInteger;
-    fmi2GetBoolean_t fmi2GetBoolean;
-    fmi2GetString_t fmi2GetString;
-    fmi2SetReal_t fmi2SetReal;
-    fmi2SetInteger_t fmi2SetInteger;
-    fmi2SetBoolean_t fmi2SetBoolean;
-    fmi2SetString_t fmi2SetString;
-    fmi2GetFMUstate_t fmi2GetFMUstate;
-    fmi2SetFMUstate_t fmi2SetFMUstate;
-    fmi2FreeFMUstate_t fmi2FreeFMUstate;
-    fmi2SerializedFMUstateSize_t fmi2SerializedFMUstateSize;
-    fmi2SerializeFMUstate_t fmi2SerializeFMUstate;
-    fmi2DeSerializeFMUstate_t fmi2DeSerializeFMUstate;
-    fmi2GetDirectionalDerivative_t fmi2GetDirectionalDerivative;
-    fmi2EnterEventMode_t fmi2EnterEventMode;
-    fmi2NewDiscreteStates_t fmi2NewDiscreteStates;
-    fmi2EnterContinuousTimeMode_t fmi2EnterContinuousTimeMode;
-    fmi2CompletedIntegratorStep_t fmi2CompletedIntegratorStep;
-    fmi2SetTime_t fmi2SetTime;
-    fmi2SetContinuousStates_t fmi2SetContinuousStates;
-    fmi2GetDerivatives_t fmi2GetDerivatives;
-    fmi2GetEventIndicators_t fmi2GetEventIndicators;
-    fmi2GetContinuousStates_t fmi2GetContinuousStates;
-    fmi2GetNominalsOfContinuousStates_t fmi2GetNominalsOfContinuousStates;
-    fmi2SetRealInputDerivatives_t fmi2SetRealInputDerivatives;
-    fmi2GetRealOutputDerivatives_t fmi2GetRealOutputDerivatives;
-    fmi2DoStep_t fmi2DoStep;
-    fmi2CancelStep_t fmi2CancelStep;
-    fmi2GetStatus_t fmi2GetStatus;
-    fmi2GetRealStatus_t fmi2GetRealStatus;
-    fmi2GetIntegerStatus_t fmi2GetIntegerStatus;
-    fmi2GetBooleanStatus_t fmi2GetBooleanStatus;
-    fmi2GetStringStatus_t fmi2GetStringStatus;
-
-    fmi2CallbackFunctions callbacks;
-} fmi2Handle;
-
+bool parseModelDescriptionFmi1(fmi1Handle *fmuFile);
 bool parseModelDescriptionFmi2(fmi2Handle *fmuFile);
 bool parseModelDescriptionFmi3(fmi3Handle *fmuFile);
 
+bool loadFunctionsFmi1(fmi1Handle *contents);
 bool loadFunctionsFmi2(fmi2Handle *contents);
 bool loadFunctionsFmi3(fmi3Handle *contents);
 
