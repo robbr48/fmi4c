@@ -1,0 +1,123 @@
+#ifndef FMIC_FUNCTIONS_FMI3_H
+#define FMIC_FUNCTIONS_FMI3_H
+
+// Callback functions
+typedef void (*fmi3CallbackLogMessage)(fmi3InstanceEnvironment,
+                                       fmi3String,
+                                       fmi3Status status,
+                                       fmi3String category,
+                                       fmi3String message);
+
+typedef void (*fmi3CallbackIntermediateUpdate)(fmi3InstanceEnvironment,
+                                               fmi3Float64 intermediateUpdateTime,
+                                               fmi3Boolean clocksTicked,
+                                               fmi3Boolean intermediateVariableSetRequested,
+                                               fmi3Boolean intermediateVariableGetAllowed,
+                                               fmi3Boolean intermediateStepFinished,
+                                               fmi3Boolean canReturnEarly,
+                                               fmi3Boolean* earlyReturnRequested,
+                                               fmi3Float64* earlyReturnTime);
+
+typedef void (*fmi3CallbackLockPreemption)();
+typedef void (*fmi3CallbackUnlockPreemption)();
+
+// API functions
+typedef const char* (__stdcall *fmi3GetVersion_t)();
+typedef fmi3Status (__stdcall *fmi3SetDebugLogging_t)(fmi3Instance, fmi3Boolean, size_t, const fmi3String[]);
+typedef fmi3Instance (__stdcall *fmi3InstantiateModelExchange_t)(fmi3String, fmi3String, fmi3String, fmi3Boolean, fmi3Boolean,
+                                                                 fmi3InstanceEnvironment, fmi3CallbackLogMessage);
+typedef fmi3Instance (__stdcall *fmi3InstantiateCoSimulation_t)(fmi3String, fmi3String, fmi3String, fmi3Boolean, fmi3Boolean,
+                                                                fmi3Boolean, fmi3Boolean, const fmi3ValueReference[], size_t,
+                                                                fmi3InstanceEnvironment, fmi3CallbackLogMessage,
+                                                                fmi3CallbackIntermediateUpdate);
+typedef fmi3Instance (__stdcall *fmi3InstantiateScheduledExecution_t)(fmi3String, fmi3String, fmi3String, fmi3Boolean,
+                                                                      fmi3Boolean, const fmi3ValueReference[], size_t,
+                                                                      fmi3InstanceEnvironment, fmi3CallbackLogMessage,
+                                                                      fmi3CallbackIntermediateUpdate,
+                                                                      fmi3CallbackLockPreemption,
+                                                                      fmi3CallbackUnlockPreemption);
+typedef void (__stdcall *fmi3FreeInstance_t)(fmi3Instance);
+typedef fmi3Status (__stdcall *fmi3EnterInitializationMode_t)(fmi3Instance, fmi3Boolean, fmi3Float64,
+                                                              fmi3Float64, fmi3Boolean, fmi3Float64);
+typedef fmi3Status (__stdcall *fmi3ExitInitializationMode_t)(fmi3Instance);
+typedef fmi3Status (__stdcall *fmi3Terminate_t)(fmi3Instance);
+typedef fmi3Status (__stdcall *fmi3GetFloat64_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetFloat64_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3DoStep_t)(fmi3Instance, fmi3Float64, fmi3Float64, fmi3Boolean,
+                                             fmi3Boolean*, fmi3Boolean*, fmi3Boolean*, fmi3Float64*);
+typedef fmi3Status (__stdcall *fmi3EnterEventMode_t)(fmi3Instance, fmi3Boolean, fmi3Boolean,
+                                                     const fmi3Int32[], size_t, fmi3Boolean);
+typedef fmi3Status (__stdcall *fmi3Reset_t)(fmi3Instance);
+typedef fmi3Status (__stdcall *fmi3GetFloat32_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Float32[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetInt8_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Int8[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetUInt8_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3UInt8[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetInt16_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Int16[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetUInt16_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3UInt16[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetInt32_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Int32[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetUInt32_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3UInt32[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetInt64_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Int64[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetUInt64_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3UInt64[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetBoolean_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Boolean[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetString_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3String[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetBinary_t)(fmi3Instance, const fmi3ValueReference[], size_t, size_t[], fmi3Binary[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetClock_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Clock[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetFloat32_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Float32[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetInt8_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Int8[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetUInt8_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3UInt8[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetInt16_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Int16[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetUInt16_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3UInt16[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetInt32_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Int32[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetUInt32_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3UInt32[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetInt64_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Int64[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetUInt64_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3UInt64[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetBoolean_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Boolean[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetString_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3String[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetBinary_t)(fmi3Instance, const fmi3ValueReference[], size_t, const size_t[], const fmi3Binary[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetClock_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Clock[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetNumberOfVariableDependencies_t)(fmi3Instance, fmi3ValueReference, size_t*);
+typedef fmi3Status (__stdcall *fmi3GetVariableDependencies_t)(fmi3Instance, fmi3ValueReference, size_t[], fmi3ValueReference[],
+                                                              size_t[], fmi3DependencyKind[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetFMUState_t)(fmi3Instance, fmi3FMUState*);
+typedef fmi3Status (__stdcall *fmi3SetFMUState_t)(fmi3Instance, fmi3FMUState);
+typedef fmi3Status (__stdcall *fmi3FreeFMUState_t)(fmi3Instance, fmi3FMUState*);
+typedef fmi3Status (__stdcall *fmi3SerializedFMUStateSize_t)(fmi3Instance, fmi3FMUState, size_t*);
+typedef fmi3Status (__stdcall *fmi3SerializeFMUState_t)(fmi3Instance, fmi3FMUState, fmi3Byte[], size_t);
+typedef fmi3Status (__stdcall *fmi3DeSerializeFMUState_t)(fmi3Instance, const fmi3Byte[], size_t, fmi3FMUState*);
+typedef fmi3Status (__stdcall *fmi3GetDirectionalDerivative_t)(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                               const fmi3ValueReference[], size_t, const fmi3Float64[],
+                                                               size_t, fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetAdjointDerivative_t)(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                           const fmi3ValueReference[], size_t, const fmi3Float64[],
+                                                           size_t, fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3EnterConfigurationMode_t)(fmi3Instance);
+typedef fmi3Status (__stdcall *fmi3ExitConfigurationMode_t)(fmi3Instance);
+typedef fmi3Status (__stdcall *fmi3GetIntervalDecimal_t)(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                         fmi3Float64[], fmi3IntervalQualifier[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetIntervalFraction_t)(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                          fmi3UInt64[], fmi3UInt64[], fmi3IntervalQualifier[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetShiftDecimal_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetShiftFraction_t)(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                       fmi3UInt64[], fmi3UInt64[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetIntervalDecimal_t)(fmi3Instance, const fmi3ValueReference[],
+                                                         size_t, const fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3SetIntervalFraction_t)(fmi3Instance, const fmi3ValueReference[],
+                                                          size_t, const fmi3UInt64[], const fmi3UInt64[], size_t);
+typedef fmi3Status (__stdcall *fmi3EvaluateDiscreteStates_t)(fmi3Instance);
+typedef fmi3Status (__stdcall *fmi3UpdateDiscreteStates_t)(fmi3Instance, fmi3Boolean*, fmi3Boolean*, fmi3Boolean*,
+                                                           fmi3Boolean*, fmi3Boolean*, fmi3Float64*);
+typedef fmi3Status (__stdcall *fmi3EnterContinuousTimeMode_t)(fmi3Instance);
+typedef fmi3Status (__stdcall *fmi3CompletedIntegratorStep_t)(fmi3Instance, fmi3Boolean, fmi3Boolean*, fmi3Boolean*);
+typedef fmi3Status (__stdcall *fmi3SetTime_t)(fmi3Instance, fmi3Float64);
+typedef fmi3Status (__stdcall *fmi3SetContinuousStates_t)(fmi3Instance, const fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetContinuousStateDerivatives_t)(fmi3Instance, fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetEventIndicators_t)(fmi3Instance, fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetContinuousStates_t)(fmi3Instance, fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetNominalsOfContinuousStates_t)(fmi3Instance, fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3GetNumberOfEventIndicators_t)(fmi3Instance, size_t*);
+typedef fmi3Status (__stdcall *fmi3GetNumberOfContinuousStates_t)(fmi3Instance, size_t*);
+typedef fmi3Status (__stdcall *fmi3EnterStepMode_t)(fmi3Instance);
+typedef fmi3Status (__stdcall *fmi3GetOutputDerivatives_t)(fmi3Instance, const fmi3ValueReference[], size_t,
+                                                           const fmi3Int32[], fmi3Float64[], size_t);
+typedef fmi3Status (__stdcall *fmi3ActivateModelPartition_t)(fmi3Instance, fmi3ValueReference, size_t, fmi3Float64);
+
+#endif // FMIC_FUNCTIONS_FMI3_H

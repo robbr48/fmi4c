@@ -1,0 +1,35 @@
+#ifndef FMI_TYPES_FMI3_H
+#define FMI_TYPES_FMI3_H
+
+// Types
+typedef void* fmi3Instance;
+typedef void* fmi3InstanceEnvironment;
+typedef void* fmi3FMUState;
+typedef uint32_t fmi3ValueReference;
+typedef float fmi3Float32;
+typedef double fmi3Float64;
+typedef int8_t fmi3Int8;
+typedef uint8_t fmi3UInt8;
+typedef int16_t fmi3Int16;
+typedef uint16_t fmi3UInt16;
+typedef int32_t fmi3Int32;
+typedef uint32_t fmi3UInt32;
+typedef int64_t fmi3Int64;
+typedef uint64_t fmi3UInt64;
+typedef bool fmi3Boolean;
+typedef char fmi3Char;
+typedef const fmi3Char* fmi3String;
+typedef uint8_t fmi3Byte;
+typedef const fmi3Byte* fmi3Binary;
+typedef bool fmi3Clock;
+
+// Enums
+typedef enum { fmi3OK, fmi3Warning, fmi3Discard, fmi3Error, fmi3Fatal, } fmi3Status;
+typedef enum { fmi3Independent, fmi3Constant, fmi3Fixed, fmi3Tunable, fmi3Discrete, fmi3Dependent } fmi3DependencyKind;
+typedef enum { fmi3IntervalNotYetKnown, fmi3IntervalUnchanged, fmi3IntervalChanged } fmi3IntervalQualifier;
+typedef enum { fmi3CausalityInput, fmi3CausalityOutput, fmi3CausalityParameter, fmi3CausalityCalculatedParameter, fmi3CausalityLocal, fmi3CausalityIndependent, fmi3CausalityStructuralParameter } fmi3Causality;
+typedef enum { fmi3VariabilityFixed, fmi3VariabilityTunable, fmi3VariabilityConstant, fmi3VariabilityDiscrete, fmi3VariabilityContinuous } fmi3Variability;
+typedef enum { fmi3InitialExact, fmi3InitialApprox } fmi3Initial;
+typedef enum { fmi3DataTypeFloat64, fmi3DataTypeFloat32, fmi3DataTypeInt64, fmi3DataTypeInt32, fmi3DataTypeInt16, fmi3DataTypeInt8, fmi3DataTypeUint64, fmi3DataTypeBoolean, fmi3DataTypeString, fmi3DataTypeBinary, fmi3DataTypeClock } fmi3DataType;
+
+#endif // FMI_TYPES_FMI3_H

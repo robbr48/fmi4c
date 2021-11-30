@@ -1,10 +1,15 @@
 #ifndef FMIC_PRIVATE_H
 #define FMIC_PRIVATE_H
 
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "fmic_types.h"
-#include "3rdparty/fmi/fmi2FunctionTypes.h"
-#include "3rdparty/fmi/fmi3FunctionTypes.h"
-#include "fmic_functions.h"
+#include "fmic_types_fmi2.h"
+#include "fmic_types_fmi3.h"
+#include "fmic_functions_fmi2.h"
+#include "fmic_functions_fmi3.h"
 
 #include <windows.h>
 

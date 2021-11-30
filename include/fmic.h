@@ -6,9 +6,6 @@
 #include "direct.h"
 #include "stdbool.h"
 #include <windows.h>
-#include "3rdparty/fmi/fmiFunctions.h"
-#include "3rdparty/fmi/fmi2FunctionTypes.h"
-#include "3rdparty/fmi/fmi3FunctionTypes.h"
 #include "fmic_functions.h"
 #include "fmic_types.h"
 #include "fmic_public.h"

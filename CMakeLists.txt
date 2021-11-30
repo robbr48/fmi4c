@@ -7,14 +7,14 @@ include_directories(src)
 
 set(SRCFILES
     src/fmic.c
-    include/fmic_functions.h
     include/fmic.h
+    include/fmic_public.h
     include/fmic_private.h
     include/fmic_types.h
-    include/fmic_public.h
-    3rdparty/fmi/fmiModelFunctions.h
-    3rdparty/fmi/fmi2FunctionTypes.h
-    3rdparty/fmi/fmi3FunctionTypes.h
+    include/fmic_types_fmi2.h
+    include/fmic_types_fmi3.h
+    include/fmic_functions_fmi2.h
+    include/fmic_functions_fmi3.h
     3rdparty/minizip/miniunz.c
     3rdparty/minizip/ioapi.c
     3rdparty/minizip/iowin32.c
@@ -37,7 +37,6 @@ target_compile_definitions(${target_name} PUBLIC HAVE_MEMMOVE=1)
 
 target_include_directories(${target_name} PUBLIC .)
 target_include_directories(${target_name} PUBLIC include)
-target_include_directories(${target_name} PUBLIC 3rdparty/fmi)
 target_include_directories(${target_name} PUBLIC 3rdparty/minizip)
 target_include_directories(${target_name} PUBLIC 3rdparty/zlib-1.2.6)
 target_include_directories(${target_name} PUBLIC 3rdparty/libxml2/include)
