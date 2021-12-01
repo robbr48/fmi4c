@@ -1,6 +1,10 @@
 #ifndef FMI_TYPES_FMI3_H
 #define FMI_TYPES_FMI3_H
 
+//Defines
+#define fmi3True  true
+#define fmi3False false
+
 // Types
 typedef void* fmi3Instance;
 typedef void* fmi3InstanceEnvironment;

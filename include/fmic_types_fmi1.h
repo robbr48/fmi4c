@@ -1,6 +1,10 @@
 #ifndef FMIC_TYPES_FMI1_H
 #define FMIC_TYPES_FMI1_H
 
+//Defines
+#define fmi1True  1
+#define fmi1False 0
+
 // Types
 typedef void* fmi1Component;
 typedef unsigned int fmi1ValueReference;

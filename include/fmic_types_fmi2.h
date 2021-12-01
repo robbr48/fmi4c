@@ -1,6 +1,10 @@
 #ifndef FMIC_FMI2_TYPES_H
 #define FMIC_FMI2_TYPES_H
 
+//Defines
+#define fmi2True  1
+#define fmi2False 0
+
 // Types
 typedef void* fmi2Component;
 typedef void* fmi2ComponentEnvironment;
