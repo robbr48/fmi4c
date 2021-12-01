@@ -3,11 +3,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "direct.h"
-#include "stdbool.h"
+#include <direct.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <windows.h>
-#include "fmic_functions.h"
 #include "fmic_types.h"
+#include "fmic_types_fmi1.h"
+#include "fmic_types_fmi2.h"
+#include "fmic_types_fmi3.h"
+#include "fmic_functions_fmi1.h"
+#include "fmic_functions_fmi2.h"
+#include "fmic_functions_fmi3.h"
 #include "fmic_public.h"
 
 #undef fmiVersion
