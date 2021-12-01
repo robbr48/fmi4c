@@ -1,4 +1,3 @@
-//#include "fmiquick.h"
 #include "fmic_private.h"
 #include "3rdparty/libxml2/include/libxml/tree.h"
 #include "3rdparty/libxml2/include/libxml/parser.h"
