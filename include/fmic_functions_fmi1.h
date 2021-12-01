@@ -10,7 +10,7 @@ typedef void (*fmi1CallbackLogger_t)(fmi1Component,
                                      ...);
 typedef void* (*fmi1CallbackAllocateMemory_t)(size_t nobj, size_t size);
 typedef void (*fmi1CallbackFreeMemory_t)(void* obj);
-typedef void  (*fmiStepFinished_t)(fmi1Component, fmi1Status status);
+typedef void  (*fmi1StepFinished_t)(fmi1Component, fmi1Status status);
 
 
 // Structs
@@ -25,7 +25,7 @@ typedef struct {
     fmi1CallbackLogger_t logger;
     fmi1CallbackAllocateMemory_t allocateMemory;
     fmi1CallbackFreeMemory_t freeMemory;
-    fmiStepFinished_t stepFinished;
+    fmi1StepFinished_t stepFinished;
 } fmi1CallbackFunctionsCoSimulation;
 
 typedef struct {

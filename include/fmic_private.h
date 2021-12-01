@@ -157,6 +157,9 @@ typedef struct {
     fmi1GetNominalContinuousStates_t fmi1GetNominalContinuousStates;
     fmi1GetStateValueReferences_t fmi1GetStateValueReferences;
     fmi1Terminate_t fmi1Terminate;
+
+    fmi1CallbackFunctionsCoSimulation callbacksCoSimulation;
+    fmi1CallbackFunctionsModelExchange callbacksModelExchange;
 } fmi1Handle;
 
 

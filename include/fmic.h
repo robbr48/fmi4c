@@ -25,14 +25,86 @@ extern "C" {
 #define FMIQUICK_DLLEXPORT
 #endif
 
+// FMU access functions
+
 FMIQUICK_DLLEXPORT fmiHandle* unzipFmu(const char *fmufile, const char* instanceName);
 FMIQUICK_DLLEXPORT fmiVersion_t getFmiVersion(fmiHandle *fmu);
 FMIQUICK_DLLEXPORT fmi1Handle* loadFmu1(fmiHandle* fmu);
 FMIQUICK_DLLEXPORT fmi2Handle* loadFmu2(fmiHandle* fmu);
 FMIQUICK_DLLEXPORT fmi3Handle* loadFmu3(fmiHandle* fmu);
-FMIQUICK_DLLEXPORT void *freeFmu2(fmi2Handle* fmuContents);
-FMIQUICK_DLLEXPORT void *freeFmu3(fmi3Handle* fmuContents);
+FMIQUICK_DLLEXPORT void *freeFmu1(fmi1Handle* fmu);
+FMIQUICK_DLLEXPORT void *freeFmu2(fmi2Handle* fmu);
+FMIQUICK_DLLEXPORT void *freeFmu3(fmi3Handle* fmu);
 
+// FMI 1 wrapper functions
+
+FMIQUICK_DLLEXPORT bool fmi1DefaultStartTimeDefined(fmi1Handle *fmu);
+FMIQUICK_DLLEXPORT bool fmi1DefaultStopTimeDefined(fmi1Handle *fmu);
+FMIQUICK_DLLEXPORT bool fmi1DefaultToleranceDefined(fmi1Handle *fmu) ;
+FMIQUICK_DLLEXPORT double fmi1GetDefaultStartTime(fmi1Handle *fmu);
+FMIQUICK_DLLEXPORT double fmi1GetDefaultStopTime(fmi1Handle *fmu);
+FMIQUICK_DLLEXPORT double fmi1GetDefaultTolerance(fmi1Handle *fmu);
+
+FMIQUICK_DLLEXPORT int fmi1GetNumberOfVariables(fmi1Handle *fmu);
+FMIQUICK_DLLEXPORT fmi1VariableHandle* fmi1GetVariableByIndex(fmi1Handle *fmu, int i);
+FMIQUICK_DLLEXPORT fmi1VariableHandle* fmi1GetVariableByValueReference(fmi1Handle *fmu, fmi3ValueReference vr);
+FMIQUICK_DLLEXPORT const char* fmi1GetVariableName(fmi1VariableHandle* var);
+FMIQUICK_DLLEXPORT const char* fmi1GetVariableDescription(fmi1VariableHandle* var);
+FMIQUICK_DLLEXPORT const char* fmi1GetVariableQuantity(fmi1VariableHandle* var);
+FMIQUICK_DLLEXPORT const char* fmi1GetVariableUnit(fmi1VariableHandle* var);
+FMIQUICK_DLLEXPORT const char* fmi1GetVariableDisplayUnit(fmi1VariableHandle* var);
+FMIQUICK_DLLEXPORT fmi1Real fmi1GetVariableStartReal(fmi1VariableHandle* var);
+FMIQUICK_DLLEXPORT long fmi1GetVariableValueReference(fmi1VariableHandle* var);
+FMIQUICK_DLLEXPORT fmi1Causality fmi1GetVariableCausality(fmi1VariableHandle* var);
+FMIQUICK_DLLEXPORT fmi1Variability fmi1GetVariableVariability(fmi1VariableHandle* var);
+FMIQUICK_DLLEXPORT bool fmi1GetVariableIsFixed(fmi1VariableHandle* var);
+
+FMIQUICK_DLLEXPORT const char* fmi1GetTypesPlatform(fmi1Handle* fmu);
+FMIQUICK_DLLEXPORT const char* fmi1GetVersion(fmi1Handle* fmu);
+FMIQUICK_DLLEXPORT fmi1Status fmi1SetDebugLogging(fmi1Handle* fmu, fmi1Boolean);
+
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetReal(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Real values[]);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetInteger(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Integer values[]);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetBoolean(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Boolean values[]);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetString(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1String values[]);
+
+FMIQUICK_DLLEXPORT fmi1Status fmi1SetReal(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Real values[]);
+FMIQUICK_DLLEXPORT fmi1Status fmi1SetInteger(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer values[]);
+FMIQUICK_DLLEXPORT fmi1Status fmi1SetBoolean(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Boolean values[]);
+FMIQUICK_DLLEXPORT fmi1Status fmi1SetString(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1String values[]);
+
+FMIQUICK_DLLEXPORT bool fmi1InstantiateSlave(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger logger, fmi1CallbackAllocateMemory allocateMemory, fmi1CallbackFreeMemory freeMemory, fmi1StepFinished stepFinished, fmi1ComponentEnvironment componentEnvironment, fmi1Boolean visible, fmi1Boolean loggingOn);
+FMIQUICK_DLLEXPORT fmi1Status fmi1InitializeSlave(fmi1Handle* fmu, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime);
+FMIQUICK_DLLEXPORT fmi1Status fmi1TerminateSlave(fmi1Handle* fmu);
+FMIQUICK_DLLEXPORT fmi1Status fmi1ResetSlave(fmi1Handle* fmu);
+FMIQUICK_DLLEXPORT void fmi1FreeSlaveInstance(fmi1Handle* fmu);
+
+FMIQUICK_DLLEXPORT fmi1Status fmi1SetRealInputDerivatives(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], const fmi1Real values[]);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetRealOutputDerivatives(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], fmi1Real values[]);
+FMIQUICK_DLLEXPORT fmi1Status fmi1CancelStep(fmi1Handle* fmu);
+FMIQUICK_DLLEXPORT fmi1Status fmi1DoStep(fmi1Handle *fmu, fmi1Real currentCommunicationPoint, fmi1Real communicationStepSize, fmi1Boolean newStep);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetStatus(fmi1Handle* fmu, const fmi1StatusKind statusKind, fmi1Status* value);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetRealStatus(fmi1Handle* fmu, const fmi1StatusKind statusKind, fmi1Real* value);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetIntegerStatus(fmi1Handle* fmu, const fmi1StatusKind statusKind, fmi1Integer* value);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetBooleanStatus(fmi1Handle* fmu, const fmi1StatusKind statusKind, fmi1Boolean* value);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetStringStatus(fmi1Handle* fmu, const fmi1StatusKind statusKind, fmi1String* value);
+
+FMIQUICK_DLLEXPORT const char *fmi1GetModelTypesPlatform(fmi1Handle* fmu);
+FMIQUICK_DLLEXPORT bool fmi1InstantiateModel(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger logger, fmi1CallbackAllocateMemory allocateMemory, fmi1CallbackFreeMemory freeMemory, fmi1StepFinished stepFinished, fmi1ComponentEnvironment componentEnvironment, fmi1Boolean visible, fmi1Boolean loggingOn);
+FMIQUICK_DLLEXPORT void fmi1FreeModelInstance(fmi1Handle* fmu);
+FMIQUICK_DLLEXPORT fmi1Status fmi1SetTime(fmi1Handle* fmu, fmi1Real);
+FMIQUICK_DLLEXPORT fmi1Status fmi1SetContinuousStates(fmi1Handle* fmu, const fmi1Real[], size_t);
+FMIQUICK_DLLEXPORT fmi1Status fmi1CompletedIntegratorStep(fmi1Handle* fmu, fmi1Boolean* callEventUpdate);
+FMIQUICK_DLLEXPORT fmi1Status fmi1Initialize(fmi1Handle* fmu, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetDerivatives(fmi1Handle *fmu, fmi1Real derivatives[], size_t nDerivatives);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetEventIndicators(fmi1Handle *fmu, fmi1Real indicators[], size_t nIndicators);
+FMIQUICK_DLLEXPORT fmi1Status fmi1EventUpdate(fmi1Handle *fmu, fmi1Boolean intermediateResults, fmi1EventInfo *eventInfo);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetContinuousStates(fmi1Handle* fmu, fmi1Real[], size_t);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetNominalContinuousStates(fmi1Handle* fmu, fmi1Real nominals[], size_t nNominals);
+FMIQUICK_DLLEXPORT fmi1Status fmi1GetStateValueReferences(fmi1Handle* fmu, fmi1ValueReference valueReferences[], size_t nValueReferences);
+FMIQUICK_DLLEXPORT fmi1Status fmi1Terminate(fmi1Handle* fmu);
+
+// FMI 2 wrapper functions
 
 FMIQUICK_DLLEXPORT bool fmi2DefaultStartTimeDefined(fmi2Handle *fmu);
 FMIQUICK_DLLEXPORT bool fmi2DefaultStopTimeDefined(fmi2Handle *fmu);
@@ -85,15 +157,15 @@ FMIQUICK_DLLEXPORT fmi2Status fmi2ExitInitializationMode(fmi2Handle* fmu);
 FMIQUICK_DLLEXPORT fmi2Status fmi2Terminate(fmi2Handle* fmu);
 FMIQUICK_DLLEXPORT fmi2Status fmi2Reset(fmi2Handle* fmu);
 
-FMIQUICK_DLLEXPORT fmi2Status fmi2GetReal(fmi2Handle* fmu, const fmi2ValueReference[], size_t, fmi2Real   []);
-FMIQUICK_DLLEXPORT fmi2Status fmi2GetInteger(fmi2Handle* fmu, const fmi2ValueReference[], size_t, fmi2Integer[]);
-FMIQUICK_DLLEXPORT fmi2Status fmi2GetBoolean(fmi2Handle* fmu, const fmi2ValueReference[], size_t, fmi2Boolean[]);
-FMIQUICK_DLLEXPORT fmi2Status fmi2GetString(fmi2Handle* fmu, const fmi2ValueReference[], size_t, fmi2String []);
+FMIQUICK_DLLEXPORT fmi2Status fmi2GetReal(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, fmi2Real values[]);
+FMIQUICK_DLLEXPORT fmi2Status fmi2GetInteger(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, fmi2Integer values[]);
+FMIQUICK_DLLEXPORT fmi2Status fmi2GetBoolean(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, fmi2Boolean values[]);
+FMIQUICK_DLLEXPORT fmi2Status fmi2GetString(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, fmi2String values[]);
 
-FMIQUICK_DLLEXPORT fmi2Status fmi2SetReal(fmi2Handle* fmu, const fmi2ValueReference[], size_t, const fmi2Real   []);
-FMIQUICK_DLLEXPORT fmi2Status fmi2SetInteger(fmi2Handle* fmu, const fmi2ValueReference[], size_t, const fmi2Integer[]);
-FMIQUICK_DLLEXPORT fmi2Status fmi2SetBoolean(fmi2Handle* fmu, const fmi2ValueReference[], size_t, const fmi2Boolean[]);
-FMIQUICK_DLLEXPORT fmi2Status fmi2SetString(fmi2Handle* fmu, const fmi2ValueReference[], size_t, const fmi2String []);
+FMIQUICK_DLLEXPORT fmi2Status fmi2SetReal(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, const fmi2Real values[]);
+FMIQUICK_DLLEXPORT fmi2Status fmi2SetInteger(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, const fmi2Integer values[]);
+FMIQUICK_DLLEXPORT fmi2Status fmi2SetBoolean(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, const fmi2Boolean values[]);
+FMIQUICK_DLLEXPORT fmi2Status fmi2SetString(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, const fmi2String values[]);
 
 FMIQUICK_DLLEXPORT fmi2Status fmi2GetFMUstate(fmi2Handle* fmu, fmi2FMUstate*);
 FMIQUICK_DLLEXPORT fmi2Status fmi2SetFMUstate(fmi2Handle* fmu, fmi2FMUstate);
@@ -102,8 +174,8 @@ FMIQUICK_DLLEXPORT fmi2Status fmi2SerializedFMUstateSize(fmi2Handle* fmu, fmi2FM
 FMIQUICK_DLLEXPORT fmi2Status fmi2SerializeFMUstate(fmi2Handle* fmu, fmi2FMUstate, fmi2Byte[], size_t);
 FMIQUICK_DLLEXPORT fmi2Status fmi2DeSerializeFMUstate(fmi2Handle* fmu, const fmi2Byte[], size_t, fmi2FMUstate*);
 
-FMIQUICK_DLLEXPORT fmi2Status fmi2GetDirectionalDerivative(fmi2Handle* fmu, const fmi2ValueReference[], size_t,
-                                                                const fmi2ValueReference[], size_t,
+FMIQUICK_DLLEXPORT fmi2Status fmi2GetDirectionalDerivative(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences,
+                                                                const fmi2ValueReference valueReferences[], size_t nValueReferences,
                                                                 const fmi2Real[], fmi2Real[]);
 
 FMIQUICK_DLLEXPORT fmi2Status fmi2EnterEventMode(fmi2Handle* fmu);

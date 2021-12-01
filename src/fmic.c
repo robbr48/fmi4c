@@ -1057,7 +1057,7 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
     if(fmu->type == fmi1CoSimulationStandAlone || fmu->type == fmi1CoSimulationTool) {
         CHECKFUNCTION(fmi1GetTypesPlatform);
         CHECKFUNCTION(fmi1InstantiateSlave);
-        CHECKFUNCTION(fmi1InitializeSlave);
+        CHECKFUNCTION(fmi1Initialize);
         CHECKFUNCTION(fmi1TerminateSlave);
         CHECKFUNCTION(fmi1ResetSlave);
         CHECKFUNCTION(fmi1FreeSlaveInstance);
@@ -2774,4 +2774,361 @@ fmi1Handle *loadFmu1(fmiHandle *fmu)
     printf("Returning FMU handle\n");
 
     return fmu1;
+}
+
+void *freeFmu1(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    FreeLibrary(fmu->dll);
+}
+
+bool fmi1DefaultStartTimeDefined(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->defaultStartTimeDefined;
+}
+
+bool fmi1DefaultStopTimeDefined(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->defaultStopTimeDefined;
+}
+
+bool fmi1DefaultToleranceDefined(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->defaultToleranceDefined;
+}
+
+double fmi1GetDefaultStartTime(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->defaultStartTime;
+}
+
+double fmi1GetDefaultStopTime(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->defaultStopTime;
+}
+
+double fmi1GetDefaultTolerance(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->defaultTolerance;
+}
+
+int fmi1GetNumberOfVariables(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->numberOfVariables;
+}
+
+fmi1VariableHandle *fmi1GetVariableByIndex(fmi1Handle *fmu, int i)
+{
+    TRACEFUNC
+
+    if(i >= fmu->numberOfVariables) {
+        printf("Variable index out of bounds: %i\n",i);
+        return NULL;
+    }
+    return &fmu->variables[i];
+}
+
+fmi1VariableHandle *fmi1GetVariableByValueReference(fmi1Handle *fmu, fmi1ValueReference vr)
+{
+    TRACEFUNC
+
+    for(int i=0; i<fmu->numberOfVariables; ++i) {
+        if(fmu->variables[i].valueReference == vr) {
+            return &fmu->variables[i];
+        }
+    }
+    printf("Variable with value reference %i not found.\n", vr);
+    return NULL;
+}
+
+const char *fmi1GetVariableName(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->name;
+}
+
+const char *fmi1GetVariableDescription(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->description;
+}
+
+fmi1Real fmi1GetVariableStartReal(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startReal;
+}
+
+long fmi1GetVariableValueReference(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->valueReference;
+}
+
+fmi1Causality fmi1GetVariableCausality(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->causality;
+}
+
+fmi1Variability fmi1GetVariableVariability(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->variability;
+}
+
+bool fmi1GetVariableIsFixed(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->fixed;
+}
+
+const char *fmi1GetTypesPlatform(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1GetTypesPlatform();
+}
+
+const char *fmi1GetVersion(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1GetVersion();
+}
+
+fmi1Status fmi1SetDebugLogging(fmi1Handle *fmu, fmi1Boolean loggingOn)
+{
+    TRACEFUNC
+    return fmu->fmi1SetDebugLogging(fmu->_fmi1Component, loggingOn);
+}
+
+fmi1Status fmi1GetReal(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Real values[])
+{
+    TRACEFUNC
+    return fmu->fmi1GetReal(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+}
+
+fmi1Status fmi1GetInteger(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Integer values[])
+{
+    TRACEFUNC
+    return fmu->fmi1GetInteger(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+}
+
+fmi1Status fmi1GetBoolean(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Boolean values[])
+{
+    TRACEFUNC
+    return fmu->fmi1GetBoolean(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+}
+
+fmi1Status fmi1GetString(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1String values[])
+{
+    TRACEFUNC
+    return fmu->fmi1GetString(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+}
+
+fmi1Status fmi1SetReal(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Real values[])
+{
+    TRACEFUNC
+    return fmu->fmi1SetReal(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+}
+
+fmi1Status fmi1SetInteger(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer values[])
+{
+    TRACEFUNC
+    return fmu->fmi1SetInteger(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+}
+
+fmi1Status fmi1SetBoolean(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Boolean values[])
+{
+    TRACEFUNC
+    return fmu->fmi1SetBoolean(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+}
+
+fmi1Status fmi1SetString(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1String values[])
+{
+    TRACEFUNC
+    return fmu->fmi1SetString(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+}
+
+bool fmi1InstantiateSlave(fmi1Handle *fmu, fmi1String mimeType, fmi1Real timeOut, fmi1Boolean visible, fmi1Boolean interactive, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi3Boolean loggingOn)
+{
+    TRACEFUNC
+    fmu->callbacksCoSimulation.logger = logger;
+    fmu->callbacksCoSimulation.allocateMemory = allocateMemory;
+    fmu->callbacksCoSimulation.freeMemory = freeMemory;
+    fmu->callbacksCoSimulation.stepFinished = stepFinished;
+
+    return fmu->fmi1InstantiateSlave(fmu->instanceName, fmu->guid, fmu->unzippedLocation, mimeType, timeOut, visible, interactive, fmu->callbacksCoSimulation, loggingOn);
+}
+
+fmi1Status fmi1InitializeSlave(fmi1Handle *fmu, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime)
+{
+    TRACEFUNC
+    return fmu->fmi1InitializeSlave(fmu->_fmi1Component, startTime, stopTimeDefined, stopTime);
+}
+
+fmi1Status fmi1TerminateSlave(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1TerminateSlave(fmu->_fmi1Component);
+}
+
+fmi1Status fmi1ResetSlave(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1ResetSlave(fmu->_fmi1Component);
+}
+
+void fmi1FreeSlaveInstance(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1FreeSlaveInstance(fmu->_fmi1Component);
+}
+
+fmi1Status fmi1SetRealInputDerivatives(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], const fmi1Real values[])
+{
+    TRACEFUNC
+    return fmu->fmi1SetRealInputDerivatives(fmu->_fmi1Component, valueReferences, nValueReferences, orders, values);
+}
+
+fmi1Status fmi1GetRealOutputDerivatives(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], fmi1Real values[])
+{
+    TRACEFUNC
+    return fmu->fmi1GetRealOutputDerivatives(fmu->_fmi1Component, valueReferences, nValueReferences, orders, values);
+}
+
+fmi1Status fmi1CancelStep(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1CancelStep(fmu->_fmi1Component);
+}
+
+fmi1Status fmi1DoStep(fmi1Handle *fmu, fmi1Real currentCommunicationPoint, fmi1Real communicationStepSize, fmi1Boolean newStep)
+{
+    TRACEFUNC
+    return fmu->fmi1DoStep(fmu->_fmi1Component, currentCommunicationPoint, communicationStepSize, newStep);
+}
+
+fmi1Status fmi1GetStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1Status *value)
+{
+    TRACEFUNC
+    return fmu->fmi1GetStatus(fmu->_fmi1Component, statusKind, value);
+}
+
+fmi1Status fmi1GetRealStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1Real *value)
+{
+    TRACEFUNC
+    return fmu->fmi1GetRealStatus(fmu->_fmi1Component, statusKind, value);
+}
+
+fmi1Status fmi1GetIntegerStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1Integer *value)
+{
+    TRACEFUNC
+    return fmu->fmi1GetIntegerStatus(fmu->_fmi1Component, statusKind, value);
+}
+
+fmi1Status fmi1GetBooleanStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1Boolean *value)
+{
+    TRACEFUNC
+    return fmu->fmi1GetBooleanStatus(fmu->_fmi1Component, statusKind, value);
+}
+
+fmi1Status fmi1GetStringStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1String *value)
+{
+    TRACEFUNC
+    return fmu->fmi1GetStringStatus(fmu->_fmi1Component, statusKind, value);
+}
+
+const char *fmi1GetModelTypesPlatform(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1GetModelTypesPlatform();
+}
+
+
+bool fmi1InstantiateModel(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1Boolean loggingOn)
+{
+    TRACEFUNC
+    fmu->callbacksModelExchange.logger = logger;
+    fmu->callbacksModelExchange.allocateMemory = allocateMemory;
+    fmu->callbacksModelExchange.freeMemory = freeMemory;
+    return fmu->fmi1InstantiateModel(fmu->instanceName, fmu->guid, fmu->callbacksModelExchange, loggingOn);
+}
+
+void fmi1FreeModelInstance(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1FreeModelInstance(fmu->_fmi1Component);
+}
+
+fmi1Status fmi1SetTime(fmi1Handle *fmu, fmi1Real time)
+{
+    TRACEFUNC
+    return fmu->fmi1SetTime(fmu->_fmi1Component, time);
+}
+
+fmi1Status fmi1SetContinuousStates(fmi1Handle *fmu, const fmi1Real values[], size_t nStates)
+{
+    TRACEFUNC
+    return fmu->fmi1SetContinuousStates(fmu->_fmi1Component, values, nStates);
+}
+
+fmi1Status fmi1CompletedIntegratorStep(fmi1Handle *fmu, fmi1Boolean *callEventUpdate)
+{
+    TRACEFUNC
+    return fmu->fmi1CompletedIntegratorStep(fmu->_fmi1Component, callEventUpdate);
+}
+
+fmi1Status fmi1Initialize(fmi1Handle *fmu, fmi1Boolean toleranceControlled, fmi1Real relativeTolerance, fmi1EventInfo *eventInfo)
+{
+    TRACEFUNC
+    return fmu->fmi1Initialize(fmu->_fmi1Component, toleranceControlled, relativeTolerance, eventInfo);
+}
+
+fmi1Status fmi1GetDerivatives(fmi1Handle *fmu, fmi1Real derivatives[], size_t nDerivatives)
+{
+    TRACEFUNC
+    return fmu->fmi1GetDerivatives(fmu->_fmi1Component, derivatives, nDerivatives);
+}
+
+fmi1Status fmi1GetEventIndicators(fmi1Handle *fmu, fmi1Real indicators[], size_t nIndicators)
+{
+    TRACEFUNC
+    return fmu->fmi1GetEventIndicators(fmu->_fmi1Component, indicators, nIndicators);
+}
+
+fmi1Status fmi1EventUpdate(fmi1Handle *fmu, fmi1Boolean intermediateResults, fmi1EventInfo *eventInfo)
+{
+    TRACEFUNC
+    return fmu->fmi1EventUpdate(fmu->_fmi1Component, intermediateResults, eventInfo);
+}
+
+fmi1Status fmi1GetContinuousStates(fmi1Handle *fmu, fmi1Real states[], size_t nStates)
+{
+    TRACEFUNC
+    return fmu->fmi1GetContinuousStates(fmu, states, nStates);
+}
+
+fmi1Status fmi1GetNominalContinuousStates(fmi1Handle *fmu, fmi1Real nominals[], size_t nNominals)
+{
+    TRACEFUNC
+    return fmu->fmi1GetNominalContinuousStates(fmu->_fmi1Component, nominals, nNominals);
+}
+
+fmi1Status fmi1GetStateValueReferences(fmi1Handle *fmu, fmi1ValueReference valueReferences[], size_t nValueReferences)
+{
+    TRACEFUNC
+    return fmu->fmi1GetStateValueReferences(fmu, valueReferences, nValueReferences);
+}
+
+fmi1Status fmi1Terminate(fmi1Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1Terminate(fmu->_fmi1Component);
 }
