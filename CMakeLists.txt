@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(fmic)
+project(fmic C)
 
 set(target_name fmic)
 
@@ -54,4 +54,4 @@ find_package(LibXml2 REQUIRED)
 
 target_link_libraries(${target_name} ${LIBXML2_LIBRARIES})
 
-install(TARGETS ${target_name} DESTINATION ${CMAKE_SOURCE_DIR}/lib)
+install(TARGETS ${target_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
