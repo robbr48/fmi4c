@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 
+#include "fmic_utils.h"
 
 //! @brief Unzips an FMU file
 //! @param fmuFile Path to zip file
@@ -100,37 +101,37 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
     //Parse attributes in <fmiModelDescription>
     for(xmlAttr *attr = rootElement->properties; attr != NULL; attr = attr->next) {
         if(!strcmp(attr->name, "modelName")) {
-            fmu->modelName = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->modelName = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "modelIdentifier")) {
-            fmu->modelIdentifier = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->modelIdentifier = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "guid")) {
-            fmu->guid = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->guid = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "description")) {
-            fmu->description = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->description = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "author")) {
-            fmu->author = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->author = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "version")) {
-            fmu->version = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->version = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "generationtool")) {
-            fmu->generationTool = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->generationTool = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "generationDateAndTime")) {
-            fmu->generationDateAndTime = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->generationDateAndTime = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "variableNamingConvention")) {
-            fmu->variableNamingConvention = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->variableNamingConvention = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "numberOfContinuousStates")) {
-            fmu->numberOfContinuousStates = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->numberOfContinuousStates = parseIntegerAttribute(attr);
         }
         if(!strcmp(attr->name, "numberOfEventIndicators")) {
-            fmu->numberOfEventIndicators = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->numberOfEventIndicators = parseIntegerAttribute(attr);
         }
     }
 
@@ -149,49 +150,49 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                 if(!strcmp(node->name, "Capabilities")) {
                     for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
                         if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
-                            fmu->canHandleVariableCommunicationStepSize = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                            fmu->canHandleVariableCommunicationStepSize = parseBooleanAttribute(attr);
                         }
                         else if(!strcmp(attr->name, "canHandleEvents")) {
-                            fmu->canHandleEvents = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                            fmu->canHandleEvents = parseBooleanAttribute(attr);
                         }
                         else if(!strcmp(attr->name, "canRejectSteps")) {
-                            fmu->canRejectSteps = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                            fmu->canRejectSteps = parseBooleanAttribute(attr);
                         }
                         else if(!strcmp(attr->name, "canInterpolateInputs")) {
-                            fmu->canInterpolateInputs = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                            fmu->canInterpolateInputs = parseBooleanAttribute(attr);
                         }
                         else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                            fmu->maxOutputDerivativeOrder = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                            fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
                         }
                         else if(!strcmp(attr->name, "canRunAsynchronuously")) {
-                            fmu->canRunAsynchronuously = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                            fmu->canRunAsynchronuously = parseBooleanAttribute(attr);
                         }
                         else if(!strcmp(attr->name, "canSignalEvents")) {
-                            fmu->canSignalEvents = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                            fmu->canSignalEvents = parseBooleanAttribute(attr);
                         }
                         else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                            fmu->canBeInstantiatedOnlyOncePerProcess = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                            fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
                         }
                         else if(!strcmp(attr->name, "canNotUseMemoryManagementFunctions")) {
-                            fmu->canNotUseMemoryManagementFunctions = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                            fmu->canNotUseMemoryManagementFunctions = parseBooleanAttribute(attr);
                         }
                     }
                 }
             }
         }
-        //Parse arguments in <DefaultExperiment>
+        //Parse attributes in <DefaultExperiment>
         if(!strcmp(node->name, "DefaultExperiment")) {
             for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
                 if(!strcmp(attr->name, "startTime")) {
-                    fmu->defaultStartTime = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStartTime = parseDoubleAttribute(attr);
                     fmu->defaultStartTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "stopTime")) {
-                    fmu->defaultStartTime = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStartTime = parseDoubleAttribute(attr);
                     fmu->defaultStartTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "tolerance")) {
-                    fmu->defaultTolerance = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultTolerance = parseDoubleAttribute(attr);
                     fmu->defaultToleranceDefined = true;
                 }
             }
@@ -207,16 +208,16 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                 //Parse variable attributes
                 for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
                     if(!strcmp(attr->name, "name")) {
-                        var.name = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.name = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "valueReference")) {
-                        var.valueReference = atol(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.valueReference = parseLongAttribute(attr);
                     }
                     if(!strcmp(attr->name, "description")) {
-                        var.description = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.description = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "causality")) {
-                        xmlChar *value = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+                        xmlChar *value = parseStringAttribute(attr);
                         if(!strcmp(value, "input")) {
                             var.causality = fmi1CausalityInput;
                         }
@@ -235,7 +236,7 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                         }
                     }
                     if(!strcmp(attr->name, "variability")) {
-                        xmlChar *value = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+                        xmlChar *value = parseStringAttribute(attr);
                         if(!strcmp(value, "parameter")) {
                             var.variability = fmi1VariabilityParameter;
                         }
@@ -260,10 +261,10 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                         //Parse variable attributes
                         for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
                             if(!strcmp(attr->name, "start")) {
-                                var.startReal = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                                var.startReal = parseDoubleAttribute(attr);
                             }
                             if(!strcmp(attr->name, "start")) {
-                                var.fixed = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                                var.fixed = parseBooleanAttribute(attr);
                             }
                         }
                     }
@@ -341,37 +342,37 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
     //Parse attributes in <fmiModelDescription>
     for(xmlAttr *attr = rootElement->properties; attr != NULL; attr = attr->next) {
         if(!strcmp(attr->name, "modelName")) {
-            fmu->modelName = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->modelName = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "guid")) {
-            fmu->guid = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->guid = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "description")) {
-            fmu->description = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->description = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "author")) {
-            fmu->author = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->author = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "version")) {
-            fmu->version = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->version = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "copyright")) {
-            fmu->copyright = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->copyright = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "license")) {
-            fmu->license = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->license = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "generationtool")) {
-            fmu->generationTool = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->generationTool = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "generationDateAndTime")) {
-            fmu->generationDateAndTime = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->generationDateAndTime = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "variableNamingConvention")) {
-            fmu->variableNamingConvention = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->variableNamingConvention = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "numberOfEventIndicators")) {
-            fmu->numberOfEventIndicators = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->numberOfEventIndicators = parseIntegerAttribute(attr);
         }
     }
 
@@ -385,37 +386,37 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
              if(!strcmp(node->name, "CoSimulation")) {
                  for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
                      if(!strcmp(attr->name, "modelIdentifier")) {
-                         fmu->modelIdentifier = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                         fmu->modelIdentifier = parseStringAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "needsExecutionTool")) {
-                         fmu->needsExecutionTool = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                         fmu->needsExecutionTool = parseBooleanAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
-                         fmu->canHandleVariableCommunicationStepSize = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                         fmu->canHandleVariableCommunicationStepSize = parseBooleanAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "canInterpolateInputs")) {
-                         fmu->canInterpolateInputs = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                         fmu->canInterpolateInputs = parseBooleanAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                         fmu->maxOutputDerivativeOrder = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                         fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "canRunAsynchronuously")) {
-                         fmu->canRunAsynchronuously = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                         fmu->canRunAsynchronuously = parseBooleanAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                         fmu->canBeInstantiatedOnlyOncePerProcess = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                         fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "canNotUseMemoryManagementFunctions")) {
-                         fmu->canNotUseMemoryManagementFunctions = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                         fmu->canNotUseMemoryManagementFunctions = parseBooleanAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "canGetAndSetFMUState")) {
-                         fmu->canGetAndSetFMUState = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                         fmu->canGetAndSetFMUState = parseBooleanAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "canSerializeFMUState")) {
-                         fmu->canSerializeFMUState = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                         fmu->canSerializeFMUState = parseBooleanAttribute(attr);
                      }
                      else if(!strcmp(attr->name, "providesDirectionalDerivative")) {
-                         fmu->providesDirectionalDerivative = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true");
+                         fmu->providesDirectionalDerivative = parseBooleanAttribute(attr);
                      }
                  }
              }
@@ -429,19 +430,19 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
         if(!strcmp(node->name, "DefaultExperiment")) {
             for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
                 if(!strcmp(attr->name, "startTime")) {
-                    fmu->defaultStartTime = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStartTime = parseDoubleAttribute(attr);
                     fmu->defaultStartTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "stopTime")) {
-                    fmu->defaultStartTime = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStartTime = parseDoubleAttribute(attr);
                     fmu->defaultStartTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "tolerance")) {
-                    fmu->defaultTolerance = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultTolerance = parseDoubleAttribute(attr);
                     fmu->defaultToleranceDefined = true;
                 }
                 if(!strcmp(attr->name, "stepSize")) {
-                    fmu->defaultStepSize = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStepSize = parseDoubleAttribute(attr);
                     fmu->defaultStepSizeDefined = true;
                 }
             }
@@ -458,16 +459,16 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
                 //Parse variable attributes
                 for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
                     if(!strcmp(attr->name, "name")) {
-                        var.instanceName = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.instanceName = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "valueReference")) {
-                        var.valueReference = atol(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.valueReference = parseLongAttribute(attr);
                     }
                     if(!strcmp(attr->name, "description")) {
-                        var.description = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.description = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "causality")) {
-                        xmlChar *value = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+                        xmlChar *value = parseStringAttribute(attr);
                         if(!strcmp(value, "input")) {
                             var.causality = fmi2CausalityInput;
                         }
@@ -492,7 +493,7 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
                         }
                     }
                     if(!strcmp(attr->name, "variability")) {
-                        xmlChar *value = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+                        xmlChar *value = parseStringAttribute(attr);
                         if(!strcmp(value, "fixed")) {
                             var.variability = fmi2VariabilityFixed;
                         }
@@ -514,7 +515,7 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
                         }
                     }
                     if(!strcmp(attr->name, "initial")) {
-                        xmlChar *value = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+                        xmlChar *value = parseStringAttribute(attr);
                         if(!strcmp(value, "approx")) {
                             var.variability = fmi2InitialApprox;
                         }
@@ -530,7 +531,7 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
                         }
                     }
                     if(!strcmp(attr->name, "canHandleMultipleSetPerTimeInstant")) {
-                        var.canHandleMultipleSetPerTimeInstant = (strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true") == 0);
+                        var.canHandleMultipleSetPerTimeInstant = parseBooleanAttribute(attr);
                     }
 
                     xmlNode *dataNode = varNode->children;
@@ -627,34 +628,34 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     //Parse attributes in <fmiModelDescription>
     for(xmlAttr *attr = rootElement->properties; attr != NULL; attr = attr->next) {
         if(!strcmp(attr->name, "modelName")) {
-            fmu->modelName = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->modelName = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "instantiationToken")) {
-            fmu->instantiationToken = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->instantiationToken = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "description")) {
-            fmu->description = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->description = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "author")) {
-            fmu->author = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->author = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "version")) {
-            fmu->version = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->version = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "copyright")) {
-            fmu->copyright = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->copyright = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "license")) {
-            fmu->license = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->license = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "generationtool")) {
-            fmu->generationTool = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->generationTool = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "generationDateAndTime")) {
-            fmu->generationDateAndTime = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->generationDateAndTime = parseStringAttribute(attr);
         }
         if(!strcmp(attr->name, "variableNamingConvention")) {
-            fmu->variableNamingConvention = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+            fmu->variableNamingConvention = parseStringAttribute(attr);
         }
     }
 
@@ -667,52 +668,52 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
             fmu->supportsCoSimulation = true;
             for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
                 if(!strcmp(attr->name, "modelIdentifier")) {
-                    fmu->modelIdentifier = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->modelIdentifier = parseStringAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "needsExecutionTool")) {
-                    fmu->needsExecutionTool = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->needsExecutionTool = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                    fmu->canBeInstantiatedOnlyOncePerProcess = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canGetAndSetFMUState")) {
-                    fmu->canGetAndSetFMUState = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canGetAndSetFMUState = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canSerializeFMUState")) {
-                    fmu->canSerializeFMUState = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canSerializeFMUState = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesDirectionalDerivative")) {
-                    fmu->providesDirectionalDerivative = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesDirectionalDerivative = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesAdjointDerivatives")) {
-                    fmu->providesAdjointDerivatives = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesAdjointDerivatives = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesPerElementDependencies")) {
-                    fmu->providesPerElementDependencies = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesPerElementDependencies = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                    fmu->maxOutputDerivativeOrder = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesIntermediateUpdate")) {
-                    fmu->providesIntermediateUpdate = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesIntermediateUpdate = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesEvaluateDiscreteStates")) {
-                    fmu->providesEvaluateDiscreteStates = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "recommendedIntermediateInputSmoothness")) {
-                    fmu->recommendedIntermediateInputSmoothness = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->recommendedIntermediateInputSmoothness = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
-                    fmu->canHandleVariableCommunicationStepSize = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canHandleVariableCommunicationStepSize = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canReturnEarlyAfterIntermediateUpdate")) {
-                    fmu->canReturnEarlyAfterIntermediateUpdate = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canReturnEarlyAfterIntermediateUpdate = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "fixedInternalStepSize")) {
-                    fmu->fixedInternalStepSize = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->fixedInternalStepSize = parseDoubleAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "hasEventMode")) {
-                    fmu->hasEventMode = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->hasEventMode = parseBooleanAttribute(attr);
                 }
             }
         }
@@ -721,43 +722,43 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
             fmu->supportsModelExchange = true;
             for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
                 if(!strcmp(attr->name, "modelIdentifier")) {
-                    fmu->modelIdentifier = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->modelIdentifier = parseStringAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "needsExecutionTool")) {
-                    fmu->needsExecutionTool = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->needsExecutionTool = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                    fmu->canBeInstantiatedOnlyOncePerProcess = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canGetAndSetFMUState")) {
-                    fmu->canGetAndSetFMUState = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canGetAndSetFMUState = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canSerializeFMUState")) {
-                    fmu->canSerializeFMUState = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canSerializeFMUState = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesDirectionalDerivative")) {
-                    fmu->providesDirectionalDerivative = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesDirectionalDerivative = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesAdjointDerivatives")) {
-                    fmu->providesAdjointDerivatives = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesAdjointDerivatives = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesPerElementDependencies")) {
-                    fmu->providesPerElementDependencies = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesPerElementDependencies = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                    fmu->maxOutputDerivativeOrder = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesIntermediateUpdate")) {
-                    fmu->providesIntermediateUpdate = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesIntermediateUpdate = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesEvaluateDiscreteStates")) {
-                    fmu->providesEvaluateDiscreteStates = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "recommendedIntermediateInputSmoothness")) {
-                    fmu->recommendedIntermediateInputSmoothness = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->recommendedIntermediateInputSmoothness = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "completedIntegratorStepNotNeeded")) {
-                    fmu->completedIntegratorStepNotNeeded = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->completedIntegratorStepNotNeeded = parseBooleanAttribute(attr);
                 }
             }
         }
@@ -766,40 +767,40 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
             fmu->supportsScheduledExecution = true;
             for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
                 if(!strcmp(attr->name, "modelIdentifier")) {
-                    fmu->modelIdentifier = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->modelIdentifier = parseStringAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "needsExecutionTool")) {
-                    fmu->needsExecutionTool = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->needsExecutionTool = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                    fmu->canBeInstantiatedOnlyOncePerProcess = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canGetAndSetFMUState")) {
-                    fmu->canGetAndSetFMUState = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canGetAndSetFMUState = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canSerializeFMUState")) {
-                    fmu->canSerializeFMUState = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->canSerializeFMUState = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesDirectionalDerivative")) {
-                    fmu->providesDirectionalDerivative = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesDirectionalDerivative = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesAdjointDerivatives")) {
-                    fmu->providesAdjointDerivatives = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesAdjointDerivatives = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesPerElementDependencies")) {
-                    fmu->providesPerElementDependencies = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesPerElementDependencies = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                    fmu->maxOutputDerivativeOrder = atoi(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesIntermediateUpdate")) {
-                    fmu->providesIntermediateUpdate = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesIntermediateUpdate = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesEvaluateDiscreteStates")) {
-                    fmu->providesEvaluateDiscreteStates = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "recommendedIntermediateInputSmoothness")) {
-                    fmu->recommendedIntermediateInputSmoothness = !strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1), "true");
+                    fmu->recommendedIntermediateInputSmoothness = parseBooleanAttribute(attr);
                 }
             }
         }
@@ -808,19 +809,19 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
         if(!strcmp(node->name, "DefaultExperiment")) {
             for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
                 if(!strcmp(attr->name, "startTime")) {
-                    fmu->defaultStartTime = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStartTime = parseDoubleAttribute(attr);
                     fmu->defaultStartTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "stopTime")) {
-                    fmu->defaultStartTime = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStartTime = parseDoubleAttribute(attr);
                     fmu->defaultStartTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "tolerance")) {
-                    fmu->defaultTolerance = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultTolerance = parseDoubleAttribute(attr);
                     fmu->defaultToleranceDefined = true;
                 }
                 if(!strcmp(attr->name, "stepSize")) {
-                    fmu->defaultStepSize = atof(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                    fmu->defaultStepSize = parseDoubleAttribute(attr);
                     fmu->defaultStepSizeDefined = true;
                 }
             }
@@ -870,30 +871,28 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                 //Parse variable attributes
                 for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
                     if(!strcmp(attr->name, "name")) {
-                        var.instanceName = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.instanceName = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "description")) {
-                        var.description = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.description = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "quantity")) {
-                        var.quantity = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.quantity = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "unit")) {
-                        var.unit = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.unit = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "displayUnit")) {
-                        var.displayUnit = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.displayUnit = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "start") && !strcmp(varNode->name, "Float64")) {
-                        const char* temp = strdup(xmlNodeListGetString(rootElement->doc, attr->children, 1));
-                        var.startFloat64 = atof(temp);
-                        printf("start(%s): %f\n",var.instanceName, var.startFloat64);
+                        var.startFloat64 = parseDoubleAttribute(attr);
                     }
                     if(!strcmp(attr->name, "valueReference")) {
-                        var.valueReference = atol(xmlNodeListGetString(rootElement->doc, attr->children, 1));
+                        var.valueReference = parseLongAttribute(attr);
                     }
                      if(!strcmp(attr->name, "causality")) {
-                        xmlChar *value = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+                        xmlChar *value = parseStringAttribute(attr);
                         if(!strcmp(value, "input")) {
                             var.causality = fmi3CausalityInput;
                         }
@@ -921,7 +920,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                         }
                     }
                     if(!strcmp(attr->name, "variability")) {
-                        xmlChar *value = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+                        xmlChar *value = parseStringAttribute(attr);
                         if(!strcmp(value, "fixed")) {
                             var.variability = fmi3VariabilityFixed;
                         }
@@ -943,7 +942,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                         }
                     }
                     if(!strcmp(attr->name, "intermediateUpdate")) {
-                        var.intermediateUpdate = (strcmp(xmlNodeListGetString(rootElement->doc, attr->children, 1),"true") == 0);
+                        var.intermediateUpdate = parseBooleanAttribute(attr);
                     }
                 }
 
@@ -1430,7 +1429,7 @@ fmiVersion_t getFmiVersion(fmiHandle *fmu)
     xmlAttr *attr = rootElement->properties;
     for(; attr != NULL; attr = attr->next) {
         if(!strcmp(attr->name,"fmiVersion")) {
-            xmlChar *version = xmlNodeListGetString(rootElement->doc, attr->children, 1);
+            xmlChar *version = parseStringAttribute(attr);
             if(version[0] == '1') {
                 return fmiVersion1;
             }

@@ -7,6 +7,7 @@ include_directories(src)
 
 set(SRCFILES
     src/fmic.c
+    src/fmic_utils.c
     include/fmic.h
     include/fmic_public.h
     include/fmic_private.h
@@ -17,6 +18,7 @@ set(SRCFILES
     include/fmic_functions_fmi1.h
     include/fmic_functions_fmi2.h
     include/fmic_functions_fmi3.h
+    include/fmic_utils.h
     3rdparty/minizip/miniunz.c
     3rdparty/minizip/ioapi.c
     3rdparty/minizip/iowin32.c
