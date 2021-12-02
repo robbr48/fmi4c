@@ -9,5 +9,6 @@ bool parseBooleanAttribute(xmlAttr *attr);
 double parseDoubleAttribute(xmlAttr *attr);
 int parseIntegerAttribute(xmlAttr *attr);
 int parseLongAttribute(xmlAttr *attr);
+const char* getFunctionName(const char* modelName, const char* functionName);
 
 #endif // FMIC_UTILS_H

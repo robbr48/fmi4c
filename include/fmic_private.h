@@ -17,7 +17,9 @@
 
 #define TRACEFUNC printf("In function: %s\n",__func__);
 
+#define LOADFUNCTION2(FUNCNAME) (FUNCNAME ## _t)GetProcAddress(dll, getFunctionName(fmu->modelName, #FUNCNAME));
 #define LOADFUNCTION(FUNCNAME) (FUNCNAME ## _t)GetProcAddress(dll, #FUNCNAME);
+
 #define CHECKFUNCTION(FUNCNAME) ({ \
     if(fmu->FUNCNAME == NULL) { \
         printf("Failed to load function \"%s\" from %s\n",#FUNCNAME,fmu->modelIdentifier); \
@@ -31,6 +33,9 @@ typedef struct {
     char *description;
     long valueReference;
     fmi1Real startReal;
+    fmi1Integer startInteger;
+    fmi1Boolean startBoolean;
+    fmi1String startString;
     fmi1Causality causality;
     fmi1Variability variability;
     bool fixed;
@@ -118,45 +123,45 @@ typedef struct {
 
     fmi1Component _fmi1Component;
 
-    fmi1GetTypesPlatform_t fmi1GetTypesPlatform;
-    fmi1GetVersion_t fmi1GetVersion;
-    fmi1SetDebugLogging_t fmi1SetDebugLogging;
-    fmi1GetReal_t fmi1GetReal;
-    fmi1GetInteger_t fmi1GetInteger;
-    fmi1GetBoolean_t fmi1GetBoolean;
-    fmi1GetString_t fmi1GetString;
-    fmi1SetReal_t fmi1SetReal;
-    fmi1SetInteger_t fmi1SetInteger;
-    fmi1SetBoolean_t fmi1SetBoolean;
-    fmi1SetString_t fmi1SetString;
-    fmi1InstantiateSlave_t fmi1InstantiateSlave;
-    fmi1InitializeSlave_t fmi1InitializeSlave;
-    fmi1TerminateSlave_t fmi1TerminateSlave;
-    fmi1ResetSlave_t fmi1ResetSlave;
-    fmi1FreeSlaveInstance_t fmi1FreeSlaveInstance;
-    fmi1SetRealInputDerivatives_t fmi1SetRealInputDerivatives;
-    fmi1GetRealOutputDerivatives_t fmi1GetRealOutputDerivatives;
-    fmi1CancelStep_t fmi1CancelStep;
-    fmi1DoStep_t fmi1DoStep;
-    fmi1GetStatus_t fmi1GetStatus;
-    fmi1GetRealStatus_t fmi1GetRealStatus;
-    fmi1GetIntegerStatus_t fmi1GetIntegerStatus;
-    fmi1GetBooleanStatus_t fmi1GetBooleanStatus;
-    fmi1GetStringStatus_t fmi1GetStringStatus;
-    fmi1GetModelTypesPlatform_t fmi1GetModelTypesPlatform;
-    fmi1InstantiateModel_t fmi1InstantiateModel;
-    fmi1FreeModelInstance_t fmi1FreeModelInstance;
-    fmi1SetTime_t fmi1SetTime;
-    fmi1SetContinuousStates_t fmi1SetContinuousStates;
-    fmi1CompletedIntegratorStep_t fmi1CompletedIntegratorStep;
-    fmi1Initialize_t fmi1Initialize;
-    fmi1GetDerivatives_t fmi1GetDerivatives;
-    fmi1GetEventIndicators_t fmi1GetEventIndicators;
-    fmi1EventUpdate_t fmi1EventUpdate;
-    fmi1GetContinuousStates_t fmi1GetContinuousStates;
-    fmi1GetNominalContinuousStates_t fmi1GetNominalContinuousStates;
-    fmi1GetStateValueReferences_t fmi1GetStateValueReferences;
-    fmi1Terminate_t fmi1Terminate;
+    fmiGetTypesPlatform_t fmiGetTypesPlatform;
+    fmiGetVersion_t fmiGetVersion;
+    fmiSetDebugLogging_t fmiSetDebugLogging;
+    fmiGetReal_t fmiGetReal;
+    fmiGetInteger_t fmiGetInteger;
+    fmiGetBoolean_t fmiGetBoolean;
+    fmiGetString_t fmiGetString;
+    fmiSetReal_t fmiSetReal;
+    fmiSetInteger_t fmiSetInteger;
+    fmiSetBoolean_t fmiSetBoolean;
+    fmiSetString_t fmiSetString;
+    fmiInstantiateSlave_t fmiInstantiateSlave;
+    fmiInitializeSlave_t fmiInitializeSlave;
+    fmiTerminateSlave_t fmiTerminateSlave;
+    fmiResetSlave_t fmiResetSlave;
+    fmiFreeSlaveInstance_t fmiFreeSlaveInstance;
+    fmiSetRealInputDerivatives_t fmiSetRealInputDerivatives;
+    fmiGetRealOutputDerivatives_t fmiGetRealOutputDerivatives;
+    fmiCancelStep_t fmiCancelStep;
+    fmiDoStep_t fmiDoStep;
+    fmiGetStatus_t fmiGetStatus;
+    fmiGetRealStatus_t fmiGetRealStatus;
+    fmiGetIntegerStatus_t fmiGetIntegerStatus;
+    fmiGetBooleanStatus_t fmiGetBooleanStatus;
+    fmiGetStringStatus_t fmiGetStringStatus;
+    fmiGetModelTypesPlatform_t fmiGetModelTypesPlatform;
+    fmiInstantiateModel_t fmiInstantiateModel;
+    fmiFreeModelInstance_t fmiFreeModelInstance;
+    fmiSetTime_t fmiSetTime;
+    fmiSetContinuousStates_t fmiSetContinuousStates;
+    fmiCompletedIntegratorStep_t fmiCompletedIntegratorStep;
+    fmiInitialize_t fmiInitialize;
+    fmiGetDerivatives_t fmiGetDerivatives;
+    fmiGetEventIndicators_t fmiGetEventIndicators;
+    fmiEventUpdate_t fmiEventUpdate;
+    fmiGetContinuousStates_t fmiGetContinuousStates;
+    fmiGetNominalContinuousStates_t fmiGetNominalContinuousStates;
+    fmiGetStateValueReferences_t fmiGetStateValueReferences;
+    fmiTerminate_t fmiTerminate;
 
     fmi1CallbackFunctionsCoSimulation callbacksCoSimulation;
     fmi1CallbackFunctionsModelExchange callbacksModelExchange;

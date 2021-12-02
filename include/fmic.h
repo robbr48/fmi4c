@@ -58,6 +58,7 @@ FMIC_DLLEXPORT long fmi1GetVariableValueReference(fmi1VariableHandle* var);
 FMIC_DLLEXPORT fmi1Causality fmi1GetVariableCausality(fmi1VariableHandle* var);
 FMIC_DLLEXPORT fmi1Variability fmi1GetVariableVariability(fmi1VariableHandle* var);
 FMIC_DLLEXPORT bool fmi1GetVariableIsFixed(fmi1VariableHandle* var);
+FMIC_DLLEXPORT fmi1DataType fmi1GetVariableDataType(fmi1VariableHandle* var);
 
 FMIC_DLLEXPORT const char* fmi1GetTypesPlatform(fmi1Handle* fmu);
 FMIC_DLLEXPORT const char* fmi1GetVersion(fmi1Handle* fmu);
@@ -73,7 +74,7 @@ FMIC_DLLEXPORT fmi1Status fmi1SetInteger(fmi1Handle* fmu, const fmi1ValueReferen
 FMIC_DLLEXPORT fmi1Status fmi1SetBoolean(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Boolean values[]);
 FMIC_DLLEXPORT fmi1Status fmi1SetString(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1String values[]);
 
-FMIC_DLLEXPORT bool fmi1InstantiateSlave(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger logger, fmi1CallbackAllocateMemory allocateMemory, fmi1CallbackFreeMemory freeMemory, fmi1StepFinished stepFinished, fmi1ComponentEnvironment componentEnvironment, fmi1Boolean visible, fmi1Boolean loggingOn);
+FMIC_DLLEXPORT bool fmi1InstantiateSlave(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi1Boolean loggingOn);
 FMIC_DLLEXPORT fmi1Status fmi1InitializeSlave(fmi1Handle* fmu, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime);
 FMIC_DLLEXPORT fmi1Status fmi1TerminateSlave(fmi1Handle* fmu);
 FMIC_DLLEXPORT fmi1Status fmi1ResetSlave(fmi1Handle* fmu);
@@ -90,7 +91,7 @@ FMIC_DLLEXPORT fmi1Status fmi1GetBooleanStatus(fmi1Handle* fmu, const fmi1Status
 FMIC_DLLEXPORT fmi1Status fmi1GetStringStatus(fmi1Handle* fmu, const fmi1StatusKind statusKind, fmi1String* value);
 
 FMIC_DLLEXPORT const char *fmi1GetModelTypesPlatform(fmi1Handle* fmu);
-FMIC_DLLEXPORT bool fmi1InstantiateModel(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger logger, fmi1CallbackAllocateMemory allocateMemory, fmi1CallbackFreeMemory freeMemory, fmi1StepFinished stepFinished, fmi1ComponentEnvironment componentEnvironment, fmi1Boolean visible, fmi1Boolean loggingOn);
+FMIC_DLLEXPORT bool fmi1InstantiateModel(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished,fmi1Boolean loggingOn);
 FMIC_DLLEXPORT void fmi1FreeModelInstance(fmi1Handle* fmu);
 FMIC_DLLEXPORT fmi1Status fmi1SetTime(fmi1Handle* fmu, fmi1Real);
 FMIC_DLLEXPORT fmi1Status fmi1SetContinuousStates(fmi1Handle* fmu, const fmi1Real[], size_t);
@@ -174,9 +175,9 @@ FMIC_DLLEXPORT fmi2Status fmi2SerializedFMUstateSize(fmi2Handle* fmu, fmi2FMUsta
 FMIC_DLLEXPORT fmi2Status fmi2SerializeFMUstate(fmi2Handle* fmu, fmi2FMUstate, fmi2Byte[], size_t);
 FMIC_DLLEXPORT fmi2Status fmi2DeSerializeFMUstate(fmi2Handle* fmu, const fmi2Byte[], size_t, fmi2FMUstate*);
 
-FMIC_DLLEXPORT fmi2Status fmi2GetDirectionalDerivative(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences,
-                                                                const fmi2ValueReference valueReferences[], size_t nValueReferences,
-                                                                const fmi2Real[], fmi2Real[]);
+FMIC_DLLEXPORT fmi2Status fmi2GetDirectionalDerivative(fmi2Handle* fmu, const fmi2ValueReference unknownReferences[], size_t nUnknown,
+                                                                const fmi2ValueReference knownReferences[], size_t nKnown,
+                                                                const fmi2Real dvKnown[], fmi2Real dvUnknown[]);
 
 FMIC_DLLEXPORT fmi2Status fmi2EnterEventMode(fmi2Handle* fmu);
 FMIC_DLLEXPORT fmi2Status fmi2NewDiscreteStates(fmi2Handle* fmu, fmi2EventInfo*);

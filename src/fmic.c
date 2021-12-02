@@ -137,48 +137,51 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
     xmlNode *node = rootElement->children;
     for(; node != NULL; node = node->next) {
 
-        if(!strcmp(node->name, "CoSimulation_Tool")) {
-            fmu->type = fmi1CoSimulationTool;
-        }
-        else if(!strcmp(node->name, "CoSimulation_StandAlone")) {
-            fmu->type = fmi1CoSimulationStandAlone;
-        }
-        if(!strcmp(node->name, "CoSimulation_StandAlone") || !strcmp(node->name, "CoSimulation_Tool")) {
+        if(!strcmp(node->name, "Implementation")) {
             xmlNode *cosimNode = node->children;
-            for(; cosimNode!= NULL; cosimNode = cosimNode->next) {
-                if(!strcmp(node->name, "Capabilities")) {
-                    for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
-                        if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
-                            fmu->canHandleVariableCommunicationStepSize = parseBooleanAttribute(attr);
-                        }
-                        else if(!strcmp(attr->name, "canHandleEvents")) {
-                            fmu->canHandleEvents = parseBooleanAttribute(attr);
-                        }
-                        else if(!strcmp(attr->name, "canRejectSteps")) {
-                            fmu->canRejectSteps = parseBooleanAttribute(attr);
-                        }
-                        else if(!strcmp(attr->name, "canInterpolateInputs")) {
-                            fmu->canInterpolateInputs = parseBooleanAttribute(attr);
-                        }
-                        else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                            fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
-                        }
-                        else if(!strcmp(attr->name, "canRunAsynchronuously")) {
-                            fmu->canRunAsynchronuously = parseBooleanAttribute(attr);
-                        }
-                        else if(!strcmp(attr->name, "canSignalEvents")) {
-                            fmu->canSignalEvents = parseBooleanAttribute(attr);
-                        }
-                        else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                            fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
-                        }
-                        else if(!strcmp(attr->name, "canNotUseMemoryManagementFunctions")) {
-                            fmu->canNotUseMemoryManagementFunctions = parseBooleanAttribute(attr);
+            if(!strcmp(cosimNode->name, "CoSimulation_Tool")) {
+                fmu->type = fmi1CoSimulationTool;
+            }
+            else if(!strcmp(cosimNode->name, "CoSimulation_StandAlone")) {
+                fmu->type = fmi1CoSimulationStandAlone;
+            }
+            if(!strcmp(node->name, "CoSimulation_StandAlone") || !strcmp(node->name, "CoSimulation_Tool")) {
+                for(; cosimNode!= NULL; cosimNode = cosimNode->next) {
+                    if(!strcmp(node->name, "Capabilities")) {
+                        for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
+                            if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
+                                fmu->canHandleVariableCommunicationStepSize = parseBooleanAttribute(attr);
+                            }
+                            else if(!strcmp(attr->name, "canHandleEvents")) {
+                                fmu->canHandleEvents = parseBooleanAttribute(attr);
+                            }
+                            else if(!strcmp(attr->name, "canRejectSteps")) {
+                                fmu->canRejectSteps = parseBooleanAttribute(attr);
+                            }
+                            else if(!strcmp(attr->name, "canInterpolateInputs")) {
+                                fmu->canInterpolateInputs = parseBooleanAttribute(attr);
+                            }
+                            else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
+                                fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
+                            }
+                            else if(!strcmp(attr->name, "canRunAsynchronuously")) {
+                                fmu->canRunAsynchronuously = parseBooleanAttribute(attr);
+                            }
+                            else if(!strcmp(attr->name, "canSignalEvents")) {
+                                fmu->canSignalEvents = parseBooleanAttribute(attr);
+                            }
+                            else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
+                                fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
+                            }
+                            else if(!strcmp(attr->name, "canNotUseMemoryManagementFunctions")) {
+                                fmu->canNotUseMemoryManagementFunctions = parseBooleanAttribute(attr);
+                            }
                         }
                     }
                 }
             }
         }
+
         //Parse attributes in <DefaultExperiment>
         if(!strcmp(node->name, "DefaultExperiment")) {
             for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
@@ -255,12 +258,55 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                     }
                     xmlNode *dataNode = varNode->children;
                     if(dataNode && !strcmp(dataNode->name, "Real")) {
-                        printf("Found a real variable!\n");
+                        printf("Found a real variable!\n");  //!< @todo Remove debug output
+                        var.datatype = fmi1DataTypeReal;
 
                         //Parse variable attributes
                         for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
                             if(!strcmp(attr->name, "start")) {
                                 var.startReal = parseDoubleAttribute(attr);
+                            }
+                            if(!strcmp(attr->name, "start")) {
+                                var.fixed = parseBooleanAttribute(attr);
+                            }
+                        }
+                    }
+                    else if(dataNode && !strcmp(dataNode->name, "Integer")) {
+                        printf("Found an integer variable!\n");  //!< @todo Remove debug output
+                        var.datatype = fmi1DataTypeInteger;
+
+                        //Parse variable attributes
+                        for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
+                            if(!strcmp(attr->name, "start")) {
+                                var.startInteger = parseIntegerAttribute(attr);
+                            }
+                            if(!strcmp(attr->name, "start")) {
+                                var.fixed = parseBooleanAttribute(attr);
+                            }
+                        }
+                    }
+                    else if(dataNode && !strcmp(dataNode->name, "Boolean")) {
+                        printf("Found a boolean variable!\n");  //!< @todo Remove debug output
+                        var.datatype = fmi1DataTypeBoolean;
+
+                        //Parse variable attributes
+                        for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
+                            if(!strcmp(attr->name, "start")) {
+                                var.startBoolean = parseBooleanAttribute(attr);
+                            }
+                            if(!strcmp(attr->name, "start")) {
+                                var.fixed = parseBooleanAttribute(attr);
+                            }
+                        }
+                    }
+                    else if(dataNode && !strcmp(dataNode->name, "String")) {
+                        printf("Found a string variable!\n");  //!< @todo Remove debug output
+                        var.datatype = fmi1DataTypeString;
+
+                        //Parse variable attributes
+                        for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
+                            if(!strcmp(attr->name, "start")) {
+                                var.startString = parseStringAttribute(attr);
                             }
                             if(!strcmp(attr->name, "start")) {
                                 var.fixed = parseBooleanAttribute(attr);
@@ -535,7 +581,20 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
 
                     xmlNode *dataNode = varNode->children;
                     if(dataNode && !strcmp(dataNode->name, "Real")) {
-                        printf("Found a real variable!\n");
+                        var.datatype = fmi2DataTypeReal;
+                        printf("Found a real variable!\n");  //!< @todo Remove debug output
+                    }
+                    else if(dataNode && !strcmp(dataNode->name, "Integer")) {
+                        var.datatype = fmi2DataTypeInteger;
+                        printf("Found an integer variable!\n");  //!< @todo Remove debug output
+                    }
+                    else if(dataNode && !strcmp(dataNode->name, "Boolean")) {
+                        var.datatype = fmi2DataTypeBoolean;
+                        printf("Found a boolean variable!\n");  //!< @todo Remove debug output
+                    }
+                    else if(dataNode && !strcmp(dataNode->name, "String")) {
+                        var.datatype = fmi2DataTypeString;
+                        printf("Found a string variable!\n");  //!< @todo Remove debug output
                     }
                 }
 
@@ -985,90 +1044,90 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
 
     fmu->dll = dll;
 
-    fmu->fmi1GetTypesPlatform = LOADFUNCTION(fmi1GetTypesPlatform);
-    fmu->fmi1GetVersion = LOADFUNCTION(fmi1GetVersion);
-    fmu->fmi1SetDebugLogging = LOADFUNCTION(fmi1SetDebugLogging);
-    fmu->fmi1GetReal = LOADFUNCTION(fmi1GetReal);
-    fmu->fmi1GetInteger = LOADFUNCTION(fmi1GetInteger);
-    fmu->fmi1GetBoolean = LOADFUNCTION(fmi1GetBoolean);
-    fmu->fmi1GetString = LOADFUNCTION(fmi1GetString);
-    fmu->fmi1SetReal = LOADFUNCTION(fmi1SetReal);
-    fmu->fmi1SetInteger = LOADFUNCTION(fmi1SetInteger);
-    fmu->fmi1SetBoolean = LOADFUNCTION(fmi1SetBoolean);
-    fmu->fmi1SetString = LOADFUNCTION(fmi1SetString);
-    fmu->fmi1InstantiateSlave = LOADFUNCTION(fmi1InstantiateSlave);
-    fmu->fmi1InitializeSlave = LOADFUNCTION(fmi1InitializeSlave);
-    fmu->fmi1TerminateSlave = LOADFUNCTION(fmi1TerminateSlave);
-    fmu->fmi1ResetSlave = LOADFUNCTION(fmi1ResetSlave);
-    fmu->fmi1FreeSlaveInstance = LOADFUNCTION(fmi1FreeSlaveInstance);
-    fmu->fmi1SetRealInputDerivatives = LOADFUNCTION(fmi1SetRealInputDerivatives);
-    fmu->fmi1GetRealOutputDerivatives = LOADFUNCTION(fmi1GetRealOutputDerivatives);
-    fmu->fmi1CancelStep = LOADFUNCTION(fmi1CancelStep);
-    fmu->fmi1DoStep = LOADFUNCTION(fmi1DoStep);
-    fmu->fmi1GetStatus = LOADFUNCTION(fmi1GetStatus);
-    fmu->fmi1GetRealStatus = LOADFUNCTION(fmi1GetRealStatus);
-    fmu->fmi1GetIntegerStatus = LOADFUNCTION(fmi1GetIntegerStatus);
-    fmu->fmi1GetBooleanStatus = LOADFUNCTION(fmi1GetBooleanStatus);
-    fmu->fmi1GetStringStatus = LOADFUNCTION(fmi1GetStringStatus);
-    fmu->fmi1GetModelTypesPlatform = LOADFUNCTION(fmi1GetModelTypesPlatform);
-    fmu->fmi1InstantiateModel = LOADFUNCTION(fmi1InstantiateModel);
-    fmu->fmi1FreeModelInstance = LOADFUNCTION(fmi1FreeModelInstance);
-    fmu->fmi1SetTime = LOADFUNCTION(fmi1SetTime);
-    fmu->fmi1SetContinuousStates = LOADFUNCTION(fmi1SetContinuousStates);
-    fmu->fmi1CompletedIntegratorStep = LOADFUNCTION(fmi1CompletedIntegratorStep);
-    fmu->fmi1Initialize = LOADFUNCTION(fmi1Initialize);
-    fmu->fmi1GetDerivatives = LOADFUNCTION(fmi1GetDerivatives);
-    fmu->fmi1GetEventIndicators = LOADFUNCTION(fmi1GetEventIndicators);
-    fmu->fmi1EventUpdate = LOADFUNCTION(fmi1EventUpdate);
-    fmu->fmi1GetContinuousStates = LOADFUNCTION(fmi1GetContinuousStates);
-    fmu->fmi1GetNominalContinuousStates = LOADFUNCTION(fmi1GetNominalContinuousStates);
-    fmu->fmi1GetStateValueReferences = LOADFUNCTION(fmi1GetStateValueReferences);
-    fmu->fmi1Terminate = LOADFUNCTION(fmi1Terminate);
+    fmu->fmiGetTypesPlatform = LOADFUNCTION2(fmiGetTypesPlatform);
+    fmu->fmiGetVersion = LOADFUNCTION2(fmiGetVersion);
+    fmu->fmiSetDebugLogging = LOADFUNCTION2(fmiSetDebugLogging);
+    fmu->fmiGetReal = LOADFUNCTION2(fmiGetReal);
+    fmu->fmiGetInteger = LOADFUNCTION2(fmiGetInteger);
+    fmu->fmiGetBoolean = LOADFUNCTION2(fmiGetBoolean);
+    fmu->fmiGetString = LOADFUNCTION2(fmiGetString);
+    fmu->fmiSetReal = LOADFUNCTION2(fmiSetReal);
+    fmu->fmiSetInteger = LOADFUNCTION2(fmiSetInteger);
+    fmu->fmiSetBoolean = LOADFUNCTION2(fmiSetBoolean);
+    fmu->fmiSetString = LOADFUNCTION2(fmiSetString);
+    fmu->fmiInstantiateSlave = LOADFUNCTION2(fmiInstantiateSlave);
+    fmu->fmiInitializeSlave = LOADFUNCTION2(fmiInitializeSlave);
+    fmu->fmiTerminateSlave = LOADFUNCTION2(fmiTerminateSlave);
+    fmu->fmiResetSlave = LOADFUNCTION2(fmiResetSlave);
+    fmu->fmiFreeSlaveInstance = LOADFUNCTION2(fmiFreeSlaveInstance);
+    fmu->fmiSetRealInputDerivatives = LOADFUNCTION2(fmiSetRealInputDerivatives);
+    fmu->fmiGetRealOutputDerivatives = LOADFUNCTION2(fmiGetRealOutputDerivatives);
+    fmu->fmiCancelStep = LOADFUNCTION2(fmiCancelStep);
+    fmu->fmiDoStep = LOADFUNCTION2(fmiDoStep);
+    fmu->fmiGetStatus = LOADFUNCTION2(fmiGetStatus);
+    fmu->fmiGetRealStatus = LOADFUNCTION2(fmiGetRealStatus);
+    fmu->fmiGetIntegerStatus = LOADFUNCTION2(fmiGetIntegerStatus);
+    fmu->fmiGetBooleanStatus = LOADFUNCTION2(fmiGetBooleanStatus);
+    fmu->fmiGetStringStatus = LOADFUNCTION2(fmiGetStringStatus);
+    fmu->fmiGetModelTypesPlatform = LOADFUNCTION2(fmiGetModelTypesPlatform);
+    fmu->fmiInstantiateModel = LOADFUNCTION2(fmiInstantiateModel);
+    fmu->fmiFreeModelInstance = LOADFUNCTION2(fmiFreeModelInstance);
+    fmu->fmiSetTime = LOADFUNCTION2(fmiSetTime);
+    fmu->fmiSetContinuousStates = LOADFUNCTION2(fmiSetContinuousStates);
+    fmu->fmiCompletedIntegratorStep = LOADFUNCTION2(fmiCompletedIntegratorStep);
+    fmu->fmiInitialize = LOADFUNCTION2(fmiInitialize);
+    fmu->fmiGetDerivatives = LOADFUNCTION2(fmiGetDerivatives);
+    fmu->fmiGetEventIndicators = LOADFUNCTION2(fmiGetEventIndicators);
+    fmu->fmiEventUpdate = LOADFUNCTION2(fmiEventUpdate);
+    fmu->fmiGetContinuousStates = LOADFUNCTION2(fmiGetContinuousStates);
+    fmu->fmiGetNominalContinuousStates = LOADFUNCTION2(fmiGetNominalContinuousStates);
+    fmu->fmiGetStateValueReferences = LOADFUNCTION2(fmiGetStateValueReferences);
+    fmu->fmiTerminate = LOADFUNCTION2(fmiTerminate);
 
-    CHECKFUNCTION(fmi1GetVersion);
-    CHECKFUNCTION(fmi1SetDebugLogging);
-    CHECKFUNCTION(fmi1GetReal);
-    CHECKFUNCTION(fmi1GetInteger);
-    CHECKFUNCTION(fmi1GetBoolean);
-    CHECKFUNCTION(fmi1GetString);
-    CHECKFUNCTION(fmi1SetReal);
-    CHECKFUNCTION(fmi1SetInteger);
-    CHECKFUNCTION(fmi1SetBoolean);
-    CHECKFUNCTION(fmi1SetString);
+    CHECKFUNCTION(fmiGetVersion);
+    CHECKFUNCTION(fmiSetDebugLogging);
+    CHECKFUNCTION(fmiGetReal);
+    CHECKFUNCTION(fmiGetInteger);
+    CHECKFUNCTION(fmiGetBoolean);
+    CHECKFUNCTION(fmiGetString);
+    CHECKFUNCTION(fmiSetReal);
+    CHECKFUNCTION(fmiSetInteger);
+    CHECKFUNCTION(fmiSetBoolean);
+    CHECKFUNCTION(fmiSetString);
 
     if(fmu->type == fmi1ModelExchange) {
-        CHECKFUNCTION(fmi1InstantiateModel);
-        CHECKFUNCTION(fmi1FreeModelInstance);
-        CHECKFUNCTION(fmi1Initialize);
-        CHECKFUNCTION(fmi1GetDerivatives);
-        CHECKFUNCTION(fmi1Terminate);
-        CHECKFUNCTION(fmi1SetTime);
-        CHECKFUNCTION(fmi1GetModelTypesPlatform);
-        CHECKFUNCTION(fmi1SetContinuousStates);
-        CHECKFUNCTION(fmi1CompletedIntegratorStep);
-        CHECKFUNCTION(fmi1GetEventIndicators);
-        CHECKFUNCTION(fmi1EventUpdate);
-        CHECKFUNCTION(fmi1GetContinuousStates);
-        CHECKFUNCTION(fmi1GetNominalContinuousStates);
-        CHECKFUNCTION(fmi1GetStateValueReferences);
+        CHECKFUNCTION(fmiInstantiateModel);
+        CHECKFUNCTION(fmiFreeModelInstance);
+        CHECKFUNCTION(fmiInitialize);
+        CHECKFUNCTION(fmiGetDerivatives);
+        CHECKFUNCTION(fmiTerminate);
+        CHECKFUNCTION(fmiSetTime);
+        CHECKFUNCTION(fmiGetModelTypesPlatform);
+        CHECKFUNCTION(fmiSetContinuousStates);
+        CHECKFUNCTION(fmiCompletedIntegratorStep);
+        CHECKFUNCTION(fmiGetEventIndicators);
+        CHECKFUNCTION(fmiEventUpdate);
+        CHECKFUNCTION(fmiGetContinuousStates);
+        CHECKFUNCTION(fmiGetNominalContinuousStates);
+        CHECKFUNCTION(fmiGetStateValueReferences);
     }
 
     if(fmu->type == fmi1CoSimulationStandAlone || fmu->type == fmi1CoSimulationTool) {
-        CHECKFUNCTION(fmi1GetTypesPlatform);
-        CHECKFUNCTION(fmi1InstantiateSlave);
-        CHECKFUNCTION(fmi1Initialize);
-        CHECKFUNCTION(fmi1TerminateSlave);
-        CHECKFUNCTION(fmi1ResetSlave);
-        CHECKFUNCTION(fmi1FreeSlaveInstance);
-        CHECKFUNCTION(fmi1SetRealInputDerivatives);
-        CHECKFUNCTION(fmi1GetRealOutputDerivatives);
-        CHECKFUNCTION(fmi1DoStep);
-        CHECKFUNCTION(fmi1CancelStep);
-        CHECKFUNCTION(fmi1GetStatus);
-        CHECKFUNCTION(fmi1GetRealStatus);
-        CHECKFUNCTION(fmi1GetIntegerStatus);
-        CHECKFUNCTION(fmi1GetBooleanStatus);
-        CHECKFUNCTION(fmi1GetStringStatus);
+        CHECKFUNCTION(fmiGetTypesPlatform);
+        CHECKFUNCTION(fmiInstantiateSlave);
+        CHECKFUNCTION(fmiInitializeSlave);
+        CHECKFUNCTION(fmiTerminateSlave);
+        CHECKFUNCTION(fmiResetSlave);
+        CHECKFUNCTION(fmiFreeSlaveInstance);
+        CHECKFUNCTION(fmiSetRealInputDerivatives);
+        CHECKFUNCTION(fmiGetRealOutputDerivatives);
+        CHECKFUNCTION(fmiDoStep);
+        CHECKFUNCTION(fmiCancelStep);
+        CHECKFUNCTION(fmiGetStatus);
+        CHECKFUNCTION(fmiGetRealStatus);
+        CHECKFUNCTION(fmiGetIntegerStatus);
+        CHECKFUNCTION(fmiGetBooleanStatus);
+        CHECKFUNCTION(fmiGetStringStatus);
     }
 
     return true;
@@ -2892,67 +2951,67 @@ bool fmi1GetVariableIsFixed(fmi1VariableHandle *var)
 const char *fmi1GetTypesPlatform(fmi1Handle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1GetTypesPlatform();
+    return fmu->fmiGetTypesPlatform();
 }
 
 const char *fmi1GetVersion(fmi1Handle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1GetVersion();
+    return fmu->fmiGetVersion();
 }
 
 fmi1Status fmi1SetDebugLogging(fmi1Handle *fmu, fmi1Boolean loggingOn)
 {
     TRACEFUNC
-    return fmu->fmi1SetDebugLogging(fmu->_fmi1Component, loggingOn);
+    return fmu->fmiSetDebugLogging(fmu->_fmi1Component, loggingOn);
 }
 
 fmi1Status fmi1GetReal(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Real values[])
 {
     TRACEFUNC
-    return fmu->fmi1GetReal(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+    return fmu->fmiGetReal(fmu->_fmi1Component, valueReferences, nValueReferences, values);
 }
 
 fmi1Status fmi1GetInteger(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Integer values[])
 {
     TRACEFUNC
-    return fmu->fmi1GetInteger(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+    return fmu->fmiGetInteger(fmu->_fmi1Component, valueReferences, nValueReferences, values);
 }
 
 fmi1Status fmi1GetBoolean(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Boolean values[])
 {
     TRACEFUNC
-    return fmu->fmi1GetBoolean(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+    return fmu->fmiGetBoolean(fmu->_fmi1Component, valueReferences, nValueReferences, values);
 }
 
 fmi1Status fmi1GetString(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1String values[])
 {
     TRACEFUNC
-    return fmu->fmi1GetString(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+    return fmu->fmiGetString(fmu->_fmi1Component, valueReferences, nValueReferences, values);
 }
 
 fmi1Status fmi1SetReal(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Real values[])
 {
     TRACEFUNC
-    return fmu->fmi1SetReal(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+    return fmu->fmiSetReal(fmu->_fmi1Component, valueReferences, nValueReferences, values);
 }
 
 fmi1Status fmi1SetInteger(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer values[])
 {
     TRACEFUNC
-    return fmu->fmi1SetInteger(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+    return fmu->fmiSetInteger(fmu->_fmi1Component, valueReferences, nValueReferences, values);
 }
 
 fmi1Status fmi1SetBoolean(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Boolean values[])
 {
     TRACEFUNC
-    return fmu->fmi1SetBoolean(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+    return fmu->fmiSetBoolean(fmu->_fmi1Component, valueReferences, nValueReferences, values);
 }
 
 fmi1Status fmi1SetString(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1String values[])
 {
     TRACEFUNC
-    return fmu->fmi1SetString(fmu->_fmi1Component, valueReferences, nValueReferences, values);
+    return fmu->fmiSetString(fmu->_fmi1Component, valueReferences, nValueReferences, values);
 }
 
 bool fmi1InstantiateSlave(fmi1Handle *fmu, fmi1String mimeType, fmi1Real timeOut, fmi1Boolean visible, fmi1Boolean interactive, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi3Boolean loggingOn)
@@ -2963,91 +3022,93 @@ bool fmi1InstantiateSlave(fmi1Handle *fmu, fmi1String mimeType, fmi1Real timeOut
     fmu->callbacksCoSimulation.freeMemory = freeMemory;
     fmu->callbacksCoSimulation.stepFinished = stepFinished;
 
-    return fmu->fmi1InstantiateSlave(fmu->instanceName, fmu->guid, fmu->unzippedLocation, mimeType, timeOut, visible, interactive, fmu->callbacksCoSimulation, loggingOn);
+    fmu->_fmi1Component = fmu->fmiInstantiateSlave(fmu->instanceName, fmu->guid, fmu->unzippedLocation, mimeType, timeOut, visible, interactive, fmu->callbacksCoSimulation, loggingOn);
+
+    return (fmu->_fmi1Component != NULL);
 }
 
 fmi1Status fmi1InitializeSlave(fmi1Handle *fmu, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime)
 {
     TRACEFUNC
-    return fmu->fmi1InitializeSlave(fmu->_fmi1Component, startTime, stopTimeDefined, stopTime);
+    return fmu->fmiInitializeSlave(fmu->_fmi1Component, startTime, stopTimeDefined, stopTime);
 }
 
 fmi1Status fmi1TerminateSlave(fmi1Handle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1TerminateSlave(fmu->_fmi1Component);
+    return fmu->fmiTerminateSlave(fmu->_fmi1Component);
 }
 
 fmi1Status fmi1ResetSlave(fmi1Handle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1ResetSlave(fmu->_fmi1Component);
+    return fmu->fmiResetSlave(fmu->_fmi1Component);
 }
 
 void fmi1FreeSlaveInstance(fmi1Handle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1FreeSlaveInstance(fmu->_fmi1Component);
+    return fmu->fmiFreeSlaveInstance(fmu->_fmi1Component);
 }
 
 fmi1Status fmi1SetRealInputDerivatives(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], const fmi1Real values[])
 {
     TRACEFUNC
-    return fmu->fmi1SetRealInputDerivatives(fmu->_fmi1Component, valueReferences, nValueReferences, orders, values);
+    return fmu->fmiSetRealInputDerivatives(fmu->_fmi1Component, valueReferences, nValueReferences, orders, values);
 }
 
 fmi1Status fmi1GetRealOutputDerivatives(fmi1Handle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], fmi1Real values[])
 {
     TRACEFUNC
-    return fmu->fmi1GetRealOutputDerivatives(fmu->_fmi1Component, valueReferences, nValueReferences, orders, values);
+    return fmu->fmiGetRealOutputDerivatives(fmu->_fmi1Component, valueReferences, nValueReferences, orders, values);
 }
 
 fmi1Status fmi1CancelStep(fmi1Handle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1CancelStep(fmu->_fmi1Component);
+    return fmu->fmiCancelStep(fmu->_fmi1Component);
 }
 
 fmi1Status fmi1DoStep(fmi1Handle *fmu, fmi1Real currentCommunicationPoint, fmi1Real communicationStepSize, fmi1Boolean newStep)
 {
     TRACEFUNC
-    return fmu->fmi1DoStep(fmu->_fmi1Component, currentCommunicationPoint, communicationStepSize, newStep);
+    return fmu->fmiDoStep(fmu->_fmi1Component, currentCommunicationPoint, communicationStepSize, newStep);
 }
 
 fmi1Status fmi1GetStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1Status *value)
 {
     TRACEFUNC
-    return fmu->fmi1GetStatus(fmu->_fmi1Component, statusKind, value);
+    return fmu->fmiGetStatus(fmu->_fmi1Component, statusKind, value);
 }
 
 fmi1Status fmi1GetRealStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1Real *value)
 {
     TRACEFUNC
-    return fmu->fmi1GetRealStatus(fmu->_fmi1Component, statusKind, value);
+    return fmu->fmiGetRealStatus(fmu->_fmi1Component, statusKind, value);
 }
 
 fmi1Status fmi1GetIntegerStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1Integer *value)
 {
     TRACEFUNC
-    return fmu->fmi1GetIntegerStatus(fmu->_fmi1Component, statusKind, value);
+    return fmu->fmiGetIntegerStatus(fmu->_fmi1Component, statusKind, value);
 }
 
 fmi1Status fmi1GetBooleanStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1Boolean *value)
 {
     TRACEFUNC
-    return fmu->fmi1GetBooleanStatus(fmu->_fmi1Component, statusKind, value);
+    return fmu->fmiGetBooleanStatus(fmu->_fmi1Component, statusKind, value);
 }
 
 fmi1Status fmi1GetStringStatus(fmi1Handle *fmu, const fmi1StatusKind statusKind, fmi1String *value)
 {
     TRACEFUNC
-    return fmu->fmi1GetStringStatus(fmu->_fmi1Component, statusKind, value);
+    return fmu->fmiGetStringStatus(fmu->_fmi1Component, statusKind, value);
 }
 
 const char *fmi1GetModelTypesPlatform(fmi1Handle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1GetModelTypesPlatform();
+    return fmu->fmiGetModelTypesPlatform();
 }
 
 
@@ -3057,77 +3118,85 @@ bool fmi1InstantiateModel(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger_t l
     fmu->callbacksModelExchange.logger = logger;
     fmu->callbacksModelExchange.allocateMemory = allocateMemory;
     fmu->callbacksModelExchange.freeMemory = freeMemory;
-    return fmu->fmi1InstantiateModel(fmu->instanceName, fmu->guid, fmu->callbacksModelExchange, loggingOn);
+    fmu->_fmi1Component = fmu->fmiInstantiateModel(fmu->instanceName, fmu->guid, fmu->callbacksModelExchange, loggingOn);
+
+    return (fmu->_fmi1Component != NULL);
 }
 
 void fmi1FreeModelInstance(fmi1Handle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1FreeModelInstance(fmu->_fmi1Component);
+    return fmu->fmiFreeModelInstance(fmu->_fmi1Component);
 }
 
 fmi1Status fmi1SetTime(fmi1Handle *fmu, fmi1Real time)
 {
     TRACEFUNC
-    return fmu->fmi1SetTime(fmu->_fmi1Component, time);
+    return fmu->fmiSetTime(fmu->_fmi1Component, time);
 }
 
 fmi1Status fmi1SetContinuousStates(fmi1Handle *fmu, const fmi1Real values[], size_t nStates)
 {
     TRACEFUNC
-    return fmu->fmi1SetContinuousStates(fmu->_fmi1Component, values, nStates);
+    return fmu->fmiSetContinuousStates(fmu->_fmi1Component, values, nStates);
 }
 
 fmi1Status fmi1CompletedIntegratorStep(fmi1Handle *fmu, fmi1Boolean *callEventUpdate)
 {
     TRACEFUNC
-    return fmu->fmi1CompletedIntegratorStep(fmu->_fmi1Component, callEventUpdate);
+    return fmu->fmiCompletedIntegratorStep(fmu->_fmi1Component, callEventUpdate);
 }
 
 fmi1Status fmi1Initialize(fmi1Handle *fmu, fmi1Boolean toleranceControlled, fmi1Real relativeTolerance, fmi1EventInfo *eventInfo)
 {
     TRACEFUNC
-    return fmu->fmi1Initialize(fmu->_fmi1Component, toleranceControlled, relativeTolerance, eventInfo);
+    return fmu->fmiInitialize(fmu->_fmi1Component, toleranceControlled, relativeTolerance, eventInfo);
 }
 
 fmi1Status fmi1GetDerivatives(fmi1Handle *fmu, fmi1Real derivatives[], size_t nDerivatives)
 {
     TRACEFUNC
-    return fmu->fmi1GetDerivatives(fmu->_fmi1Component, derivatives, nDerivatives);
+    return fmu->fmiGetDerivatives(fmu->_fmi1Component, derivatives, nDerivatives);
 }
 
 fmi1Status fmi1GetEventIndicators(fmi1Handle *fmu, fmi1Real indicators[], size_t nIndicators)
 {
     TRACEFUNC
-    return fmu->fmi1GetEventIndicators(fmu->_fmi1Component, indicators, nIndicators);
+    return fmu->fmiGetEventIndicators(fmu->_fmi1Component, indicators, nIndicators);
 }
 
 fmi1Status fmi1EventUpdate(fmi1Handle *fmu, fmi1Boolean intermediateResults, fmi1EventInfo *eventInfo)
 {
     TRACEFUNC
-    return fmu->fmi1EventUpdate(fmu->_fmi1Component, intermediateResults, eventInfo);
+    return fmu->fmiEventUpdate(fmu->_fmi1Component, intermediateResults, eventInfo);
 }
 
 fmi1Status fmi1GetContinuousStates(fmi1Handle *fmu, fmi1Real states[], size_t nStates)
 {
     TRACEFUNC
-    return fmu->fmi1GetContinuousStates(fmu, states, nStates);
+    return fmu->fmiGetContinuousStates(fmu, states, nStates);
 }
 
 fmi1Status fmi1GetNominalContinuousStates(fmi1Handle *fmu, fmi1Real nominals[], size_t nNominals)
 {
     TRACEFUNC
-    return fmu->fmi1GetNominalContinuousStates(fmu->_fmi1Component, nominals, nNominals);
+    return fmu->fmiGetNominalContinuousStates(fmu->_fmi1Component, nominals, nNominals);
 }
 
 fmi1Status fmi1GetStateValueReferences(fmi1Handle *fmu, fmi1ValueReference valueReferences[], size_t nValueReferences)
 {
     TRACEFUNC
-    return fmu->fmi1GetStateValueReferences(fmu, valueReferences, nValueReferences);
+    return fmu->fmiGetStateValueReferences(fmu, valueReferences, nValueReferences);
 }
 
 fmi1Status fmi1Terminate(fmi1Handle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1Terminate(fmu->_fmi1Component);
+    return fmu->fmiTerminate(fmu->_fmi1Component);
+}
+
+fmi1DataType fmi1GetVariableDataType(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->datatype;
 }
