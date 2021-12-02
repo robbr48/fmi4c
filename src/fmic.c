@@ -56,6 +56,9 @@ fmiHandle* unzipFmu(const char* fmuFile, const char* instanceName)
 }
 
 
+//! @brief Parses modelDescription.xml for FMI 1
+//! @param fmu FMU handle
+//! @returns True if parsing was successful
 bool parseModelDescriptionFmi1(fmi1Handle *fmu)
 {
     fmu->defaultStartTimeDefined = false;
@@ -222,15 +225,19 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                         xmlChar *value = parseStringAttribute(attr);
                         if(!strcmp(value, "input")) {
                             var.causality = fmi1CausalityInput;
+                            printf("Input!\n");
                         }
                         else if(!strcmp(value, "output")) {
                             var.causality = fmi1CausalityOutput;
+                            printf("Output!\n");
                         }
                         else if(!strcmp(value, "internal")) {
                             var.causality = fmi1CausalityInternal;
+                            printf("Internal!\n");
                         }
                         else if(!strcmp(value, "none")) {
                             var.causality = fmi1CausalityNone;
+                            printf("None!\n");
                         }
                         else {
                             printf("Unknown causality: %s\n",value);
@@ -336,6 +343,8 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
 
 
 //! @brief Parses modelDescription.xml for FMI 2
+//! @param fmu FMU handle
+//! @returns True if parsing was successful
 bool parseModelDescriptionFmi2(fmi2Handle *fmu)
 {
     fmu->defaultStartTimeDefined = false;
@@ -620,6 +629,8 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
 
 
 //! @brief Parses modelDescription.xml for FMI 3
+//! @param fmu FMU handle
+//! @returns True if parsing was successful
 bool parseModelDescriptionFmi3(fmi3Handle *fmu)
 {
     fmu->supportsCoSimulation = false;
@@ -1024,7 +1035,9 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
 }
 
 
-//! @brief Loads all DLL functions for FMI 2
+//! @brief Loads all DLL functions for FMI 1
+//! @param fmu FMU handle
+//! @returns True if load was successful
 bool loadFunctionsFmi1(fmi1Handle *fmu)
 {
     TRACEFUNC
@@ -1137,7 +1150,10 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
     return true;
 }
 
+
 //! @brief Loads all DLL functions for FMI 2
+//! @param fmu FMU handle
+//! @returns True if load was successful
 bool loadFunctionsFmi2(fmi2Handle *fmu)
 {
     TRACEFUNC
@@ -1273,6 +1289,8 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
 
 
 //! @brief Loads all DLL functions for FMI 3
+//! @param fmu FMU handle
+//! @returns True if load was successful
 bool loadFunctionsFmi3(fmi3Handle *fmu)
 {
     TRACEFUNC
@@ -1473,6 +1491,8 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
 
 
 //! @brief Returns FMI version of FMU
+//! @param fmu FMU handle
+//! @returns Version of the FMU
 fmiVersion_t getFmiVersion(fmiHandle *fmu)
 {
     xmlKeepBlanksDefault(0);
@@ -1517,7 +1537,10 @@ fmiVersion_t getFmiVersion(fmiHandle *fmu)
 }
 
 
-//! @brief Loads the FMU as version 2
+//! @brief Loads the FMU as version 2.
+//! First parses modelDescription.xml, then loads all required FMI functions.
+//! @param fmu FMU handle
+//! @returns Handle to FMU with FMI version 2
 fmi2Handle *loadFmu2(fmiHandle *fmu)
 {
     fmi2Handle *fmu2 = malloc(sizeof(fmi2Handle));
@@ -1541,7 +1564,10 @@ fmi2Handle *loadFmu2(fmiHandle *fmu)
 }
 
 
-//! @brief Loads the FMU as version 3
+//! @brief Loads the FMU as version 3.
+//! First parses modelDescription.xml, then loads all required FMI functions.
+//! @param fmu FMU handle
+//! @returns Handle to FMU with FMI version 3
 fmi3Handle *loadFmu3(fmiHandle *fmu)
 {
     TRACEFUNC
@@ -1863,6 +1889,7 @@ const char *fmi3GetVariableName(fmi3VariableHandle *var)
 
 
 //! @brief Free FMU dll for FMI version 2
+//! @param fmu FMU handle
 void *freeFmu2(fmi2Handle *fmu)
 {
     TRACEFUNC
@@ -1875,6 +1902,7 @@ void *freeFmu2(fmi2Handle *fmu)
 
 
 //! @brief Free FMU dll for FMI version 3
+//! @param fmu FMU handle
 void *freeFmu3(fmi3Handle *fmu)
 {
     TRACEFUNC
@@ -2832,6 +2860,11 @@ bool fmi3GetCompletedIntegratorStepNotNeeded(fmi3Handle *fmu)
     return fmu->completedIntegratorStepNotNeeded;
 }
 
+
+//! @brief Loads the FMU as version 1.
+//! First parses modelDescription.xml, then loads all required FMI functions.
+//! @param fmu FMU handle
+//! @returns Handle to FMU with FMI version 1
 fmi1Handle *loadFmu1(fmiHandle *fmu)
 {
     fmi1Handle *fmu1 = malloc(sizeof(fmi1Handle));
@@ -2854,6 +2887,9 @@ fmi1Handle *loadFmu1(fmiHandle *fmu)
     return fmu1;
 }
 
+
+//! @brief Free FMU dll for FMI version 1
+//! @param fmu FMU handle
 void *freeFmu1(fmi1Handle *fmu)
 {
     TRACEFUNC

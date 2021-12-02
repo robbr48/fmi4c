@@ -3,6 +3,8 @@ project(fmic C)
 
 set(target_name fmic)
 
+add_subdirectory(doc)
+
 include_directories(src)
 
 set(SRCFILES

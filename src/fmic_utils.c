@@ -2,25 +2,41 @@
 #include <string.h>
 #include "fmic_utils.h"
 
+
+//! @brief Parses an XML attribute as a string
+//! @param attr XML attribute from libxml2
+//! @returns Attribute value as a string
 char* parseStringAttribute(xmlAttr *attr) {
     return strdup(xmlNodeListGetString(attr->doc, attr->children, 1));
 }
 
+//! @brief Parses an XML attribute as a boolean
+//! @param attr XML attribute from libxml2
+//! @returns True if attribute value equals "true"
 bool parseBooleanAttribute(xmlAttr *attr)
 {
     return !strcmp(xmlNodeListGetString(attr->doc, attr->children, 1), "true");
 }
 
+//! @brief Parses an XML attribute as a double
+//! @param attr XML attribute from libxml2
+//! @returns Attribute value converted to double
 double parseDoubleAttribute(xmlAttr *attr)
 {
     return atof(xmlNodeListGetString(attr->doc, attr->children, 1));
 }
 
+//! @brief Parses an XML attribute as an integer
+//! @param attr XML attribute from libxml2
+//! @returns Attribute value converted to int
 int parseIntegerAttribute(xmlAttr *attr)
 {
     return atoi(xmlNodeListGetString(attr->doc, attr->children, 1));
 }
 
+//! @brief Parses an XML attribute as a long integer
+//! @param attr XML attribute from libxml2
+//! @returns Attribute value converted to long
 int parseLongAttribute(xmlAttr *attr)
 {
     return atol(xmlNodeListGetString(attr->doc, attr->children, 1));
