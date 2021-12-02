@@ -1035,7 +1035,11 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
     strcat(dllPath,"\\binaries\\win64\\");
     strcat(dllPath,fmu->modelIdentifier);
     strcat(dllPath,".dll");
+#ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
+#else
+    void* dll = dlopen(dll_file_path, RTLD_NOW|RTLD_LOCAL);
+#endif
     if(NULL == dll) {
         printf("Loading DLL failed: %s\n",dllPath);
         return false;
@@ -1144,7 +1148,11 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
     strcat(dllPath,"\\binaries\\win64\\");
     strcat(dllPath,fmu->modelIdentifier);
     strcat(dllPath,".dll");
+#ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
+#else
+    void* dll = dlopen(dll_file_path, RTLD_NOW|RTLD_LOCAL);
+#endif
     if(NULL == dll) {
         printf("Loading DLL failed: %s\n",dllPath);
         return false;
@@ -1274,7 +1282,11 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
     strcat(dllPath,"\\binaries\\x86_64-windows\\");
     strcat(dllPath,fmu->modelIdentifier);
     strcat(dllPath,".dll");
+#ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
+#else
+    void* dll = dlopen(dll_file_path, RTLD_NOW|RTLD_LOCAL);
+#endif
     if(NULL == dll) {
         printf("Loading DLL failed!\n");
         return false;
@@ -1854,7 +1866,11 @@ const char *fmi3GetVariableName(fmi3VariableHandle *var)
 void *freeFmu2(fmi2Handle *fmu)
 {
     TRACEFUNC
+#ifdef _WIN32
     FreeLibrary(fmu->dll);
+#else
+    dlclose(fmu->dll);
+#endif
 }
 
 
@@ -1862,7 +1878,11 @@ void *freeFmu2(fmi2Handle *fmu)
 void *freeFmu3(fmi3Handle *fmu)
 {
     TRACEFUNC
+#ifdef _WIN32
     FreeLibrary(fmu->dll);
+#else
+    dlclose(fmu->dll);
+#endif
 }
 
 fmi3Initial fmi3GetVariableInitial(fmi3VariableHandle *var)
@@ -2837,7 +2857,11 @@ fmi1Handle *loadFmu1(fmiHandle *fmu)
 void *freeFmu1(fmi1Handle *fmu)
 {
     TRACEFUNC
+#ifdef _WIN32
     FreeLibrary(fmu->dll);
+#else
+    dlclose(fmu->dll);
+#endif
 }
 
 bool fmi1DefaultStartTimeDefined(fmi1Handle *fmu)

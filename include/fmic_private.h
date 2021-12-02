@@ -17,8 +17,13 @@
 
 #define TRACEFUNC printf("In function: %s\n",__func__);
 
+#ifdef _WIN32
 #define LOADFUNCTION2(FUNCNAME) (FUNCNAME ## _t)GetProcAddress(dll, getFunctionName(fmu->modelName, #FUNCNAME));
 #define LOADFUNCTION(FUNCNAME) (FUNCNAME ## _t)GetProcAddress(dll, #FUNCNAME);
+#else
+#define LOADFUNCTION2(FUNCNAME) (FUNCNAME ## _t)dlsym(dll, getFunctionName(fmu->modelName, #FUNCNAME));
+#define LOADFUNCTION(FUNCNAME) (FUNCNAME ## _t)dlsym(dll, #FUNCNAME);
+#endif
 
 #define CHECKFUNCTION(FUNCNAME) ({ \
     if(fmu->FUNCNAME == NULL) { \
@@ -80,8 +85,11 @@ typedef struct {
 
 // Handle for FMI 1
 typedef struct {
+#ifdef _WIN32
     HINSTANCE dll;
-
+#else
+    void* dll;
+#endif
     const char* instanceName;
     const char* unzippedLocation;
     const char* resourcesLocation;
@@ -170,7 +178,11 @@ typedef struct {
 
 // Handle for FMI 2
 typedef struct {
+#ifdef _WIN32
     HINSTANCE dll;
+#else
+    void* dll;
+#endif
 
     const char* instanceName;
     const char* unzippedLocation;
@@ -267,7 +279,11 @@ typedef struct {
 
 // Handle for FMI 3
 typedef struct {
+#ifdef _WIN32
     HINSTANCE dll;
+#else
+    void* dll;
+#endif
 
     int hierarchyLength;
     char* hierarchy[5];
