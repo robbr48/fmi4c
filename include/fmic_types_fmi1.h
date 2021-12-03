@@ -14,7 +14,7 @@ typedef char fmi1Boolean;
 typedef const char* fmi1String;
 
 // Enums
-typedef enum { fmi1OK, fmi1Warning, fmi1Discard, fmi1Error, fmi1Fatal} fmi1Status;
+typedef enum { fmi1OK, fmi1Warning, fmi1Discard, fmi1Error, fmi1Fatal, fmi1Pending} fmi1Status;
 typedef enum { fmi1DoStepStatus, fmi1PendingStatus, fmi1LastSuccessfulTime} fmi1StatusKind;
 typedef enum { fmi1ModelExchange, fmi1CoSimulationStandAlone, fmi1CoSimulationTool } fmi1Type;
 typedef enum { fmi1CausalityInput, fmi1CausalityOutput, fmi1CausalityInternal, fmi1CausalityNone } fmi1Causality;
