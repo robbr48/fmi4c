@@ -74,7 +74,7 @@ FMIC_DLLEXPORT fmi1Status fmi1SetInteger(fmi1Handle* fmu, const fmi1ValueReferen
 FMIC_DLLEXPORT fmi1Status fmi1SetBoolean(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Boolean values[]);
 FMIC_DLLEXPORT fmi1Status fmi1SetString(fmi1Handle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1String values[]);
 
-FMIC_DLLEXPORT bool fmi1InstantiateSlave(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi1Boolean loggingOn);
+FMIC_DLLEXPORT bool fmi1InstantiateSlave(fmi1Handle *fmu, fmi1String mimeType, fmi1Real timeOut, fmi1Boolean visible, fmi1Boolean interactive, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi3Boolean loggingOn);
 FMIC_DLLEXPORT fmi1Status fmi1InitializeSlave(fmi1Handle* fmu, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime);
 FMIC_DLLEXPORT fmi1Status fmi1TerminateSlave(fmi1Handle* fmu);
 FMIC_DLLEXPORT fmi1Status fmi1ResetSlave(fmi1Handle* fmu);
