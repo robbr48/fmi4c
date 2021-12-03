@@ -3,7 +3,10 @@ project(fmic C)
 
 set(target_name fmic)
 
-add_subdirectory(doc)
+option(BUILD_DOCUMENTATION "Build Doxtygen documentation" OFF])
+if (${BUILD_DOCUMENTATION})
+    add_subdirectory(doc)
+endif()
 
 include_directories(src)
 
