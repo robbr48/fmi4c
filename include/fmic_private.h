@@ -15,7 +15,11 @@
 
 #include <windows.h>
 
+#ifdef DEBUG
 #define TRACEFUNC printf("In function: %s\n",__func__);
+#else
+#define TRACEFUNC
+#endif
 
 #ifdef _WIN32
 #define LOADFUNCTION2(FUNCNAME) (FUNCNAME ## _t)GetProcAddress(dll, getFunctionName(fmu->modelName, #FUNCNAME));
