@@ -206,6 +206,7 @@ FMIC_DLLEXPORT fmi2Status fmi2GetStringStatus(fmi2Handle* fmu, const fmi2StatusK
 
 
 FMIC_DLLEXPORT int fmi3GetNumberOfVariables(fmi3Handle *fmu);
+FMIC_DLLEXPORT fmi3VariableHandle* fmi3GetVariableByName(fmi3Handle *fmu, fmi3String name);
 FMIC_DLLEXPORT fmi3VariableHandle* fmi3GetVariableByIndex(fmi3Handle *fmu, int i);
 FMIC_DLLEXPORT fmi3VariableHandle* fmi3GetVariableByValueReference(fmi3Handle *fmu, fmi3ValueReference vr);
 FMIC_DLLEXPORT const char* fmi3GetVariableName(fmi3VariableHandle* var);

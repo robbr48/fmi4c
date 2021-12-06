@@ -513,7 +513,7 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
                 //Parse variable attributes
                 for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
                     if(!strcmp(attr->name, "name")) {
-                        var.instanceName = parseStringAttribute(attr);
+                        var.name = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "valueReference")) {
                         var.valueReference = parseLongAttribute(attr);
@@ -940,7 +940,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                 //Parse variable attributes
                 for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
                     if(!strcmp(attr->name, "name")) {
-                        var.instanceName = parseStringAttribute(attr);
+                        var.name = parseStringAttribute(attr);
                     }
                     if(!strcmp(attr->name, "description")) {
                         var.description = parseStringAttribute(attr);
@@ -1884,7 +1884,7 @@ int fmi3GetNumberOfVariables(fmi3Handle *fmu)
 const char *fmi3GetVariableName(fmi3VariableHandle *var)
 {
     TRACEFUNC
-    return var->instanceName;
+    return var->name;
 }
 
 
@@ -2451,6 +2451,16 @@ double fmi2GetDefaultStepSize(fmi2Handle *fmu)
     return fmu->defaultStepSize;
 }
 
+void *fmi3GetVariableByName(fmi3Handle *fmu, fmi3String name)
+{
+    for(int i=0; i<fmu->numberOfVariables; ++i) {
+        if(fmu->variables[i].name == name) {
+            return &fmu->variables[i];
+        }
+    }
+    printf("Variable with name %s not found.\n", name);
+    return NULL;
+}
 
 void *fmi3GetVariableByIndex(fmi3Handle *fmu, int i)
 {
@@ -2508,7 +2518,7 @@ void *fmi2GetVariableByValueReference(fmi2Handle *fmu, fmi3ValueReference vr)
 const char *fmi2GetVariableName(fmi2VariableHandle *var)
 {
     TRACEFUNC
-    return var->instanceName;
+    return var->name;
 }
 
 const char *fmi2GetVariableDescription(fmi2VariableHandle *var)

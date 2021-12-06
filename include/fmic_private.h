@@ -52,7 +52,7 @@ typedef struct {
 
 typedef struct {
     fmi2DataType datatype;
-    char *instanceName;
+    char *name;
     char *description;
     char *quantity;
     char *unit;
@@ -67,7 +67,7 @@ typedef struct {
 
 typedef struct {
     fmi3DataType datatype;
-    char *instanceName;
+    char *name;
     char *description;
     char *quantity;
     char *unit;
