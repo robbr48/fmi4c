@@ -50,6 +50,7 @@ fmiHandle* unzipFmu(const char* fmuFile, const char* instanceName)
 
     fmu->instanceName = instanceName;
 
+    chdir(cwd);
     printf("CWD (2): %s\n",cwd);
     printf("Successfully unzipped FMU\n");
     return fmu;
@@ -74,12 +75,14 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
     fmu->canRunAsynchronuously = false;
     fmu->canBeInstantiatedOnlyOncePerProcess = false;
     fmu->canNotUseMemoryManagementFunctions = false;
+    fmu->maxOutputDerivativeOrder = 0;
 
     fmu->type = fmi1ModelExchange;
 
     char cwd[FILENAME_MAX];
     _getcwd(cwd, FILENAME_MAX);
-    printf("Current working dir: %s\n", cwd);
+
+    chdir(fmu->unzippedLocation);
 
     xmlKeepBlanksDefault(0);
 
@@ -372,7 +375,6 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
 
     char cwd[FILENAME_MAX];
     _getcwd(cwd, FILENAME_MAX);
-    printf("Current working dir: %s\n", cwd);
 
     xmlKeepBlanksDefault(0);
 
@@ -661,8 +663,8 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
 
     char cwd[FILENAME_MAX];
     _getcwd(cwd, FILENAME_MAX);
-    printf("Current working dir: %s\n", cwd);
 
+    chdir(fmu->unzippedLocation);
     chdir(fmu->instanceName);
 
     char tempPath[FILENAME_MAX];
@@ -1495,12 +1497,19 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
 //! @returns Version of the FMU
 fmiVersion_t getFmiVersion(fmiHandle *fmu)
 {
+    char cwd[FILENAME_MAX];
+    _getcwd(cwd, FILENAME_MAX);
+
+    chdir(fmu->unzippedLocation);
+
+
     xmlKeepBlanksDefault(0);
 
     xmlDoc *doc = NULL;
     xmlNode *rootElement = NULL;
 
     doc = xmlReadFile("modelDescription.xml", NULL, 0);
+    chdir(cwd);
     if(NULL == doc){
        printf("Failed to read modelDescription.xml");
        return false;
