@@ -1592,7 +1592,7 @@ fmi3Handle *loadFmu3(fmiHandle *fmu)
 }
 
 
-void fmi3InstantiateCoSimulation(fmi3Handle *fmu,
+bool fmi3InstantiateCoSimulation(fmi3Handle *fmu,
                              fmi3Boolean                    visible,
                              fmi3Boolean                    loggingOn,
                              fmi3Boolean                    eventModeUsed,
@@ -1616,6 +1616,8 @@ void fmi3InstantiateCoSimulation(fmi3Handle *fmu,
                                                       instanceEnvironment,
                                                       logMessage,
                                                       intermediateUpdate);
+
+    return (fmu->_fmi3Instance != NULL);
 }
 
 const char* fmi3GetVersion(fmi3Handle *fmu) {
