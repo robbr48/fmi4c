@@ -196,8 +196,8 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                     fmu->defaultStartTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "stopTime")) {
-                    fmu->defaultStartTime = parseDoubleAttribute(attr);
-                    fmu->defaultStartTimeDefined = true;
+                    fmu->defaultStopTime = parseDoubleAttribute(attr);
+                    fmu->defaultStopTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "tolerance")) {
                     fmu->defaultTolerance = parseDoubleAttribute(attr);
@@ -490,8 +490,8 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
                     fmu->defaultStartTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "stopTime")) {
-                    fmu->defaultStartTime = parseDoubleAttribute(attr);
-                    fmu->defaultStartTimeDefined = true;
+                    fmu->defaultStopTime = parseDoubleAttribute(attr);
+                    fmu->defaultStopTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "tolerance")) {
                     fmu->defaultTolerance = parseDoubleAttribute(attr);
@@ -884,8 +884,8 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                     fmu->defaultStartTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "stopTime")) {
-                    fmu->defaultStartTime = parseDoubleAttribute(attr);
-                    fmu->defaultStartTimeDefined = true;
+                    fmu->defaultStopTime = parseDoubleAttribute(attr);
+                    fmu->defaultStopTimeDefined = true;
                 }
                 if(!strcmp(attr->name, "tolerance")) {
                     fmu->defaultTolerance = parseDoubleAttribute(attr);
