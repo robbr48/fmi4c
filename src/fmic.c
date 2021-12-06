@@ -651,7 +651,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     fmu->providesDirectionalDerivative = false;
     fmu->providesAdjointDerivatives = false;
     fmu->providesPerElementDependencies = false;
-    fmu-> maxOutputDerivativeOrder = 0;
+    fmu->maxOutputDerivativeOrder = 0;
     fmu->providesIntermediateUpdate = false;
     fmu->providesEvaluateDiscreteStates = false;
     fmu->recommendedIntermediateInputSmoothness = false;
@@ -1138,15 +1138,21 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
         CHECKFUNCTION(fmiTerminateSlave);
         CHECKFUNCTION(fmiResetSlave);
         CHECKFUNCTION(fmiFreeSlaveInstance);
-        CHECKFUNCTION(fmiSetRealInputDerivatives);
-        CHECKFUNCTION(fmiGetRealOutputDerivatives);
+        if(fmu->canInterpolateInputs) {
+            CHECKFUNCTION(fmiSetRealInputDerivatives);
+        }
+        if(fmu->maxOutputDerivativeOrder > 0) {
+            CHECKFUNCTION(fmiGetRealOutputDerivatives);
+        }
         CHECKFUNCTION(fmiDoStep);
-        CHECKFUNCTION(fmiCancelStep);
-        CHECKFUNCTION(fmiGetStatus);
-        CHECKFUNCTION(fmiGetRealStatus);
-        CHECKFUNCTION(fmiGetIntegerStatus);
-        CHECKFUNCTION(fmiGetBooleanStatus);
-        CHECKFUNCTION(fmiGetStringStatus);
+        if(fmu->canRunAsynchronuously) {
+            CHECKFUNCTION(fmiCancelStep);
+            CHECKFUNCTION(fmiGetStatus);
+            CHECKFUNCTION(fmiGetRealStatus);
+            CHECKFUNCTION(fmiGetIntegerStatus);
+            CHECKFUNCTION(fmiGetBooleanStatus);
+            CHECKFUNCTION(fmiGetStringStatus);
+        }
     }
 
     return true;
