@@ -375,6 +375,8 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
 
     char cwd[FILENAME_MAX];
     _getcwd(cwd, FILENAME_MAX);
+    chdir(fmu->unzippedLocation);
+    chdir(fmu->instanceName);
 
     xmlKeepBlanksDefault(0);
 
@@ -1054,9 +1056,12 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
 {
     TRACEFUNC
 
+    char cwd[FILENAME_MAX];
+    _getcwd(cwd, FILENAME_MAX);
+
     char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
-    _getcwd(dllPath, sizeof(char)*FILENAME_MAX);
-    chdir(dllPath);
+    dllPath[0] = '\0';
+    strcat(dllPath, fmu->unzippedLocation);
     strcat(dllPath,"\\binaries\\win64\\");
     strcat(dllPath,fmu->modelIdentifier);
     strcat(dllPath,".dll");
@@ -1165,6 +1170,8 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
         }
     }
 
+    chdir(cwd);
+
     return true;
 }
 
@@ -1176,9 +1183,12 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
 {
     TRACEFUNC
 
+    char cwd[FILENAME_MAX];
+    _getcwd(cwd, FILENAME_MAX);
+
     char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
-    _getcwd(dllPath, sizeof(char)*FILENAME_MAX);
-    chdir(dllPath);
+    dllPath[0] = '\0';
+    strcat(dllPath, fmu->unzippedLocation);
     strcat(dllPath,"\\binaries\\win64\\");
     strcat(dllPath,fmu->modelIdentifier);
     strcat(dllPath,".dll");
@@ -1301,6 +1311,8 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
     if(fmu->providesDirectionalDerivative) {
         CHECKFUNCTION(fmi2GetDirectionalDerivative);
     }
+
+    chdir(cwd);
 
     return true;
 }
