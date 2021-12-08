@@ -661,6 +661,22 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     fmu->fixedInternalStepSize = 0;
     fmu->hasEventMode = false;
     fmu->completedIntegratorStepNotNeeded = false;
+    fmu->hasClockVaraibles = false;
+    fmu->hasFloat64Variables = false;
+    fmu->hasFloat32Variables = false;
+    fmu->hasInt64Variables = false;
+    fmu->hasInt32Variables = false;
+    fmu->hasInt16Variables = false;
+    fmu->hasInt8Variables = false;
+    fmu->hasUInt64Variables = false;
+    fmu->hasUInt32Variables = false;
+    fmu->hasUInt16Variables = false;
+    fmu->hasUInt8Variables = false;
+    fmu->hasBooleanVariables = false;
+    fmu->hasStringVariables = false;
+    fmu->hasBinaryVariables = false;
+    fmu->hasClockVaraibles = false;
+    fmu->hasStructuralPrameters = false;
 
     char cwd[FILENAME_MAX];
     _getcwd(cwd, FILENAME_MAX);
@@ -917,36 +933,59 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                 var.intermediateUpdate = false; //Default value if attribute not defined
                 if(!strcmp(varNode->name,"Float64")) {
                     var.datatype = fmi3DataTypeFloat64;
+                    fmu->hasFloat64Variables = true;
                 }
                 else if(!strcmp(varNode->name,"Float32")) {
                     var.datatype = fmi3DataTypeFloat32;
+                    fmu->hasFloat32Variables = true;
                 }
                 else if(!strcmp(varNode->name,"Int64")) {
                     var.datatype = fmi3DataTypeInt64;
+                    fmu->hasInt64Variables = true;
                 }
                 else if(!strcmp(varNode->name,"Int32")) {
                     var.datatype = fmi3DataTypeInt32;
+                    fmu->hasInt32Variables = true;
                 }
                 else if(!strcmp(varNode->name,"Int16")) {
                     var.datatype = fmi3DataTypeInt16;
+                    fmu->hasInt16Variables = true;
                 }
                 else if(!strcmp(varNode->name,"Int8")) {
                     var.datatype = fmi3DataTypeInt8;
+                    fmu->hasInt8Variables = true;
                 }
                 else if(!strcmp(varNode->name,"Uint64")) {
                     var.datatype = fmi3DataTypeUint64;
+                    fmu->hasUInt64Variables = true;
+                }
+                else if(!strcmp(varNode->name,"Uint32")) {
+                    var.datatype = fmi3DataTypeUint32;
+                    fmu->hasUInt32Variables = true;
+                }
+                else if(!strcmp(varNode->name,"Uint64")) {
+                    var.datatype = fmi3DataTypeUint16;
+                    fmu->hasUInt16Variables = true;
+                }
+                else if(!strcmp(varNode->name,"Uint64")) {
+                    var.datatype = fmi3DataTypeUint8;
+                    fmu->hasUInt8Variables = true;
                 }
                 else if(!strcmp(varNode->name,"Boolean")) {
                     var.datatype = fmi3DataTypeBoolean;
+                    fmu->hasBooleanVariables = true;
                 }
                 else if(!strcmp(varNode->name,"String")) {
                     var.datatype = fmi3DataTypeString;
+                    fmu->hasStringVariables = true;
                 }
                 else if(!strcmp(varNode->name,"Binary")) {
                     var.datatype = fmi3DataTypeBinary;
+                    fmu->hasBinaryVariables = true;
                 }
                 else if(!strcmp(varNode->name,"Clock")) {
                     var.datatype = fmi3DataTypeClock;
+                    fmu->hasClockVaraibles = true;
                 }
 
                 //Parse variable attributes
@@ -994,6 +1033,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                         }
                         else if(!strcmp(value, "structuralparameter")) {
                             var.causality = fmi3CausalityStructuralParameter;
+                            fmu->hasStructuralPrameters = true;
                         }
                         else {
                             printf("Unknown causality: %s\n",value);
@@ -1423,60 +1463,98 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
     CHECKFUNCTION(fmi3EnterInitializationMode);
     CHECKFUNCTION(fmi3ExitInitializationMode);
     CHECKFUNCTION(fmi3Terminate);
-    CHECKFUNCTION(fmi3SetFloat64);
-    CHECKFUNCTION(fmi3GetFloat64);
-    CHECKFUNCTION(fmi3EnterEventMode);
     CHECKFUNCTION(fmi3Reset);
-    CHECKFUNCTION(fmi3GetFloat32);
-    CHECKFUNCTION(fmi3GetInt8);
-    CHECKFUNCTION(fmi3GetUInt8);
-    CHECKFUNCTION(fmi3GetInt16);
-    CHECKFUNCTION(fmi3GetUInt16);
-    CHECKFUNCTION(fmi3GetInt32);
-    CHECKFUNCTION(fmi3GetUInt32);
-    CHECKFUNCTION(fmi3GetInt64);
-    CHECKFUNCTION(fmi3GetUInt64);
-    CHECKFUNCTION(fmi3GetBoolean);
-    CHECKFUNCTION(fmi3GetString);
-    CHECKFUNCTION(fmi3GetBinary);
-    CHECKFUNCTION(fmi3GetClock);
-    CHECKFUNCTION(fmi3SetFloat32);
-    CHECKFUNCTION(fmi3SetInt8);
-    CHECKFUNCTION(fmi3SetUInt8);
-    CHECKFUNCTION(fmi3SetInt16);
-    CHECKFUNCTION(fmi3SetUInt16);
-    CHECKFUNCTION(fmi3SetInt32);
-    CHECKFUNCTION(fmi3SetUInt32);
-    CHECKFUNCTION(fmi3SetInt64);
-    CHECKFUNCTION(fmi3SetUInt64);
-    CHECKFUNCTION(fmi3SetBoolean);
-    CHECKFUNCTION(fmi3SetString);
-    CHECKFUNCTION(fmi3SetBinary);
-    CHECKFUNCTION(fmi3SetClock);
-    CHECKFUNCTION(fmi3GetNumberOfVariableDependencies);
-    CHECKFUNCTION(fmi3GetVariableDependencies);
-    CHECKFUNCTION(fmi3EnterConfigurationMode);
-    CHECKFUNCTION(fmi3ExitConfigurationMode);
-    CHECKFUNCTION(fmi3GetIntervalDecimal);
-    CHECKFUNCTION(fmi3GetIntervalFraction);
-    CHECKFUNCTION(fmi3GetShiftDecimal);
-    CHECKFUNCTION(fmi3GetShiftFraction);
-    CHECKFUNCTION(fmi3SetIntervalDecimal);
-    CHECKFUNCTION(fmi3SetIntervalFraction);
-
-
-
-    CHECKFUNCTION(fmi3GetOutputDerivatives);
-
+    CHECKFUNCTION(fmi3EnterEventMode);
+    if(fmu->hasFloat64Variables) {
+        CHECKFUNCTION(fmi3SetFloat64);
+        CHECKFUNCTION(fmi3GetFloat64);
+    }
+    if(fmu->hasFloat32Variables) {
+        CHECKFUNCTION(fmi3SetFloat32);
+        CHECKFUNCTION(fmi3GetFloat32);
+    }
+    if(fmu->hasInt64Variables) {
+        CHECKFUNCTION(fmi3GetInt64);
+        CHECKFUNCTION(fmi3SetInt64);
+    }
+    if(fmu->hasInt32Variables) {
+        CHECKFUNCTION(fmi3GetInt32);
+        CHECKFUNCTION(fmi3SetInt32);
+    }
+    if(fmu->hasInt16Variables) {
+        CHECKFUNCTION(fmi3GetInt16);
+        CHECKFUNCTION(fmi3SetInt16);
+    }
+    if(fmu->hasInt8Variables) {
+        CHECKFUNCTION(fmi3GetInt8);
+        CHECKFUNCTION(fmi3SetInt8);
+    }
+    if(fmu->hasUInt64Variables) {
+        CHECKFUNCTION(fmi3GetUInt64);
+        CHECKFUNCTION(fmi3SetUInt64);
+    }
+    if(fmu->hasUInt32Variables) {
+        CHECKFUNCTION(fmi3GetUInt32);
+        CHECKFUNCTION(fmi3SetUInt32);
+    }
+    if(fmu->hasUInt16Variables) {
+        CHECKFUNCTION(fmi3GetUInt16);
+        CHECKFUNCTION(fmi3SetUInt16);
+    }
+    if(fmu->hasUInt8Variables) {
+        CHECKFUNCTION(fmi3GetUInt8);
+        CHECKFUNCTION(fmi3SetUInt8);
+    }
+    if(fmu->hasBooleanVariables) {
+        CHECKFUNCTION(fmi3GetBoolean);
+        CHECKFUNCTION(fmi3SetBoolean);
+    }
+    if(fmu->hasStringVariables)  {
+        CHECKFUNCTION(fmi3GetString);
+        CHECKFUNCTION(fmi3SetString);
+    }
+    if(fmu->hasBinaryVariables) {
+        CHECKFUNCTION(fmi3GetBinary);
+        CHECKFUNCTION(fmi3SetBinary);
+    }
+    if(fmu->hasClockVaraibles) {
+        CHECKFUNCTION(fmi3GetClock);
+        CHECKFUNCTION(fmi3SetClock);
+        CHECKFUNCTION(fmi3GetIntervalDecimal);
+        CHECKFUNCTION(fmi3GetIntervalFraction);
+        CHECKFUNCTION(fmi3GetShiftDecimal);
+        CHECKFUNCTION(fmi3GetShiftFraction);
+        CHECKFUNCTION(fmi3SetIntervalDecimal);
+        CHECKFUNCTION(fmi3SetIntervalFraction);
+    }
+    if(fmu->providesPerElementDependencies) {
+        CHECKFUNCTION(fmi3GetNumberOfVariableDependencies);
+        CHECKFUNCTION(fmi3GetVariableDependencies);
+    }
+    if(fmu->hasStructuralPrameters) {
+        CHECKFUNCTION(fmi3EnterConfigurationMode);
+        CHECKFUNCTION(fmi3ExitConfigurationMode);
+    }
+    if(fmu->maxOutputDerivativeOrder > 0) {
+        CHECKFUNCTION(fmi3GetOutputDerivatives);
+    }
 
     if(fmu->supportsCoSimulation) {
         CHECKFUNCTION(fmi3InstantiateCoSimulation);
-        CHECKFUNCTION(fmi3EnterStepMode);
+        if(fmu->hasEventMode) {
+            CHECKFUNCTION(fmi3EnterStepMode);
+            CHECKFUNCTION(fmi3UpdateDiscreteStates);
+        }
         CHECKFUNCTION(fmi3DoStep);
-        CHECKFUNCTION(fmi3EvaluateDiscreteStates);
-        CHECKFUNCTION(fmi3UpdateDiscreteStates);
-        CHECKFUNCTION(fmi3GetDirectionalDerivative);
-        CHECKFUNCTION(fmi3GetAdjointDerivative);
+        if(fmu->providesEvaluateDiscreteStates) {
+            CHECKFUNCTION(fmi3EvaluateDiscreteStates);
+        }
+        if(fmu->providesDirectionalDerivative) {
+            CHECKFUNCTION(fmi3GetDirectionalDerivative);
+        }
+        if(fmu->providesAdjointDerivatives) {
+            CHECKFUNCTION(fmi3GetAdjointDerivative);
+        }
     }
 
     if(fmu->supportsModelExchange) {
@@ -1491,10 +1569,16 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
         CHECKFUNCTION(fmi3GetNominalsOfContinuousStates);
         CHECKFUNCTION(fmi3GetNumberOfEventIndicators);
         CHECKFUNCTION(fmi3GetNumberOfContinuousStates);
-        CHECKFUNCTION(fmi3EvaluateDiscreteStates);
+        if(fmu->providesEvaluateDiscreteStates) {
+            CHECKFUNCTION(fmi3EvaluateDiscreteStates);
+        }
         CHECKFUNCTION(fmi3UpdateDiscreteStates);
-        CHECKFUNCTION(fmi3GetDirectionalDerivative);
-        CHECKFUNCTION(fmi3GetAdjointDerivative);
+        if(fmu->providesDirectionalDerivative) {
+            CHECKFUNCTION(fmi3GetDirectionalDerivative);
+        }
+        if(fmu->providesAdjointDerivatives) {
+            CHECKFUNCTION(fmi3GetAdjointDerivative);
+        }
     }
 
     if(fmu->supportsScheduledExecution) {
