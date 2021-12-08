@@ -47,7 +47,8 @@ FMIC_DLLEXPORT double fmi1GetDefaultTolerance(fmi1Handle *fmu);
 
 FMIC_DLLEXPORT int fmi1GetNumberOfVariables(fmi1Handle *fmu);
 FMIC_DLLEXPORT fmi1VariableHandle* fmi1GetVariableByIndex(fmi1Handle *fmu, int i);
-FMIC_DLLEXPORT fmi1VariableHandle* fmi1GetVariableByValueReference(fmi1Handle *fmu, fmi3ValueReference vr);
+FMIC_DLLEXPORT fmi1VariableHandle* fmi1GetVariableByValueReference(fmi1Handle *fmu, fmi1ValueReference vr);
+FMIC_DLLEXPORT fmi1VariableHandle* fmi1GetVariableByName(fmi1Handle *fmu, fmi1String name);
 FMIC_DLLEXPORT const char* fmi1GetVariableName(fmi1VariableHandle* var);
 FMIC_DLLEXPORT const char* fmi1GetVariableDescription(fmi1VariableHandle* var);
 FMIC_DLLEXPORT const char* fmi1GetVariableQuantity(fmi1VariableHandle* var);
@@ -119,6 +120,7 @@ FMIC_DLLEXPORT double fmi2GetDefaultStepSize(fmi2Handle *fmu);
 FMIC_DLLEXPORT int fmi2GetNumberOfVariables(fmi2Handle *fmu);
 FMIC_DLLEXPORT fmi2VariableHandle* fmi2GetVariableByIndex(fmi2Handle *fmu, int i);
 FMIC_DLLEXPORT fmi2VariableHandle* fmi2GetVariableByValueReference(fmi2Handle *fmu, fmi3ValueReference vr);
+FMIC_DLLEXPORT fmi2VariableHandle* fmi2GetVariableByName(fmi2Handle *fmu, fmi2String name);
 FMIC_DLLEXPORT const char* fmi2GetVariableName(fmi2VariableHandle* var);
 FMIC_DLLEXPORT const char* fmi2GetVariableDescription(fmi2VariableHandle* var);
 FMIC_DLLEXPORT const char* fmi2GetVariableQuantity(fmi2VariableHandle* var);

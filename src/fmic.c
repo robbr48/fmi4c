@@ -2493,7 +2493,7 @@ double fmi2GetDefaultStepSize(fmi2Handle *fmu)
 void *fmi3GetVariableByName(fmi3Handle *fmu, fmi3String name)
 {
     for(int i=0; i<fmu->numberOfVariables; ++i) {
-        if(fmu->variables[i].name == name) {
+        if(!strcmp(fmu->variables[i].name, name)) {
             return &fmu->variables[i];
         }
     }
@@ -2541,7 +2541,7 @@ void *fmi2GetVariableByIndex(fmi2Handle *fmu, int i)
     return &fmu->variables[i];
 }
 
-void *fmi2GetVariableByValueReference(fmi2Handle *fmu, fmi3ValueReference vr)
+void *fmi2GetVariableByValueReference(fmi2Handle *fmu, fmi2ValueReference vr)
 {
     TRACEFUNC
 
@@ -2551,6 +2551,17 @@ void *fmi2GetVariableByValueReference(fmi2Handle *fmu, fmi3ValueReference vr)
         }
     }
     printf("Variable with value reference %i not found.\n", vr);
+    return NULL;
+}
+
+void *fmi2GetVariableByName(fmi2Handle *fmu, fmi2String name)
+{
+    for(int i=0; i<fmu->numberOfVariables; ++i) {
+        if(!strcmp(fmu->variables[i].name, name)) {
+            return &fmu->variables[i];
+        }
+    }
+    printf("Variable with name %s not found.\n", name);
     return NULL;
 }
 
@@ -3012,6 +3023,17 @@ fmi1VariableHandle *fmi1GetVariableByValueReference(fmi1Handle *fmu, fmi1ValueRe
         }
     }
     printf("Variable with value reference %i not found.\n", vr);
+    return NULL;
+}
+
+void *fmi1GetVariableByName(fmi1Handle *fmu, fmi1String name)
+{
+    for(int i=0; i<fmu->numberOfVariables; ++i) {
+        if(!strcmp(fmu->variables[i].name, name)) {
+            return &fmu->variables[i];
+        }
+    }
+    printf("Variable with name %s not found.\n", name);
     return NULL;
 }
 
