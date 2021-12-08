@@ -1362,9 +1362,13 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
 bool loadFunctionsFmi3(fmi3Handle *fmu)
 {
     TRACEFUNC
+
+    char cwd[FILENAME_MAX];
+    _getcwd(cwd, FILENAME_MAX);
+
     char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
-    _getcwd(dllPath, sizeof(char)*FILENAME_MAX);
-    chdir(dllPath);
+    dllPath[0] = '\0';
+    strcat(dllPath, fmu->unzippedLocation);
     strcat(dllPath,"\\binaries\\x86_64-windows\\");
     strcat(dllPath,fmu->modelIdentifier);
     strcat(dllPath,".dll");
@@ -1374,7 +1378,7 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
     void* dll = dlopen(dll_file_path, RTLD_NOW|RTLD_LOCAL);
 #endif
     if(NULL == dll) {
-        printf("Loading DLL failed!\n");
+        printf("Loading DLL failed: %s\n",dllPath);
         return false;
     }
     printf("Load successful!\n",dllPath);
@@ -1597,6 +1601,8 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
         CHECKFUNCTION(fmi3SerializeFMUState);
         CHECKFUNCTION(fmi3DeSerializeFMUState);
     }
+
+    chdir(cwd);
 
     return true;
 }
