@@ -653,6 +653,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     fmu->providesPerElementDependencies = false;
     fmu->maxOutputDerivativeOrder = 0;
     fmu->providesIntermediateUpdate = false;
+    fmu->mightReturnEarlyFromDoStep = false;
     fmu->providesEvaluateDiscreteStates = false;
     fmu->recommendedIntermediateInputSmoothness = false;
     fmu->canHandleVariableCommunicationStepSize = false;
@@ -768,6 +769,9 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                 else if(!strcmp(attr->name, "providesIntermediateUpdate")) {
                     fmu->providesIntermediateUpdate = parseBooleanAttribute(attr);
                 }
+                else if(!strcmp(attr->name, "mightReturnEarlyFromDoStep")) {
+                    fmu->mightReturnEarlyFromDoStep = parseBooleanAttribute(attr);
+                }
                 else if(!strcmp(attr->name, "providesEvaluateDiscreteStates")) {
                     fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
                 }
@@ -822,6 +826,9 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                 else if(!strcmp(attr->name, "providesIntermediateUpdate")) {
                     fmu->providesIntermediateUpdate = parseBooleanAttribute(attr);
                 }
+                else if(!strcmp(attr->name, "mightReturnEarlyFromDoStep")) {
+                    fmu->mightReturnEarlyFromDoStep = parseBooleanAttribute(attr);
+                }
                 else if(!strcmp(attr->name, "providesEvaluateDiscreteStates")) {
                     fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
                 }
@@ -857,6 +864,9 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                 }
                 else if(!strcmp(attr->name, "providesAdjointDerivatives")) {
                     fmu->providesAdjointDerivatives = parseBooleanAttribute(attr);
+                }
+                else if(!strcmp(attr->name, "mightReturnEarlyFromDoStep")) {
+                    fmu->mightReturnEarlyFromDoStep = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "providesPerElementDependencies")) {
                     fmu->providesPerElementDependencies = parseBooleanAttribute(attr);
