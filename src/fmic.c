@@ -1326,12 +1326,14 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
             CHECKFUNCTION(fmi2GetRealOutputDerivatives);
         }
         CHECKFUNCTION(fmi2DoStep);
-        CHECKFUNCTION(fmi2CancelStep);
-        CHECKFUNCTION(fmi2GetStatus);
-        CHECKFUNCTION(fmi2GetRealStatus);
-        CHECKFUNCTION(fmi2GetIntegerStatus);
-        CHECKFUNCTION(fmi2GetBooleanStatus);
-        CHECKFUNCTION(fmi2GetStringStatus);
+        if(fmu->canRunAsynchronuously) {
+            CHECKFUNCTION(fmi2CancelStep);
+            CHECKFUNCTION(fmi2GetStatus);
+            CHECKFUNCTION(fmi2GetRealStatus);
+            CHECKFUNCTION(fmi2GetIntegerStatus);
+            CHECKFUNCTION(fmi2GetBooleanStatus);
+            CHECKFUNCTION(fmi2GetStringStatus);
+        }
     }
 
     if(fmu->canGetAndSetFMUState) {
