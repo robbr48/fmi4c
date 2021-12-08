@@ -16,7 +16,6 @@ fmiHandle* unzipFmu(const char* fmuFile, const char* instanceName)
     printf("Entering unzip()\n");
     char *cwd = (char*)malloc(sizeof(char)*FILENAME_MAX);
     _getcwd(cwd, sizeof(char)*FILENAME_MAX);
-    printf("CWD (1): %s\n",cwd);
 
     int argc = 6;
     const char *argv[6];
@@ -51,7 +50,6 @@ fmiHandle* unzipFmu(const char* fmuFile, const char* instanceName)
     fmu->instanceName = instanceName;
 
     chdir(cwd);
-    printf("CWD (2): %s\n",cwd);
     printf("Successfully unzipped FMU\n");
     return fmu;
 }
@@ -1855,14 +1853,12 @@ bool fmi2Instantiate(fmi2Handle *fmu, fmi2Type type, fmi2CallbackLogger logger, 
     fmu->callbacks.stepFinished = stepFinished;
     fmu->callbacks.componentEnvironment = componentEnvironment;
 
-    printf("Debug kanin\n");
     printf("Calling API function fmi2Instantiate():\n");
     printf("unzippedLocation = %s\n", fmu->unzippedLocation);
     printf("resourcesLocation = %s\n", fmu->resourcesLocation);
     printf("instanceName = %s\n", fmu->instanceName);
     printf("GUID = %s\n", fmu->guid);
     printf("FMU type = %i\n", fmuType);
-    printf("Debug katt\n");
     fmu->_fmi2Component = fmu->fmi2Instantiate(fmu->instanceName, type, fmu->guid, fmu->resourcesLocation, &fmu->callbacks, visible, loggingOn);
     printf("Exiting fmi2Instantiate()\n");
     return (fmu->_fmi2Component != NULL);
