@@ -660,7 +660,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     fmu->providesIntermediateUpdate = false;
     fmu->mightReturnEarlyFromDoStep = false;
     fmu->providesEvaluateDiscreteStates = false;
-    fmu->recommendedIntermediateInputSmoothness = false;
+    fmu->recommendedIntermediateInputSmoothness = 0;
     fmu->canHandleVariableCommunicationStepSize = false;
     fmu->canReturnEarlyAfterIntermediateUpdate = false;
     fmu->fixedInternalStepSize = 0;
@@ -797,7 +797,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                     fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "recommendedIntermediateInputSmoothness")) {
-                    fmu->recommendedIntermediateInputSmoothness = parseBooleanAttribute(attr);
+                    fmu->recommendedIntermediateInputSmoothness = parseIntegerAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
                     fmu->canHandleVariableCommunicationStepSize = parseBooleanAttribute(attr);
@@ -854,7 +854,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                     fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "recommendedIntermediateInputSmoothness")) {
-                    fmu->recommendedIntermediateInputSmoothness = parseBooleanAttribute(attr);
+                    fmu->recommendedIntermediateInputSmoothness = parseIntegerAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "completedIntegratorStepNotNeeded")) {
                     fmu->completedIntegratorStepNotNeeded = parseBooleanAttribute(attr);
@@ -902,7 +902,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                     fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
                 }
                 else if(!strcmp(attr->name, "recommendedIntermediateInputSmoothness")) {
-                    fmu->recommendedIntermediateInputSmoothness = parseBooleanAttribute(attr);
+                    fmu->recommendedIntermediateInputSmoothness = parseIntegerAttribute(attr);
                 }
             }
         }

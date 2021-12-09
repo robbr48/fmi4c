@@ -328,8 +328,9 @@ typedef struct {
     bool providesPerElementDependencies;
     int maxOutputDerivativeOrder;
     bool providesIntermediateUpdate;
+    bool mightReturnEarlyFromDoStep;
     bool providesEvaluateDiscreteStates;
-    bool recommendedIntermediateInputSmoothness;
+    int recommendedIntermediateInputSmoothness;
 
     //Co-simulation only capabilities
     bool canHandleVariableCommunicationStepSize;
