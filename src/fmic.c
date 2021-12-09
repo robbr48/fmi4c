@@ -370,6 +370,11 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
     fmu->canGetAndSetFMUState = false;
     fmu->canSerializeFMUState = false;
     fmu->providesDirectionalDerivative = false;
+    fmu->hasRealVariables = false;
+    fmu->hasIntegerVariables = false;
+    fmu->hasStringVariables = false;
+    fmu->hasBooleanVariables = false;
+
 
     char cwd[FILENAME_MAX];
     _getcwd(cwd, FILENAME_MAX);
@@ -593,19 +598,19 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
                     xmlNode *dataNode = varNode->children;
                     if(dataNode && !strcmp(dataNode->name, "Real")) {
                         var.datatype = fmi2DataTypeReal;
-                        printf("Found a real variable!\n");  //!< @todo Remove debug output
+                        fmu->hasRealVariables = true;
                     }
                     else if(dataNode && !strcmp(dataNode->name, "Integer")) {
                         var.datatype = fmi2DataTypeInteger;
-                        printf("Found an integer variable!\n");  //!< @todo Remove debug output
+                        fmu->hasIntegerVariables = true;
                     }
                     else if(dataNode && !strcmp(dataNode->name, "Boolean")) {
                         var.datatype = fmi2DataTypeBoolean;
-                        printf("Found a boolean variable!\n");  //!< @todo Remove debug output
+                        fmu->hasBooleanVariables = true;
                     }
                     else if(dataNode && !strcmp(dataNode->name, "String")) {
                         var.datatype = fmi2DataTypeString;
-                        printf("Found a string variable!\n");  //!< @todo Remove debug output
+                        fmu->hasStringVariables = true;
                     }
                 }
 
@@ -676,7 +681,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     fmu->hasStringVariables = false;
     fmu->hasBinaryVariables = false;
     fmu->hasClockVaraibles = false;
-    fmu->hasStructuralPrameters = false;
+    fmu->hasStructuralParameters = false;
 
     char cwd[FILENAME_MAX];
     _getcwd(cwd, FILENAME_MAX);
@@ -1033,7 +1038,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                         }
                         else if(!strcmp(value, "structuralparameter")) {
                             var.causality = fmi3CausalityStructuralParameter;
-                            fmu->hasStructuralPrameters = true;
+                            fmu->hasStructuralParameters = true;
                         }
                         else {
                             printf("Unknown causality: %s\n",value);
@@ -1253,31 +1258,50 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
     fmu->fmi2ExitInitializationMode= LOADFUNCTION(fmi2ExitInitializationMode);
     fmu->fmi2Terminate= LOADFUNCTION(fmi2Terminate);
     fmu->fmi2Reset= LOADFUNCTION(fmi2Reset);
-    fmu->fmi2GetReal= LOADFUNCTION(fmi2GetReal);
-    fmu->fmi2GetInteger= LOADFUNCTION(fmi2GetInteger);
-    fmu->fmi2GetBoolean= LOADFUNCTION(fmi2GetBoolean);
-    fmu->fmi2GetString= LOADFUNCTION(fmi2GetString);
-    fmu->fmi2SetReal= LOADFUNCTION(fmi2SetReal);
-    fmu->fmi2SetInteger= LOADFUNCTION(fmi2SetInteger);
-    fmu->fmi2SetBoolean= LOADFUNCTION(fmi2SetBoolean);
-    fmu->fmi2SetString= LOADFUNCTION(fmi2SetString);
-    fmu->fmi2GetFMUstate= LOADFUNCTION(fmi2GetFMUstate);
-    fmu->fmi2SetFMUstate= LOADFUNCTION(fmi2SetFMUstate);
-    fmu->fmi2FreeFMUstate= LOADFUNCTION(fmi2FreeFMUstate);
-    fmu->fmi2SerializedFMUstateSize= LOADFUNCTION(fmi2SerializedFMUstateSize);
-    fmu->fmi2SerializeFMUstate= LOADFUNCTION(fmi2SerializeFMUstate);
-    fmu->fmi2DeSerializeFMUstate= LOADFUNCTION(fmi2DeSerializeFMUstate);
-    fmu->fmi2GetDirectionalDerivative= LOADFUNCTION(fmi2GetDirectionalDerivative);
-    fmu->fmi2EnterEventMode= LOADFUNCTION(fmi2EnterEventMode);
-    fmu->fmi2NewDiscreteStates= LOADFUNCTION(fmi2NewDiscreteStates);
-    fmu->fmi2EnterContinuousTimeMode= LOADFUNCTION(fmi2EnterContinuousTimeMode);
-    fmu->fmi2CompletedIntegratorStep= LOADFUNCTION(fmi2CompletedIntegratorStep);
-    fmu->fmi2SetTime= LOADFUNCTION(fmi2SetTime);
-    fmu->fmi2SetContinuousStates= LOADFUNCTION(fmi2SetContinuousStates);
-    fmu->fmi2GetDerivatives= LOADFUNCTION(fmi2GetDerivatives);
-    fmu->fmi2GetEventIndicators= LOADFUNCTION(fmi2GetEventIndicators);
-    fmu->fmi2GetContinuousStates= LOADFUNCTION(fmi2GetContinuousStates);
-    fmu->fmi2GetNominalsOfContinuousStates= LOADFUNCTION(fmi2GetNominalsOfContinuousStates);
+    if(fmu->hasRealVariables) {
+        fmu->fmi2GetReal= LOADFUNCTION(fmi2GetReal);
+        fmu->fmi2SetReal= LOADFUNCTION(fmi2SetReal);
+        CHECKFUNCTION(fmi2GetReal);
+        CHECKFUNCTION(fmi2SetReal);
+    }
+    if(fmu->hasIntegerVariables) {
+        fmu->fmi2GetInteger= LOADFUNCTION(fmi2GetInteger);
+        fmu->fmi2SetInteger= LOADFUNCTION(fmi2SetInteger);
+        CHECKFUNCTION(fmi2GetInteger);
+        CHECKFUNCTION(fmi2SetInteger);
+    }
+    if(fmu->hasBooleanVariables) {
+        fmu->fmi2GetBoolean= LOADFUNCTION(fmi2GetBoolean);
+        fmu->fmi2SetBoolean= LOADFUNCTION(fmi2SetBoolean);
+        CHECKFUNCTION(fmi2GetBoolean);
+        CHECKFUNCTION(fmi2SetBoolean);
+    }
+    if(fmu->hasStringVariables) {
+        fmu->fmi2GetString= LOADFUNCTION(fmi2GetString);
+        fmu->fmi2SetString= LOADFUNCTION(fmi2SetString);
+        CHECKFUNCTION(fmi2GetString);
+        CHECKFUNCTION(fmi2SetString);
+    }
+    if(fmu->canGetAndSetFMUState) {
+        fmu->fmi2GetFMUstate= LOADFUNCTION(fmi2GetFMUstate);
+        fmu->fmi2SetFMUstate= LOADFUNCTION(fmi2SetFMUstate);
+        CHECKFUNCTION(fmi2GetFMUstate);
+        CHECKFUNCTION(fmi2SetFMUstate);
+    }
+
+    if(fmu->canSerializeFMUState) {
+        fmu->fmi2FreeFMUstate= LOADFUNCTION(fmi2FreeFMUstate);
+        fmu->fmi2SerializedFMUstateSize= LOADFUNCTION(fmi2SerializedFMUstateSize);
+        fmu->fmi2SerializeFMUstate= LOADFUNCTION(fmi2SerializeFMUstate);
+        fmu->fmi2DeSerializeFMUstate= LOADFUNCTION(fmi2DeSerializeFMUstate);
+        CHECKFUNCTION(fmi2SerializedFMUstateSize);
+        CHECKFUNCTION(fmi2SerializeFMUstate);
+        CHECKFUNCTION(fmi2DeSerializeFMUstate);
+        CHECKFUNCTION(fmi2FreeFMUstate);
+    }
+    if(fmu->providesDirectionalDerivative) {
+        fmu->fmi2GetDirectionalDerivative= LOADFUNCTION(fmi2GetDirectionalDerivative);
+    }
     fmu->fmi2SetRealInputDerivatives= LOADFUNCTION(fmi2SetRealInputDerivatives);
     fmu->fmi2GetRealOutputDerivatives= LOADFUNCTION(fmi2GetRealOutputDerivatives);
     fmu->fmi2DoStep= LOADFUNCTION(fmi2DoStep);
@@ -1298,16 +1322,18 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
     CHECKFUNCTION(fmi2ExitInitializationMode);
     CHECKFUNCTION(fmi2Terminate);
     CHECKFUNCTION(fmi2Reset);
-    CHECKFUNCTION(fmi2GetReal);
-    CHECKFUNCTION(fmi2GetInteger);
-    CHECKFUNCTION(fmi2GetBoolean);
-    CHECKFUNCTION(fmi2GetString);
-    CHECKFUNCTION(fmi2SetReal);
-    CHECKFUNCTION(fmi2SetInteger);
-    CHECKFUNCTION(fmi2SetBoolean);
-    CHECKFUNCTION(fmi2SetString);
 
     if(fmu->supportsModelExchange) {
+        fmu->fmi2EnterEventMode= LOADFUNCTION(fmi2EnterEventMode);
+        fmu->fmi2NewDiscreteStates= LOADFUNCTION(fmi2NewDiscreteStates);
+        fmu->fmi2EnterContinuousTimeMode= LOADFUNCTION(fmi2EnterContinuousTimeMode);
+        fmu->fmi2CompletedIntegratorStep= LOADFUNCTION(fmi2CompletedIntegratorStep);
+        fmu->fmi2SetTime= LOADFUNCTION(fmi2SetTime);
+        fmu->fmi2SetContinuousStates= LOADFUNCTION(fmi2SetContinuousStates);
+        fmu->fmi2GetEventIndicators= LOADFUNCTION(fmi2GetEventIndicators);
+        fmu->fmi2GetContinuousStates= LOADFUNCTION(fmi2GetContinuousStates);
+        fmu->fmi2GetDerivatives= LOADFUNCTION(fmi2GetDerivatives);
+        fmu->fmi2GetNominalsOfContinuousStates= LOADFUNCTION(fmi2GetNominalsOfContinuousStates);
         CHECKFUNCTION(fmi2EnterEventMode);
         CHECKFUNCTION(fmi2NewDiscreteStates);
         CHECKFUNCTION(fmi2EnterContinuousTimeMode);
@@ -1336,17 +1362,6 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
         }
     }
 
-    if(fmu->canGetAndSetFMUState) {
-        CHECKFUNCTION(fmi2GetFMUstate);
-        CHECKFUNCTION(fmi2SetFMUstate);
-    }
-
-    if(fmu->canSerializeFMUState) {
-        CHECKFUNCTION(fmi2SerializedFMUstateSize);
-        CHECKFUNCTION(fmi2SerializeFMUstate);
-        CHECKFUNCTION(fmi2DeSerializeFMUstate);
-        CHECKFUNCTION(fmi2FreeFMUstate);
-    }
 
     if(fmu->providesDirectionalDerivative) {
         CHECKFUNCTION(fmi2GetDirectionalDerivative);
@@ -1537,7 +1552,7 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
         CHECKFUNCTION(fmi3GetNumberOfVariableDependencies);
         CHECKFUNCTION(fmi3GetVariableDependencies);
     }
-    if(fmu->hasStructuralPrameters) {
+    if(fmu->hasStructuralParameters) {
         CHECKFUNCTION(fmi3EnterConfigurationMode);
         CHECKFUNCTION(fmi3ExitConfigurationMode);
     }

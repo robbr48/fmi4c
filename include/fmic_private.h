@@ -218,6 +218,11 @@ typedef struct {
     bool canSerializeFMUState;
     bool providesDirectionalDerivative;
 
+    bool hasRealVariables;
+    bool hasIntegerVariables;
+    bool hasBooleanVariables;
+    bool hasStringVariables;
+
     int numberOfVariables;
     fmi2VariableHandle *variables;
     int variablesSize;
@@ -335,6 +340,21 @@ typedef struct {
     //Model exchange only capabilities
     bool completedIntegratorStepNotNeeded;
 
+    bool hasFloat64Variables;
+    bool hasFloat32Variables;
+    bool hasInt64Variables;
+    bool hasInt32Variables;
+    bool hasInt16Variables;
+    bool hasInt8Variables;
+    bool hasUInt64Variables;
+    bool hasUInt32Variables;
+    bool hasUInt16Variables;
+    bool hasUInt8Variables;
+    bool hasBooleanVariables;
+    bool hasStringVariables;
+    bool hasBinaryVariables;
+    bool hasClockVaraibles;
+    bool hasStructuralParameters;
 
     int numberOfVariables;
     fmi3VariableHandle *variables;
