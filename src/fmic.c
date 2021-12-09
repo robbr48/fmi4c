@@ -2840,6 +2840,151 @@ fmi2Status fmi2SetString(fmi2Handle *fmu,
                                values);
 }
 
+fmi2Status fmi2GetFMUstate(fmi2Handle* fmu, fmi2FMUstate* FMUstate)
+{
+    TRACEFUNC
+    return fmu->fmi2GetFMUstate(fmu->_fmi2Component, FMUstate);
+}
+
+fmi2Status fmi2SetFMUstate(fmi2Handle* fmu, fmi2FMUstate FMUstate)
+{
+    TRACEFUNC
+    return fmu->fmi2SetFMUstate(fmu->_fmi2Component, FMUstate);
+}
+
+fmi2Status fmi2FreeFMUstate(fmi2Handle* fmu, fmi2FMUstate* FMUstate)
+{
+    TRACEFUNC
+    return fmu->fmi2FreeFMUstate(fmu->_fmi2Component, FMUstate);
+}
+
+fmi2Status fmi2SerializedFMUstateSize(fmi2Handle* fmu, fmi2FMUstate FMUstate, size_t* size)
+{
+    TRACEFUNC
+    return fmu->fmi2SerializedFMUstateSize(fmu->_fmi2Component, FMUstate, size);
+}
+
+fmi2Status fmi2SerializeFMUstate(fmi2Handle* fmu, fmi2FMUstate FMUstate, fmi2Byte serializedState[], size_t size)
+{
+    TRACEFUNC
+    return fmu->fmi2SerializeFMUstate(fmu->_fmi2Component, FMUstate, serializedState, size);
+}
+
+fmi2Status fmi2DeSerializeFMUstate(fmi2Handle* fmu, const fmi2Byte serializedState[], size_t size, fmi2FMUstate* FMUstate)
+{
+    TRACEFUNC
+    return fmu->fmi2DeSerializeFMUstate(fmu->_fmi2Component, serializedState, size, FMUstate);
+}
+
+fmi2Status fmi2GetDirectionalDerivative(fmi2Handle* fmu,
+                                        const fmi2ValueReference unknownReferences[],
+                                        size_t nUnknown,
+                                        const fmi2ValueReference knownReferences[],
+                                        size_t nKnown,
+                                        const fmi2Real dvKnown[],
+                                        fmi2Real dvUnknown[])
+{
+    TRACEFUNC
+    return fmu->fmi2GetDirectionalDerivative(fmu->_fmi2Component,
+                                             unknownReferences,
+                                             nUnknown,
+                                             knownReferences,
+                                             nKnown,
+                                             dvKnown,
+                                             dvUnknown);
+}
+
+fmi2Status fmi2EnterEventMode(fmi2Handle* fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2EnterEventMode(fmu->_fmi2Component);
+}
+
+fmi2Status fmi2NewDiscreteStates(fmi2Handle* fmu, fmi2EventInfo* eventInfo)
+{
+    TRACEFUNC
+            return fmu->fmi2NewDiscreteStates(fmu->_fmi2Component, eventInfo);
+}
+
+fmi2Status fmi2EnterContinuousTimeMode(fmi2Handle* fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2EnterContinuousTimeMode(fmu->_fmi2Component);
+}
+
+fmi2Status fmi2CompletedIntegratorStep(fmi2Handle* fmu,
+                                       fmi2Boolean noSetFMUStatePriorToCurrentPoint,
+                                       fmi2Boolean* enterEventMode,
+                                       fmi2Boolean* terminateSimulation)
+{
+    TRACEFUNC
+    return fmu->fmi2CompletedIntegratorStep(fmu->_fmi2Component,
+                                            noSetFMUStatePriorToCurrentPoint,
+                                            enterEventMode,
+                                            terminateSimulation);
+}
+
+fmi2Status fmi2SetTime(fmi2Handle* fmu, fmi2Real time)
+{
+    TRACEFUNC
+    return fmu->fmi2SetTime(fmu->_fmi2Component, time);
+}
+
+fmi2Status fmi2SetContinuousStates(fmi2Handle* fmu,
+                                   const fmi2Real x[],
+                                   size_t nx)
+{
+    TRACEFUNC
+    return fmu->fmi2SetContinuousStates(fmu, x, nx);
+}
+
+fmi2Status fmi2GetDerivatives(fmi2Handle* fmu, fmi2Real derivatives[], size_t nx)
+{
+    TRACEFUNC
+    return fmu->fmi2GetDerivatives(fmu->_fmi2Component, derivatives, nx);
+}
+
+fmi2Status fmi2GetEventIndicators(fmi2Handle* fmu, fmi2Real eventIndicators[], size_t ni)
+{
+    TRACEFUNC
+    return fmu->fmi2GetEventIndicators(fmu->_fmi2Component, eventIndicators, ni);
+}
+
+fmi2Status fmi2GetContinuousStates(fmi2Handle* fmu, fmi2Real x[], size_t nx)
+{
+    TRACEFUNC
+    return fmu->fmi2GetContinuousStates(fmu->_fmi2Component, x, nx);
+}
+
+fmi2Status fmi2GetNominalsOfContinuousStates(fmi2Handle* fmu, fmi2Real x_nominal[], size_t nx)
+{
+    TRACEFUNC
+    return fmu->fmi2GetNominalsOfContinuousStates(fmu->_fmi2Component, x_nominal, nx);
+}
+
+fmi2Status fmi2SetRealInputDerivatives(fmi2Handle* fmu, const fmi2ValueReference [], size_t, const fmi2Integer [], const fmi2Real []);
+fmi2Status fmi2GetRealOutputDerivatives(fmi2Handle* fmu, const fmi2ValueReference [], size_t, const fmi2Integer [], fmi2Real []);
+
+fmi2Status fmi2SetRealInputDerivatives(fmi2Handle* fmu,
+                                       const fmi2ValueReference vr[],
+                                       size_t nvr,
+                                       const fmi2Integer order[],
+                                       const fmi2Real value[])
+{
+    TRACEFUNC
+    return fmu->fmi2SetRealInputDerivatives(fmu->_fmi2Component, vr, nvr, order, value);
+}
+
+fmi2Status fmi2GetRealOutputDerivatives (fmi2Handle* fmu,
+                                         const fmi2ValueReference vr[],
+                                         size_t nvr,
+                                         const fmi2Integer order[],
+                                         fmi2Real value[])
+{
+    TRACEFUNC
+    return fmu->fmi2GetRealOutputDerivatives(fmu->_fmi2Component, vr, nvr, order, value);
+}
+
 fmi2Status fmi2DoStep(fmi2Handle *fmu, fmi2Real currentCommunicationPoint, fmi2Real communicationStepSize, fmi2Boolean noSetFMUStatePriorToCurrentPoint)
 {
     return fmu->fmi2DoStep(fmu->_fmi2Component,

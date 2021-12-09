@@ -170,32 +170,69 @@ FMIC_DLLEXPORT fmi2Status fmi2SetInteger(fmi2Handle* fmu, const fmi2ValueReferen
 FMIC_DLLEXPORT fmi2Status fmi2SetBoolean(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, const fmi2Boolean values[]);
 FMIC_DLLEXPORT fmi2Status fmi2SetString(fmi2Handle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, const fmi2String values[]);
 
-FMIC_DLLEXPORT fmi2Status fmi2GetFMUstate(fmi2Handle* fmu, fmi2FMUstate*);
-FMIC_DLLEXPORT fmi2Status fmi2SetFMUstate(fmi2Handle* fmu, fmi2FMUstate);
-FMIC_DLLEXPORT fmi2Status fmi2FreeFMUstate(fmi2Handle* fmu, fmi2FMUstate*);
-FMIC_DLLEXPORT fmi2Status fmi2SerializedFMUstateSize(fmi2Handle* fmu, fmi2FMUstate, size_t*);
-FMIC_DLLEXPORT fmi2Status fmi2SerializeFMUstate(fmi2Handle* fmu, fmi2FMUstate, fmi2Byte[], size_t);
-FMIC_DLLEXPORT fmi2Status fmi2DeSerializeFMUstate(fmi2Handle* fmu, const fmi2Byte[], size_t, fmi2FMUstate*);
+FMIC_DLLEXPORT fmi2Status fmi2GetFMUstate(fmi2Handle* fmu,
+                                          fmi2FMUstate* FMUstate);
+FMIC_DLLEXPORT fmi2Status fmi2SetFMUstate(fmi2Handle* fmu,
+                                          fmi2FMUstate FMUstate);
+FMIC_DLLEXPORT fmi2Status fmi2FreeFMUstate(fmi2Handle* fmu,
+                                           fmi2FMUstate* FMUstate);
+FMIC_DLLEXPORT fmi2Status fmi2SerializedFMUstateSize(fmi2Handle* fmu,
+                                                     fmi2FMUstate FMUstate,
+                                                     size_t* size);
+FMIC_DLLEXPORT fmi2Status fmi2SerializeFMUstate(fmi2Handle* fmu,
+                                                fmi2FMUstate FMUstate,
+                                                fmi2Byte serializedState[],
+                                                size_t size);
+FMIC_DLLEXPORT fmi2Status fmi2DeSerializeFMUstate(fmi2Handle* fmu,
+                                                  const fmi2Byte serializedState[],
+                                                  size_t size,
+                                                  fmi2FMUstate* FMUstate);
 
-FMIC_DLLEXPORT fmi2Status fmi2GetDirectionalDerivative(fmi2Handle* fmu, const fmi2ValueReference unknownReferences[], size_t nUnknown,
-                                                                const fmi2ValueReference knownReferences[], size_t nKnown,
-                                                                const fmi2Real dvKnown[], fmi2Real dvUnknown[]);
+FMIC_DLLEXPORT fmi2Status fmi2GetDirectionalDerivative(fmi2Handle* fmu,
+                                                       const fmi2ValueReference unknownReferences[],
+                                                       size_t nUnknown,
+                                                       const fmi2ValueReference knownReferences[],
+                                                       size_t nKnown,
+                                                       const fmi2Real dvKnown[],
+                                                       fmi2Real dvUnknown[]);
 
 FMIC_DLLEXPORT fmi2Status fmi2EnterEventMode(fmi2Handle* fmu);
-FMIC_DLLEXPORT fmi2Status fmi2NewDiscreteStates(fmi2Handle* fmu, fmi2EventInfo*);
+FMIC_DLLEXPORT fmi2Status fmi2NewDiscreteStates(fmi2Handle* fmu, fmi2EventInfo* eventInfo);
 FMIC_DLLEXPORT fmi2Status fmi2EnterContinuousTimeMode(fmi2Handle* fmu);
-FMIC_DLLEXPORT fmi2Status fmi2CompletedIntegratorStep(fmi2Handle* fmu, fmi2Boolean, fmi2Boolean*, fmi2Boolean*);
+FMIC_DLLEXPORT fmi2Status fmi2CompletedIntegratorStep(fmi2Handle* fmu,
+                                                      fmi2Boolean noSetFMUStatePriorToCurrentPoint,
+                                                      fmi2Boolean* enterEventMode,
+                                                      fmi2Boolean* terminateSimulation);
 
-FMIC_DLLEXPORT fmi2Status fmi2SetTime(fmi2Handle* fmu, fmi2Real);
-FMIC_DLLEXPORT fmi2Status fmi2SetContinuousStates(fmi2Handle* fmu, const fmi2Real[], size_t);
+FMIC_DLLEXPORT fmi2Status fmi2SetTime(fmi2Handle* fmu,
+                                      fmi2Real time);
+FMIC_DLLEXPORT fmi2Status fmi2SetContinuousStates(fmi2Handle* fmu,
+                                                  const fmi2Real x[],
+                                                  size_t nx);
 
-FMIC_DLLEXPORT fmi2Status fmi2GetDerivatives(fmi2Handle* fmu, fmi2Real[], size_t);
-FMIC_DLLEXPORT fmi2Status fmi2GetEventIndicators(fmi2Handle* fmu, fmi2Real[], size_t);
-FMIC_DLLEXPORT fmi2Status fmi2GetContinuousStates(fmi2Handle* fmu, fmi2Real[], size_t);
-FMIC_DLLEXPORT fmi2Status fmi2GetNominalsOfContinuousStates(fmi2Handle* fmu, fmi2Real[], size_t);
+FMIC_DLLEXPORT fmi2Status fmi2GetDerivatives(fmi2Handle* fmu,
+                                             fmi2Real derivatives[],
+                                             size_t nx);
+FMIC_DLLEXPORT fmi2Status fmi2GetEventIndicators(fmi2Handle* fmu,
+                                                 fmi2Real eventIndicators[],
+                                                 size_t ni);
+FMIC_DLLEXPORT fmi2Status fmi2GetContinuousStates(fmi2Handle* fmu,
+                                                  fmi2Real x[],
+                                                  size_t nx);
+FMIC_DLLEXPORT fmi2Status fmi2GetNominalsOfContinuousStates(fmi2Handle* fmu,
+                                                            fmi2Real x_nominal[],
+                                                            size_t nx);
 
-FMIC_DLLEXPORT fmi2Status fmi2SetRealInputDerivatives(fmi2Handle* fmu, const fmi2ValueReference [], size_t, const fmi2Integer [], const fmi2Real []);
-FMIC_DLLEXPORT fmi2Status fmi2GetRealOutputDerivatives(fmi2Handle* fmu, const fmi2ValueReference [], size_t, const fmi2Integer [], fmi2Real []);
+FMIC_DLLEXPORT fmi2Status fmi2SetRealInputDerivatives(fmi2Handle* fmu,
+                                                      const fmi2ValueReference vr[],
+                                                      size_t nvr,
+                                                      const fmi2Integer order[],
+                                                      const fmi2Real value[]);
+FMIC_DLLEXPORT fmi2Status fmi2GetRealOutputDerivatives (fmi2Handle* fmu,
+                                                        const fmi2ValueReference vr[],
+                                                        size_t nvr,
+                                                        const fmi2Integer order[],
+                                                        fmi2Real value[]);
 
 FMIC_DLLEXPORT fmi2Status fmi2DoStep(fmi2Handle *fmu, fmi2Real, fmi2Real, fmi2Boolean);
 FMIC_DLLEXPORT fmi2Status fmi2CancelStep(fmi2Handle* fmu);
