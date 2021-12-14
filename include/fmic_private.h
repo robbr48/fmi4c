@@ -63,6 +63,7 @@ typedef struct {
     fmi2Variability variability;
     fmi2Initial initial;
     bool canHandleMultipleSetPerTimeInstant;
+    fmi2ValueReference derivative;
 } fmi2VariableHandle;
 
 typedef struct {
@@ -236,6 +237,8 @@ typedef struct {
     double defaultStopTime;
     double defaultTolerance;
     double defaultStepSize;
+
+    int numberOfContinuousStates;
 
     fmi2Component _fmi2Component;
     fmi2GetTypesPlatform_t fmi2GetTypesPlatform;
