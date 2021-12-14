@@ -37,7 +37,9 @@ FMIC_DLLEXPORT void *freeFmu2(fmi2Handle* fmu);
 FMIC_DLLEXPORT void *freeFmu3(fmi3Handle* fmu);
 
 // FMI 1 wrapper functions
-
+FMIC_DLLEXPORT fmi1Type fmi1GetType(fmi1Handle *fmu);
+FMIC_DLLEXPORT int fmi1GetNumberOfContinuousStates(fmi1Handle *fmu);
+FMIC_DLLEXPORT int fmi1GetNumberOfEventIndicators(fmi1Handle *fmu);
 FMIC_DLLEXPORT bool fmi1DefaultStartTimeDefined(fmi1Handle *fmu);
 FMIC_DLLEXPORT bool fmi1DefaultStopTimeDefined(fmi1Handle *fmu);
 FMIC_DLLEXPORT bool fmi1DefaultToleranceDefined(fmi1Handle *fmu) ;
@@ -92,12 +94,12 @@ FMIC_DLLEXPORT fmi1Status fmi1GetBooleanStatus(fmi1Handle* fmu, const fmi1Status
 FMIC_DLLEXPORT fmi1Status fmi1GetStringStatus(fmi1Handle* fmu, const fmi1StatusKind statusKind, fmi1String* value);
 
 FMIC_DLLEXPORT const char *fmi1GetModelTypesPlatform(fmi1Handle* fmu);
-FMIC_DLLEXPORT bool fmi1InstantiateModel(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished,fmi1Boolean loggingOn);
+FMIC_DLLEXPORT bool fmi1InstantiateModel(fmi1Handle *fmu, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished,fmi1Boolean loggingOn);
 FMIC_DLLEXPORT void fmi1FreeModelInstance(fmi1Handle* fmu);
 FMIC_DLLEXPORT fmi1Status fmi1SetTime(fmi1Handle* fmu, fmi1Real);
 FMIC_DLLEXPORT fmi1Status fmi1SetContinuousStates(fmi1Handle* fmu, const fmi1Real[], size_t);
 FMIC_DLLEXPORT fmi1Status fmi1CompletedIntegratorStep(fmi1Handle* fmu, fmi1Boolean* callEventUpdate);
-FMIC_DLLEXPORT fmi1Status fmi1Initialize(fmi1Handle* fmu, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime);
+FMIC_DLLEXPORT fmi1Status fmi1Initialize(fmi1Handle *fmu, fmi1Boolean toleranceControlled, fmi1Real relativeTolerance, fmi1EventInfo *eventInfo);
 FMIC_DLLEXPORT fmi1Status fmi1GetDerivatives(fmi1Handle *fmu, fmi1Real derivatives[], size_t nDerivatives);
 FMIC_DLLEXPORT fmi1Status fmi1GetEventIndicators(fmi1Handle *fmu, fmi1Real indicators[], size_t nIndicators);
 FMIC_DLLEXPORT fmi1Status fmi1EventUpdate(fmi1Handle *fmu, fmi1Boolean intermediateResults, fmi1EventInfo *eventInfo);
@@ -150,6 +152,10 @@ FMIC_DLLEXPORT bool fmi2GetCanNotUseMemoryManagementFunctions(fmi2Handle* fmu);
 FMIC_DLLEXPORT bool fmi2GetCanGetAndSetFMUState(fmi2Handle* fmu);
 FMIC_DLLEXPORT bool fmi2GetCanSerializeFMUState(fmi2Handle* fmu);
 FMIC_DLLEXPORT bool fmi2GetProvidesDirectionalDerivative(fmi2Handle* fmu);
+FMIC_DLLEXPORT int fmi2GetNumberOfContinuousStates(fmi2Handle *fmu);
+FMIC_DLLEXPORT int fmi2GetNumberOfEventIndicators(fmi2Handle *fmu);
+FMIC_DLLEXPORT bool fmi2GetSupportsCoSimulation(fmi2Handle *fmu);
+FMIC_DLLEXPORT bool fmi2GetSupportsModelExchange(fmi2Handle *fmu);
 
 FMIC_DLLEXPORT bool fmi2Instantiate(fmi2Handle *fmu, fmi2Type type, fmi2CallbackLogger logger, fmi2CallbackAllocateMemory allocateMemory, fmi2CallbackFreeMemory freeMemory, fmi2StepFinished stepFinished, fmi2ComponentEnvironment componentEnvironment, fmi2Boolean visible, fmi2Boolean loggingOn);
 FMIC_DLLEXPORT void fmi2FreeInstance(fmi2Handle* fmu);
@@ -271,6 +277,9 @@ FMIC_DLLEXPORT const char* fmi3License(fmi3Handle *fmu);
 FMIC_DLLEXPORT const char* fmi3GenerationTool(fmi3Handle *fmu);
 FMIC_DLLEXPORT const char* fmi3GenerationDateAndTime(fmi3Handle *fmu);
 FMIC_DLLEXPORT const char* fmi3VariableNamingConvention(fmi3Handle *fmu);
+FMIC_DLLEXPORT bool fmi3SupportsModelExchange(fmi3Handle *fmu);
+FMIC_DLLEXPORT bool fmi3SupportsScheduledExecution(fmi3Handle *fmu);
+FMIC_DLLEXPORT bool fmi3SupportsCoSimulation(fmi3Handle *fmu);
 FMIC_DLLEXPORT bool fmi3DefaultStartTimeDefined(fmi3Handle *fmu);
 FMIC_DLLEXPORT bool fmi3DefaultStopTimeDefined(fmi3Handle *fmu);
 FMIC_DLLEXPORT bool fmi3DefaultToleranceDefined(fmi3Handle *fmu) ;
@@ -308,6 +317,12 @@ FMIC_DLLEXPORT bool fmi3InstantiateCoSimulation(fmi3Handle *fmu,
                              fmi3InstanceEnvironment        instanceEnvironment,
                              fmi3CallbackLogMessage         logMessage,
                              fmi3CallbackIntermediateUpdate intermediateUpdate);
+
+FMIC_DLLEXPORT bool fmi3InstantiateModelExchange(fmi3Handle *fmu,
+                                                 fmi3Boolean                visible,
+                                                 fmi3Boolean                loggingOn,
+                                                 fmi3InstanceEnvironment    instanceEnvironment,
+                                                 fmi3CallbackLogMessage     logMessage);
 
 FMIC_DLLEXPORT const char* fmi3GetVersion(fmi3Handle *fmu);
 

@@ -358,6 +358,8 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
     fmu->defaultToleranceDefined = false;
     fmu->defaultStepSizeDefined = false;
 
+    fmu->numberOfContinuousStates = 0;
+
     fmu->supportsCoSimulation = false;
     fmu->supportsModelExchange = false;
 
@@ -594,24 +596,33 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
                     if(!strcmp(attr->name, "canHandleMultipleSetPerTimeInstant")) {
                         var.canHandleMultipleSetPerTimeInstant = parseBooleanAttribute(attr);
                     }
+                }
 
-                    xmlNode *dataNode = varNode->children;
-                    if(dataNode && !strcmp(dataNode->name, "Real")) {
-                        var.datatype = fmi2DataTypeReal;
-                        fmu->hasRealVariables = true;
+                xmlNode *dataNode = varNode->children;
+                if(dataNode && !strcmp(dataNode->name, "Real")) {
+                    var.datatype = fmi2DataTypeReal;
+                    fmu->hasRealVariables = true;
+                    for(xmlAttr *attr = dataNode->properties; attr != NULL; attr = attr->next) {
+                        if(!strcmp(attr->name, "start")) {
+                            var.startReal = parseDoubleAttribute(attr);
+                        }
+                        else if(!strcmp(attr->name, "derivative")) {
+                            var.derivative = parseIntegerAttribute(attr);
+                            fmu->numberOfContinuousStates++;
+                        }
                     }
-                    else if(dataNode && !strcmp(dataNode->name, "Integer")) {
-                        var.datatype = fmi2DataTypeInteger;
-                        fmu->hasIntegerVariables = true;
-                    }
-                    else if(dataNode && !strcmp(dataNode->name, "Boolean")) {
-                        var.datatype = fmi2DataTypeBoolean;
-                        fmu->hasBooleanVariables = true;
-                    }
-                    else if(dataNode && !strcmp(dataNode->name, "String")) {
-                        var.datatype = fmi2DataTypeString;
-                        fmu->hasStringVariables = true;
-                    }
+                }
+                else if(dataNode && !strcmp(dataNode->name, "Integer")) {
+                    var.datatype = fmi2DataTypeInteger;
+                    fmu->hasIntegerVariables = true;
+                }
+                else if(dataNode && !strcmp(dataNode->name, "Boolean")) {
+                    var.datatype = fmi2DataTypeBoolean;
+                    fmu->hasBooleanVariables = true;
+                }
+                else if(dataNode && !strcmp(dataNode->name, "String")) {
+                    var.datatype = fmi2DataTypeString;
+                    fmu->hasStringVariables = true;
                 }
 
                 if(fmu->numberOfVariables >= fmu->variablesSize) {
@@ -1762,6 +1773,23 @@ bool fmi3InstantiateCoSimulation(fmi3Handle *fmu,
     return (fmu->_fmi3Instance != NULL);
 }
 
+bool fmi3InstantiateModelExchange(fmi3Handle *fmu,
+                                  fmi3Boolean               visible,
+                                  fmi3Boolean                loggingOn,
+                                  fmi3InstanceEnvironment    instanceEnvironment,
+                                  fmi3CallbackLogMessage     logMessage)
+{
+    fmu->_fmi3Instance = fmu->fmi3InstantiateModelExchange(fmu->instanceName,
+                                                           fmu->instantiationToken,
+                                                           fmu->resourcesLocation,
+                                                           visible,
+                                                           loggingOn,
+                                                           instanceEnvironment,
+                                                           logMessage);
+
+    return (fmu->_fmi3Instance != NULL);
+}
+
 const char* fmi3GetVersion(fmi3Handle *fmu) {
 
     return fmu->fmi3GetVersion(fmu->_fmi3Instance);
@@ -1804,19 +1832,18 @@ fmi3Status fmi3SetFloat64(fmi3Handle *fmu,
 }
 
 fmi3Status fmi3EnterInitializationMode(fmi3Handle *fmu,
-                                        fmi3Boolean toleranceDefined,
-                                        fmi3Float64 tolerance,
-                                        fmi3Float64 startTime,
-                                        fmi3Boolean stopTimeDefined,
-                                        fmi3Float64 stopTime)
+                                       fmi3Boolean toleranceDefined,
+                                       fmi3Float64 tolerance,
+                                       fmi3Float64 startTime,
+                                       fmi3Boolean stopTimeDefined,
+                                       fmi3Float64 stopTime)
 {
-
     return fmu->fmi3EnterInitializationMode(fmu->_fmi3Instance,
-                                             toleranceDefined,
-                                             tolerance,
-                                             startTime,
-                                             stopTimeDefined,
-                                             stopTime);
+                                            toleranceDefined,
+                                            tolerance,
+                                            startTime,
+                                            stopTimeDefined,
+                                            stopTime);
 }
 
 fmi3Status fmi3ExitInitializationMode(fmi3Handle *fmu)
@@ -1903,20 +1930,44 @@ const char* fmi3License(fmi3Handle *fmu)
 
 const char* fmi3GenerationTool(fmi3Handle *fmu)
 {
+    TRACEFUNC
 
     return fmu->generationTool;
 }
 
 const char* fmi3GenerationDateAndTime(fmi3Handle *fmu)
 {
+    TRACEFUNC
 
     return fmu->generationDateAndTime;
 }
 
 const char* fmi3VariableNamingConvention(fmi3Handle *fmu)
 {
+    TRACEFUNC
 
     return fmu->variableNamingConvention;
+}
+
+bool fmi3SupportsCoSimulation(fmi3Handle *fmu)
+{
+    TRACEFUNC
+
+    return fmu->supportsCoSimulation;
+}
+
+bool fmi3SupportsModelExchange(fmi3Handle *fmu)
+{
+    TRACEFUNC
+
+    return fmu->supportsModelExchange;
+}
+
+bool fmi3SupportsScheduledExecution(fmi3Handle *fmu)
+{
+    TRACEFUNC
+
+    return fmu->supportsScheduledExecution;
 }
 
 const char *fmi2GetTypesPlatform(fmi2Handle *fmu)
@@ -2746,9 +2797,9 @@ fmi2Status fmi2GetReal(fmi2Handle *fmu,
                        fmi2Real values[])
 {
     return fmu->fmi2GetReal(fmu->_fmi2Component,
-                               valueReferences,
-                               nValueReferences,
-                               values);
+                            valueReferences,
+                            nValueReferences,
+                            values);
 }
 
 fmi2Status fmi2GetInteger(fmi2Handle *fmu,
@@ -2935,7 +2986,7 @@ fmi2Status fmi2SetContinuousStates(fmi2Handle* fmu,
                                    size_t nx)
 {
     TRACEFUNC
-    return fmu->fmi2SetContinuousStates(fmu, x, nx);
+    return fmu->fmi2SetContinuousStates(fmu->_fmi2Component, x, nx);
 }
 
 fmi2Status fmi2GetDerivatives(fmi2Handle* fmu, fmi2Real derivatives[], size_t nx)
@@ -3064,6 +3115,30 @@ bool fmi2GetProvidesDirectionalDerivative(fmi2Handle *fmu)
 {
     TRACEFUNC
     return fmu->providesDirectionalDerivative;
+}
+
+int fmi2GetNumberOfContinuousStates(fmi2Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->numberOfContinuousStates;
+}
+
+int fmi2GetNumberOfEventIndicators(fmi2Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->numberOfEventIndicators;
+}
+
+bool fmi2GetSupportsCoSimulation(fmi2Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->supportsCoSimulation;
+}
+
+bool fmi2GetSupportsModelExchange(fmi2Handle *fmu)
+{
+    TRACEFUNC
+    return fmu->supportsModelExchange;
 }
 
 const char *fmi3GetModelIdentifier(fmi3Handle *fmu)
@@ -3206,6 +3281,23 @@ void *freeFmu1(fmi1Handle *fmu)
 #else
     dlclose(fmu->dll);
 #endif
+}
+
+fmi1Type fmi1GetType(fmi1Handle *fmu)
+{
+    TRACEFUNC
+            printf("TYPE = %i\n",fmu->type);
+    return fmu->type;
+}
+
+int fmi1GetNumberOfContinuousStates(fmi1Handle *fmu)
+{
+    return fmu->numberOfContinuousStates;
+}
+
+int fmi1GetNumberOfEventIndicators(fmi1Handle *fmu)
+{
+    return fmu->numberOfEventIndicators;
 }
 
 bool fmi1DefaultStartTimeDefined(fmi1Handle *fmu)
@@ -3491,7 +3583,7 @@ const char *fmi1GetModelTypesPlatform(fmi1Handle *fmu)
 }
 
 
-bool fmi1InstantiateModel(fmi1Handle *fmu, fmi1Type type, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1Boolean loggingOn)
+bool fmi1InstantiateModel(fmi1Handle *fmu, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1Boolean loggingOn)
 {
     TRACEFUNC
     fmu->callbacksModelExchange.logger = logger;
@@ -3553,7 +3645,7 @@ fmi1Status fmi1EventUpdate(fmi1Handle *fmu, fmi1Boolean intermediateResults, fmi
 fmi1Status fmi1GetContinuousStates(fmi1Handle *fmu, fmi1Real states[], size_t nStates)
 {
     TRACEFUNC
-    return fmu->fmiGetContinuousStates(fmu, states, nStates);
+    return fmu->fmiGetContinuousStates(fmu->_fmi1Component, states, nStates);
 }
 
 fmi1Status fmi1GetNominalContinuousStates(fmi1Handle *fmu, fmi1Real nominals[], size_t nNominals)
@@ -3565,7 +3657,7 @@ fmi1Status fmi1GetNominalContinuousStates(fmi1Handle *fmu, fmi1Real nominals[], 
 fmi1Status fmi1GetStateValueReferences(fmi1Handle *fmu, fmi1ValueReference valueReferences[], size_t nValueReferences)
 {
     TRACEFUNC
-    return fmu->fmiGetStateValueReferences(fmu, valueReferences, nValueReferences);
+    return fmu->fmiGetStateValueReferences(fmu->_fmi1Component, valueReferences, nValueReferences);
 }
 
 fmi1Status fmi1Terminate(fmi1Handle *fmu)
