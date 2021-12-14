@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription
+  fmiVersion="2.0"
+  modelName="fmi2"
+  generationTool="None"
+  description="Integrator (dx = der(x))"
+  guid="123"
+  numberOfEventIndicators="1">
+  <CoSimulation modelIdentifier="fmi2" canHandleVariableCommunicationStepSize="true"/>
+  <ModelExchange/>  
+<ModelVariables>
+  <ScalarVariable name="dx" valueReference="1" causality="input" description="Derivative of x">
+     <Real start="0.0" derivative="2"/>
+  </ScalarVariable>
+  <ScalarVariable name="x" valueReference="2" causality="output" initial="exact" description="x">
+     <Real start="0.0"/>
+  </ScalarVariable> 
+</ModelVariables>
+<ModelStructure/>
+</fmiModelDescription>
+

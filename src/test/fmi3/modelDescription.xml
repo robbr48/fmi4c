@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription 
+  fmiVersion="3.0-beta.2" 
+  modelName="fmi3" 
+  description="Integrator (dx = der(x))" 
+  author="Robert Braun" 
+  instantiationToken="123">
+	<CoSimulation modelIdentifier="fmi3" providesIntermediateUpdate="false" canHandleVariableCommunicationStepSize="true" hasEventMode="false"/>
+	<ModelExchange modelIdentifier="fmi3"/>
+	<ModelVariables>
+		<Float64 name="dx" valueReference="1" description="Derivative of x" variability="continuous" causality="input" start="0.0"/>
+		<Float64 name="x" valueReference="2" description="x" variability="continuous" causality="output" start="0.0"/>
+	</ModelVariables>
+	<ModelStructure/>
+</fmiModelDescription>
