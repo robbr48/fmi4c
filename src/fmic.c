@@ -89,7 +89,7 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
 
     doc = xmlReadFile("modelDescription.xml", NULL, 0);
     if(NULL == doc){
-       printf("Failed to read modelDescription.xml");
+       printf("Failed to read modelDescription.xml\n");
        return false;
     }
 
@@ -390,7 +390,7 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
 
     doc = xmlReadFile("modelDescription.xml", NULL, 0);
     if(NULL == doc){
-       printf("Failed to read modelDescription.xml");
+       printf("Failed to read modelDescription.xml\n");
        return false;
     }
 
@@ -714,7 +714,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
 
     doc = xmlReadFile("modelDescription.xml", NULL, 0);
     if(NULL == doc){
-       printf("Failed to read modelDescription.xml");
+       printf("Failed to read modelDescription.xml\n");
        return false;
     }
 
@@ -1655,7 +1655,7 @@ fmiVersion_t getFmiVersion(fmiHandle *fmu)
     doc = xmlReadFile("modelDescription.xml", NULL, 0);
     chdir(cwd);
     if(NULL == doc){
-       printf("Failed to read modelDescription.xml");
+       printf("Failed to read modelDescription.xml\n");
        return false;
     }
 
