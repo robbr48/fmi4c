@@ -66,9 +66,20 @@ install(TARGETS ${target_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 if (${BUILD_TEST})
     set(test_target_name fmictest)
-    set(TESTSRCFILES src/fmic_test.c)
+    set(TESTSRCFILES
+	src/test/fmic_test.c
+	src/test/fmic_test_fmi1.c
+	src/test/fmic_test_fmi2.c
+	src/test/fmic_test_fmi3.c
+	src/test/fmic_test_tlm.c
+	include/test/fmic_test.h
+	include/test/fmic_test_fmi1.h
+	include/test/fmic_test_fmi2.h
+	include/test/fmic_test_fmi3.h
+	include/test/fmic_test_tlm.h)
     add_executable(${test_target_name} ${TESTSRCFILES})
     target_include_directories(${test_target_name} PUBLIC include)
+    target_include_directories(${test_target_name} PUBLIC include/test)
     install(TARGETS ${test_target_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
     target_link_libraries(${test_target_name} fmic)
 
