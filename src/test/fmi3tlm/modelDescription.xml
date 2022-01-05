@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fmiModelDescription
+  fmiVersion="3.0-beta.2"
+  modelName="fmi3tlm"
+  description="Mass-spring-damper oscillator with TLM connection"
+  author="Robert Braun"
+  instantiationToken="123">
+	<CoSimulation modelIdentifier="fmi3tlm" providesIntermediateUpdate="true" canHandleVariableCommunicationStepSize="false" hasEventMode="false"/>
+	<DefaultExperiment startTime="0.0" stopTime="10.0" tolerance="0.0001"/>
+	<ModelVariables>
+		<Float64 name="v" valueReference="0" description="Speed" causality="output" intermediateUpdate="true"/>
+		<Float64 name="F" valueReference="1" description="TLM force" causality="input" intermediateUpdate="true"/>
+		<Float64 name="Fd" valueReference="2" description="Disturbance force" causality="parameter" variability="tunable" start="0"/>			 
+	</ModelVariables>
+</fmiModelDescription>
+

@@ -135,4 +135,38 @@ if (${BUILD_TEST})
 	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/test/fmi3/modelDescription.xml ${CMAKE_CURRENT_BINARY_DIR}/fmi3/modelDescription.xml
 	WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fmi3"
 	COMMAND zip -r "${CMAKE_CURRENT_BINARY_DIR}/fmi3.fmu" .)
+
+    #Test FMU (FMI 3.0 for TLM using intermediate update)
+    set(fmi3tlm_target_name fmi3tlm)
+    set(FMI3TLMFILES
+	src/test/fmi3tlm/fmi3tlm.c
+	3rdparty/sundials/src/nvector/serial/nvector_serial.c
+	3rdparty/sundials/src/sundials/sundials_math.c
+	3rdparty/sundials/src/cvode/cvode.c
+	3rdparty/sundials/src/sundials/sundials_nvector.c
+	3rdparty/sundials/src/cvode/cvode_direct.c
+	3rdparty/sundials/src/sundials/sundials_direct.c
+	3rdparty/sundials/src/cvode/cvode_io.c
+	3rdparty/sundials/src/sundials/sundials_linearsolver.c
+	3rdparty/sundials/src/sundials/sundials_nonlinearsolver.c
+	3rdparty/sundials/src/sundials/sundials_matrix.c
+	3rdparty/sundials/src/sunnonlinsol/newton/sunnonlinsol_newton.c
+	3rdparty/sundials/src/cvode/cvode_nls.c
+	3rdparty/sundials/src/cvode/cvode_ls.c
+	3rdparty/sundials/src/cvode/cvode_proj.c
+	3rdparty/sundials/src/sunmatrix/dense/sunmatrix_dense.c
+	3rdparty/sundials/src/sunlinsol/dense/sunlinsol_dense.c
+	3rdparty/sundials/src/sundials/sundials_nvector_senswrapper.c
+	3rdparty/sundials/src/sunmatrix/band/sunmatrix_band.c
+	3rdparty/sundials/src/sundials/sundials_dense.c)
+    add_library(fmi3tlm SHARED ${FMI3TLMFILES})
+    target_include_directories(fmi3tlm PUBLIC 3rdparty/fmi)
+    target_include_directories(fmi3tlm PUBLIC 3rdparty/sundials/include)
+    add_custom_command(TARGET fmi3tlm POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm/binaries/x86_64-windows)
+    add_custom_command(TARGET fmi3tlm POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi3tlm> ${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm/binaries/x86_64-windows/fmi3tlm.dll
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/src/test/fmi3tlm/modelDescription.xml ${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm/modelDescription.xml
+	WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm"
+	COMMAND zip -r "${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm.fmu" .)
 endif()
