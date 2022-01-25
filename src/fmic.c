@@ -89,6 +89,11 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
     fmu->canNotUseMemoryManagementFunctions = false;
     fmu->maxOutputDerivativeOrder = 0;
 
+    fmu->hasRealVariables = false;
+    fmu->hasIntegerVariables = false;
+    fmu->hasStringVariables = false;
+    fmu->hasBooleanVariables = false;
+
     fmu->type = fmi1ModelExchange;
 
     char cwd[FILENAME_MAX];
@@ -280,6 +285,7 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                     xmlNode *dataNode = varNode->children;
                     if(dataNode && !strcmp(dataNode->name, "Real")) {
                         printf("Found a real variable!\n");  //!< @todo Remove debug output
+                        fmu->hasRealVariables = true;
                         var.datatype = fmi1DataTypeReal;
 
                         //Parse variable attributes
@@ -294,6 +300,7 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                     }
                     else if(dataNode && !strcmp(dataNode->name, "Integer")) {
                         printf("Found an integer variable!\n");  //!< @todo Remove debug output
+                        fmu->hasIntegerVariables = true;
                         var.datatype = fmi1DataTypeInteger;
 
                         //Parse variable attributes
@@ -308,6 +315,7 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                     }
                     else if(dataNode && !strcmp(dataNode->name, "Boolean")) {
                         printf("Found a boolean variable!\n");  //!< @todo Remove debug output
+                        fmu->hasBooleanVariables = true;
                         var.datatype = fmi1DataTypeBoolean;
 
                         //Parse variable attributes
@@ -322,6 +330,7 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
                     }
                     else if(dataNode && !strcmp(dataNode->name, "String")) {
                         printf("Found a string variable!\n");  //!< @todo Remove debug output
+                        fmu->hasStringVariables = true;
                         var.datatype = fmi1DataTypeString;
 
                         //Parse variable attributes
@@ -1201,14 +1210,22 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
 
     CHECKFUNCTION(fmiGetVersion);
     CHECKFUNCTION(fmiSetDebugLogging);
-    CHECKFUNCTION(fmiGetReal);
-    CHECKFUNCTION(fmiGetInteger);
-    CHECKFUNCTION(fmiGetBoolean);
-    CHECKFUNCTION(fmiGetString);
-    CHECKFUNCTION(fmiSetReal);
-    CHECKFUNCTION(fmiSetInteger);
-    CHECKFUNCTION(fmiSetBoolean);
-    CHECKFUNCTION(fmiSetString);
+    if(fmu->hasRealVariables) {
+        CHECKFUNCTION(fmiGetReal);
+        CHECKFUNCTION(fmiSetReal);
+    }
+    if(fmu->hasIntegerVariables) {
+        CHECKFUNCTION(fmiGetInteger);
+        CHECKFUNCTION(fmiSetInteger);
+    }
+    if(fmu->hasBooleanVariables) {
+        CHECKFUNCTION(fmiGetBoolean);
+        CHECKFUNCTION(fmiSetBoolean);
+    }
+    if(fmu->hasStringVariables) {
+        CHECKFUNCTION(fmiGetString);
+        CHECKFUNCTION(fmiSetString);
+    }
 
     if(fmu->type == fmi1ModelExchange) {
         CHECKFUNCTION(fmiInstantiateModel);

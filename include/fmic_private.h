@@ -121,6 +121,11 @@ typedef struct {
     bool canSignalEvents;
     bool canBeInstantiatedOnlyOncePerProcess;
     bool canNotUseMemoryManagementFunctions;
+    bool hasRealVariables;
+    bool hasIntegerVariables;
+    bool hasStringVariables;
+    bool hasBooleanVariables;
+
 
     fmi1Type type;
 
