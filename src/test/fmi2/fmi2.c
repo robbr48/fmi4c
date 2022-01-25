@@ -50,7 +50,7 @@ fmi2Component fmi2Instantiate(fmi2String instanceName, fmi2Type fmuType, fmi2Str
     fmu->loggingOn = loggingOn;
 
     if(fmu->loggingOn) {
-        fmu->callbacks->logger(fmu->callbacks->componentEnvironment, fmu->instanceName, fmi2OK, "info", "Successfully instantiated FMU");
+        //fmu->callbacks->logger(fmu->callbacks->componentEnvironment, fmu->instanceName, fmi2OK, "info", "Successfully instantiated FMU");
     }
 
     return fmu;
