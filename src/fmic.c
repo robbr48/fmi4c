@@ -2120,7 +2120,7 @@ const char *fmi3GetVariableName(fmi3VariableHandle *var)
 
 //! @brief Free FMU dll for FMI version 2
 //! @param fmu FMU handle
-void *freeFmu2(fmi2Handle *fmu)
+void freeFmu2(fmi2Handle *fmu)
 {
     TRACEFUNC
 #ifdef _WIN32
@@ -2133,7 +2133,7 @@ void *freeFmu2(fmi2Handle *fmu)
 
 //! @brief Free FMU dll for FMI version 3
 //! @param fmu FMU handle
-void *freeFmu3(fmi3Handle *fmu)
+void freeFmu3(fmi3Handle *fmu)
 {
     TRACEFUNC
 #ifdef _WIN32
@@ -3302,15 +3302,13 @@ fmi1Handle *loadFmu1(fmiHandle *fmu)
         return NULL;
     }
 
-    printf("Returning FMU handle\n");
-
     return fmu1;
 }
 
 
 //! @brief Free FMU dll for FMI version 1
 //! @param fmu FMU handle
-void *freeFmu1(fmi1Handle *fmu)
+void freeFmu1(fmi1Handle *fmu)
 {
     TRACEFUNC
 #ifdef _WIN32

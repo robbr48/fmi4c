@@ -40,9 +40,9 @@ FMIC_DLLEXPORT fmiVersion_t getFmiVersion(fmiHandle *fmu);
 FMIC_DLLEXPORT fmi1Handle* loadFmu1(fmiHandle* fmu);
 FMIC_DLLEXPORT fmi2Handle* loadFmu2(fmiHandle* fmu);
 FMIC_DLLEXPORT fmi3Handle* loadFmu3(fmiHandle* fmu);
-FMIC_DLLEXPORT void *freeFmu1(fmi1Handle* fmu);
-FMIC_DLLEXPORT void *freeFmu2(fmi2Handle* fmu);
-FMIC_DLLEXPORT void *freeFmu3(fmi3Handle* fmu);
+FMIC_DLLEXPORT void freeFmu1(fmi1Handle* fmu);
+FMIC_DLLEXPORT void freeFmu2(fmi2Handle* fmu);
+FMIC_DLLEXPORT void freeFmu3(fmi3Handle* fmu);
 
 // FMI 1 wrapper functions
 FMIC_DLLEXPORT fmi1Type fmi1GetType(fmi1Handle *fmu);
