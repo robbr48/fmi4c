@@ -1,3 +1,5 @@
+#include <stdarg.h>
+
 #include "fmic.h"
 #include "fmic_test.h"
 #include "fmic_test_fmi2.h"
@@ -28,7 +30,9 @@ int testFMI2ME(fmi2Handle *fmu2)
         printf("fmi2Instantiate() failed\n");
         exit(1);
     }
-    printf("FMU successfully instantiated!\n");
+    printf("--- Test simulation ---\n");
+    printf("  FMU successfully instantiated.\n");
+
 
     double startTime = 0;
     double stepSize = 0.001;
@@ -66,7 +70,7 @@ int testFMI2ME(fmi2Handle *fmu2)
         printf("fmi3ExitInitializationMode() failed\n");
         exit(1);
     }
-    printf("FMU successfully initialized!\n");
+    printf("  FMU successfully initialized.\n");
 
     double actualStepSize = stepSize;
     fmi2Boolean terminateSimulation = fmi2False;
@@ -111,6 +115,7 @@ int testFMI2ME(fmi2Handle *fmu2)
     }
     fprintf(outputFile,"\n");
 
+    printf("  Simulating from %f to %f...\n",startTime, stopTime);
     for(double time=startTime; time <= stopTime; time+=actualStepSize) {
         if(eventInfo.terminateSimulation || terminateSimulation) {
             printf("Terminating simulation at time = %d\n", time);
@@ -194,7 +199,11 @@ int testFMI2ME(fmi2Handle *fmu2)
     }
     fclose(outputFile);
 
+    printf("  Simulation finished.\n");
+
     fmi2Terminate(fmu2);
+    printf("  FMU successfully terminated.\n");
+
     fmi2FreeInstance(fmu2);
 }
 
@@ -206,7 +215,8 @@ int testFMI2CS(fmi2Handle *fmu2)
         printf("fmi2Instantiate() failed\n");
         exit(1);
     }
-    printf("FMU successfully instantiated!\n");
+    printf("--- Test simulation ---\n");
+    printf("  FMU successfully instantiated.\n");
 
     double startTime = 0;
     double stepSize = 0.001;
@@ -244,9 +254,9 @@ int testFMI2CS(fmi2Handle *fmu2)
         printf("fmi3ExitInitializationMode() failed\n");
         exit(1);
     }
-    printf("FMU successfully initialized!\n");
+    printf("  FMU successfully initialized.\n");
 
-    printf("Simulating from %f to %f...\n",startTime, stopTime);
+    printf("  Simulating from %f to %f...\n",startTime, stopTime);
     FILE *outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
@@ -286,8 +296,10 @@ int testFMI2CS(fmi2Handle *fmu2)
         fprintf(outputFile,"\n");
     }
     fclose(outputFile);
+    printf("  Simulation finished.\n");
 
     fmi2Terminate(fmu2);
+    printf("  FMU successfully terminated.\n");
     fmi2FreeInstance(fmu2);
 }
 
@@ -312,7 +324,6 @@ int testFMI2(fmiHandle *fmu, bool forceModelExchange)
 
         if(causality == fmi2CausalityOutput)
         {
-            printf("Output varaible: %s\n", name);
             if(numOutputs == VAR_MAX) {
                 printf("Too many output variables, only printing the first %i\n", VAR_MAX);
             }

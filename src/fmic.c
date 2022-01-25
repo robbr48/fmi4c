@@ -111,10 +111,7 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
     }
 
     rootElement = xmlDocGetRootElement(doc);
-    if(!strcmp(rootElement->name, "fmiModelDescription")) {
-        printf("Correct root element: %s\n", rootElement->name);
-    }
-    else {
+    if(strcmp(rootElement->name, "fmiModelDescription")) {
         printf("Wrong root element: %s\n", rootElement->name);
     }
 
@@ -225,7 +222,6 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
         if(!strcmp(node->name, "ModelVariables")) {
             xmlNode *varNode = node->children;
             for(; varNode != NULL; varNode = varNode->next) {
-                printf("Variable Element: %s\n",varNode->name);
                 fmi1VariableHandle var;
 
                 //Parse variable attributes
@@ -416,10 +412,7 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
     }
 
     rootElement = xmlDocGetRootElement(doc);
-    if(!strcmp(rootElement->name, "fmiModelDescription")) {
-        printf("Correct root element: %s\n", rootElement->name);
-    }
-    else {
+    if(strcmp(rootElement->name, "fmiModelDescription")) {
         printf("Wrong root element: %s\n", rootElement->name);
     }
 
@@ -462,7 +455,6 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
 
     xmlNode *node = rootElement->children;
     for(; node != NULL; node = node->next) {
-        printf("Element: %s\n",node->name);
         //Parse arguments in <DefaultExperiment>
          if(!strcmp(node->name, "CoSimulation")) {
              fmu->supportsCoSimulation = true;
@@ -536,7 +528,6 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
         if(!strcmp(node->name, "ModelVariables")) {
             xmlNode *varNode = node->children;
             for(; varNode != NULL; varNode = varNode->next) {
-                printf("Variable Element: %s\n",varNode->name);
                 fmi2VariableHandle var;
                 var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
 
@@ -748,10 +739,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     }
 
     rootElement = xmlDocGetRootElement(doc);
-    if(!strcmp(rootElement->name, "fmiModelDescription")) {
-        printf("Correct root element: %s\n", rootElement->name);
-    }
-    else {
+    if(strcmp(rootElement->name, "fmiModelDescription")) {
         printf("Wrong root element: %s\n", rootElement->name);
     }
 
@@ -794,7 +782,6 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
 
     xmlNode *node = rootElement->children;
     for(; node != NULL; node = node->next) {
-        printf("Element: %s\n",node->name);
 
         //Parse arguments in <CoSimulation>
         if(!strcmp(node->name, "CoSimulation")) {
@@ -973,7 +960,6 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
         if(!strcmp(node->name, "ModelVariables")) {
             xmlNode *varNode = node->children;
             for(; varNode != NULL; varNode = varNode->next) {
-                printf("Variable Element: %s\n",varNode->name);
                 fmi3VariableHandle var;
                 var.intermediateUpdate = false; //Default value if attribute not defined
                 if(!strcmp(varNode->name,"Float64")) {
@@ -1167,9 +1153,9 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
 #endif
     if(NULL == dll) {
         printf("Loading DLL failed: %s\n",dllPath);
+        printf("Error: %s\n", dlerror());
         return false;
     }
-    printf("Load successful!\n",dllPath);
 
     fmu->dll = dll;
 
@@ -1305,10 +1291,9 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
     void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
 #endif
     if(NULL == dll) {
-        printf("Loading DLL failed: %s\n",dllPath);
+        printf("Loading DLL failed: %s (%s)\n", dllPath, dlerror());
         return false;
     }
-    printf("Load successful!\n",dllPath);
 
     fmu->dll = dll;
 
@@ -1471,10 +1456,9 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
     void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
 #endif
     if(NULL == dll) {
-        printf("Loading DLL failed: %s\n",dllPath);
+        printf("Loading DLL failed: %s (%s)\n", dllPath, dlerror());
         return false;
     }
-    printf("Load successful!\n",dllPath);
 
     fmu->dll = dll;
 
@@ -1728,13 +1712,9 @@ fmiVersion_t getFmiVersion(fmiHandle *fmu)
     }
 
     rootElement = xmlDocGetRootElement(doc);
-    if(!strcmp(rootElement->name, "fmiModelDescription")) {
-        printf("Correct root element: %s\n", rootElement->name);
-    }
-    else {
+    if(strcmp(rootElement->name, "fmiModelDescription")) {
         printf("Wrong root element: %s\n", rootElement->name);
     }
-    printf("Debug 1\n");
 
     //Figure out FMI version
     xmlAttr *attr = rootElement->properties;
@@ -1779,8 +1759,6 @@ fmi2Handle *loadFmu2(fmiHandle *fmu)
         return NULL;
     }
 
-    printf("Returning FMU handle\n");
-
     return fmu2;
 }
 
@@ -1806,8 +1784,6 @@ fmi3Handle *loadFmu3(fmiHandle *fmu)
     if(!loadFunctionsFmi3(fmu3)) {
         return NULL;
     }
-
-    printf("Returning FMU handle\n");
 
     return fmu3;
 }
@@ -2062,8 +2038,6 @@ fmi2Status fmi2SetDebugLogging(fmi2Handle *fmu, fmi2Boolean loggingOn, size_t nC
 bool fmi2Instantiate(fmi2Handle *fmu, fmi2Type type, fmi2CallbackLogger logger, fmi2CallbackAllocateMemory allocateMemory, fmi2CallbackFreeMemory freeMemory, fmi2StepFinished stepFinished, fmi2ComponentEnvironment componentEnvironment, fmi2Boolean visible, fmi2Boolean loggingOn)
 {
     TRACEFUNC
-    printf("Entering fmi2Instantiate()\n");
-    fmi2Type fmuType;
     if(type == fmi2CoSimulation && !fmu->supportsCoSimulation) {
         printf("FMI for co-simulation is not supported by this FMU.");
         return false;
@@ -2079,14 +2053,12 @@ bool fmi2Instantiate(fmi2Handle *fmu, fmi2Type type, fmi2CallbackLogger logger, 
     fmu->callbacks.stepFinished = stepFinished;
     fmu->callbacks.componentEnvironment = componentEnvironment;
 
-    printf("Calling API function fmi2Instantiate():\n");
-    printf("unzippedLocation = %s\n", fmu->unzippedLocation);
-    printf("resourcesLocation = %s\n", fmu->resourcesLocation);
-    printf("instanceName = %s\n", fmu->instanceName);
-    printf("GUID = %s\n", fmu->guid);
-    printf("FMU type = %i\n", fmuType);
+    printf("  instanceName:       %s\n", fmu->instanceName);
+    printf("  GUID:               %s\n", fmu->guid);
+    printf("  unzipped location:  %s\n", fmu->unzippedLocation);
+    printf("  resources location: %s\n", fmu->resourcesLocation);
+
     fmu->_fmi2Component = fmu->fmi2Instantiate(fmu->instanceName, type, fmu->guid, fmu->resourcesLocation, &fmu->callbacks, visible, loggingOn);
-    printf("Exiting fmi2Instantiate()\n");
     return (fmu->_fmi2Component != NULL);
 }
 
@@ -2101,7 +2073,6 @@ fmi2Status fmi2SetupExperiment(fmi2Handle *fmu, fmi2Boolean toleranceDefined, fm
 {
     TRACEFUNC
 
-    printf("fmi2SetupExperiment()");
     return fmu->fmi2SetupExperiment(fmu->_fmi2Component, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime);
 }
 
@@ -2109,7 +2080,6 @@ fmi2Status fmi2EnterInitializationMode(fmi2Handle *fmu)
 {
     TRACEFUNC
 
-    printf("fmi2EnterInitializationMode()");
     return fmu->fmi2EnterInitializationMode(fmu->_fmi2Component);
 }
 
@@ -2117,7 +2087,6 @@ fmi2Status fmi2ExitInitializationMode(fmi2Handle *fmu)
 {
     TRACEFUNC
 
-    printf("fmi2ExitInitializationMode()");
     return fmu->fmi2ExitInitializationMode(fmu->_fmi2Component);
 }
 

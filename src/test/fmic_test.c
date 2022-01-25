@@ -91,11 +91,21 @@ int main(int argc, char *argv[])
         }
     }
 
-    printf("FMU path: %s\n", fmuPath);
-    if(inputCsvPath != "\0") {
-        printf("Input CSV path: %s\n", inputCsvPath);
+    printf("--- Arguments ---\n");
+    printf("  FMU path:        %s\n", fmuPath);
+    if(testTLM) {
+        printf("  FMU path (2): %s\n", fmuPath2);
     }
-    printf("Output CSV path: %s\n", outputCsvPath);
+    if(inputCsvPath != "\0") {
+        printf("  Input CSV path:  %s\n", inputCsvPath);
+    }
+    printf("  Output CSV path: %s\n", outputCsvPath);
+    if(testTLM) {
+        printf("  Running a TLM test.\n");
+    }
+    if(forceModelExchange) {
+        printf("  Forcing model exchange mode.\n");
+    }
 
     fmiHandle *fmu = unzipFmu(fmuPath, "testfmu");
 
@@ -103,20 +113,21 @@ int main(int argc, char *argv[])
         printf("Failed to load FMU\n");
         exit(1);
     }
-    printf("Successfully loaded FMU\n");
 
     fmiVersion_t version = getFmiVersion(fmu);
+    printf("--- FMU data ---\n  FMI Version:        ");
     if(version == fmiVersion1) {
-        printf("FMI is of version 1\n");
+        printf("1\n");
     }
     else if(version == fmiVersion2) {
-        printf("FMI is of version 2\n");
+        printf("2\n");
     }
     else if(version == fmiVersion3) {
-        printf("FMI is of version 3\n");
+        printf("3\n");
     }
     else {
-        printf("Unknown FMI version.\n");
+        printf("Unknown\n");
+        printf("Aborting due to unknown FMI verison.\n");
         exit(1);
     }
 
@@ -134,7 +145,7 @@ int main(int argc, char *argv[])
         lineStr[strcspn(lineStr, "\r\n")] = 0;
         char* word = strtok(lineStr, ",");
         int i=0;
-        while (word != NULL && word != "") {
+        while(word != NULL && strcmp(word, "")) {
             if(lineNumber == 0) {
                 namedData data;
                 data.name = strdup(word);
@@ -166,7 +177,6 @@ int main(int argc, char *argv[])
             printf("Failed to load second FMU\n");
             exit(1);
         }
-        printf("Successfully loaded second FMU\n");
 
         fmiVersion_t version2 = getFmiVersion(fmu2);
         if(version2 != fmiVersion3) {

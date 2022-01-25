@@ -1,3 +1,5 @@
+#include <stdarg.h>
+
 #include "fmic.h"
 #include "fmic_test.h"
 #include "fmic_test_fmi1.h"
@@ -257,7 +259,6 @@ int testFMI1(fmiHandle *fmu)
 
         if(causality == fmi1CausalityOutput)
         {
-            printf("Output varaible: %s\n", name);
             if(numOutputs == VAR_MAX) {
                 printf("Too many output variables, only printing the first %i\n", VAR_MAX);
             }

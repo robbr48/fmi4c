@@ -386,7 +386,6 @@ int testFMI3(fmiHandle *fmu, bool forceModelExchange)
 
         if(causality == fmi3CausalityOutput)
         {
-            printf("Output varaible: %s\n", name);
             if(numOutputs == VAR_MAX) {
                 printf("Too many output variables, only printing the first %i\n", VAR_MAX);
             }
