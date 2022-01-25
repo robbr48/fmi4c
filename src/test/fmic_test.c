@@ -138,31 +138,33 @@ int main(int argc, char *argv[])
     getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #endif
 
-    FILE *inputFile = fopen(inputCsvPath, "r");
-    char lineStr[1024];
-    size_t lineNumber = 0;
-    while(fgets(lineStr , sizeof(lineStr) , inputFile) != NULL) {
-        lineStr[strcspn(lineStr, "\r\n")] = 0;
-        char* word = strtok(lineStr, ",");
-        int i=0;
-        while(word != NULL && strcmp(word, "")) {
-            if(lineNumber == 0) {
-                namedData data;
-                data.name = strdup(word);
-                interpolationData[nInterpolators] = data;
-                ++nInterpolators;
-            }
-            else {
-                interpolationData[i].data[lineNumber-1] = atof(word);
-            }
-            word = strtok(NULL, ",");
+    if(strcmp(inputCsvPath, "\0")) {
+        FILE *inputFile = fopen(inputCsvPath, "r");
+        char lineStr[1024];
+        size_t lineNumber = 0;
+        while(fgets(lineStr , sizeof(lineStr) , inputFile) != NULL) {
+            lineStr[strcspn(lineStr, "\r\n")] = 0;
+            char* word = strtok(lineStr, ",");
+            int i=0;
+            while(word != NULL && strcmp(word, "")) {
+                if(lineNumber == 0) {
+                    namedData data;
+                    data.name = strdup(word);
+                    interpolationData[nInterpolators] = data;
+                    ++nInterpolators;
+                }
+                else {
+                    interpolationData[i].data[lineNumber-1] = atof(word);
+                }
+                word = strtok(NULL, ",");
 
-            ++i;
+                ++i;
+            }
+            lineNumber++;
         }
-        lineNumber++;
+        fclose(inputFile);
+        dataSize = lineNumber-1;
     }
-    fclose(inputFile);
-    dataSize = lineNumber-1;
 
     if(testTLM) {
         if(version != fmiVersion3) {

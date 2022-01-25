@@ -1,7 +1,7 @@
 #include "fmic_private.h"
-#include "3rdparty/libxml2/include/libxml/tree.h"
-#include "3rdparty/libxml2/include/libxml/parser.h"
 #include "3rdparty/minizip/miniunz.h"
+
+#include "3rdparty/ezxml/ezxml.h"
 
 #include <sys/stat.h>
 #include <stdlib.h>
@@ -104,260 +104,150 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
 #endif
     chdir(fmu->unzippedLocation);
 
-    xmlKeepBlanksDefault(0);
-
-    xmlDoc *doc = NULL;
-    xmlNode *rootElement = NULL;
-
-    doc = xmlReadFile("modelDescription.xml", NULL, 0);
-    if(NULL == doc){
-       printf("Failed to read modelDescription.xml\n");
-       return false;
-    }
-
-    rootElement = xmlDocGetRootElement(doc);
+    ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
     if(strcmp(rootElement->name, "fmiModelDescription")) {
-        printf("Wrong root element: %s\n", rootElement->name);
+        printf("Wrong root tag name: %s\n", rootElement->name);
+        return false;
     }
 
     //Parse attributes in <fmiModelDescription>
-    for(xmlAttr *attr = rootElement->properties; attr != NULL; attr = attr->next) {
-        if(!strcmp(attr->name, "modelName")) {
-            fmu->modelName = parseStringAttribute(attr);
+    parseStringAttributeEzXml(rootElement, "modelName",                 &fmu->modelName);
+    parseStringAttributeEzXml(rootElement, "modelIdentifier",           &fmu->modelIdentifier);
+    parseStringAttributeEzXml(rootElement, "guid",                      &fmu->guid);
+    parseStringAttributeEzXml(rootElement, "description",               &fmu->description);
+    parseStringAttributeEzXml(rootElement, "author",                    &fmu->author);
+    parseStringAttributeEzXml(rootElement, "version",                   &fmu->version);
+    parseStringAttributeEzXml(rootElement, "generationtool",            &fmu->generationTool);
+    parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->generationDateAndTime);
+    parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->variableNamingConvention);
+    parseInt32AttributeEzXml(rootElement, "numberOfContinuousStates", &fmu->numberOfContinuousStates);
+    parseInt32AttributeEzXml(rootElement, "numberOfEventIndicators",  &fmu->numberOfEventIndicators);
+
+    ezxml_t implementationElement = ezxml_child(rootElement, "Implementation");
+    if(implementationElement) {
+        ezxml_t capabilitiesElement = NULL;
+        ezxml_t cosimToolElement = ezxml_child(implementationElement, "CoSimulation_Tool");
+        if(cosimToolElement) {
+            fmu->type = fmi1CoSimulationTool;
+            capabilitiesElement = ezxml_child(cosimToolElement, "Capabilities");
         }
-        if(!strcmp(attr->name, "modelIdentifier")) {
-            fmu->modelIdentifier = parseStringAttribute(attr);
+        ezxml_t cosimStandAloneElement = ezxml_child(implementationElement, "CoSimulation_StandAlone");
+        if(cosimStandAloneElement) {
+            fmu->type = fmi1CoSimulationStandAlone;
+            capabilitiesElement = ezxml_child(cosimStandAloneElement, "Capabilities");
         }
-        if(!strcmp(attr->name, "guid")) {
-            fmu->guid = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "description")) {
-            fmu->description = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "author")) {
-            fmu->author = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "version")) {
-            fmu->version = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "generationtool")) {
-            fmu->generationTool = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "generationDateAndTime")) {
-            fmu->generationDateAndTime = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "variableNamingConvention")) {
-            fmu->variableNamingConvention = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "numberOfContinuousStates")) {
-            fmu->numberOfContinuousStates = parseIntegerAttribute(attr);
-        }
-        if(!strcmp(attr->name, "numberOfEventIndicators")) {
-            fmu->numberOfEventIndicators = parseIntegerAttribute(attr);
+        if(capabilitiesElement) {
+            parseBooleanAttributeEzXml(capabilitiesElement, "canHandleVariableCommunicationStepSize",   &fmu->canHandleVariableCommunicationStepSize);
+            parseBooleanAttributeEzXml(capabilitiesElement, "canHandleEvents",                          &fmu->canHandleEvents);
+            parseBooleanAttributeEzXml(capabilitiesElement, "canRejectSteps",                           &fmu->canRejectSteps);
+            parseBooleanAttributeEzXml(capabilitiesElement, "canInterpolateInputs",                     &fmu->canInterpolateInputs);
+            parseInt32AttributeEzXml(capabilitiesElement, "maxOutputDerivativeOrder",                 &fmu->maxOutputDerivativeOrder);
+            parseBooleanAttributeEzXml(capabilitiesElement, "canRunAsynchronuously",                    &fmu->canRunAsynchronuously);
+            parseBooleanAttributeEzXml(capabilitiesElement, "canSignalEvents",                          &fmu->canSignalEvents);
+            parseBooleanAttributeEzXml(capabilitiesElement, "canBeInstantiatedOnlyOncePerProcess",      &fmu->canBeInstantiatedOnlyOncePerProcess);
+            parseBooleanAttributeEzXml(capabilitiesElement, "canNotUseMemoryManagementFunctions",       &fmu->canNotUseMemoryManagementFunctions);
         }
     }
 
-    xmlNode *node = rootElement->children;
-    for(; node != NULL; node = node->next) {
+    ezxml_t defaultExperimentElement = ezxml_child(rootElement, "DefaultExperiment");
+    if(defaultExperimentElement) {
+        fmu->defaultStartTimeDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "startTime", &fmu->defaultStartTime);
+        fmu->defaultStopTimeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stopTime",  &fmu->defaultStopTime);
+        fmu->defaultToleranceDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "tolerance", &fmu->defaultTolerance);
+    }
 
-        if(!strcmp(node->name, "Implementation")) {
-            xmlNode *cosimNode = node->children;
-            if(!strcmp(cosimNode->name, "CoSimulation_Tool")) {
-                fmu->type = fmi1CoSimulationTool;
+    ezxml_t modelVariablesElement = ezxml_child(rootElement, "ModelVariables");
+    if(modelVariablesElement) {
+        for(ezxml_t varElement = ezxml_child(modelVariablesElement, "ScalarVariable"); varElement; varElement = varElement->next) {
+
+            fmi1VariableHandle var;
+            parseStringAttributeEzXml(varElement, "name", &var.name);
+            parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
+            parseStringAttributeEzXml(varElement, "description", &var.description);
+
+            const char* causality;
+            parseStringAttributeEzXml(varElement, "causality", &causality);
+            if(!strcmp(causality, "input")) {
+                var.causality = fmi1CausalityInput;
             }
-            else if(!strcmp(cosimNode->name, "CoSimulation_StandAlone")) {
-                fmu->type = fmi1CoSimulationStandAlone;
+            else if(!strcmp(causality, "output")) {
+                var.causality = fmi1CausalityOutput;
             }
-            if(!strcmp(node->name, "CoSimulation_StandAlone") || !strcmp(node->name, "CoSimulation_Tool")) {
-                for(; cosimNode!= NULL; cosimNode = cosimNode->next) {
-                    if(!strcmp(node->name, "Capabilities")) {
-                        for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
-                            if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
-                                fmu->canHandleVariableCommunicationStepSize = parseBooleanAttribute(attr);
-                            }
-                            else if(!strcmp(attr->name, "canHandleEvents")) {
-                                fmu->canHandleEvents = parseBooleanAttribute(attr);
-                            }
-                            else if(!strcmp(attr->name, "canRejectSteps")) {
-                                fmu->canRejectSteps = parseBooleanAttribute(attr);
-                            }
-                            else if(!strcmp(attr->name, "canInterpolateInputs")) {
-                                fmu->canInterpolateInputs = parseBooleanAttribute(attr);
-                            }
-                            else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                                fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
-                            }
-                            else if(!strcmp(attr->name, "canRunAsynchronuously")) {
-                                fmu->canRunAsynchronuously = parseBooleanAttribute(attr);
-                            }
-                            else if(!strcmp(attr->name, "canSignalEvents")) {
-                                fmu->canSignalEvents = parseBooleanAttribute(attr);
-                            }
-                            else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                                fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
-                            }
-                            else if(!strcmp(attr->name, "canNotUseMemoryManagementFunctions")) {
-                                fmu->canNotUseMemoryManagementFunctions = parseBooleanAttribute(attr);
-                            }
-                        }
-                    }
-                }
+            else if(!strcmp(causality, "internal")) {
+                var.causality = fmi1CausalityInternal;
             }
-        }
-
-        //Parse attributes in <DefaultExperiment>
-        if(!strcmp(node->name, "DefaultExperiment")) {
-            for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
-                if(!strcmp(attr->name, "startTime")) {
-                    fmu->defaultStartTime = parseDoubleAttribute(attr);
-                    fmu->defaultStartTimeDefined = true;
-                }
-                if(!strcmp(attr->name, "stopTime")) {
-                    fmu->defaultStopTime = parseDoubleAttribute(attr);
-                    fmu->defaultStopTimeDefined = true;
-                }
-                if(!strcmp(attr->name, "tolerance")) {
-                    fmu->defaultTolerance = parseDoubleAttribute(attr);
-                    fmu->defaultToleranceDefined = true;
-                }
+            else if(!strcmp(causality, "none")) {
+                var.causality = fmi1CausalityNone;
             }
-        }
-
-        //Parse model variables
-        if(!strcmp(node->name, "ModelVariables")) {
-            xmlNode *varNode = node->children;
-            for(; varNode != NULL; varNode = varNode->next) {
-                fmi1VariableHandle var;
-
-                //Parse variable attributes
-                for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
-                    if(!strcmp(attr->name, "name")) {
-                        var.name = parseStringAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "valueReference")) {
-                        var.valueReference = parseLongAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "description")) {
-                        var.description = parseStringAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "causality")) {
-                        xmlChar *value = parseStringAttribute(attr);
-                        if(!strcmp(value, "input")) {
-                            var.causality = fmi1CausalityInput;
-                            printf("Input!\n");
-                        }
-                        else if(!strcmp(value, "output")) {
-                            var.causality = fmi1CausalityOutput;
-                            printf("Output!\n");
-                        }
-                        else if(!strcmp(value, "internal")) {
-                            var.causality = fmi1CausalityInternal;
-                            printf("Internal!\n");
-                        }
-                        else if(!strcmp(value, "none")) {
-                            var.causality = fmi1CausalityNone;
-                            printf("None!\n");
-                        }
-                        else {
-                            printf("Unknown causality: %s\n",value);
-                            return false;
-                        }
-                    }
-                    if(!strcmp(attr->name, "variability")) {
-                        xmlChar *value = parseStringAttribute(attr);
-                        if(!strcmp(value, "parameter")) {
-                            var.variability = fmi1VariabilityParameter;
-                        }
-                        else if(!strcmp(value, "constant")) {
-                            var.variability = fmi1VariabilityConstant;
-                        }
-                        else if(!strcmp(value, "discrete")) {
-                            var.variability = fmi1VariabilityDiscrete;
-                        }
-                        else if(!strcmp(value, "continuous")) {
-                            var.variability = fmi1VariabilityContinuous;
-                        }
-                         else {
-                          printf("Unknown variability: %s\n", value);
-                            return false;
-                        }
-                    }
-                    xmlNode *dataNode = varNode->children;
-                    if(dataNode && !strcmp(dataNode->name, "Real")) {
-                        printf("Found a real variable!\n");  //!< @todo Remove debug output
-                        fmu->hasRealVariables = true;
-                        var.datatype = fmi1DataTypeReal;
-
-                        //Parse variable attributes
-                        for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
-                            if(!strcmp(attr->name, "start")) {
-                                var.startReal = parseDoubleAttribute(attr);
-                            }
-                            if(!strcmp(attr->name, "start")) {
-                                var.fixed = parseBooleanAttribute(attr);
-                            }
-                        }
-                    }
-                    else if(dataNode && !strcmp(dataNode->name, "Integer")) {
-                        printf("Found an integer variable!\n");  //!< @todo Remove debug output
-                        fmu->hasIntegerVariables = true;
-                        var.datatype = fmi1DataTypeInteger;
-
-                        //Parse variable attributes
-                        for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
-                            if(!strcmp(attr->name, "start")) {
-                                var.startInteger = parseIntegerAttribute(attr);
-                            }
-                            if(!strcmp(attr->name, "start")) {
-                                var.fixed = parseBooleanAttribute(attr);
-                            }
-                        }
-                    }
-                    else if(dataNode && !strcmp(dataNode->name, "Boolean")) {
-                        printf("Found a boolean variable!\n");  //!< @todo Remove debug output
-                        fmu->hasBooleanVariables = true;
-                        var.datatype = fmi1DataTypeBoolean;
-
-                        //Parse variable attributes
-                        for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
-                            if(!strcmp(attr->name, "start")) {
-                                var.startBoolean = parseBooleanAttribute(attr);
-                            }
-                            if(!strcmp(attr->name, "start")) {
-                                var.fixed = parseBooleanAttribute(attr);
-                            }
-                        }
-                    }
-                    else if(dataNode && !strcmp(dataNode->name, "String")) {
-                        printf("Found a string variable!\n");  //!< @todo Remove debug output
-                        fmu->hasStringVariables = true;
-                        var.datatype = fmi1DataTypeString;
-
-                        //Parse variable attributes
-                        for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
-                            if(!strcmp(attr->name, "start")) {
-                                var.startString = parseStringAttribute(attr);
-                            }
-                            if(!strcmp(attr->name, "start")) {
-                                var.fixed = parseBooleanAttribute(attr);
-                            }
-                        }
-                    }
-                }
-
-                if(fmu->numberOfVariables >= fmu->variablesSize) {
-                    fmu->variablesSize *= 2;
-                    fmu->variables = realloc(fmu->variables, fmu->variablesSize*sizeof(fmi1VariableHandle));
-                }
-
-                fmu->variables[fmu->numberOfVariables] = var;
-                fmu->numberOfVariables++;
+            else {
+                printf("Unknown causality: %s\n", causality);
+                return false;
             }
+
+            const char* variability;
+            parseStringAttributeEzXml(varElement, "variability", &variability);
+            if(!strcmp(variability, "parameter")) {
+                var.variability = fmi1VariabilityParameter;
+            }
+            else if(!strcmp(variability, "constant")) {
+                var.variability = fmi1VariabilityConstant;
+            }
+            else if(!strcmp(variability, "discrete")) {
+                var.variability = fmi1VariabilityDiscrete;
+            }
+            else if(!strcmp(variability, "continuous")) {
+                var.variability = fmi1VariabilityContinuous;
+            }
+            else {
+                printf("Unknown variability: %s\n", causality);
+                return false;
+            }
+
+            ezxml_t realElement = ezxml_child(varElement, "Real");
+            if(realElement) {
+                fmu->hasRealVariables = true;
+                var.datatype = fmi1DataTypeReal;
+                parseFloat64AttributeEzXml(realElement, "start", &var.startReal);
+                parseBooleanAttributeEzXml(realElement, "fixed", &var.fixed);
+            }
+
+            ezxml_t integerElement = ezxml_child(varElement, "Integer");
+            if(integerElement) {
+                fmu->hasIntegerVariables = true;
+                var.datatype = fmi1DataTypeInteger;
+                parseInt32AttributeEzXml(integerElement, "start", &var.startInteger);
+                parseBooleanAttributeEzXml(integerElement, "fixed", &var.fixed);
+            }
+
+            ezxml_t booleanElement = ezxml_child(varElement, "Boolean");
+            if(booleanElement) {
+                fmu->hasBooleanVariables = true;
+                var.datatype = fmi1DataTypeBoolean;
+                bool startBoolean;
+                parseBooleanAttributeEzXml(booleanElement, "start", &startBoolean);
+                var.startBoolean = startBoolean;
+                parseBooleanAttributeEzXml(booleanElement, "fixed", &var.fixed);
+            }
+
+            ezxml_t stringElement = ezxml_child(varElement, "String");
+            if(stringElement) {
+                fmu->hasStringVariables = true;
+                var.datatype = fmi1DataTypeString;
+                parseStringAttributeEzXml(stringElement, "start", &var.startString);
+                parseBooleanAttributeEzXml(stringElement, "fixed", &var.fixed);
+            }
+
+            if(fmu->numberOfVariables >= fmu->variablesSize) {
+                fmu->variablesSize *= 2;
+                fmu->variables = realloc(fmu->variables, fmu->variablesSize*sizeof(fmi1VariableHandle));
+            }
+
+            fmu->variables[fmu->numberOfVariables] = var;
+            fmu->numberOfVariables++;
         }
     }
 
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
+    ezxml_free(rootElement);
 
     chdir(cwd);
 
@@ -409,257 +299,171 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
     chdir(fmu->unzippedLocation);
     chdir(fmu->instanceName);
 
-    xmlKeepBlanksDefault(0);
-
-    xmlDoc *doc = NULL;
-    xmlNode *rootElement = NULL;
-
-    doc = xmlReadFile("modelDescription.xml", NULL, 0);
-    if(NULL == doc){
-       printf("Failed to read modelDescription.xml\n");
-       return false;
-    }
-
-    rootElement = xmlDocGetRootElement(doc);
+    ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
     if(strcmp(rootElement->name, "fmiModelDescription")) {
-        printf("Wrong root element: %s\n", rootElement->name);
+        printf("Wrong root tag name: %s\n", rootElement->name);
+        return false;
     }
 
     //Parse attributes in <fmiModelDescription>
-    for(xmlAttr *attr = rootElement->properties; attr != NULL; attr = attr->next) {
-        if(!strcmp(attr->name, "modelName")) {
-            fmu->modelName = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "guid")) {
-            fmu->guid = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "description")) {
-            fmu->description = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "author")) {
-            fmu->author = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "version")) {
-            fmu->version = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "copyright")) {
-            fmu->copyright = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "license")) {
-            fmu->license = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "generationtool")) {
-            fmu->generationTool = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "generationDateAndTime")) {
-            fmu->generationDateAndTime = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "variableNamingConvention")) {
-            fmu->variableNamingConvention = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "numberOfEventIndicators")) {
-            fmu->numberOfEventIndicators = parseIntegerAttribute(attr);
+    parseStringAttributeEzXml(rootElement, "modelName",                 &fmu->modelName);
+    parseStringAttributeEzXml(rootElement, "guid",                      &fmu->guid);
+    parseStringAttributeEzXml(rootElement, "description",               &fmu->description);
+    parseStringAttributeEzXml(rootElement, "author",                    &fmu->author);
+    parseStringAttributeEzXml(rootElement, "version",                   &fmu->version);
+    parseStringAttributeEzXml(rootElement, "copyright",                 &fmu->copyright);
+    parseStringAttributeEzXml(rootElement, "license",                   &fmu->license);
+    parseStringAttributeEzXml(rootElement, "generationtool",            &fmu->generationTool);
+    parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->generationDateAndTime);
+    parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->variableNamingConvention);
+    parseInt32AttributeEzXml(rootElement, "numberOfEventIndicators",  &fmu->numberOfEventIndicators);
+
+    ezxml_t cosimElement = ezxml_child(rootElement, "CoSimulation");
+    if(cosimElement) {
+        fmu->supportsCoSimulation = true;
+        parseStringAttributeEzXml(cosimElement, "modelIdentifier",     &fmu->modelIdentifier);
+        parseBooleanAttributeEzXml(cosimElement, "needsExecutionTool", &fmu->needsExecutionTool);
+        parseBooleanAttributeEzXml(cosimElement, "canHandleVariableCommunicationStepSize", &fmu->canHandleVariableCommunicationStepSize);
+        parseBooleanAttributeEzXml(cosimElement, "canInterpolateInputs", &fmu->canInterpolateInputs);
+        parseInt32AttributeEzXml(cosimElement, "maxOutputDerivativeOrder", &fmu->maxOutputDerivativeOrder);
+        parseBooleanAttributeEzXml(cosimElement, "canRunAsynchronuously", &fmu->canRunAsynchronuously);
+        parseBooleanAttributeEzXml(cosimElement, "canBeInstantiatedOnlyOncePerProcess", &fmu->canBeInstantiatedOnlyOncePerProcess);
+        parseBooleanAttributeEzXml(cosimElement, "canNotUseMemoryManagementFunctions", &fmu->canNotUseMemoryManagementFunctions);
+        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUState", &fmu->canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUState", &fmu->canSerializeFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "providesDirectionalDerivative", &fmu->providesDirectionalDerivative);
+    }
+
+    ezxml_t modelExchangeElement = ezxml_child(rootElement, "ModelExchange");
+    if(modelExchangeElement) {
+        fmu->supportsModelExchange = true;
+        //! @todo Read model exchange data
+    }
+
+    ezxml_t defaultExperimentElement = ezxml_child(rootElement, "DefaultExperiment");
+    if(defaultExperimentElement) {
+        fmu->defaultStartTimeDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "startTime", &fmu->defaultStartTime);
+        fmu->defaultStopTimeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stopTime",  &fmu->defaultStopTime);
+        fmu->defaultToleranceDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "tolerance", &fmu->defaultTolerance);
+        fmu->defaultStepSizeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stopTime",  &fmu->defaultStepSize);
+    }
+
+    ezxml_t modelVariablesElement = ezxml_child(rootElement, "ModelVariables");
+    if(modelVariablesElement) {
+        for(ezxml_t varElement = ezxml_child(modelVariablesElement, "ScalarVariable"); varElement; varElement = varElement->next) {
+            fmi2VariableHandle var;
+            var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
+
+            parseStringAttributeEzXml(varElement, "name", &var.name);
+            parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
+            parseStringAttributeEzXml(varElement, "description", &var.description);
+            parseBooleanAttributeEzXml(varElement, "canHandleMultipleSetPerTimeInstant", &var.canHandleMultipleSetPerTimeInstant);
+
+            const char* causality;
+            parseStringAttributeEzXml(varElement, "causality", &causality);
+            if(!strcmp(causality, "input")) {
+                var.causality = fmi2CausalityInput;
+            }
+            else if(!strcmp(causality, "output")) {
+                var.causality = fmi2CausalityOutput;
+            }
+            else if(!strcmp(causality, "parameter")) {
+                var.causality = fmi2CausalityParameter;
+            }
+            else if(!strcmp(causality, "calculatedparameter")) {
+                var.causality = fmi2CausalityCalculatedParameter;
+            }
+            else if(!strcmp(causality, "local")) {
+                var.causality = fmi2CausalityLocal;
+            }
+            else if(!strcmp(causality, "independent")) {
+                var.causality = fmi2CausalityIndependent;
+            }
+            else {
+                printf("Unknown causality: %s\n", causality);
+                return false;
+            }
+
+            const char* variability;
+            parseStringAttributeEzXml(varElement, "variability", &variability);
+            if(variability && !strcmp(variability, "fixed")) {
+                var.variability = fmi2VariabilityFixed;
+            }
+            else if(variability && !strcmp(variability, "tunable")) {
+                var.variability = fmi2VariabilityTunable;
+            }
+            else if(variability && !strcmp(variability, "constant")) {
+                var.variability = fmi2VariabilityConstant;
+            }
+            else if(variability && !strcmp(variability, "discrete")) {
+                var.variability = fmi2VariabilityDiscrete;
+            }
+            else if(variability && !strcmp(variability, "continuous")) {
+                var.variability = fmi2VariabilityContinuous;
+            }
+            else if(variability) {
+                printf("Unknown variability: %s\n", variability);
+                return false;
+            }
+
+            const char* initial = NULL;
+            parseStringAttributeEzXml(varElement, "initial", &initial);
+            if(initial && !strcmp(initial, "approx")) {
+                var.initial = fmi2InitialApprox;
+            }
+            else if(initial && !strcmp(initial, "calculated")) {
+                var.initial = fmi2InitialCalculated;
+            }
+            else if(initial && !strcmp(initial, "exact")) {
+                var.initial = fmi2InitialExact;
+            }
+            else if(initial) {
+                printf("Unknown initial: %s\n", initial);
+                return false;
+            }
+
+            ezxml_t realElement = ezxml_child(varElement, "Real");
+            if(realElement) {
+                fmu->hasRealVariables = true;
+                var.datatype = fmi2DataTypeReal;
+                parseFloat64AttributeEzXml(realElement, "start", &var.startReal);
+                parseInt32AttributeEzXml(realElement, "derivative", &var.derivative);
+            }
+
+            ezxml_t integerElement = ezxml_child(varElement, "Integer");
+            if(integerElement) {
+                fmu->hasIntegerVariables = true;
+                var.datatype = fmi2DataTypeInteger;
+                parseInt32AttributeEzXml(integerElement, "start", &var.startInteger);
+            }
+
+            ezxml_t booleanElement = ezxml_child(varElement, "Boolean");
+            if(booleanElement) {
+                fmu->hasBooleanVariables = true;
+                var.datatype = fmi2DataTypeBoolean;
+                bool startBoolean;
+                parseBooleanAttributeEzXml(booleanElement, "start", &startBoolean);
+                var.startBoolean = startBoolean;
+            }
+
+            ezxml_t stringElement = ezxml_child(varElement, "String");
+            if(stringElement) {
+                fmu->hasStringVariables = true;
+                var.datatype = fmi2DataTypeString;
+                parseStringAttributeEzXml(stringElement, "start", &var.startString);
+            }
+
+            if(fmu->numberOfVariables >= fmu->variablesSize) {
+                fmu->variablesSize *= 2;
+                fmu->variables = realloc(fmu->variables, fmu->variablesSize*sizeof(fmi2VariableHandle));
+            }
+
+            fmu->variables[fmu->numberOfVariables] = var;
+            fmu->numberOfVariables++;
         }
     }
 
-    xmlNode *node = rootElement->children;
-    for(; node != NULL; node = node->next) {
-        //Parse arguments in <DefaultExperiment>
-         if(!strcmp(node->name, "CoSimulation")) {
-             fmu->supportsCoSimulation = true;
-
-             if(!strcmp(node->name, "CoSimulation")) {
-                 for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
-                     if(!strcmp(attr->name, "modelIdentifier")) {
-                         fmu->modelIdentifier = parseStringAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "needsExecutionTool")) {
-                         fmu->needsExecutionTool = parseBooleanAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
-                         fmu->canHandleVariableCommunicationStepSize = parseBooleanAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "canInterpolateInputs")) {
-                         fmu->canInterpolateInputs = parseBooleanAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                         fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "canRunAsynchronuously")) {
-                         fmu->canRunAsynchronuously = parseBooleanAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                         fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "canNotUseMemoryManagementFunctions")) {
-                         fmu->canNotUseMemoryManagementFunctions = parseBooleanAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "canGetAndSetFMUState")) {
-                         fmu->canGetAndSetFMUState = parseBooleanAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "canSerializeFMUState")) {
-                         fmu->canSerializeFMUState = parseBooleanAttribute(attr);
-                     }
-                     else if(!strcmp(attr->name, "providesDirectionalDerivative")) {
-                         fmu->providesDirectionalDerivative = parseBooleanAttribute(attr);
-                     }
-                 }
-             }
-         }
-         if(!strcmp(node->name, "ModelExchange")) {
-             fmu->supportsModelExchange = true;
-
-             //! @todo Read model exchange data
-         }
-        //Parse arguments in <DefaultExperiment>
-        if(!strcmp(node->name, "DefaultExperiment")) {
-            for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
-                if(!strcmp(attr->name, "startTime")) {
-                    fmu->defaultStartTime = parseDoubleAttribute(attr);
-                    fmu->defaultStartTimeDefined = true;
-                }
-                if(!strcmp(attr->name, "stopTime")) {
-                    fmu->defaultStopTime = parseDoubleAttribute(attr);
-                    fmu->defaultStopTimeDefined = true;
-                }
-                if(!strcmp(attr->name, "tolerance")) {
-                    fmu->defaultTolerance = parseDoubleAttribute(attr);
-                    fmu->defaultToleranceDefined = true;
-                }
-                if(!strcmp(attr->name, "stepSize")) {
-                    fmu->defaultStepSize = parseDoubleAttribute(attr);
-                    fmu->defaultStepSizeDefined = true;
-                }
-            }
-        }
-
-        //Parse model variables
-        if(!strcmp(node->name, "ModelVariables")) {
-            xmlNode *varNode = node->children;
-            for(; varNode != NULL; varNode = varNode->next) {
-                fmi2VariableHandle var;
-                var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
-
-                //Parse variable attributes
-                for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
-                    if(!strcmp(attr->name, "name")) {
-                        var.name = parseStringAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "valueReference")) {
-                        var.valueReference = parseLongAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "description")) {
-                        var.description = parseStringAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "causality")) {
-                        xmlChar *value = parseStringAttribute(attr);
-                        if(!strcmp(value, "input")) {
-                            var.causality = fmi2CausalityInput;
-                        }
-                        else if(!strcmp(value, "output")) {
-                            var.causality = fmi2CausalityOutput;
-                        }
-                        else if(!strcmp(value, "parameter")) {
-                            var.causality = fmi2CausalityParameter;
-                        }
-                        else if(!strcmp(value, "calculatedparameter")) {
-                            var.causality = fmi2CausalityCalculatedParameter;
-                        }
-                        else if(!strcmp(value, "local")) {
-                            var.causality = fmi2CausalityLocal;
-                        }
-                        else if(!strcmp(value, "independent")) {
-                            var.causality = fmi2CausalityIndependent;
-                        }
-                        else {
-                            printf("Unknown causality: %s\n",value);
-                            return false;
-                        }
-                    }
-                    if(!strcmp(attr->name, "variability")) {
-                        xmlChar *value = parseStringAttribute(attr);
-                        if(!strcmp(value, "fixed")) {
-                            var.variability = fmi2VariabilityFixed;
-                        }
-                        else if(!strcmp(value, "tunable")) {
-                            var.variability = fmi2VariabilityTunable;
-                        }
-                        else if(!strcmp(value, "constant")) {
-                            var.variability = fmi2VariabilityConstant;
-                        }
-                        else if(!strcmp(value, "discrete")) {
-                            var.variability = fmi2VariabilityDiscrete;
-                        }
-                        else if(!strcmp(value, "continuous")) {
-                            var.variability = fmi2VariabilityContinuous;
-                        }
-                         else {
-                            printf("Unknown variability: %s\n", value);
-                            return false;
-                        }
-                    }
-                    if(!strcmp(attr->name, "initial")) {
-                        xmlChar *value = parseStringAttribute(attr);
-                        if(!strcmp(value, "approx")) {
-                            var.variability = fmi2InitialApprox;
-                        }
-                        else if(!strcmp(value, "calculated")) {
-                            var.variability = fmi2InitialCalculated;
-                        }
-                        else if(!strcmp(value, "exact")) {
-                            var.variability = fmi2InitialExact;
-                        }
-                        else {
-                            printf("Unknown initial: %s\n", value);
-                            return false;
-                        }
-                    }
-                    if(!strcmp(attr->name, "canHandleMultipleSetPerTimeInstant")) {
-                        var.canHandleMultipleSetPerTimeInstant = parseBooleanAttribute(attr);
-                    }
-                }
-
-                xmlNode *dataNode = varNode->children;
-                if(dataNode && !strcmp(dataNode->name, "Real")) {
-                    var.datatype = fmi2DataTypeReal;
-                    fmu->hasRealVariables = true;
-                    for(xmlAttr *attr = dataNode->properties; attr != NULL; attr = attr->next) {
-                        if(!strcmp(attr->name, "start")) {
-                            var.startReal = parseDoubleAttribute(attr);
-                        }
-                        else if(!strcmp(attr->name, "derivative")) {
-                            var.derivative = parseIntegerAttribute(attr);
-                            fmu->numberOfContinuousStates++;
-                        }
-                    }
-                }
-                else if(dataNode && !strcmp(dataNode->name, "Integer")) {
-                    var.datatype = fmi2DataTypeInteger;
-                    fmu->hasIntegerVariables = true;
-                }
-                else if(dataNode && !strcmp(dataNode->name, "Boolean")) {
-                    var.datatype = fmi2DataTypeBoolean;
-                    fmu->hasBooleanVariables = true;
-                }
-                else if(dataNode && !strcmp(dataNode->name, "String")) {
-                    var.datatype = fmi2DataTypeString;
-                    fmu->hasStringVariables = true;
-                }
-
-                if(fmu->numberOfVariables >= fmu->variablesSize) {
-                    fmu->variablesSize *= 2;
-                    fmu->variables = realloc(fmu->variables, fmu->variablesSize*sizeof(fmi2VariableHandle));
-                }
-
-                fmu->variables[fmu->numberOfVariables] = var;
-                fmu->numberOfVariables++;
-            }
-        }
-    }
-
-
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
+    ezxml_free(rootElement);
 
     chdir(cwd);
 
@@ -697,8 +501,8 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     fmu->canReturnEarlyAfterIntermediateUpdate = false;
     fmu->fixedInternalStepSize = 0;
     fmu->hasEventMode = false;
-    fmu->completedIntegratorStepNotNeeded = false;
-    fmu->hasClockVaraibles = false;
+    fmu->needsCompletedIntegratorStep = true;
+    fmu->hasClockVariables = false;
     fmu->hasFloat64Variables = false;
     fmu->hasFloat32Variables = false;
     fmu->hasInt64Variables = false;
@@ -712,7 +516,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     fmu->hasBooleanVariables = false;
     fmu->hasStringVariables = false;
     fmu->hasBinaryVariables = false;
-    fmu->hasClockVaraibles = false;
+    fmu->hasClockVariables = false;
     fmu->hasStructuralParameters = false;
 
     char cwd[FILENAME_MAX];
@@ -736,390 +540,335 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     strcat(tempPath, "/resources");
     fmu->resourcesLocation = strdup(tempPath);
 
-    xmlKeepBlanksDefault(0);
-
-    xmlDoc *doc = NULL;
-    xmlNode *rootElement = NULL;
-
-    doc = xmlReadFile("modelDescription.xml", NULL, 0);
-    if(NULL == doc){
-       printf("Failed to read modelDescription.xml\n");
-       return false;
-    }
-
-    rootElement = xmlDocGetRootElement(doc);
+    ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
     if(strcmp(rootElement->name, "fmiModelDescription")) {
-        printf("Wrong root element: %s\n", rootElement->name);
+        printf("Wrong root tag name: %s\n", rootElement->name);
+        return false;
     }
 
+    parseStringAttributeEzXml(rootElement, "modelName",                 &fmu->modelName);
+    parseStringAttributeEzXml(rootElement, "instantiationToken",        &fmu->instantiationToken);
+    parseStringAttributeEzXml(rootElement, "description",               &fmu->description);
+    parseStringAttributeEzXml(rootElement, "author",                    &fmu->author);
+    parseStringAttributeEzXml(rootElement, "version",                   &fmu->version);
+    parseStringAttributeEzXml(rootElement, "copyright",                 &fmu->copyright);
+    parseStringAttributeEzXml(rootElement, "license",                   &fmu->license);
+    parseStringAttributeEzXml(rootElement, "generationtool",            &fmu->generationTool);
+    parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->generationDateAndTime);
+    parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->variableNamingConvention);
 
-    printf("FMI version = 3\n");
-
-    //Parse attributes in <fmiModelDescription>
-    for(xmlAttr *attr = rootElement->properties; attr != NULL; attr = attr->next) {
-        if(!strcmp(attr->name, "modelName")) {
-            fmu->modelName = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "instantiationToken")) {
-            fmu->instantiationToken = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "description")) {
-            fmu->description = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "author")) {
-            fmu->author = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "version")) {
-            fmu->version = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "copyright")) {
-            fmu->copyright = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "license")) {
-            fmu->license = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "generationtool")) {
-            fmu->generationTool = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "generationDateAndTime")) {
-            fmu->generationDateAndTime = parseStringAttribute(attr);
-        }
-        if(!strcmp(attr->name, "variableNamingConvention")) {
-            fmu->variableNamingConvention = parseStringAttribute(attr);
-        }
+    ezxml_t cosimElement = ezxml_child(rootElement, "CoSimulation");
+    if(cosimElement) {
+        fmu->supportsCoSimulation = true;
+        parseStringAttributeEzXml(cosimElement, "modelIdentifier", &fmu->modelIdentifier);
+        parseBooleanAttributeEzXml(cosimElement, "needsExecutionTool", &fmu->needsExecutionTool);
+        parseBooleanAttributeEzXml(cosimElement, "canBeInstantiatedOnlyOncePerProcess", &fmu->canBeInstantiatedOnlyOncePerProcess);
+        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUState", &fmu->canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUState", &fmu->canSerializeFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "providesDirectionalDerivative", &fmu->providesDirectionalDerivative);
+        parseBooleanAttributeEzXml(cosimElement, "providesAdjointDerivatives", &fmu->providesAdjointDerivatives);
+        parseBooleanAttributeEzXml(cosimElement, "providesPerElementDependencies", &fmu->providesPerElementDependencies);
+        parseInt32AttributeEzXml(cosimElement, "maxOutputDerivativeOrder", &fmu->maxOutputDerivativeOrder);
+        parseBooleanAttributeEzXml(cosimElement, "providesIntermediateUpdate", &fmu->providesIntermediateUpdate);
+        parseBooleanAttributeEzXml(cosimElement, "mightReturnEarlyFromDoStep", &fmu->mightReturnEarlyFromDoStep);
+        parseBooleanAttributeEzXml(cosimElement, "providesEvaluateDiscreteStates", &fmu->providesEvaluateDiscreteStates);
+        parseInt32AttributeEzXml(cosimElement, "recommendedIntermediateInputSmoothness", &fmu->recommendedIntermediateInputSmoothness);
+        parseBooleanAttributeEzXml(cosimElement, "canHandleVariableCommunicationStepSize", &fmu->canHandleVariableCommunicationStepSize);
+        parseBooleanAttributeEzXml(cosimElement, "canReturnEarlyAfterIntermediateUpdate", &fmu->canReturnEarlyAfterIntermediateUpdate);
+        parseFloat64AttributeEzXml(cosimElement, "fixedInternalStepSize", &fmu->fixedInternalStepSize);
+        parseBooleanAttributeEzXml(cosimElement, "hasEventMode", &fmu->hasEventMode);
     }
 
-    xmlNode *node = rootElement->children;
-    for(; node != NULL; node = node->next) {
+    ezxml_t modelExchangeElement = ezxml_child(rootElement, "CoSimulation");
+    if(modelExchangeElement) {
+        fmu->supportsModelExchange = true;
+        parseStringAttributeEzXml(modelExchangeElement, "modelIdentifier", &fmu->modelIdentifier);
+        parseBooleanAttributeEzXml(modelExchangeElement, "needsExecutionTool", &fmu->needsExecutionTool);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canBeInstantiatedOnlyOncePerProcess", &fmu->canBeInstantiatedOnlyOncePerProcess);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canGetAndSetFMUState", &fmu->canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canSerializeFMUState", &fmu->canSerializeFMUState);
+        parseBooleanAttributeEzXml(modelExchangeElement, "providesDirectionalDerivative", &fmu->providesDirectionalDerivative);
+        parseBooleanAttributeEzXml(modelExchangeElement, "providesAdjointDerivatives", &fmu->providesAdjointDerivatives);
+        parseBooleanAttributeEzXml(modelExchangeElement, "providesPerElementDependencies", &fmu->providesPerElementDependencies);
+        parseBooleanAttributeEzXml(modelExchangeElement, "needsCompletedIntegratorStep", &fmu->needsCompletedIntegratorStep);
+        parseBooleanAttributeEzXml(modelExchangeElement, "providesEvaluateDiscreteStates", &fmu->providesEvaluateDiscreteStates);
+    }
 
-        //Parse arguments in <CoSimulation>
-        if(!strcmp(node->name, "CoSimulation")) {
-            fmu->supportsCoSimulation = true;
-            for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
-                if(!strcmp(attr->name, "modelIdentifier")) {
-                    fmu->modelIdentifier = parseStringAttribute(attr);
+    ezxml_t scheduledExecutionElement = ezxml_child(rootElement, "ScheduledExecution");
+    if(scheduledExecutionElement) {
+        fmu->supportsModelExchange = true;
+        parseStringAttributeEzXml(scheduledExecutionElement, "modelIdentifier", &fmu->modelIdentifier);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "needsExecutionTool", &fmu->needsExecutionTool);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "canBeInstantiatedOnlyOncePerProcess", &fmu->canBeInstantiatedOnlyOncePerProcess);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "canGetAndSetFMUState", &fmu->canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "canSerializeFMUState", &fmu->canSerializeFMUState);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "providesDirectionalDerivative", &fmu->providesDirectionalDerivative);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "providesAdjointDerivatives", &fmu->providesAdjointDerivatives);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "providesPerElementDependencies", &fmu->providesPerElementDependencies);
+    }
+
+    ezxml_t defaultExperimentElement = ezxml_child(rootElement, "DefaultExperiment");
+    if(defaultExperimentElement) {
+        fmu->defaultStartTimeDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "startTime", &fmu->defaultStartTime);
+        fmu->defaultStopTimeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stopTime",  &fmu->defaultStopTime);
+        fmu->defaultToleranceDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "tolerance", &fmu->defaultTolerance);
+        fmu->defaultStepSizeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stopTime",  &fmu->defaultStepSize);
+    }
+
+    ezxml_t modelVariablesElement = ezxml_child(rootElement, "ModelVariables");
+    if(modelVariablesElement) {
+        for(ezxml_t varElement = modelVariablesElement->child; varElement; varElement = varElement->next) {
+            fmi3VariableHandle var;
+            var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
+
+            parseStringAttributeEzXml(varElement, "name", &var.name);
+            parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
+            parseStringAttributeEzXml(varElement, "description", &var.description);
+            parseBooleanAttributeEzXml(varElement, "canHandleMultipleSetPerTimeInstant", &var.canHandleMultipleSetPerTimeInstant);
+            parseBooleanAttributeEzXml(varElement, "intermediateUpdate", &var.intermediateUpdate);
+            parseInt32AttributeEzXml(varElement, "previous", &var.previous);
+            parseStringAttributeEzXml(varElement, "declaredType", &var.declaredType);
+            //! @todo Read "clocks" argument (space separated list of value references)
+
+            const char* causality;
+            parseStringAttributeEzXml(varElement, "causality", &causality);
+            if(!strcmp(causality, "parameter")) {
+                var.causality = fmi3CausalityParameter;
+            }
+            else if(!strcmp(causality, "calculatedparameter")) {
+                var.causality = fmi3CausalityCalculatedParameter;
+            }
+            else if(!strcmp(causality, "input")) {
+                var.causality = fmi3CausalityInput;
+            }
+            else if(!strcmp(causality, "output")) {
+                var.causality = fmi3CausalityOutput;
+            }
+            else if(!strcmp(causality, "local")) {
+                var.causality = fmi3CausalityLocal;
+            }
+            else if(!strcmp(causality, "independent")) {
+                var.causality = fmi3CausalityIndependent;
+            }
+            else if(!strcmp(causality, "structuralParameter")) {
+                var.causality = fmi3CausalityStructuralParameter;
+            }
+            else {
+                printf("Unknown causality: %s\n", causality);
+                return false;
+            }
+
+            const char* variability;
+            parseStringAttributeEzXml(varElement, "variability", &variability);
+            if(variability && !strcmp(variability, "constant")) {
+                var.variability = fmi3VariabilityConstant;
+            }
+            else if(variability && !strcmp(variability, "fixed")) {
+                var.variability = fmi3VariabilityFixed;
+            }
+            else if(variability && !strcmp(variability, "tunable")) {
+                var.variability = fmi3VariabilityTunable;
+            }
+            else if(variability && !strcmp(variability, "discrete")) {
+                var.variability = fmi3VariabilityDiscrete;
+            }
+            else if(variability && !strcmp(variability, "continuous")) {
+                var.variability = fmi3VariabilityContinuous;
+            }
+            else if(variability) {
+                printf("Unknown variability: %s\n", variability);
+                return false;
+            }
+
+            //Figure out data type
+            if(!strcmp(varElement->name, "Float64")) {
+                var.datatype = fmi3DataTypeFloat64;
+                fmu->hasFloat64Variables = true;
+                parseFloat64AttributeEzXml(varElement, "start", &var.startFloat64);
+            }
+            else if(!strcmp(varElement->name, "Float32")) {
+                var.datatype = fmi3DataTypeFloat32;
+                fmu->hasFloat32Variables = true;
+                parseFloat32AttributeEzXml(varElement, "start", &var.startFloat32);
+            }
+            else if(!strcmp(varElement->name, "Int64")) {
+                var.datatype = fmi3DataTypeInt64;
+                fmu->hasInt64Variables = true;
+                parseInt64AttributeEzXml(varElement, "start", &var.startInt64);
+            }
+            else if(!strcmp(varElement->name, "Int32")) {
+                var.datatype = fmi3DataTypeInt32;
+                fmu->hasInt32Variables = true;
+                parseInt32AttributeEzXml(varElement, "start", &var.startInt32);
+            }
+            else if(!strcmp(varElement->name, "Int16")) {
+                var.datatype = fmi3DataTypeInt16;
+                fmu->hasInt16Variables = true;
+                parseInt16AttributeEzXml(varElement, "start", &var.startInt16);
+            }
+            else if(!strcmp(varElement->name, "Int8")) {
+                var.datatype = fmi3DataTypeInt8;
+                fmu->hasInt8Variables = true;
+                parseInt8AttributeEzXml(varElement, "start", &var.startInt8);
+            }
+            else if(!strcmp(varElement->name, "UInt64")) {
+                var.datatype = fmi3DataTypeUInt64;
+                fmu->hasUInt64Variables = true;
+                parseUInt64AttributeEzXml(varElement, "start", &var.startUInt64);
+            }
+            else if(!strcmp(varElement->name, "UInt32")) {
+                var.datatype = fmi3DataTypeUInt32;
+                fmu->hasUInt32Variables = true;
+                parseUInt32AttributeEzXml(varElement, "start", &var.startUInt32);
+            }
+            else if(!strcmp(varElement->name, "UInt16")) {
+                var.datatype = fmi3DataTypeUInt16;
+                fmu->hasUInt16Variables = true;
+                parseUInt16AttributeEzXml(varElement, "start", &var.startUInt16);
+            }
+            else if(!strcmp(varElement->name, "UInt8")) {
+                var.datatype = fmi3DataTypeUInt8;
+                fmu->hasUInt8Variables = true;
+                parseUInt8AttributeEzXml(varElement, "start", &var.startUInt8);
+            }
+            else if(!strcmp(varElement->name, "Boolean")) {
+                var.datatype = fmi3DataTypeBoolean;
+                fmu->hasBooleanVariables = true;
+                parseBooleanAttributeEzXml(varElement, "start", &var.startBoolean);
+            }
+            else if(!strcmp(varElement->name, "String")) {
+                var.datatype = fmi3DataTypeString;
+                fmu->hasStringVariables = true;
+                parseStringAttributeEzXml(varElement, "start", &var.startString);
+            }
+            else if(!strcmp(varElement->name, "Binary")) {
+                var.datatype = fmi3DataTypeBinary;
+                fmu->hasBinaryVariables = true;
+                parseInt32AttributeEzXml(varElement, "start", &var.startBinary);
+            }
+            else if(!strcmp(varElement->name, "Enumeration")) {
+                var.datatype = fmi3DataTypeEnumeration;
+                fmu->hasEnumerationVariables = true;
+                parseInt64AttributeEzXml(varElement, "start", &var.startEnumeration);
+            }
+            else if(!strcmp(varElement->name, "Clock")) {
+                var.datatype = fmi3DataTypeClock;
+                fmu->hasClockVariables = true;
+                parseBooleanAttributeEzXml(varElement, "start", &var.startClock);
+            }
+
+            //Parse arguments common to all except clock type
+            if(var.datatype == fmi3DataTypeFloat64 ||
+               var.datatype == fmi3DataTypeFloat32 ||
+               var.datatype == fmi3DataTypeInt64 ||
+               var.datatype == fmi3DataTypeInt32 ||
+               var.datatype == fmi3DataTypeInt16 ||
+               var.datatype == fmi3DataTypeInt8 ||
+               var.datatype == fmi3DataTypeUInt64 ||
+               var.datatype == fmi3DataTypeUInt32 ||
+               var.datatype == fmi3DataTypeUInt16 ||
+               var.datatype == fmi3DataTypeUInt8 ||
+               var.datatype == fmi3DataTypeBoolean ||
+               var.datatype == fmi3DataTypeBinary ||
+               var.datatype == fmi3DataTypeEnumeration) {
+                const char* initial;
+                parseStringAttributeEzXml(varElement, "initial", &initial);
+                if(initial && !strcmp(initial, "approx")) {
+                    var.initial = fmi3InitialApprox;
                 }
-                else if(!strcmp(attr->name, "needsExecutionTool")) {
-                    fmu->needsExecutionTool = parseBooleanAttribute(attr);
+                else if(initial && !strcmp(initial, "exact")) {
+                    var.initial = fmi3InitialExact;
                 }
-                else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                    fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "canGetAndSetFMUState")) {
-                    fmu->canGetAndSetFMUState = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "canSerializeFMUState")) {
-                    fmu->canSerializeFMUState = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesDirectionalDerivative")) {
-                    fmu->providesDirectionalDerivative = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesAdjointDerivatives")) {
-                    fmu->providesAdjointDerivatives = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesPerElementDependencies")) {
-                    fmu->providesPerElementDependencies = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                    fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesIntermediateUpdate")) {
-                    fmu->providesIntermediateUpdate = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "mightReturnEarlyFromDoStep")) {
-                    fmu->mightReturnEarlyFromDoStep = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesEvaluateDiscreteStates")) {
-                    fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "recommendedIntermediateInputSmoothness")) {
-                    fmu->recommendedIntermediateInputSmoothness = parseIntegerAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "canHandleVariableCommunicationStepSize")) {
-                    fmu->canHandleVariableCommunicationStepSize = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "canReturnEarlyAfterIntermediateUpdate")) {
-                    fmu->canReturnEarlyAfterIntermediateUpdate = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "fixedInternalStepSize")) {
-                    fmu->fixedInternalStepSize = parseDoubleAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "hasEventMode")) {
-                    fmu->hasEventMode = parseBooleanAttribute(attr);
+                else if(initial) {
+                    printf("Unknown initial: %s\n", initial);
+                    return false;
                 }
             }
-        }
 
-        if(!strcmp(node->name, "ModelExchange")) {
-            fmu->supportsModelExchange = true;
-            for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
-                if(!strcmp(attr->name, "modelIdentifier")) {
-                    fmu->modelIdentifier = parseStringAttribute(attr);
+            //Parse arguments common to float, int and enumeration
+            if(var.datatype == fmi3DataTypeFloat64 ||
+               var.datatype == fmi3DataTypeFloat32 ||
+               var.datatype == fmi3DataTypeInt64 ||
+               var.datatype == fmi3DataTypeInt32 ||
+               var.datatype == fmi3DataTypeInt16 ||
+               var.datatype == fmi3DataTypeInt8 ||
+               var.datatype == fmi3DataTypeUInt64 ||
+               var.datatype == fmi3DataTypeUInt32 ||
+               var.datatype == fmi3DataTypeUInt16 ||
+               var.datatype == fmi3DataTypeUInt8 ||
+               var.datatype == fmi3DataTypeEnumeration) {
+                parseStringAttributeEzXml(varElement,  "quantity", &var.quantity);
+                parseFloat64AttributeEzXml(varElement,  "min", &var.min);
+                parseFloat64AttributeEzXml(varElement,  "max", &var.max);
+            }
+
+            //Parse arguments only in float type
+            if(var.datatype == fmi3DataTypeFloat64 ||
+               var.datatype == fmi3DataTypeFloat32) {
+                parseStringAttributeEzXml(varElement,  "unit", &var.unit);
+                parseStringAttributeEzXml(varElement,  "displayUnit", &var.displayUnit);
+                parseBooleanAttributeEzXml(varElement, "relativeQuantity", &var.relativeQuantity);
+                parseBooleanAttributeEzXml(varElement, "unbounded", &var.unbounded);
+                parseFloat64AttributeEzXml(varElement,  "nominal", &var.nominal);
+                parseInt32AttributeEzXml(varElement, "derivative", &var.derivative);
+                parseBooleanAttributeEzXml(varElement, "reinit", &var.reInit);
+            }
+
+            //Parse arguments only in binary type
+            if(var.datatype == fmi3DataTypeBinary) {
+                parseStringAttributeEzXml(varElement, "mimeType", &var.mimeType);
+                parseInt32AttributeEzXml(varElement, "maxSize", &var.maxSize);
+            }
+
+            if(var.datatype == fmi3DataTypeClock) {
+                parseBooleanAttributeEzXml(varElement, "canBeDeactivated", &var.canBeDeactivated);
+                parseInt32AttributeEzXml(varElement, "priority", &var.priority);
+                parseFloat64AttributeEzXml(varElement, "intervalDecimal", &var.intervalDecimal);
+                parseFloat64AttributeEzXml(varElement, "shiftDecimal", &var.shiftDecimal);
+                parseBooleanAttributeEzXml(varElement, "supportsFraction", &var.supportsFraction);
+                parseInt64AttributeEzXml(varElement, "resolution", &var.resolution);
+                parseInt64AttributeEzXml(varElement, "intervalCounter", &var.intervalCounter);
+                parseInt64AttributeEzXml(varElement, "shiftCounter", &var.shiftCounter);
+                const char* intervalVariability;
+                parseStringAttributeEzXml(varElement, "intervalVariability", &intervalVariability);
+                if(intervalVariability && !strcmp(intervalVariability, "calculated")) {
+                    var.intervalVariability = fmi3IntervalVariabilityCalculated;
                 }
-                else if(!strcmp(attr->name, "needsExecutionTool")) {
-                    fmu->needsExecutionTool = parseBooleanAttribute(attr);
+                else if(intervalVariability && !strcmp(intervalVariability, "changing")) {
+                    var.intervalVariability = fmi3IntervalVariabilityChanging;
                 }
-                else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                    fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
+                else if(intervalVariability && !strcmp(intervalVariability, "constant")) {
+                    var.intervalVariability = fmi3IntervalVariabilityConstant;
                 }
-                else if(!strcmp(attr->name, "canGetAndSetFMUState")) {
-                    fmu->canGetAndSetFMUState = parseBooleanAttribute(attr);
+                else if(intervalVariability && !strcmp(intervalVariability, "countdown")) {
+                    var.intervalVariability = fmi3IntervalVariabilityCountdown;
                 }
-                else if(!strcmp(attr->name, "canSerializeFMUState")) {
-                    fmu->canSerializeFMUState = parseBooleanAttribute(attr);
+                else if(intervalVariability && !strcmp(intervalVariability, "fixed")) {
+                    var.intervalVariability = fmi3IntervalVariabilityFixed;
                 }
-                else if(!strcmp(attr->name, "providesDirectionalDerivative")) {
-                    fmu->providesDirectionalDerivative = parseBooleanAttribute(attr);
+                else if(intervalVariability && !strcmp(intervalVariability, "triggered")) {
+                    var.intervalVariability = fmi3IntervalVariabilityTriggered;
                 }
-                else if(!strcmp(attr->name, "providesAdjointDerivatives")) {
-                    fmu->providesAdjointDerivatives = parseBooleanAttribute(attr);
+                else if(intervalVariability && !strcmp(intervalVariability, "tunable")) {
+                    var.intervalVariability = fmi3IntervalVariabilityTunable;
                 }
-                else if(!strcmp(attr->name, "providesPerElementDependencies")) {
-                    fmu->providesPerElementDependencies = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                    fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesIntermediateUpdate")) {
-                    fmu->providesIntermediateUpdate = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "mightReturnEarlyFromDoStep")) {
-                    fmu->mightReturnEarlyFromDoStep = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesEvaluateDiscreteStates")) {
-                    fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "recommendedIntermediateInputSmoothness")) {
-                    fmu->recommendedIntermediateInputSmoothness = parseIntegerAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "completedIntegratorStepNotNeeded")) {
-                    fmu->completedIntegratorStepNotNeeded = parseBooleanAttribute(attr);
+                else if(intervalVariability) {
+                    printf("Unknown interval variability: %s\n", intervalVariability);
+                    return false;
                 }
             }
-        }
 
-        if(!strcmp(node->name, "ScheduledExecution")) {
-            fmu->supportsScheduledExecution = true;
-            for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
-                if(!strcmp(attr->name, "modelIdentifier")) {
-                    fmu->modelIdentifier = parseStringAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "needsExecutionTool")) {
-                    fmu->needsExecutionTool = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "canBeInstantiatedOnlyOncePerProcess")) {
-                    fmu->canBeInstantiatedOnlyOncePerProcess = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "canGetAndSetFMUState")) {
-                    fmu->canGetAndSetFMUState = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "canSerializeFMUState")) {
-                    fmu->canSerializeFMUState = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesDirectionalDerivative")) {
-                    fmu->providesDirectionalDerivative = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesAdjointDerivatives")) {
-                    fmu->providesAdjointDerivatives = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "mightReturnEarlyFromDoStep")) {
-                    fmu->mightReturnEarlyFromDoStep = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesPerElementDependencies")) {
-                    fmu->providesPerElementDependencies = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "maxOutputDerivativeOrder")) {
-                    fmu->maxOutputDerivativeOrder = parseIntegerAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesIntermediateUpdate")) {
-                    fmu->providesIntermediateUpdate = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "providesEvaluateDiscreteStates")) {
-                    fmu->providesEvaluateDiscreteStates = parseBooleanAttribute(attr);
-                }
-                else if(!strcmp(attr->name, "recommendedIntermediateInputSmoothness")) {
-                    fmu->recommendedIntermediateInputSmoothness = parseIntegerAttribute(attr);
-                }
+            if(fmu->numberOfVariables >= fmu->variablesSize) {
+                fmu->variablesSize *= 2;
+                fmu->variables = realloc(fmu->variables, fmu->variablesSize*sizeof(fmi3VariableHandle));
             }
-        }
 
-        //Parse arguments in <DefaultExperiment>
-        if(!strcmp(node->name, "DefaultExperiment")) {
-            for(xmlAttr *attr = node->properties; attr != NULL; attr = attr->next) {
-                if(!strcmp(attr->name, "startTime")) {
-                    fmu->defaultStartTime = parseDoubleAttribute(attr);
-                    fmu->defaultStartTimeDefined = true;
-                }
-                if(!strcmp(attr->name, "stopTime")) {
-                    fmu->defaultStopTime = parseDoubleAttribute(attr);
-                    fmu->defaultStopTimeDefined = true;
-                }
-                if(!strcmp(attr->name, "tolerance")) {
-                    fmu->defaultTolerance = parseDoubleAttribute(attr);
-                    fmu->defaultToleranceDefined = true;
-                }
-                if(!strcmp(attr->name, "stepSize")) {
-                    fmu->defaultStepSize = parseDoubleAttribute(attr);
-                    fmu->defaultStepSizeDefined = true;
-                }
-            }
-        }
-
-        //Parse model variables
-        if(!strcmp(node->name, "ModelVariables")) {
-            xmlNode *varNode = node->children;
-            for(; varNode != NULL; varNode = varNode->next) {
-                fmi3VariableHandle var;
-                var.intermediateUpdate = false; //Default value if attribute not defined
-                if(!strcmp(varNode->name,"Float64")) {
-                    var.datatype = fmi3DataTypeFloat64;
-                    fmu->hasFloat64Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Float32")) {
-                    var.datatype = fmi3DataTypeFloat32;
-                    fmu->hasFloat32Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Int64")) {
-                    var.datatype = fmi3DataTypeInt64;
-                    fmu->hasInt64Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Int32")) {
-                    var.datatype = fmi3DataTypeInt32;
-                    fmu->hasInt32Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Int16")) {
-                    var.datatype = fmi3DataTypeInt16;
-                    fmu->hasInt16Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Int8")) {
-                    var.datatype = fmi3DataTypeInt8;
-                    fmu->hasInt8Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Uint64")) {
-                    var.datatype = fmi3DataTypeUint64;
-                    fmu->hasUInt64Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Uint32")) {
-                    var.datatype = fmi3DataTypeUint32;
-                    fmu->hasUInt32Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Uint64")) {
-                    var.datatype = fmi3DataTypeUint16;
-                    fmu->hasUInt16Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Uint64")) {
-                    var.datatype = fmi3DataTypeUint8;
-                    fmu->hasUInt8Variables = true;
-                }
-                else if(!strcmp(varNode->name,"Boolean")) {
-                    var.datatype = fmi3DataTypeBoolean;
-                    fmu->hasBooleanVariables = true;
-                }
-                else if(!strcmp(varNode->name,"String")) {
-                    var.datatype = fmi3DataTypeString;
-                    fmu->hasStringVariables = true;
-                }
-                else if(!strcmp(varNode->name,"Binary")) {
-                    var.datatype = fmi3DataTypeBinary;
-                    fmu->hasBinaryVariables = true;
-                }
-                else if(!strcmp(varNode->name,"Clock")) {
-                    var.datatype = fmi3DataTypeClock;
-                    fmu->hasClockVaraibles = true;
-                }
-
-                //Parse variable attributes
-                for(xmlAttr *attr = varNode->properties; attr != NULL; attr = attr->next) {
-                    if(!strcmp(attr->name, "name")) {
-                        var.name = parseStringAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "description")) {
-                        var.description = parseStringAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "quantity")) {
-                        var.quantity = parseStringAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "unit")) {
-                        var.unit = parseStringAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "displayUnit")) {
-                        var.displayUnit = parseStringAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "start") && !strcmp(varNode->name, "Float64")) {
-                        var.startFloat64 = parseDoubleAttribute(attr);
-                    }
-                    if(!strcmp(attr->name, "valueReference")) {
-                        var.valueReference = parseLongAttribute(attr);
-                    }
-                     if(!strcmp(attr->name, "causality")) {
-                        xmlChar *value = parseStringAttribute(attr);
-                        if(!strcmp(value, "input")) {
-                            var.causality = fmi3CausalityInput;
-                        }
-                        else if(!strcmp(value, "output")) {
-                            var.causality = fmi3CausalityOutput;
-                        }
-                        else if(!strcmp(value, "parameter")) {
-                            var.causality = fmi3CausalityParameter;
-                        }
-                        else if(!strcmp(value, "calculatedparameter")) {
-                            var.causality = fmi3CausalityCalculatedParameter;
-                        }
-                        else if(!strcmp(value, "local")) {
-                            var.causality = fmi3CausalityLocal;
-                        }
-                        else if(!strcmp(value, "independent")) {
-                            var.causality = fmi3CausalityIndependent;
-                        }
-                        else if(!strcmp(value, "structuralparameter")) {
-                            var.causality = fmi3CausalityStructuralParameter;
-                            fmu->hasStructuralParameters = true;
-                        }
-                        else {
-                            printf("Unknown causality: %s\n",value);
-                            return false;
-                        }
-                    }
-                    if(!strcmp(attr->name, "variability")) {
-                        xmlChar *value = parseStringAttribute(attr);
-                        if(!strcmp(value, "fixed")) {
-                            var.variability = fmi3VariabilityFixed;
-                        }
-                        else if(!strcmp(value, "tunable")) {
-                            var.variability = fmi3VariabilityTunable;
-                        }
-                        else if(!strcmp(value, "constant")) {
-                            var.variability = fmi3VariabilityConstant;
-                        }
-                        else if(!strcmp(value, "discrete")) {
-                            var.variability = fmi3VariabilityDiscrete;
-                        }
-                        else if(!strcmp(value, "continuous")) {
-                            var.variability = fmi3VariabilityContinuous;
-                        }
-                         else {
-                            printf("Unknown variability: %s\n", value);
-                            return false;
-                        }
-                    }
-                    if(!strcmp(attr->name, "intermediateUpdate")) {
-                        var.intermediateUpdate = parseBooleanAttribute(attr);
-                    }
-                }
-
-                if(fmu->numberOfVariables >= fmu->variablesSize) {
-                    fmu->variablesSize *= 2;
-                    fmu->variables = realloc(fmu->variables, fmu->variablesSize*sizeof(fmi3VariableHandle));
-                }
-
-                fmu->variables[fmu->numberOfVariables] = var;
-                fmu->numberOfVariables++;
-            }
+            fmu->variables[fmu->numberOfVariables] = var;
+            fmu->numberOfVariables++;
         }
     }
 
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
+    ezxml_free(rootElement);
 
     chdir(cwd);
 
@@ -1615,7 +1364,7 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
         CHECKFUNCTION(fmi3GetBinary);
         CHECKFUNCTION(fmi3SetBinary);
     }
-    if(fmu->hasClockVaraibles) {
+    if(fmu->hasClockVariables) {
         CHECKFUNCTION(fmi3GetClock);
         CHECKFUNCTION(fmi3SetClock);
         CHECKFUNCTION(fmi3GetIntervalDecimal);
@@ -1715,43 +1464,34 @@ fmiVersion_t getFmiVersion(fmiHandle *fmu)
 #endif
     chdir(fmu->unzippedLocation);
 
+    ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
 
-    xmlKeepBlanksDefault(0);
-
-    xmlDoc *doc = NULL;
-    xmlNode *rootElement = NULL;
-
-    doc = xmlReadFile("modelDescription.xml", NULL, 0);
-    chdir(cwd);
-    if(NULL == doc){
-       printf("Failed to read modelDescription.xml\n");
-       return false;
-    }
-
-    rootElement = xmlDocGetRootElement(doc);
     if(strcmp(rootElement->name, "fmiModelDescription")) {
-        printf("Wrong root element: %s\n", rootElement->name);
+        printf("Wrong root tag name: %s\n", rootElement->name);
+        return false;
     }
+
+    chdir(cwd);
 
     //Figure out FMI version
-    xmlAttr *attr = rootElement->properties;
-    for(; attr != NULL; attr = attr->next) {
-        if(!strcmp(attr->name,"fmiVersion")) {
-            xmlChar *version = parseStringAttribute(attr);
-            if(version[0] == '1') {
-                return fmiVersion1;
-            }
-            else if(version[0] == '2') {
-                return fmiVersion2;
-            }
-            else if(version[0] == '3') {
-                return fmiVersion3;
-            }
-            else {
-                return fmiVersionUnknown;
-            }
-        }
+    const char* version;
+    parseStringAttributeEzXml(rootElement, "fmiVersion", &version);
+    if(version[0] == '1') {
+        return fmiVersion1;
     }
+    else if(version[0] == '2') {
+        return fmiVersion2;
+    }
+    else if(version[0] == '3') {
+        return fmiVersion3;
+    }
+    else {
+        return fmiVersionUnknown;
+    }
+
+    ezxml_free(rootElement);
+
+
 }
 
 
@@ -3291,10 +3031,10 @@ bool fmi3GetRecommendedIntermediateInputSmoothness(fmi3Handle *fmu)
     return fmu->recommendedIntermediateInputSmoothness;
 }
 
-bool fmi3GetCompletedIntegratorStepNotNeeded(fmi3Handle *fmu)
+bool fmi3GetNeedsCompletedIntegratorStep(fmi3Handle *fmu)
 {
     TRACEFUNC
-    return fmu->completedIntegratorStepNotNeeded;
+    return fmu->needsCompletedIntegratorStep;
 }
 
 

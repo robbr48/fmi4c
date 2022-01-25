@@ -208,7 +208,6 @@ int testFMI1CS(fmi1Handle *fmu1)
             }
             fmi1Real value = interpolate(&interpolationData[0], &interpolationData[i], time, dataSize);
             fmi1ValueReference vr = fmi1GetVariableValueReference(var);
-            printf("Setting real (%i): %f\n", vr, value);
             fmi1SetReal(fmu1, &vr, 1, &value);
         }
 
@@ -224,7 +223,6 @@ int testFMI1CS(fmi1Handle *fmu1)
         fprintf(outputFile,"%f",time);
         for(int i=0; i<numOutputs; ++i) {
             fmi1GetReal(fmu1, &outputRefs[i], 1, &value);
-            printf("Reading real  (%i): %f\n", outputRefs[i], value);
             fprintf(outputFile,",%f",value);
         }
         fprintf(outputFile,"\n");

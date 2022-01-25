@@ -3,46 +3,6 @@
 #include "fmic_utils.h"
 
 
-//! @brief Parses an XML attribute as a string
-//! @param attr XML attribute from libxml2
-//! @returns Attribute value as a string
-char* parseStringAttribute(xmlAttr *attr) {
-    return strdup(xmlNodeListGetString(attr->doc, attr->children, 1));
-}
-
-//! @brief Parses an XML attribute as a boolean
-//! @param attr XML attribute from libxml2
-//! @returns True if attribute value equals "true"
-bool parseBooleanAttribute(xmlAttr *attr)
-{
-    return !strcmp(xmlNodeListGetString(attr->doc, attr->children, 1), "true");
-}
-
-//! @brief Parses an XML attribute as a double
-//! @param attr XML attribute from libxml2
-//! @returns Attribute value converted to double
-double parseDoubleAttribute(xmlAttr *attr)
-{
-    return atof(xmlNodeListGetString(attr->doc, attr->children, 1));
-}
-
-//! @brief Parses an XML attribute as an integer
-//! @param attr XML attribute from libxml2
-//! @returns Attribute value converted to int
-int parseIntegerAttribute(xmlAttr *attr)
-{
-    return atoi(xmlNodeListGetString(attr->doc, attr->children, 1));
-}
-
-//! @brief Parses an XML attribute as a long integer
-//! @param attr XML attribute from libxml2
-//! @returns Attribute value converted to long
-int parseLongAttribute(xmlAttr *attr)
-{
-    return atol(xmlNodeListGetString(attr->doc, attr->children, 1));
-}
-
-
 //! @brief Concatenates model name and function name into "modelName_functionName" (for FMI 1)
 //! @param modelName FMU model name
 //! @param functionName Function name
@@ -55,6 +15,173 @@ const char* getFunctionName(const char* modelName, const char* functionName) {
     strcpy(fullName, modelName);
     strcat(fullName, "_");
     strcat(fullName, functionName);
-    printf("Function name: %s\n",fullName); //!< @todo Remove debug output
     return fullName;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseStringAttributeEzXml(ezxml_t element, const char *attributeName, const char **target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = strdup(ezxml_attr(element, attributeName));
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseBooleanAttributeEzXml(ezxml_t element, const char *attributeName, bool *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = !strcmp(ezxml_attr(element, attributeName), "true");
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseFloat64AttributeEzXml(ezxml_t element, const char *attributeName, double *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = atof(ezxml_attr(element, attributeName));
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseInt16AttributeEzXml(ezxml_t element, const char *attributeName, short *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = (short)atoi(ezxml_attr(element, attributeName));
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseInt64AttributeEzXml(ezxml_t element, const char *attributeName, int64_t* target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = atol(ezxml_attr(element, attributeName));
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseInt32AttributeEzXml(ezxml_t element, const char *attributeName, int32_t *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = atoi(ezxml_attr(element, attributeName));
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseFloat32AttributeEzXml(ezxml_t element, const char *attributeName, int16_t *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = (int16_t)atof(ezxml_attr(element, attributeName));
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseInt8AttributeEzXml(ezxml_t element, const char *attributeName, int8_t *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = (int8_t)atoi(ezxml_attr(element, attributeName));
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseUInt64AttributeEzXml(ezxml_t element, const char *attributeName, u_int64_t *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = strtoul(ezxml_attr(element, attributeName), NULL, 10);
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseUInt32AttributeEzXml(ezxml_t element, const char *attributeName, u_int32_t *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = (u_int32_t)strtoul(ezxml_attr(element, attributeName), NULL, 10);
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseUInt16AttributeEzXml(ezxml_t element, const char *attributeName, u_int16_t *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = (u_int16_t)strtoul(ezxml_attr(element, attributeName), NULL, 10);
+        return true;
+    }
+    return false;
+}
+
+//! @brief Parses specified XML attribute and assigns it to target
+//! @param element XML element
+//! @param attributeName Attribute name
+//! @param target Pointer to target variable
+//! @returns True if attribute was found, else false
+bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, u_int8_t *target)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = (u_int8_t)strtoul(ezxml_attr(element, attributeName), NULL, 10);
+        return true;
+    }
+    return false;
 }

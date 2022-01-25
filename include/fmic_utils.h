@@ -1,14 +1,22 @@
 #ifndef FMIC_UTILS_H
 #define FMIC_UTILS_H
 
-#include "tree.h"
 #include <stdbool.h>
+#include "3rdparty/ezxml/ezxml.h"
 
-char* parseStringAttribute(xmlAttr *attr);
-bool parseBooleanAttribute(xmlAttr *attr);
-double parseDoubleAttribute(xmlAttr *attr);
-int parseIntegerAttribute(xmlAttr *attr);
-int parseLongAttribute(xmlAttr *attr);
 const char* getFunctionName(const char* modelName, const char* functionName);
+
+bool parseStringAttributeEzXml(ezxml_t element, const char* attributeName, const char** target);
+bool parseBooleanAttributeEzXml(ezxml_t element, const char* attributeName, bool* target);
+bool parseFloat64AttributeEzXml(ezxml_t element, const char* attributeName, double* target);
+bool parseFloat32AttributeEzXml(ezxml_t element, const char* attributeName, int16_t *target);
+bool parseInt64AttributeEzXml(ezxml_t element, const char* attributeName, int64_t* target);
+bool parseInt32AttributeEzXml(ezxml_t element, const char* attributeName, int32_t* target);
+bool parseInt16AttributeEzXml(ezxml_t element, const char *attributeName, int16_t* target);
+bool parseInt8AttributeEzXml(ezxml_t element, const char *attributeName, int8_t* target);
+bool parseUInt64AttributeEzXml(ezxml_t element, const char* attributeName, u_int64_t* target);
+bool parseUInt32AttributeEzXml(ezxml_t element, const char* attributeName, u_int32_t* target);
+bool parseUInt16AttributeEzXml(ezxml_t element, const char *attributeName, u_int16_t* target);
+bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, u_int8_t *target);
 
 #endif // FMIC_UTILS_H

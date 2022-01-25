@@ -60,6 +60,9 @@ typedef struct {
     char *unit;
     char *displayUnit;
     fmi2Real startReal;
+    fmi2Integer startInteger;
+    fmi2Boolean startBoolean;
+    fmi2String startString;
     long valueReference;
     fmi2Causality causality;
     fmi2Variability variability;
@@ -75,12 +78,48 @@ typedef struct {
     char *quantity;
     char *unit;
     char *displayUnit;
+    bool relativeQuantity;
+    bool unbounded;
+    double min;
+    double max;
+    double nominal;
     fmi3Float64 startFloat64;
+    fmi3Float32 startFloat32;
+    fmi3Int64 startInt64;
+    fmi3Int32 startInt32;
+    fmi3Int16 startInt16;
+    fmi3Int8 startInt8;
+    fmi3UInt64 startUInt64;
+    fmi3UInt32 startUInt32;
+    fmi3UInt16 startUInt16;
+    fmi3UInt8 startUInt8;
+    fmi3Boolean startBoolean;
+    fmi3Binary startBinary;
+    fmi3Clock startClock;
+    fmi3String startString;
+    fmi3Int64 startEnumeration;
+    unsigned int derivative;
+    bool reInit;
     long valueReference;
     fmi3Causality causality;
     fmi3Variability variability;
     fmi3Initial initial;
+    bool canHandleMultipleSetPerTimeInstant;
     bool intermediateUpdate;
+    unsigned int previous;
+    char* declaredType;
+    char *mimeType;
+    int maxSize;
+    bool canBeDeactivated;
+    int priority;
+    fmi3IntervalVariability intervalVariability;
+    double intervalDecimal;
+    double shiftDecimal;
+    bool supportsFraction;
+    long resolution;
+    long intervalCounter;
+    long shiftCounter;
+
 } fmi3VariableHandle;
 
 typedef struct {
@@ -349,7 +388,7 @@ typedef struct {
     bool hasEventMode;
 
     //Model exchange only capabilities
-    bool completedIntegratorStepNotNeeded;
+    bool needsCompletedIntegratorStep;
 
     bool hasFloat64Variables;
     bool hasFloat32Variables;
@@ -364,7 +403,8 @@ typedef struct {
     bool hasBooleanVariables;
     bool hasStringVariables;
     bool hasBinaryVariables;
-    bool hasClockVaraibles;
+    bool hasEnumerationVariables;
+    bool hasClockVariables;
     bool hasStructuralParameters;
 
     int numberOfVariables;
