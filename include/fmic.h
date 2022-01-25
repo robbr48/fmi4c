@@ -3,10 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <direct.h>
 #include <stdbool.h>
 #include <stdint.h>
+
+#ifdef _WIN32
+#include <direct.h
 #include <windows.h>
+#endif
+
 #include "fmic_types.h"
 #include "fmic_types_fmi1.h"
 #include "fmic_types_fmi2.h"
@@ -19,7 +23,11 @@
 #undef fmiVersion
 
 #ifdef __cplusplus
+#ifdef _WIN32
 #define FMIC_DLLEXPORT __declspec(dllexport)
+#else
+#define FMIC_DLLEXPORT
+#endif
 extern "C" {
 #else
 #define FMIC_DLLEXPORT

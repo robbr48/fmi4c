@@ -121,8 +121,11 @@ int main(int argc, char *argv[])
     }
 
     char *cwd = (char*)malloc(sizeof(char)*FILENAME_MAX);
+#ifdef _WIN32
     _getcwd(cwd, sizeof(char)*FILENAME_MAX);
-    printf("CWD (katt): %s\n",cwd);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
 
     FILE *inputFile = fopen(inputCsvPath, "r");
     char lineStr[1024];

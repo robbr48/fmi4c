@@ -13,7 +13,9 @@
 #include "fmic_functions_fmi2.h"
 #include "fmic_functions_fmi3.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 #ifdef DEBUG
 #define TRACEFUNC printf("In function: %s\n",__func__);

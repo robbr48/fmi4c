@@ -5,6 +5,9 @@
 
 #include <sys/stat.h>
 #include <stdlib.h>
+#ifndef _WIN32
+    #include <dlfcn.h>
+#endif
 
 #include "fmic_utils.h"
 
@@ -13,14 +16,21 @@
 //! @param instanceName Instance name for FMU
 fmiHandle* unzipFmu(const char* fmuFile, const char* instanceName)
 {
-    printf("Entering unzip()\n");
     char *cwd = (char*)malloc(sizeof(char)*FILENAME_MAX);
+#ifdef _WIN32
     _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
 
     int argc = 6;
     const char *argv[6];
 
+#ifdef _WIN32
     mkdir(instanceName);
+#else
+    mkdir(instanceName, S_IRWXU | S_IRWXG | S_IRWXO);
+#endif
 
     argv[0]="miniunz";
     argv[1]="-x";
@@ -41,7 +51,11 @@ fmiHandle* unzipFmu(const char* fmuFile, const char* instanceName)
     //Decide location for where to unzip
     //! @todo Change to temp folder
     char tempPath[FILENAME_MAX];
-    _getcwd(tempPath, FILENAME_MAX);
+#ifdef _WIN32
+    _getcwd(tempPath, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(tempPath, sizeof(char)*FILENAME_MAX);
+#endif
     fmu->unzippedLocation = strdup(tempPath);
 
     strcat(tempPath, "/resources");
@@ -50,7 +64,7 @@ fmiHandle* unzipFmu(const char* fmuFile, const char* instanceName)
     fmu->instanceName = instanceName;
 
     chdir(cwd);
-    printf("Successfully unzipped FMU\n");
+
     return fmu;
 }
 
@@ -78,8 +92,11 @@ bool parseModelDescriptionFmi1(fmi1Handle *fmu)
     fmu->type = fmi1ModelExchange;
 
     char cwd[FILENAME_MAX];
-    _getcwd(cwd, FILENAME_MAX);
-
+#ifdef _WIN32
+    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
     chdir(fmu->unzippedLocation);
 
     xmlKeepBlanksDefault(0);
@@ -379,7 +396,11 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
 
 
     char cwd[FILENAME_MAX];
-    _getcwd(cwd, FILENAME_MAX);
+#ifdef _WIN32
+    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
     chdir(fmu->unzippedLocation);
     chdir(fmu->instanceName);
 
@@ -695,13 +716,21 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
     fmu->hasStructuralParameters = false;
 
     char cwd[FILENAME_MAX];
-    _getcwd(cwd, FILENAME_MAX);
+#ifdef _WIN32
+    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
 
     chdir(fmu->unzippedLocation);
     chdir(fmu->instanceName);
 
     char tempPath[FILENAME_MAX];
-    _getcwd(tempPath, FILENAME_MAX);
+#ifdef _WIN32
+    _getcwd(tempPath, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(tempPath, sizeof(char)*FILENAME_MAX);
+#endif
     fmu->unzippedLocation = strdup(tempPath);
 
     strcat(tempPath, "/resources");
@@ -1111,18 +1140,30 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
     TRACEFUNC
 
     char cwd[FILENAME_MAX];
-    _getcwd(cwd, FILENAME_MAX);
+#ifdef _WIN32
+    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
 
     char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
     dllPath[0] = '\0';
     strcat(dllPath, fmu->unzippedLocation);
+#ifdef _WIN32
     strcat(dllPath,"\\binaries\\win64\\");
+#else
+    strcat(dllPath,"/binaries/linux64/");
+#endif
     strcat(dllPath,fmu->modelIdentifier);
+#ifdef _WIN32
     strcat(dllPath,".dll");
+#else
+    strcat(dllPath,".so");
+#endif
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
 #else
-    void* dll = dlopen(dll_file_path, RTLD_NOW|RTLD_LOCAL);
+    void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
 #endif
     if(NULL == dll) {
         printf("Loading DLL failed: %s\n",dllPath);
@@ -1238,18 +1279,30 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
     TRACEFUNC
 
     char cwd[FILENAME_MAX];
-    _getcwd(cwd, FILENAME_MAX);
+#ifdef _WIN32
+    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
 
     char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
     dllPath[0] = '\0';
     strcat(dllPath, fmu->unzippedLocation);
+#ifdef _WIN32
     strcat(dllPath,"\\binaries\\win64\\");
+#else
+    strcat(dllPath,"/binaries/linux64/");
+#endif
     strcat(dllPath,fmu->modelIdentifier);
+#ifdef _WIN32
     strcat(dllPath,".dll");
+#else
+    strcat(dllPath,".so");
+#endif
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
 #else
-    void* dll = dlopen(dll_file_path, RTLD_NOW|RTLD_LOCAL);
+    void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
 #endif
     if(NULL == dll) {
         printf("Loading DLL failed: %s\n",dllPath);
@@ -1392,18 +1445,30 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
     TRACEFUNC
 
     char cwd[FILENAME_MAX];
-    _getcwd(cwd, FILENAME_MAX);
+#ifdef _WIN32
+    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
 
     char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
     dllPath[0] = '\0';
     strcat(dllPath, fmu->unzippedLocation);
+#ifdef _WIN32
     strcat(dllPath,"\\binaries\\x86_64-windows\\");
+#else
+    strcat(dllPath,"/binaries/x86_64-linux/");
+#endif
     strcat(dllPath,fmu->modelIdentifier);
+#ifdef _WIN32
     strcat(dllPath,".dll");
+#else
+    strcat(dllPath,".so");
+#endif
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
 #else
-    void* dll = dlopen(dll_file_path, RTLD_NOW|RTLD_LOCAL);
+    void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
 #endif
     if(NULL == dll) {
         printf("Loading DLL failed: %s\n",dllPath);
@@ -1642,8 +1707,11 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
 fmiVersion_t getFmiVersion(fmiHandle *fmu)
 {
     char cwd[FILENAME_MAX];
-    _getcwd(cwd, FILENAME_MAX);
-
+#ifdef _WIN32
+    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
     chdir(fmu->unzippedLocation);
 
 
