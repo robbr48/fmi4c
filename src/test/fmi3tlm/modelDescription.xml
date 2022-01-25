@@ -11,6 +11,7 @@
 		<Float64 name="v" valueReference="0" description="Speed" causality="output" intermediateUpdate="true"/>
 		<Float64 name="F" valueReference="1" description="TLM force" causality="input" intermediateUpdate="true"/>
 		<Float64 name="Fd" valueReference="2" description="Disturbance force" causality="parameter" variability="tunable" start="0"/>			 
+                <Float64 name="hfactor" valueReference="3" description="Step size factor" causality="parameter" variability="tunable" start="1"/>
 	</ModelVariables>
 </fmiModelDescription>
 

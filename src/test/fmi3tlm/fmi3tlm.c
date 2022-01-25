@@ -3,14 +3,16 @@
 #include "fmi3Functions.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <math.h>
+#include <assert.h>
 
 #include "cvode/cvode.h"             /* prototypes for CVODE fcts., consts. */
-#include "nvector/nvector_serial.h"  /* serial N_Vector types, fcts., macros */
+#include "cvode/cvode_serialization.h"
+#include "cvode/cvode_dense.h"
+#include "nvector/nvector_serial.h"  /* serial FMIC_N_Vector types, fcts., macros */
 #include "sundials/sundials_dense.h" /* definitions DlsMat DENSE_ELEM */
+#include "sundials/sundials_math.h"
 #include "sundials/sundials_types.h" /* definition of type realtype */
-#include "sunnonlinsol/sunnonlinsol_newton.h"
-#include "sunmatrix/sunmatrix_dense.h"
-#include "sunlinsol/sunlinsol_dense.h"
 
 #define VR_V 0
 #define VR_F 1
@@ -20,6 +22,9 @@
 #define Ith(v,i)    NV_Ith_S(v,i-1)       /* Ith numbers components 1..NEQ */
 #define IJth(A,i,j) DENSE_ELEM(A,i-1,j-1) /* IJth numbers rows,cols 1..NEQ */
 
+#define LOG_SIZE 1000
+
+#define TLMVARIABLE
 
 typedef struct {
     fmi3String instanceName;
@@ -31,24 +36,44 @@ typedef struct {
     fmi3Float64 v; //Speed (output)
     fmi3Float64 f; //TLM force (input)
     fmi3Float64 fd; //Disturbance force (tunable parameter)
-    SUNMatrix A;
-    SUNLinearSolver LS;
-    SUNNonlinearSolver NLS;
-    void *mem;
-    N_Vector y, abstol;
+    fmi3Float64 hfactor;    //Step-size factor
+    FMIC_N_Vector abstol;
     int flag;
     size_t n_states;
     double tstart;
-    double tsolver;
     double tcur;
     double reltol;
     double m;
     double c;
     double k;
+    FMIC_N_Vector y;
+    FMIC_N_Vector y_backup;
+    double tsolver;
+    double tsolver_backup;
+    void *mem;
+    void *mem_backup;
+    double solverStep;
+    double minStepSize;
+    bool steadyState;                   //! @todo Initialize (false)
+    double lastFlow;
+    double tlog[LOG_SIZE];
+    double wlog[LOG_SIZE];
+    size_t logstart;                    //! @todo Initialize (0)
+    size_t logend;                      //! @todo Initialize (0)
+    double steadyStateWindowLength;     //! @todo Initialize (0.1)
+    double steadyStateAbsolutLimit;     //! @todo Initialize (0.00001)
+    double lastNonSteadyStateTime;      //! @todo Initialize (0)
+    double steadyStateRatioLimit;       //! @todo Initialize (0.01)
+    double wdevsq;                      //! @todo Initialize (0)
+    double meanFlow;                    //! @todo Initialize (0)
+    double var2;                        //! @todo Initialize (0)
+    double wdevsq_backup;
+    double meanFlow_backup;
+    double var2_backup;
 } fmuContext;
 
 
-int rhs(realtype t, N_Vector yy, N_Vector yp, void *user_data)
+int rhs(realtype t, FMIC_N_Vector yy, FMIC_N_Vector yp, void *user_data)
 {
     fmuContext* fmu = (fmuContext*)user_data;
 
@@ -110,8 +135,6 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
 
     fmu->n_states = 2;  //Number of states
     fmu->tstart = 0;    //Start time
-    fmu->tsolver;       //Solver time
-    fmu->tcur;          //Current time
     fmu->reltol = 1e-4; //Relative tolerance
     fmu->f = 0;         //Input force
     fmu->v = 0;         //Output speed
@@ -119,11 +142,9 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
     fmu->c = 10;        //Viscous friction
     fmu->k = 100;       //Spring constant
     fmu->fd = 0;        //Disturbance force
-
-    //CVODE variables
-    fmu->A = 0;         //Linear solver matrix
-    fmu->LS = 0;        //Linear solver
-    fmu->NLS = 0;       //Nonlinear solver
+    fmu->minStepSize = 1e-4;
+    fmu->solverStep = 1e-4;
+    fmu->hfactor = 1;
 
     if(fmu->loggingOn) {
         fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3OK, "info", "Successfully instantiated FMU");
@@ -131,34 +152,61 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
 
     fmu->mem = NULL;
     fmu->y = fmu->abstol = NULL;
-    fmu->y = N_VNew_Serial(fmu->n_states);
-    fmu->abstol = N_VNew_Serial(fmu->n_states);
+    fmu->y = FMIC_N_VNew_Serial(fmu->n_states);
+    fmu->abstol = FMIC_N_VNew_Serial(fmu->n_states);
     for(size_t i=0; i<fmu->n_states; ++i) {
         Ith(fmu->y,i+1) = 0;     //Start at zero position and velocity
     }
     for(size_t i=0; i<fmu->n_states; ++i) {
         Ith(fmu->abstol,i+1) = 0.01*fmu->reltol;  //Same absolute tolerance for all states for now
     }
-    fmu->mem = CVodeCreate(CV_BDF);
-    CVodeInit(fmu->mem, rhs, fmu->tstart, fmu->y);
-    CVodeSVtolerances(fmu->mem, fmu->reltol, fmu->abstol);
-    if(fmu->NLS) {
-        SUNNonlinSolFree(fmu->NLS);
+    fmu->y_backup = FMIC_N_VClone(fmu->y);
+
+    fmu->mem = CVodeCreate(CV_BDF, CV_NEWTON);
+    if(fmu->mem == NULL) {
+        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, 0, "Failed to allocate memory for CVODE solver");
+        return NULL;
     }
-    if(fmu->LS) {
-        SUNLinSolFree(fmu->LS);
+
+    int flag;
+    flag = CVodeInit(fmu->mem, rhs, fmu->tstart, fmu->y);
+    if(flag != CV_SUCCESS) {
+        char errstr[1024];
+        sprintf(errstr, "Failed to initialize CVODE solver, error code: %i", flag);
+        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, 0, errstr);
+        return NULL;
     }
-    if (fmu->A) {
-        SUNMatDestroy(fmu->A);
+
+    flag = CVodeSVtolerances(fmu->mem, fmu->reltol, fmu->abstol);
+    if(flag != CV_SUCCESS) {
+        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, 0, "Failed to set CVODE tolerances");
+        return NULL;
     }
-    fmu->NLS = SUNNonlinSol_Newton(fmu->y);
-    CVodeSetNonlinearSolver(fmu->mem, fmu->NLS);
-    fmu->A = SUNDenseMatrix(fmu->n_states, fmu->n_states);
-    fmu->LS = SUNLinSol_Dense(fmu->y, fmu->A);
-    CVodeSetLinearSolver(fmu->mem, fmu->LS, fmu->A);
-    CVodeSetMaxStep(fmu->mem, 5e-4); //!< @warning Maximum step size is hard-coded
-    CVodeSetMaxNumSteps(fmu->mem, 1000000);
+    flag = CVDense(fmu->mem, fmu->n_states);
+    if(flag != CV_SUCCESS) {
+        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, 0, "Failed to specify linear (dense) solver for CVODE");
+        return NULL;
+    }
+    flag = CVodeSetMinStep(fmu->mem, 0);
+    if(flag != CV_SUCCESS) {
+        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, 0, "Failed to set minimum step for CVODE solver");
+        return NULL;
+    }
+    CVodeSetMaxStep(fmu->mem, fmu->solverStep); //!< @todo Initialize!
+    if(flag != CV_SUCCESS) {
+        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, 0, "Failed to set maximum step for CVODE solver");
+        return NULL;
+    }
     CVodeSetUserData(fmu->mem, fmu);
+    if(flag != CV_SUCCESS) {
+        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, 0, "Failed to set user data pointer for CVODE solver");
+        return NULL;
+    }
+    CVodeSetMaxNumSteps(fmu->mem, 1000000);
+    if(flag != CV_SUCCESS) {
+        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, 0, "Failed to set maximum number of steps for CVODE solver");
+        return NULL;
+    }
 
     fmu->tsolver = fmu->tstart;
     fmu->tcur = fmu->tstart;
@@ -193,6 +241,20 @@ fmi3Status fmi3EnterInitializationMode(fmi3Instance instance,
 fmi3Status fmi3ExitInitializationMode(fmi3Instance instance)
 {
     UNUSED(instance);
+
+    fmuContext *fmu = (fmuContext*)instance;
+
+    fmu->steadyState = false;
+    fmu->logstart = 0;
+    fmu->logend = 0;
+    fmu->steadyStateWindowLength = 0.1;
+    fmu->steadyStateAbsolutLimit = 0.00001;
+    fmu->lastNonSteadyStateTime = 0;
+    fmu->steadyStateRatioLimit = 0.01;
+    fmu->wdevsq = 0;
+    fmu->meanFlow = 0;
+    fmu->var2 = 0;
+
     return fmi3OK;  //Nothing to do
 }
 
@@ -250,6 +312,11 @@ fmi3Status fmi3GetFloat64(fmi3Instance instance,
     else if(nValueReferences == 1 && valueReferences[0] == 2) {
         values[0] = fmu->fd;
     }
+#ifdef TLMVARIABLE
+    else if(nValueReferences == 1 && valueReferences[0] == 3) {
+        values[0] = fmu->hfactor;
+    }
+#endif
     return fmi3OK;
 }
 
@@ -280,6 +347,164 @@ fmi3Status fmi3EnterStepMode(fmi3Instance instance)
 }
 
 
+bool steadyState(fmuContext *fmu)
+{
+    // tlog and wlog are circular buffers with maximum length LOG_SIZE
+
+    fmu->tlog[fmu->logstart] = fmu->tsolver;
+    fmu->wlog[fmu->logstart] = fmu->lastFlow;
+    fmu->logend++;
+    if(fmu->logend >= LOG_SIZE) {
+        fmu->logend = 0;
+    }
+    if(fmu->logend == fmu->logstart) {
+        fmu->logstart = fmu->logend+1;
+        if(fmu->logstart > LOG_SIZE) {
+            fmu->logstart = 0;
+        }
+    }
+
+    while(fmu->tlog[fmu->logstart] < fmu->tsolver-fmu->steadyStateWindowLength && fmu->logstart != fmu->logend) {
+        fmu->logstart++;
+        if(fmu->logstart > LOG_SIZE) {
+            fmu->logstart = 0;
+        }
+    }
+    assert(fmu->logstart != fmu->logend);
+
+    //Number of log samples stored
+    size_t nlog = (fmu->logend - fmu->logstart);
+
+    int method = 3;
+    if(method == 1) {
+        if(fmu->tcur > 0.10136*100 && fmu->tcur < 0.11) {
+            fmu->steadyState = false;
+        }
+        if(true) {
+
+            double wmax = -1e100;
+            for(size_t i = fmu->logstart; i <= fmu->logend; ++i) {
+                if(fabs(fmu->wlog[i] -fmu->lastFlow ) > wmax) {
+                    wmax = fabs(fmu->wlog[i] - fmu->lastFlow);
+                }
+            }
+
+            fmu->steadyState = (wmax < fmu->steadyStateAbsolutLimit && fmu->tsolver > fmu->steadyStateWindowLength + fmu->lastNonSteadyStateTime);
+            if(!fmu->steadyState && fmu->tsolver > 2*fmu->steadyStateWindowLength+fmu->lastNonSteadyStateTime) {
+                fmu->lastNonSteadyStateTime = fmu->tsolver;
+            }
+        }
+    }
+    else if(method == 2) {
+        if(fmu->tcur > 10*0.1 && fmu->tcur < 0.11) {
+            fmu->steadyState = false;
+        }
+        else {
+
+            //Sum of values
+            double sum_vec = 0;
+            for(size_t i=fmu->logstart; i<fmu->logend; ++i) {
+                sum_vec+=fmu->wlog[i];
+            }
+
+            //Mean of values
+            double wmean = sum_vec/nlog;
+
+            //Variance method 1
+            double sum1 = 0;
+            for(size_t i=fmu->logstart; i<fmu->logend; i++)
+            {
+                sum1 += (fmu->wlog[i]-wmean)*(fmu->wlog[i]-wmean);
+            }
+            double var1 = sum1/(nlog-1.0);
+
+            //Variance method 2
+            double sum2 = 0;
+            for(size_t i=fmu->logstart; i<fmu->logend; i++)
+            {
+                sum2 += (fmu->wlog[i+1]-fmu->wlog[i])*(fmu->wlog[i+1]-fmu->wlog[i]);
+            }
+            double var2 = sum2/(nlog-1.0);
+
+            double ratio = var1/(var2+DBL_MIN);
+
+            fmu->steadyState = (ratio<fmu->steadyStateRatioLimit) || fabs(var1-var2) < fmu->steadyStateAbsolutLimit;
+        }
+    }
+    else if(method == 3) {
+
+            double hfac = 1;
+            if(nlog > 1) {
+                hfac = (fmu->tlog[fmu->logend] - fmu->tlog[fmu->logend-2])/fmu->minStepSize;
+            }
+
+            double lambda1=0.3;
+            double lambda2=0.2;
+            double lambda3=0.001;
+
+            //Previous flow
+            double prevFlow = fmu->lastFlow;
+            if(nlog > 2) {
+                prevFlow = fmu->wlog[fmu->logend-2];
+            }
+
+            //Mean square deviation (filtered)
+            fmu->wdevsq = lambda2*(fmu->lastFlow-fmu->meanFlow)*(fmu->lastFlow - fmu->meanFlow) + (1-lambda2*lambda2)*fmu->wdevsq;
+
+            //Exponentially weighted moving average
+            fmu->meanFlow = lambda1*fmu->lastFlow + (1-lambda1)*fmu->meanFlow;
+
+            //Variance (method 1)
+            double var1 = (2-lambda1)*fmu->wdevsq;
+
+            //Variance (method 2)
+            fmu->var2 = lambda3*(fmu->lastFlow-prevFlow)*(fmu->lastFlow-prevFlow) + (1-lambda3)*fmu->var2;
+
+            //Ratio
+            double ratio = var1/(fmu->var2+DBL_MIN);
+            fmu->steadyState = (ratio < fmu->steadyStateRatioLimit);
+    }
+
+    if(fmu->steadyState) {
+        fmu->solverStep = fmin(fmu->solverStep*1.1,fmu->minStepSize*fmu->hfactor);
+    }
+    else {
+        fmu->solverStep = fmu->minStepSize;
+    }
+
+    return fmu->steadyState;
+}
+
+void saveState(fmuContext *fmu)
+{
+    FMIC_N_VScale(1.0, fmu->y, fmu->y_backup);
+
+    fmu->tsolver_backup = fmu->tsolver;
+
+    size_t memsize = CVodeSerializationSize(fmu->mem);
+    fmu->mem_backup = malloc(memsize+16);
+    CVodeSerialize(fmu->mem, &fmu->mem_backup);
+
+    fmu->wdevsq_backup = fmu->wdevsq;
+    fmu->meanFlow_backup = fmu->meanFlow;
+    fmu->var2_backup = fmu->var2;
+}
+
+void restoreState(fmuContext *fmu)
+{
+    double cvstep;
+    CVodeGetCurrentStep(fmu->mem, &cvstep);
+    fmu->tsolver = fmu->tsolver_backup;
+    FMIC_N_VScale(1.0, fmu->y_backup,  fmu->y);
+    CVodeReInit(fmu->mem, fmu->tsolver, fmu->y);
+    CVodeDeserialize(fmu->mem, &fmu->mem_backup);
+    CVodeSetInitStep(fmu->mem, fmin(fmu->solverStep,cvstep*0.5));
+
+    fmu->wdevsq = fmu->wdevsq_backup;
+    fmu->meanFlow = fmu->meanFlow_backup;
+    fmu->var2 = fmu->var2_backup;
+}
+
 fmi3Status fmi3DoStep(fmi3Instance instance,
                       fmi3Float64 currentCommunicationPoint,
                       fmi3Float64 communicationStepSize,
@@ -297,10 +522,30 @@ fmi3Status fmi3DoStep(fmi3Instance instance,
 
     fmuContext *fmu = (fmuContext *)instance;
 
+#ifdef TLMVARIABLE
     while(fmu->tsolver < currentCommunicationPoint+communicationStepSize) {
-        CVode(fmu->mem, currentCommunicationPoint+communicationStepSize, fmu->y, &fmu->tsolver, CV_NORMAL);
+
+        saveState(fmu);
+
+        double nextTime = currentCommunicationPoint+fmu->solverStep;
+
+        CVodeSetMaxStep(fmu->mem, fmu->solverStep);
+        CVode(fmu->mem, nextTime, fmu->y, &fmu->tsolver, CV_ONE_STEP);
+
+        double cvstep;
+        CVodeGetCurrentStep(fmu->mem, &cvstep);
+        if(!steadyState(fmu) && cvstep >= fmu->minStepSize+1e-10) {
+            restoreState(fmu);
+            continue;
+        }
+
         fmu->intermediateUpdate(fmu->instanceEnvironment, fmu->tsolver, fmi3False, fmi3True, fmi3True, fmi3True, fmi3False, NULL, NULL);
     }
-
+#else
+    while(fmu->tsolver < currentCommunicationPoint+communicationStepSize) {
+        CVode(fmu->mem, currentCommunicationPoint+communicationStepSize, fmu->y, &fmu->tsolver, CV_ONE_STEP);
+        fmu->intermediateUpdate(fmu->instanceEnvironment, fmu->tsolver, fmi3False, fmi3True, fmi3True, fmi3True, fmi3False, NULL, NULL);
+    }
+#endif
     return fmi3OK;
 }

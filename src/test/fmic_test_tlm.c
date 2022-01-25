@@ -5,6 +5,10 @@
 #include <pthread.h>
 #include <math.h>
 
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+
 #include "fmic.h"
 #include "fmic_test.h"
 #include "fmic_test_fmi1.h"
@@ -37,7 +41,11 @@ static tlmContext tlm;
 double getInterpolatedForce1(double time)
 {
     while(tlm.table1[0][tlm.table1end] < time) {
+#ifdef _WIN32
         Sleep(1);
+#else
+        usleep(1000);
+#endif
     }
 
     pthread_mutex_lock(&mutex1);
@@ -67,7 +75,11 @@ double getInterpolatedForce1(double time)
 double getInterpolatedForce2(double time)
 {
     while(tlm.table2[0][tlm.table2end] < time) {
+#ifdef _WIN32
         Sleep(1);
+#else
+        usleep(1000);
+#endif
     }
 
     pthread_mutex_lock(&mutex2);

@@ -1,20 +1,20 @@
 /*
  * -----------------------------------------------------------------
- * $Revision$
- * $Date$
+ * $Revision: 4272 $
+ * $Date: 2014-12-02 11:19:41 -0800 (Tue, 02 Dec 2014) $
  * -----------------------------------------------------------------
  * Programmer(s): Scott D. Cohen, Alan C. Hindmarsh and
  *                Radu Serban @ LLNL
  * -----------------------------------------------------------------
- * SUNDIALS Copyright Start
- * Copyright (c) 2002-2020, Lawrence Livermore National Security
- * and Southern Methodist University.
+ * LLNS Copyright Start
+ * Copyright (c) 2014, Lawrence Livermore National Security
+ * This work was performed under the auspices of the U.S. Department 
+ * of Energy by Lawrence Livermore National Laboratory in part under 
+ * Contract W-7405-Eng-48 and in part under Contract DE-AC52-07NA27344.
+ * Produced at the Lawrence Livermore National Laboratory.
  * All rights reserved.
- *
- * See the top-level LICENSE and NOTICE files for details.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- * SUNDIALS Copyright End
+ * For details, see the LICENSE file.
+ * LLNS Copyright End
  * -----------------------------------------------------------------
  * This is the implementation file for a generic package of dense
  * matrix operations.
@@ -37,17 +37,17 @@
  * -----------------------------------------------------
  */
 
-sunindextype DenseGETRF(DlsMat A, sunindextype *p)
+long int DenseGETRF(DlsMat A, long int *p)
 {
   return(denseGETRF(A->cols, A->M, A->N, p));
 }
 
-void DenseGETRS(DlsMat A, sunindextype *p, realtype *b)
+void DenseGETRS(DlsMat A, long int *p, realtype *b)
 {
   denseGETRS(A->cols, A->N, p, b);
 }
 
-sunindextype DensePOTRF(DlsMat A)
+long int DensePOTRF(DlsMat A)
 {
   return(densePOTRF(A->cols, A->M));
 }
@@ -82,9 +82,9 @@ void DenseMatvec(DlsMat A, realtype *x, realtype *y)
   denseMatvec(A->cols, x, y, A->M, A->N);
 }
 
-sunindextype denseGETRF(realtype **a, sunindextype m, sunindextype n, sunindextype *p)
+long int denseGETRF(realtype **a, long int m, long int n, long int *p)
 {
-  sunindextype i, j, k, l;
+  long int i, j, k, l;
   realtype *col_j, *col_k;
   realtype temp, mult, a_kj;
 
@@ -134,8 +134,8 @@ sunindextype denseGETRF(realtype **a, sunindextype m, sunindextype n, sunindexty
       /* a_kj = a(k,j), col_k[i] = - a(i,k)/a(k,k) */
 
       if (a_kj != ZERO) {
-	for (i=k+1; i < m; i++)
-	  col_j[i] -= a_kj * col_k[i];
+        for (i=k+1; i < m; i++)
+        col_j[i] -= a_kj * col_k[i];
       }
     }
   }
@@ -145,9 +145,9 @@ sunindextype denseGETRF(realtype **a, sunindextype m, sunindextype n, sunindexty
   return(0);
 }
 
-void denseGETRS(realtype **a, sunindextype n, sunindextype *p, realtype *b)
+void denseGETRS(realtype **a, long int n, long int *p, realtype *b)
 {
-  sunindextype i, k, pk;
+  long int i, k, pk;
   realtype *col_k, tmp;
 
   /* Permute b, based on pivot information in p */
@@ -182,11 +182,11 @@ void denseGETRS(realtype **a, sunindextype n, sunindextype *p, realtype *b)
  * Only the lower triangle of A is accessed and it is overwritten with
  * the lower triangle of C.
  */
-sunindextype densePOTRF(realtype **a, sunindextype m)
+long int densePOTRF(realtype **a, long int m)
 {
   realtype *a_col_j, *a_col_k;
   realtype a_diag;
-  sunindextype i, j, k;
+  long int i, j, k;
 
   for (j=0; j<m; j++) {
 
@@ -217,10 +217,10 @@ sunindextype densePOTRF(realtype **a, sunindextype m)
  * obtained with denPOTRF.; A = C*C^T, C lower triangular
  *
  */
-void densePOTRS(realtype **a, sunindextype m, realtype *b)
+void densePOTRS(realtype **a, long int m, realtype *b)
 {
   realtype *col_j, *col_i;
-  sunindextype i, j;
+  long int i, j;
 
   /* Solve C y = b, forward substitution - column version.
      Store solution y in b */
@@ -258,11 +258,11 @@ void densePOTRS(realtype **a, sunindextype m, realtype *b)
  *
  */
 
-int denseGEQRF(realtype **a, sunindextype m, sunindextype n, realtype *beta, realtype *v)
+int denseGEQRF(realtype **a, long int m, long int n, realtype *beta, realtype *v)
 {
   realtype ajj, s, mu, v1, v1_2;
   realtype *col_j, *col_k;
-  sunindextype i, j, k;
+  long int i, j, k;
 
   /* For each column...*/
   for(j=0; j<n; j++) {
@@ -319,11 +319,11 @@ int denseGEQRF(realtype **a, sunindextype m, sunindextype n, realtype *beta, rea
  *
  * v (of length m) must be provided as workspace.
  */
-int denseORMQR(realtype **a, sunindextype m, sunindextype n, realtype *beta,
+int denseORMQR(realtype **a, long int m, long int n, realtype *beta,
                realtype *vn, realtype *vm, realtype *v)
 {
   realtype *col_j, s;
-  sunindextype i, j;
+  long int i, j;
 
   /* Initialize vm */
   for(i=0; i<n; i++) vm[i] = vn[i];
@@ -349,9 +349,9 @@ int denseORMQR(realtype **a, sunindextype m, sunindextype n, realtype *beta,
   return(0);
 }
 
-void denseCopy(realtype **a, realtype **b, sunindextype m, sunindextype n)
+void denseCopy(realtype **a, realtype **b, long int m, long int n)
 {
-  sunindextype i, j;
+  long int i, j;
   realtype *a_col_j, *b_col_j;
 
   for (j=0; j < n; j++) {
@@ -363,9 +363,9 @@ void denseCopy(realtype **a, realtype **b, sunindextype m, sunindextype n)
 
 }
 
-void denseScale(realtype c, realtype **a, sunindextype m, sunindextype n)
+void denseScale(realtype c, realtype **a, long int m, long int n)
 {
-  sunindextype i, j;
+  long int i, j;
   realtype *col_j;
 
   for (j=0; j < n; j++) {
@@ -375,16 +375,16 @@ void denseScale(realtype c, realtype **a, sunindextype m, sunindextype n)
   }
 }
 
-void denseAddIdentity(realtype **a, sunindextype n)
+void denseAddIdentity(realtype **a, long int n)
 {
-  sunindextype i;
+  long int i;
   
   for (i=0; i < n; i++) a[i][i] += ONE;
 }
 
-void denseMatvec(realtype **a, realtype *x, realtype *y, sunindextype m, sunindextype n)
+void denseMatvec(realtype **a, realtype *x, realtype *y, long int m, long int n)
 {
-  sunindextype i, j;
+  long int i, j;
   realtype *col_j;
 
   for (i=0; i<m; i++) {

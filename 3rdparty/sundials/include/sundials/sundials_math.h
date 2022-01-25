@@ -1,17 +1,20 @@
 /*
  * -----------------------------------------------------------------
+ * $Revision: 4378 $
+ * $Date: 2015-02-19 10:55:14 -0800 (Thu, 19 Feb 2015) $
+ * -----------------------------------------------------------------
  * Programmer(s): Scott D. Cohen, Alan C. Hindmarsh and
  *                Aaron Collier @ LLNL
  * -----------------------------------------------------------------
- * SUNDIALS Copyright Start
- * Copyright (c) 2002-2020, Lawrence Livermore National Security
- * and Southern Methodist University.
+ * LLNS Copyright Start
+ * Copyright (c) 2014, Lawrence Livermore National Security
+ * This work was performed under the auspices of the U.S. Department 
+ * of Energy by Lawrence Livermore National Laboratory in part under 
+ * Contract W-7405-Eng-48 and in part under Contract DE-AC52-07NA27344.
+ * Produced at the Lawrence Livermore National Laboratory.
  * All rights reserved.
- *
- * See the top-level LICENSE and NOTICE files for details.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- * SUNDIALS Copyright End
+ * For details, see the LICENSE file.
+ * LLNS Copyright End
  * -----------------------------------------------------------------
  * This is the header file for a simple C-language math library. The
  * routines listed here work with the type realtype as defined in
@@ -22,8 +25,6 @@
 #ifndef _SUNDIALSMATH_H
 #define _SUNDIALSMATH_H
 
-#include <math.h>
-
 #include <sundials/sundials_types.h>
 
 #ifdef __cplusplus  /* wrapper to enable C++ usage */
@@ -32,21 +33,13 @@ extern "C" {
 
 /*
  * -----------------------------------------------------------------
- * Macros
+ * Macros : MIN and MAX
  * -----------------------------------------------------------------
- * SUNMIN(A,B) returns the minimum of A and B
+ * MIN(A,B) returns the minimum of A and B
  *
- * SUNMAX(A,B) returns the maximum of A and B
+ * MAX(A,B) returns the maximum of A and B
  *
- * SUNSQR(A) returns A^2
- *
- * SUNRsqrt calls the appropriate version of sqrt
- *
- * SUNRabs calls the appropriate version of abs
- *
- * SUNRexp calls the appropriate version of exp
- *
- * SUNRceil calls the appropriate version of ceil
+ * SQR(A) returns A^2
  * -----------------------------------------------------------------
  */
 
@@ -62,98 +55,6 @@ extern "C" {
 #define SUNSQR(A) ((A)*(A))
 #endif
 
-/*
- * -----------------------------------------------------------------
- * Function : SUNRsqrt
- * -----------------------------------------------------------------
- * Usage : realtype sqrt_x;
- *         sqrt_x = SUNRsqrt(x);
- * -----------------------------------------------------------------
- * SUNRsqrt(x) returns the square root of x. If x < ZERO, then
- * SUNRsqrt returns ZERO.
- * -----------------------------------------------------------------
- */
-
-#ifndef SUNRsqrt
-#if defined(SUNDIALS_USE_GENERIC_MATH)
-#define SUNRsqrt(x) ((x) <= RCONST(0.0) ? (RCONST(0.0)) : ((realtype) sqrt((double) (x))))
-#elif defined(SUNDIALS_DOUBLE_PRECISION)
-#define SUNRsqrt(x) ((x) <= RCONST(0.0) ? (RCONST(0.0)) : (sqrt((x))))
-#elif defined(SUNDIALS_SINGLE_PRECISION)
-#define SUNRsqrt(x) ((x) <= RCONST(0.0) ? (RCONST(0.0)) : (sqrtf((x))))
-#elif defined(SUNDIALS_EXTENDED_PRECISION)
-#define SUNRsqrt(x) ((x) <= RCONST(0.0) ? (RCONST(0.0)) : (sqrtl((x))))
-#endif
-#endif
-
-/*
- * -----------------------------------------------------------------
- * Function : SUNRabs
- * -----------------------------------------------------------------
- * Usage : realtype abs_x;
- *         abs_x = SUNRabs(x);
- * -----------------------------------------------------------------
- * SUNRabs(x) returns the absolute value of x.
- * -----------------------------------------------------------------
- */
-
-#ifndef SUNRabs
-#if defined(SUNDIALS_USE_GENERIC_MATH)
-#define SUNRabs(x) ((realtype) fabs((double) (x)))
-#elif defined(SUNDIALS_DOUBLE_PRECISION)
-#define SUNRabs(x) (fabs((x)))
-#elif defined(SUNDIALS_SINGLE_PRECISION)
-#define SUNRabs(x) (fabsf((x)))
-#elif defined(SUNDIALS_EXTENDED_PRECISION)
-#define SUNRabs(x) (fabsl((x)))
-#endif
-#endif
-
-/*
- * -----------------------------------------------------------------
- * Function : SUNRexp
- * -----------------------------------------------------------------
- * Usage : realtype exp_x;
- *         exp_x = SUNRexp(x);
- * -----------------------------------------------------------------
- * SUNRexp(x) returns e^x (base-e exponential function).
- * -----------------------------------------------------------------
- */
-
-#ifndef SUNRexp
-#if defined(SUNDIALS_USE_GENERIC_MATH)
-#define SUNRexp(x) ((realtype) exp((double) (x)))
-#elif defined(SUNDIALS_DOUBLE_PRECISION)
-#define SUNRexp(x) (exp((x)))
-#elif defined(SUNDIALS_SINGLE_PRECISION)
-#define SUNRexp(x) (expf((x)))
-#elif defined(SUNDIALS_EXTENDED_PRECISION)
-#define SUNRexp(x) (expl((x)))
-#endif
-#endif
-
-/*
- * -----------------------------------------------------------------
- * Function : SUNRceil
- * -----------------------------------------------------------------
- * Usage : realtype ceil_x;
- *         ceil_x = SUNRceil(x);
- * -----------------------------------------------------------------
- * SUNRceil(x) returns the smallest integer value not less than x.
- * -----------------------------------------------------------------
- */
-
-#ifndef SUNRceil
-#if defined(SUNDIALS_USE_GENERIC_MATH)
-#define SUNRceil(x) ((realtype) ceil((double) (x)))
-#elif defined(SUNDIALS_DOUBLE_PRECISION)
-#define SUNRceil(x) (ceil((x)))
-#elif defined(SUNDIALS_SINGLE_PRECISION)
-#define SUNRceil(x) (ceilf((x)))
-#elif defined(SUNDIALS_EXTENDED_PRECISION)
-#define SUNRceil(x) (ceill((x)))
-#endif
-#endif
 
 /*
  * -----------------------------------------------------------------
@@ -185,6 +86,45 @@ SUNDIALS_EXPORT realtype SUNRpowerI(realtype base, int exponent);
 
 SUNDIALS_EXPORT realtype SUNRpowerR(realtype base, realtype exponent);
 
+/*
+ * -----------------------------------------------------------------
+ * Function : SUNRsqrt
+ * -----------------------------------------------------------------
+ * Usage : realtype sqrt_x;
+ *         sqrt_x = SUNRsqrt(x);
+ * -----------------------------------------------------------------
+ * SUNRsqrt(x) returns the square root of x. If x < ZERO, then
+ * SUNRsqrt returns ZERO.
+ * -----------------------------------------------------------------
+ */
+
+SUNDIALS_EXPORT realtype SUNRsqrt(realtype x);
+
+/*
+ * -----------------------------------------------------------------
+ * Function : SUNRabs
+ * -----------------------------------------------------------------
+ * Usage : realtype abs_x;
+ *         abs_x = SUNRabs(x);
+ * -----------------------------------------------------------------
+ * SUNRabs(x) returns the absolute value of x.
+ * -----------------------------------------------------------------
+ */
+
+SUNDIALS_EXPORT realtype SUNRabs(realtype x);
+
+/*
+ * -----------------------------------------------------------------
+ * Function : SUNRexp
+ * -----------------------------------------------------------------
+ * Usage : realtype exp_x;
+ *         exp_x = SUNRexp(x);
+ * -----------------------------------------------------------------
+ * SUNRexp(x) returns e^x (base-e exponential function).
+ * -----------------------------------------------------------------
+ */
+
+SUNDIALS_EXPORT realtype SUNRexp(realtype x);
 
 #ifdef __cplusplus
 }

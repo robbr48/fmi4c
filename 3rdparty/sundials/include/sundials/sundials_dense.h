@@ -1,15 +1,19 @@
-/* -----------------------------------------------------------------
+/*
+ * -----------------------------------------------------------------
+ * $Revision: 4780 $
+ * $Date: 2016-06-22 17:28:19 -0700 (Wed, 22 Jun 2016) $
+ * -----------------------------------------------------------------
  * Programmer: Radu Serban @ LLNL
  * -----------------------------------------------------------------
- * SUNDIALS Copyright Start
- * Copyright (c) 2002-2020, Lawrence Livermore National Security
- * and Southern Methodist University.
+ * LLNS Copyright Start
+ * Copyright (c) 2014, Lawrence Livermore National Security
+ * This work was performed under the auspices of the U.S. Department 
+ * of Energy by Lawrence Livermore National Laboratory in part under 
+ * Contract W-7405-Eng-48 and in part under Contract DE-AC52-07NA27344.
+ * Produced at the Lawrence Livermore National Laboratory.
  * All rights reserved.
- *
- * See the top-level LICENSE and NOTICE files for details.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- * SUNDIALS Copyright End
+ * For details, see the LICENSE file.
+ * LLNS Copyright End
  * -----------------------------------------------------------------
  * This is the header file for a generic package of DENSE matrix
  * operations, based on the DlsMat type defined in sundials_direct.h.
@@ -18,8 +22,9 @@
  * this file: one set uses type DlsMat defined below and the
  * other set uses the type realtype ** for dense matrix arguments.
  * Routines that work with the type DlsMat begin with "Dense".
- * Routines that work with realtype** begin with "dense".
- * -----------------------------------------------------------------*/
+ * Routines that work with realtype** begin with "dense". 
+ * -----------------------------------------------------------------
+ */
 
 #ifndef _SUNDIALS_DENSE_H
 #define _SUNDIALS_DENSE_H
@@ -73,13 +78,11 @@ extern "C" {
  * -----------------------------------------------------------------
  */
 
-SUNDIALS_EXPORT sunindextype DenseGETRF(DlsMat A, sunindextype *p);
-SUNDIALS_EXPORT void DenseGETRS(DlsMat A, sunindextype *p, realtype *b);
+SUNDIALS_EXPORT long int DenseGETRF(DlsMat A, long int *p);
+SUNDIALS_EXPORT void DenseGETRS(DlsMat A, long int *p, realtype *b);
 
-SUNDIALS_EXPORT sunindextype denseGETRF(realtype **a, sunindextype m,
-                                        sunindextype n, sunindextype *p);
-SUNDIALS_EXPORT void denseGETRS(realtype **a, sunindextype n, sunindextype *p,
-                                realtype *b);
+SUNDIALS_EXPORT long int denseGETRF(realtype **a, long int m, long int n, long int *p);
+SUNDIALS_EXPORT void denseGETRS(realtype **a, long int n, long int *p, realtype *b);
 
 /*
  * -----------------------------------------------------------------
@@ -88,7 +91,7 @@ SUNDIALS_EXPORT void denseGETRS(realtype **a, sunindextype n, sunindextype *p,
  * DensePOTRF computes the Cholesky factorization of a real symmetric
  * positive definite matrix A.
  * -----------------------------------------------------------------
- * DensePOTRS solves a system of linear equations A*X = B with a
+ * DensePOTRS solves a system of linear equations A*X = B with a 
  * symmetric positive definite matrix A using the Cholesky factorization
  * A = L*L**T computed by DensePOTRF.
  *
@@ -99,11 +102,11 @@ SUNDIALS_EXPORT void denseGETRS(realtype **a, sunindextype n, sunindextype *p,
  * -----------------------------------------------------------------
  */
 
-SUNDIALS_EXPORT sunindextype DensePOTRF(DlsMat A);
+SUNDIALS_EXPORT long int DensePOTRF(DlsMat A);
 SUNDIALS_EXPORT void DensePOTRS(DlsMat A, realtype *b);
 
-SUNDIALS_EXPORT sunindextype densePOTRF(realtype **a, sunindextype m);
-SUNDIALS_EXPORT void densePOTRS(realtype **a, sunindextype m, realtype *b);
+SUNDIALS_EXPORT long int densePOTRF(realtype **a, long int m);
+SUNDIALS_EXPORT void densePOTRS(realtype **a, long int m, realtype *b);
 
 /*
  * -----------------------------------------------------------------
@@ -111,10 +114,10 @@ SUNDIALS_EXPORT void densePOTRS(realtype **a, sunindextype m, realtype *b);
  * -----------------------------------------------------------------
  * DenseGEQRF computes a QR factorization of a real M-by-N matrix A:
  * A = Q * R (with M>= N).
- *
+ * 
  * DenseGEQRF requires a temporary work vector wrk of length M.
  * -----------------------------------------------------------------
- * DenseORMQR computes the product w = Q * v where Q is a real
+ * DenseORMQR computes the product w = Q * v where Q is a real 
  * orthogonal matrix defined as the product of k elementary reflectors
  *
  *        Q = H(1) H(2) . . . H(k)
@@ -132,14 +135,13 @@ SUNDIALS_EXPORT void densePOTRS(realtype **a, sunindextype m, realtype *b);
  */
 
 SUNDIALS_EXPORT int DenseGEQRF(DlsMat A, realtype *beta, realtype *wrk);
-SUNDIALS_EXPORT int DenseORMQR(DlsMat A, realtype *beta, realtype *vn,
-                               realtype *vm, realtype *wrk);
+SUNDIALS_EXPORT int DenseORMQR(DlsMat A, realtype *beta, realtype *vn, realtype *vm, 
+			       realtype *wrk);
 
-SUNDIALS_EXPORT int denseGEQRF(realtype **a, sunindextype m, sunindextype n,
-                               realtype *beta, realtype *wrk);
-SUNDIALS_EXPORT int denseORMQR(realtype **a, sunindextype m, sunindextype n,
-                               realtype *beta, realtype *v, realtype *w,
+SUNDIALS_EXPORT int denseGEQRF(realtype **a, long int m, long int n, realtype *beta,
                                realtype *wrk);
+SUNDIALS_EXPORT int denseORMQR(realtype **a, long int m, long int n, realtype *beta,
+			       realtype *v, realtype *w, realtype *wrk);
 
 /*
  * -----------------------------------------------------------------
@@ -147,15 +149,14 @@ SUNDIALS_EXPORT int denseORMQR(realtype **a, sunindextype m, sunindextype n,
  * -----------------------------------------------------------------
  * DenseCopy copies the contents of the M-by-N matrix A into the
  * M-by-N matrix B.
- *
+ * 
  * DenseCopy is a wrapper around denseCopy which accesses the data
  * in the DlsMat A and DlsMat B (i.e. the fields cols)
  * -----------------------------------------------------------------
  */
 
 SUNDIALS_EXPORT void DenseCopy(DlsMat A, DlsMat B);
-SUNDIALS_EXPORT void denseCopy(realtype **a, realtype **b, sunindextype m,
-                               sunindextype n);
+SUNDIALS_EXPORT void denseCopy(realtype **a, realtype **b, long int m, long int n);
 
 /*
  * -----------------------------------------------------------------
@@ -170,8 +171,7 @@ SUNDIALS_EXPORT void denseCopy(realtype **a, realtype **b, sunindextype m,
  */
 
 SUNDIALS_EXPORT void DenseScale(realtype c, DlsMat A);
-SUNDIALS_EXPORT void denseScale(realtype c, realtype **a, sunindextype m,
-                                sunindextype n);
+SUNDIALS_EXPORT void denseScale(realtype c, realtype **a, long int m, long int n);
 
 
 /*
@@ -183,26 +183,25 @@ SUNDIALS_EXPORT void denseScale(realtype c, realtype **a, sunindextype m,
  * -----------------------------------------------------------------
  */
 
-SUNDIALS_EXPORT void denseAddIdentity(realtype **a, sunindextype n);
+SUNDIALS_EXPORT void denseAddIdentity(realtype **a, long int n);
 
 
 /*
  * -----------------------------------------------------------------
  * Function: DenseMatvec
  * -----------------------------------------------------------------
- * DenseMatvec computes the matrix-vector product y = A*x, where A
+ * DenseMatvec computes the matrix-vector product y = A*x, where A 
  * is an M-by-N matrix, x is a vector of length N, and y is a vector
  * of length M.  No error checking is performed on the length of the
  * arrays x and y.  Only y is modified in this routine.
  *
- * DenseMatvec is a wrapper around denseMatvec which performs the
+ * DenseMatvec is a wrapper around denseMatvec which performs the 
  * actual product by accessing the data in the DlsMat A.
  * -----------------------------------------------------------------
  */
 
 SUNDIALS_EXPORT void DenseMatvec(DlsMat A, realtype *x, realtype *y);
-SUNDIALS_EXPORT void denseMatvec(realtype **a, realtype *x, realtype *y,
-                                 sunindextype m, sunindextype n);
+SUNDIALS_EXPORT void denseMatvec(realtype **a, realtype *x, realtype *y, long int m, long int n);
 
 
 #ifdef __cplusplus
