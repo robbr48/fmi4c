@@ -1,7 +1,7 @@
 #ifndef FMIC_TEST_FMI3_H
 #define FMIC_TEST_FMI3_H
 
-#include "fmic_types_fmi3.h"
+#include "fmi4c_types_fmi3.h"
 
 void loggerFmi3(fmi3InstanceEnvironment instanceEnvironment,
                  fmi3String instanceName,

@@ -1,8 +1,8 @@
 #include <stdarg.h>
 
-#include "fmic.h"
-#include "fmic_test.h"
-#include "fmic_test_fmi2.h"
+#include "fmi4c.h"
+#include "fmi4c_test.h"
+#include "fmi4c_test_fmi2.h"
 
 void loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
                 fmi2String instanceName,

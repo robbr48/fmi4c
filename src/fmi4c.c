@@ -1,4 +1,4 @@
-#include "fmic_private.h"
+#include "fmi4c_private.h"
 #include "3rdparty/minizip/miniunz.h"
 
 #include "3rdparty/ezxml/ezxml.h"
@@ -9,7 +9,7 @@
     #include <dlfcn.h>
 #endif
 
-#include "fmic_utils.h"
+#include "fmi4c_utils.h"
 
 //! @brief Unzips an FMU file
 //! @param fmuFile Path to zip file

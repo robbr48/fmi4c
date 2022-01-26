@@ -1,6 +1,6 @@
-#include "fmic.h"
-#include "fmic_test.h"
-#include "fmic_test_fmi3.h"
+#include "fmi4c.h"
+#include "fmi4c_test.h"
+#include "fmi4c_test_fmi3.h"
 
 void  loggerFmi3(fmi3InstanceEnvironment instanceEnvironment,
                  fmi3String instanceName,

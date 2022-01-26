@@ -1,7 +1,7 @@
 #ifndef FMIC_TEST_FMI2_H
 #define FMIC_TEST_FMI2_H
 
-#include "fmic_types_fmi2.h"
+#include "fmi4c_types_fmi2.h"
 
 void loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
                 fmi2String instanceName,

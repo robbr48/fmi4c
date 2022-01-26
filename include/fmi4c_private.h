@@ -5,13 +5,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "fmic_types.h"
-#include "fmic_types_fmi1.h"
-#include "fmic_types_fmi2.h"
-#include "fmic_types_fmi3.h"
-#include "fmic_functions_fmi1.h"
-#include "fmic_functions_fmi2.h"
-#include "fmic_functions_fmi3.h"
+#include "fmi4c_types.h"
+#include "fmi4c_types_fmi1.h"
+#include "fmi4c_types_fmi2.h"
+#include "fmi4c_types_fmi3.h"
+#include "fmi4c_functions_fmi1.h"
+#include "fmi4c_functions_fmi2.h"
+#include "fmi4c_functions_fmi3.h"
 
 #ifdef _WIN32
 #include <windows.h>

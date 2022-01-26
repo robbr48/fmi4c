@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
-project(fmic C)
+project(fmi4c C)
 
-set(target_name fmic)
+set(target_name fmi4c)
 
 option(BUILD_DOCUMENTATION "Build Doxtygen documentation" OFF])
 option(BUILD_TEST "Build test executable" OFF])
@@ -13,19 +13,19 @@ endif()
 include_directories(src)
 
 set(SRCFILES
-    src/fmic.c
-    src/fmic_utils.c
-    include/fmic.h
-    include/fmic_public.h
-    include/fmic_private.h
-    include/fmic_types.h
-    include/fmic_types_fmi1.h
-    include/fmic_types_fmi2.h
-    include/fmic_types_fmi3.h
-    include/fmic_functions_fmi1.h
-    include/fmic_functions_fmi2.h
-    include/fmic_functions_fmi3.h
-    include/fmic_utils.h
+    src/fmi4c.c
+    src/fmi4c_utils.c
+    include/fmi4c.h
+    include/fmi4c_public.h
+    include/fmi4c_private.h
+    include/fmi4c_types.h
+    include/fmi4c_types_fmi1.h
+    include/fmi4c_types_fmi2.h
+    include/fmi4c_types_fmi3.h
+    include/fmi4c_functions_fmi1.h
+    include/fmi4c_functions_fmi2.h
+    include/fmi4c_functions_fmi3.h
+    include/fmi4c_utils.h
     3rdparty/minizip/miniunz.c
     3rdparty/minizip/ioapi.c
     3rdparty/minizip/mztools.c
@@ -60,23 +60,23 @@ target_include_directories(${target_name} PUBLIC 3rdparty/zlib-1.2.6)
 install(TARGETS ${target_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 if (${BUILD_TEST})
-    set(test_target_name fmictest)
+    set(test_target_name fmi4ctest)
     set(TESTSRCFILES
-	src/test/fmic_test.c
-	src/test/fmic_test_fmi1.c
-	src/test/fmic_test_fmi2.c
-	src/test/fmic_test_fmi3.c
-	src/test/fmic_test_tlm.c
-	include/test/fmic_test.h
-	include/test/fmic_test_fmi1.h
-	include/test/fmic_test_fmi2.h
-	include/test/fmic_test_fmi3.h
-	include/test/fmic_test_tlm.h)
+	src/test/fmi4c_test.c
+	src/test/fmi4c_test_fmi1.c
+	src/test/fmi4c_test_fmi2.c
+	src/test/fmi4c_test_fmi3.c
+	src/test/fmi4c_test_tlm.c
+	include/test/fmi4c_test.h
+	include/test/fmi4c_test_fmi1.h
+	include/test/fmi4c_test_fmi2.h
+	include/test/fmi4c_test_fmi3.h
+	include/test/fmi4c_test_tlm.h)
     add_executable(${test_target_name} ${TESTSRCFILES})
     target_include_directories(${test_target_name} PUBLIC include)
     target_include_directories(${test_target_name} PUBLIC include/test)
     install(TARGETS ${test_target_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
-    target_link_libraries(${test_target_name} -lm fmic)
+    target_link_libraries(${test_target_name} -lm fmi4c)
 
     #Test FMU (FMI 1.0 for co-simulation)
     set(fmi1cs_target_name fmi1cs)

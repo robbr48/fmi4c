@@ -9,12 +9,12 @@
 #include <unistd.h>
 #endif
 
-#include "fmic.h"
-#include "fmic_test.h"
-#include "fmic_test_fmi1.h"
-#include "fmic_test_fmi2.h"
-#include "fmic_test_fmi3.h"
-#include "fmic_test_tlm.h"
+#include "fmi4c.h"
+#include "fmi4c_test.h"
+#include "fmi4c_test_fmi1.h"
+#include "fmi4c_test_fmi2.h"
+#include "fmi4c_test_fmi3.h"
+#include "fmi4c_test_tlm.h"
 
 #define TABLE_SIZE 1500
 

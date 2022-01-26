@@ -1,7 +1,7 @@
 #ifndef FMIC_TEST_H
 #define FMIC_TEST_H
 
-#include "fmic.h"
+#include "fmi4c.h"
 
 #define UNUSED(x) (void)(x);
 
