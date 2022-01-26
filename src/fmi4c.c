@@ -345,7 +345,7 @@ bool parseModelDescriptionFmi2(fmi2Handle *fmu)
         fmu->defaultStartTimeDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "startTime", &fmu->defaultStartTime);
         fmu->defaultStopTimeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stopTime",  &fmu->defaultStopTime);
         fmu->defaultToleranceDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "tolerance", &fmu->defaultTolerance);
-        fmu->defaultStepSizeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stopTime",  &fmu->defaultStepSize);
+        fmu->defaultStepSizeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stepSize",  &fmu->defaultStepSize);
     }
 
     ezxml_t modelVariablesElement = ezxml_child(rootElement, "ModelVariables");
@@ -612,7 +612,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
         fmu->defaultStartTimeDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "startTime", &fmu->defaultStartTime);
         fmu->defaultStopTimeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stopTime",  &fmu->defaultStopTime);
         fmu->defaultToleranceDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "tolerance", &fmu->defaultTolerance);
-        fmu->defaultStepSizeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stopTime",  &fmu->defaultStepSize);
+        fmu->defaultStepSizeDefined =  parseFloat64AttributeEzXml(defaultExperimentElement, "stepSize",  &fmu->defaultStepSize);
     }
 
     ezxml_t modelVariablesElement = ezxml_child(rootElement, "ModelVariables");

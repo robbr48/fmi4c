@@ -81,7 +81,7 @@ int testFMI3CS(fmi3Handle *fmu3)
 
     printf("FMU successfully initialized!\n");
 
-    printf("Simulating from %f to %f...\n",startTime, stopTime);
+    printf("Simulating from %f to %f with a step size of %f...\n",startTime, stopTime, stepSize);
     FILE *outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
