@@ -2,6 +2,7 @@
 #define FMIC_UTILS_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include "3rdparty/ezxml/ezxml.h"
 
 const char* getFunctionName(const char* modelName, const char* functionName);
@@ -14,9 +15,9 @@ bool parseInt64AttributeEzXml(ezxml_t element, const char* attributeName, int64_
 bool parseInt32AttributeEzXml(ezxml_t element, const char* attributeName, int32_t* target);
 bool parseInt16AttributeEzXml(ezxml_t element, const char *attributeName, int16_t* target);
 bool parseInt8AttributeEzXml(ezxml_t element, const char *attributeName, int8_t* target);
-bool parseUInt64AttributeEzXml(ezxml_t element, const char* attributeName, u_int64_t* target);
-bool parseUInt32AttributeEzXml(ezxml_t element, const char* attributeName, u_int32_t* target);
-bool parseUInt16AttributeEzXml(ezxml_t element, const char *attributeName, u_int16_t* target);
-bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, u_int8_t *target);
+bool parseUInt64AttributeEzXml(ezxml_t element, const char* attributeName, uint64_t* target);
+bool parseUInt32AttributeEzXml(ezxml_t element, const char* attributeName, uint32_t* target);
+bool parseUInt16AttributeEzXml(ezxml_t element, const char *attributeName, uint16_t* target);
+bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, uint8_t *target);
 
 #endif // FMIC_UTILS_H

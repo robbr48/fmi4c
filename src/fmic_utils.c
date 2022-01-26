@@ -135,7 +135,7 @@ bool parseInt8AttributeEzXml(ezxml_t element, const char *attributeName, int8_t 
 //! @param attributeName Attribute name
 //! @param target Pointer to target variable
 //! @returns True if attribute was found, else false
-bool parseUInt64AttributeEzXml(ezxml_t element, const char *attributeName, u_int64_t *target)
+bool parseUInt64AttributeEzXml(ezxml_t element, const char *attributeName, uint64_t *target)
 {
     if(ezxml_attr(element, attributeName)) {
         (*target) = strtoul(ezxml_attr(element, attributeName), NULL, 10);
@@ -149,10 +149,10 @@ bool parseUInt64AttributeEzXml(ezxml_t element, const char *attributeName, u_int
 //! @param attributeName Attribute name
 //! @param target Pointer to target variable
 //! @returns True if attribute was found, else false
-bool parseUInt32AttributeEzXml(ezxml_t element, const char *attributeName, u_int32_t *target)
+bool parseUInt32AttributeEzXml(ezxml_t element, const char *attributeName, uint32_t *target)
 {
     if(ezxml_attr(element, attributeName)) {
-        (*target) = (u_int32_t)strtoul(ezxml_attr(element, attributeName), NULL, 10);
+        (*target) = (uint32_t)strtoul(ezxml_attr(element, attributeName), NULL, 10);
         return true;
     }
     return false;
@@ -163,10 +163,10 @@ bool parseUInt32AttributeEzXml(ezxml_t element, const char *attributeName, u_int
 //! @param attributeName Attribute name
 //! @param target Pointer to target variable
 //! @returns True if attribute was found, else false
-bool parseUInt16AttributeEzXml(ezxml_t element, const char *attributeName, u_int16_t *target)
+bool parseUInt16AttributeEzXml(ezxml_t element, const char *attributeName, uint16_t *target)
 {
     if(ezxml_attr(element, attributeName)) {
-        (*target) = (u_int16_t)strtoul(ezxml_attr(element, attributeName), NULL, 10);
+        (*target) = (uint16_t)strtoul(ezxml_attr(element, attributeName), NULL, 10);
         return true;
     }
     return false;
@@ -177,10 +177,10 @@ bool parseUInt16AttributeEzXml(ezxml_t element, const char *attributeName, u_int
 //! @param attributeName Attribute name
 //! @param target Pointer to target variable
 //! @returns True if attribute was found, else false
-bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, u_int8_t *target)
+bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, uint8_t *target)
 {
     if(ezxml_attr(element, attributeName)) {
-        (*target) = (u_int8_t)strtoul(ezxml_attr(element, attributeName), NULL, 10);
+        (*target) = (uint8_t)strtoul(ezxml_attr(element, attributeName), NULL, 10);
         return true;
     }
     return false;

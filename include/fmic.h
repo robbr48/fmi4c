@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #ifdef _WIN32
-#include <direct.h
+#include <direct.h>
 #include <windows.h>
 #endif
 

@@ -50,7 +50,7 @@ endif()
 
 add_library(${target_name} SHARED ${SRCFILES})
 
-target_compile_definitions(${target_name} PUBLIC HAVE_MEMMOVE=1)
+target_compile_definitions(${target_name} PUBLIC HAVE_MEMMOVE=1 EZXML_NOMMAP)
 
 target_include_directories(${target_name} PUBLIC .)
 target_include_directories(${target_name} PUBLIC include)

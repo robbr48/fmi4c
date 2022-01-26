@@ -771,7 +771,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
                var.datatype == fmi3DataTypeBoolean ||
                var.datatype == fmi3DataTypeBinary ||
                var.datatype == fmi3DataTypeEnumeration) {
-                const char* initial;
+                const char* initial = NULL;
                 parseStringAttributeEzXml(varElement, "initial", &initial);
                 if(initial && !strcmp(initial, "approx")) {
                     var.initial = fmi3InitialApprox;
@@ -906,14 +906,17 @@ bool loadFunctionsFmi1(fmi1Handle *fmu)
 #endif
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
-#else
-    void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
-#endif
     if(NULL == dll) {
         printf("Loading DLL failed: %s\n",dllPath);
-        printf("Error: %s\n", dlerror());
         return false;
     }
+#else
+    void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
+    if(NULL == dll) {
+        printf("Loading DLL failed: %s (%s)\n",dllPath, dlerror());
+        return false;
+    }
+#endif
 
     fmu->dll = dll;
 
@@ -1053,13 +1056,17 @@ bool loadFunctionsFmi2(fmi2Handle *fmu)
 #endif
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
+    if(NULL == dll) {
+        printf("Loading DLL failed: %s\n", dllPath);
+        return false;
+    }
 #else
     void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
-#endif
     if(NULL == dll) {
         printf("Loading DLL failed: %s (%s)\n", dllPath, dlerror());
         return false;
     }
+#endif
 
     fmu->dll = dll;
 
@@ -1218,13 +1225,17 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
 #endif
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
+    if(NULL == dll) {
+        printf("Loading DLL failed: %s\n", dllPath);
+        return false;
+    }
 #else
     void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
-#endif
     if(NULL == dll) {
         printf("Loading DLL failed: %s (%s)\n", dllPath, dlerror());
         return false;
     }
+#endif
 
     fmu->dll = dll;
 
