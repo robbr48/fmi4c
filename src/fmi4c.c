@@ -579,7 +579,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
         parseBooleanAttributeEzXml(cosimElement, "hasEventMode", &fmu->hasEventMode);
     }
 
-    ezxml_t modelExchangeElement = ezxml_child(rootElement, "CoSimulation");
+    ezxml_t modelExchangeElement = ezxml_child(rootElement, "ModelExchange");
     if(modelExchangeElement) {
         fmu->supportsModelExchange = true;
         parseStringAttributeEzXml(modelExchangeElement, "modelIdentifier", &fmu->modelIdentifier);
@@ -596,7 +596,7 @@ bool parseModelDescriptionFmi3(fmi3Handle *fmu)
 
     ezxml_t scheduledExecutionElement = ezxml_child(rootElement, "ScheduledExecution");
     if(scheduledExecutionElement) {
-        fmu->supportsModelExchange = true;
+        fmu->supportsScheduledExecution = true;
         parseStringAttributeEzXml(scheduledExecutionElement, "modelIdentifier", &fmu->modelIdentifier);
         parseBooleanAttributeEzXml(scheduledExecutionElement, "needsExecutionTool", &fmu->needsExecutionTool);
         parseBooleanAttributeEzXml(scheduledExecutionElement, "canBeInstantiatedOnlyOncePerProcess", &fmu->canBeInstantiatedOnlyOncePerProcess);
@@ -1322,7 +1322,9 @@ bool loadFunctionsFmi3(fmi3Handle *fmu)
     CHECKFUNCTION(fmi3ExitInitializationMode);
     CHECKFUNCTION(fmi3Terminate);
     CHECKFUNCTION(fmi3Reset);
-    CHECKFUNCTION(fmi3EnterEventMode);
+    if(fmu->hasEventMode) {
+        CHECKFUNCTION(fmi3EnterEventMode);
+    }
     if(fmu->hasFloat64Variables) {
         CHECKFUNCTION(fmi3SetFloat64);
         CHECKFUNCTION(fmi3GetFloat64);
