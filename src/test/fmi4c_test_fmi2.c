@@ -108,7 +108,7 @@ int testFMI2ME(fmi2Handle *fmu2)
     status = fmi2GetContinuousStates(fmu2, states, nStates);
     status = fmi2GetEventIndicators(fmu2, eventIndicators, nEventIndicators);
 
-    FILE *outputFile = fopen(outputCsvPath, "w");
+    outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
         fprintf(outputFile,",%s",fmi2GetVariableName(fmi2GetVariableByValueReference(fmu2, outputRefs[i])));
@@ -257,7 +257,7 @@ int testFMI2CS(fmi2Handle *fmu2)
     printf("  FMU successfully initialized.\n");
 
     printf("  Simulating from %f to %f...\n",startTime, stopTime);
-    FILE *outputFile = fopen(outputCsvPath, "w");
+    outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
         fprintf(outputFile,",%s",fmi2GetVariableName(fmi2GetVariableByValueReference(fmu2, outputRefs[i])));

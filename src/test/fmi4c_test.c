@@ -13,6 +13,7 @@
 #include "fmi4c_test_tlm.h"
 
 int numOutputs = 0;
+FILE* outputFile = NULL;
 unsigned int outputRefs[VAR_MAX];
 
 //Default experiment settings (may be overwritten by default experiment in FMU)

@@ -72,7 +72,7 @@ int testFMI1ME(fmi1Handle *fmu1) {
     status = fmi1GetContinuousStates(fmu1, states, nStates);
     status = fmi1GetEventIndicators(fmu1, eventIndicators, nEventIndicators);
 
-    FILE *outputFile = fopen(outputCsvPath, "w");
+    outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
         fprintf(outputFile,",%s",fmi1GetVariableName(fmi1GetVariableByValueReference(fmu1, outputRefs[i])));
@@ -190,7 +190,7 @@ int testFMI1CS(fmi1Handle *fmu1)
     printf("FMU successfully initialized!\n");
 
     printf("Simulating from %f to %f...\n",startTime, stopTime);
-    FILE *outputFile = fopen(outputCsvPath, "w");
+    outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
         fprintf(outputFile,",%s",fmi1GetVariableName(fmi1GetVariableByValueReference(fmu1, outputRefs[i])));

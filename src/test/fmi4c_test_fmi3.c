@@ -28,14 +28,24 @@ void intermediateUpdate(
         fmi3Boolean* earlyReturnRequested,
         fmi3Float64* earlyReturnTime)
 {
-    UNUSED(instanceEnvironment);
     UNUSED(clocksTicked);
     UNUSED(intermediateVariableSetRequested);
-    UNUSED(intermediateVariableGetAllowed);
-    UNUSED(intermediateStepFinished);
     UNUSED(canReturnEarly);
     UNUSED(earlyReturnRequested);
     UNUSED(earlyReturnTime);
+
+    printf("Intermediate update at %f\n", intermediateUpdateTime);
+
+    if(intermediateVariableGetAllowed && intermediateStepFinished) {
+        //Print all output variables to CSV file
+        double value;
+        fprintf(outputFile,"%f",intermediateUpdateTime);
+        for(int i=0; i<numOutputs; ++i) {
+            fmi3GetFloat64((fmi3Handle *)instanceEnvironment, &outputRefs[i], 1, &value, 1);
+            fprintf(outputFile,",%f",value);
+        }
+        fprintf(outputFile,"\n");
+    }
 }
 
 
@@ -82,7 +92,7 @@ int testFMI3CS(fmi3Handle *fmu3)
     printf("FMU successfully initialized!\n");
 
     printf("Simulating from %f to %f with a step size of %f...\n",startTime, stopTime, stepSize);
-    FILE *outputFile = fopen(outputCsvPath, "w");
+    outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
         fprintf(outputFile,",%s",fmi3GetVariableName(fmi3GetVariableByValueReference(fmu3, outputRefs[i])));
@@ -234,7 +244,7 @@ int testFMI3ME(fmi3Handle *fmu3) {
     status = fmi3GetNominalsOfContinuousStates(fmu3, nominalStates, nStates);
     status = fmi3GetEventIndicators(fmu3, eventIndicators, nEventIndicators);
 
-    FILE *outputFile = fopen(outputCsvPath, "w");
+    outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
         fprintf(outputFile,",%s",fmi3GetVariableName(fmi3GetVariableByValueReference(fmu3, outputRefs[i])));
