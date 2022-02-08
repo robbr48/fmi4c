@@ -107,10 +107,10 @@ bool parseInt32AttributeEzXml(ezxml_t element, const char *attributeName, int32_
 //! @param attributeName Attribute name
 //! @param target Pointer to target variable
 //! @returns True if attribute was found, else false
-bool parseFloat32AttributeEzXml(ezxml_t element, const char *attributeName, int16_t *target)
+bool parseFloat32AttributeEzXml(ezxml_t element, const char *attributeName, float *target)
 {
     if(ezxml_attr(element, attributeName)) {
-        (*target) = (int16_t)atof(ezxml_attr(element, attributeName));
+        (*target) = (float)atof(ezxml_attr(element, attributeName));
         return true;
     }
     return false;

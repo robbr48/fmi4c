@@ -57,10 +57,6 @@ fmi3Instance fmi3InstantiateModelExchange(fmi3String instanceName,
     fmu->logger = logMessage;
     fmu->loggingOn = loggingOn;
 
-    if(fmu->loggingOn) {
-        fmu->logger(fmu->fmi3InstanceEnvironment, fmu->instanceName, fmi3OK, "info", "Successfully instantiated FMU for Model Exchange");
-    }
-
     return fmu;
 }
 

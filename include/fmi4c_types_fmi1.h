@@ -6,7 +6,7 @@
 #define fmi1False 0
 
 // Types
-typedef void* fmi1Component;
+typedef void* fmi1Component_t;
 typedef unsigned int fmi1ValueReference;
 typedef double fmi1Real;
 typedef int fmi1Integer;

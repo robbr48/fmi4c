@@ -10,7 +10,7 @@ const char* getFunctionName(const char* modelName, const char* functionName);
 bool parseStringAttributeEzXml(ezxml_t element, const char* attributeName, const char** target);
 bool parseBooleanAttributeEzXml(ezxml_t element, const char* attributeName, bool* target);
 bool parseFloat64AttributeEzXml(ezxml_t element, const char* attributeName, double* target);
-bool parseFloat32AttributeEzXml(ezxml_t element, const char* attributeName, int16_t *target);
+bool parseFloat32AttributeEzXml(ezxml_t element, const char* attributeName, float *target);
 bool parseInt64AttributeEzXml(ezxml_t element, const char* attributeName, int64_t* target);
 bool parseInt32AttributeEzXml(ezxml_t element, const char* attributeName, int32_t* target);
 bool parseInt16AttributeEzXml(ezxml_t element, const char *attributeName, int16_t* target);

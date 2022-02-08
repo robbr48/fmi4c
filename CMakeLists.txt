@@ -26,6 +26,7 @@ set(SRCFILES
     include/fmi4c_functions_fmi2.h
     include/fmi4c_functions_fmi3.h
     include/fmi4c_utils.h
+    include/fmi4c_placeholders.h
     3rdparty/minizip/miniunz.c
     3rdparty/minizip/ioapi.c
     3rdparty/minizip/mztools.c

@@ -37,7 +37,7 @@ typedef fmi3Instance (STDCALL *fmi3InstantiateCoSimulation_t)(fmi3String, fmi3St
                                                                 fmi3InstanceEnvironment, fmi3CallbackLogMessage,
                                                                 fmi3CallbackIntermediateUpdate);
 typedef fmi3Instance (STDCALL *fmi3InstantiateScheduledExecution_t)(fmi3String, fmi3String, fmi3String, fmi3Boolean,
-                                                                      fmi3Boolean, const fmi3ValueReference[], size_t,
+                                                                      fmi3Boolean,
                                                                       fmi3InstanceEnvironment, fmi3CallbackLogMessage,
                                                                       fmi3CallbackIntermediateUpdate,
                                                                       fmi3CallbackLockPreemption,
@@ -98,16 +98,16 @@ typedef fmi3Status (STDCALL *fmi3GetAdjointDerivative_t)(fmi3Instance, const fmi
 typedef fmi3Status (STDCALL *fmi3EnterConfigurationMode_t)(fmi3Instance);
 typedef fmi3Status (STDCALL *fmi3ExitConfigurationMode_t)(fmi3Instance);
 typedef fmi3Status (STDCALL *fmi3GetIntervalDecimal_t)(fmi3Instance, const fmi3ValueReference[], size_t,
-                                                         fmi3Float64[], fmi3IntervalQualifier[], size_t);
+                                                         fmi3Float64[], fmi3IntervalQualifier[]);
 typedef fmi3Status (STDCALL *fmi3GetIntervalFraction_t)(fmi3Instance, const fmi3ValueReference[], size_t,
-                                                          fmi3UInt64[], fmi3UInt64[], fmi3IntervalQualifier[], size_t);
-typedef fmi3Status (STDCALL *fmi3GetShiftDecimal_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Float64[], size_t);
+                                                          fmi3UInt64[], fmi3UInt64[], fmi3IntervalQualifier[]);
+typedef fmi3Status (STDCALL *fmi3GetShiftDecimal_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Float64[]);
 typedef fmi3Status (STDCALL *fmi3GetShiftFraction_t)(fmi3Instance, const fmi3ValueReference[], size_t,
-                                                       fmi3UInt64[], fmi3UInt64[], size_t);
+                                                       fmi3UInt64[], fmi3UInt64[]);
 typedef fmi3Status (STDCALL *fmi3SetIntervalDecimal_t)(fmi3Instance, const fmi3ValueReference[],
-                                                         size_t, const fmi3Float64[], size_t);
+                                                         size_t, const fmi3Float64[]);
 typedef fmi3Status (STDCALL *fmi3SetIntervalFraction_t)(fmi3Instance, const fmi3ValueReference[],
-                                                          size_t, const fmi3UInt64[], const fmi3UInt64[], size_t);
+                                                          size_t, const fmi3UInt64[], const fmi3UInt64[]);
 typedef fmi3Status (STDCALL *fmi3EvaluateDiscreteStates_t)(fmi3Instance);
 typedef fmi3Status (STDCALL *fmi3UpdateDiscreteStates_t)(fmi3Instance, fmi3Boolean*, fmi3Boolean*, fmi3Boolean*,
                                                            fmi3Boolean*, fmi3Boolean*, fmi3Float64*);
@@ -124,6 +124,6 @@ typedef fmi3Status (STDCALL *fmi3GetNumberOfContinuousStates_t)(fmi3Instance, si
 typedef fmi3Status (STDCALL *fmi3EnterStepMode_t)(fmi3Instance);
 typedef fmi3Status (STDCALL *fmi3GetOutputDerivatives_t)(fmi3Instance, const fmi3ValueReference[], size_t,
                                                            const fmi3Int32[], fmi3Float64[], size_t);
-typedef fmi3Status (STDCALL *fmi3ActivateModelPartition_t)(fmi3Instance, fmi3ValueReference, size_t, fmi3Float64);
+typedef fmi3Status (STDCALL *fmi3ActivateModelPartition_t)(fmi3Instance, fmi3ValueReference, fmi3Float64);
 
 #endif // FMIC_FUNCTIONS_FMI3_H

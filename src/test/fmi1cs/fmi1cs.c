@@ -96,10 +96,6 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString  instanceName,
     fmu->callbacks = functions;
     fmu->loggingOn = loggingOn;
 
-    if(fmu->loggingOn) {
-        fmu->callbacks.logger(fmu, fmu->instanceName, fmiOK, "info", "Successfully instantiated FMU");
-    }
-
     return fmu;
 }
 

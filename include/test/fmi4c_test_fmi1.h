@@ -3,7 +3,7 @@
 
 #include "fmi4c_types_fmi1.h"
 
-void loggerFmi1(fmi1Component component,
+void loggerFmi1(fmi1Component_t component,
                 fmi1String instanceName,
                 fmi1Status status,
                 fmi1String category,

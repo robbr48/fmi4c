@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
         printf("  Forcing model exchange mode.\n");
     }
 
-    fmiHandle *fmu = unzipFmu(fmuPath, "testfmu");
+    fmiHandle *fmu = loadFmu(fmuPath, "testfmu");
 
     if(fmu == NULL) {
         printf("Failed to load FMU\n");
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
         }
 
         //Load second FMU
-        fmiHandle *fmu2 = unzipFmu(fmuPath2, "testfmu2");
+        fmiHandle *fmu2 = loadFmu(fmuPath2, "testfmu2");
 
         if(fmu2 == NULL) {
             printf("Failed to load second FMU\n");

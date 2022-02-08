@@ -24,7 +24,7 @@ typedef bool fmi3Boolean;
 typedef char fmi3Char;
 typedef const fmi3Char* fmi3String;
 typedef uint8_t fmi3Byte;
-typedef const fmi3Byte* fmi3Binary;
+typedef fmi3Byte* fmi3Binary;
 typedef bool fmi3Clock;
 
 // Enums
