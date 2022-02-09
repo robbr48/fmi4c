@@ -23,7 +23,7 @@ Below is a simplified example on how to load and simulate an FMI 3.0 FMU for co-
 int main(int argc, char *argv[])
 {
     if(argc < 2) {
-        printf("Too few argumentse.\n");
+        printf("Too few arguments.\n");
         exit(1);
     }
 
