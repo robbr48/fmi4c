@@ -310,7 +310,7 @@ FMIC_DLLEXPORT bool fmi3GetHasEventMode(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetProvidesIntermediateUpdate(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetProvidesEvaluateDiscreteStates(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetRecommendedIntermediateInputSmoothness(fmiHandle* fmu);
-FMIC_DLLEXPORT bool fmi3GetCompletedIntegratorStepNotNeeded(fmiHandle* fmu);
+FMIC_DLLEXPORT bool fmi3GetNeedsCompletedIntegratorStep(fmiHandle* fmu);
 
 FMIC_DLLEXPORT bool fmi3InstantiateCoSimulation(fmiHandle *fmu,
                              fmi3Boolean                    visible,

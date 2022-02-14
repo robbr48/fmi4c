@@ -466,7 +466,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
     fmu->fmi3.canReturnEarlyAfterIntermediateUpdate = false;
     fmu->fmi3.fixedInternalStepSize = 0;
     fmu->fmi3.hasEventMode = false;
-    fmu->fmi3.needsCompletedIntegratorStep = true;
+    fmu->fmi3.needsCompletedIntegratorStep = false;
     fmu->fmi3.hasClockVariables = false;
     fmu->fmi3.hasFloat64Variables = false;
     fmu->fmi3.hasFloat32Variables = false;
