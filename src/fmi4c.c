@@ -116,7 +116,7 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
             parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
             parseStringAttributeEzXml(varElement, "description", &var.description);
 
-            const char* causality;
+            const char* causality = "internal";
             parseStringAttributeEzXml(varElement, "causality", &causality);
             if(!strcmp(causality, "input")) {
                 var.causality = fmi1CausalityInput;
@@ -135,7 +135,7 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
                 return false;
             }
 
-            const char* variability;
+            const char* variability = "continuous";
             parseStringAttributeEzXml(varElement, "variability", &variability);
             if(!strcmp(variability, "parameter")) {
                 var.variability = fmi1VariabilityParameter;
@@ -310,7 +310,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             parseStringAttributeEzXml(varElement, "description", &var.description);
             parseBooleanAttributeEzXml(varElement, "canHandleMultipleSetPerTimeInstant", &var.canHandleMultipleSetPerTimeInstant);
 
-            const char* causality;
+            const char* causality = "local";
             parseStringAttributeEzXml(varElement, "causality", &causality);
             if(!strcmp(causality, "input")) {
                 var.causality = fmi2CausalityInput;
@@ -335,7 +335,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 return false;
             }
 
-            const char* variability;
+            const char* variability = "continuous";
             parseStringAttributeEzXml(varElement, "variability", &variability);
             if(variability && !strcmp(variability, "fixed")) {
                 var.variability = fmi2VariabilityFixed;
@@ -583,56 +583,6 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             parseStringAttributeEzXml(varElement, "declaredType", &var.declaredType);
             //! @todo Read "clocks" argument (space separated list of value references)
 
-            const char* causality;
-            parseStringAttributeEzXml(varElement, "causality", &causality);
-            if(!strcmp(causality, "parameter")) {
-                var.causality = fmi3CausalityParameter;
-            }
-            else if(!strcmp(causality, "calculatedparameter")) {
-                var.causality = fmi3CausalityCalculatedParameter;
-            }
-            else if(!strcmp(causality, "input")) {
-                var.causality = fmi3CausalityInput;
-            }
-            else if(!strcmp(causality, "output")) {
-                var.causality = fmi3CausalityOutput;
-            }
-            else if(!strcmp(causality, "local")) {
-                var.causality = fmi3CausalityLocal;
-            }
-            else if(!strcmp(causality, "independent")) {
-                var.causality = fmi3CausalityIndependent;
-            }
-            else if(!strcmp(causality, "structuralParameter")) {
-                var.causality = fmi3CausalityStructuralParameter;
-            }
-            else {
-                printf("Unknown causality: %s\n", causality);
-                return false;
-            }
-
-            const char* variability;
-            parseStringAttributeEzXml(varElement, "variability", &variability);
-            if(variability && !strcmp(variability, "constant")) {
-                var.variability = fmi3VariabilityConstant;
-            }
-            else if(variability && !strcmp(variability, "fixed")) {
-                var.variability = fmi3VariabilityFixed;
-            }
-            else if(variability && !strcmp(variability, "tunable")) {
-                var.variability = fmi3VariabilityTunable;
-            }
-            else if(variability && !strcmp(variability, "discrete")) {
-                var.variability = fmi3VariabilityDiscrete;
-            }
-            else if(variability && !strcmp(variability, "continuous")) {
-                var.variability = fmi3VariabilityContinuous;
-            }
-            else if(variability) {
-                printf("Unknown variability: %s\n", variability);
-                return false;
-            }
-
             //Figure out data type
             if(!strcmp(varElement->name, "Float64")) {
                 var.datatype = fmi3DataTypeFloat64;
@@ -708,6 +658,62 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 var.datatype = fmi3DataTypeClock;
                 fmu->fmi3.hasClockVariables = true;
                 parseBooleanAttributeEzXml(varElement, "start", &var.startClock);
+            }
+
+            const char* causality = "local";
+            parseStringAttributeEzXml(varElement, "causality", &causality);
+            if(!strcmp(causality, "parameter")) {
+                var.causality = fmi3CausalityParameter;
+            }
+            else if(!strcmp(causality, "calculatedparameter")) {
+                var.causality = fmi3CausalityCalculatedParameter;
+            }
+            else if(!strcmp(causality, "input")) {
+                var.causality = fmi3CausalityInput;
+            }
+            else if(!strcmp(causality, "output")) {
+                var.causality = fmi3CausalityOutput;
+            }
+            else if(!strcmp(causality, "local")) {
+                var.causality = fmi3CausalityLocal;
+            }
+            else if(!strcmp(causality, "independent")) {
+                var.causality = fmi3CausalityIndependent;
+            }
+            else if(!strcmp(causality, "structuralParameter")) {
+                var.causality = fmi3CausalityStructuralParameter;
+            }
+            else {
+                printf("Unknown causality: %s\n", causality);
+                return false;
+            }
+
+            const char* variability;
+            if(var.datatype == fmi3DataTypeFloat64 || var.datatype == fmi3DataTypeFloat32) {
+                variability = "continuous";
+            }
+            else {
+                variability = "discrete";
+            }
+            parseStringAttributeEzXml(varElement, "variability", &variability);
+            if(variability && !strcmp(variability, "constant")) {
+                var.variability = fmi3VariabilityConstant;
+            }
+            else if(variability && !strcmp(variability, "fixed")) {
+                var.variability = fmi3VariabilityFixed;
+            }
+            else if(variability && !strcmp(variability, "tunable")) {
+                var.variability = fmi3VariabilityTunable;
+            }
+            else if(variability && !strcmp(variability, "discrete")) {
+                var.variability = fmi3VariabilityDiscrete;
+            }
+            else if(variability && !strcmp(variability, "continuous")) {
+                var.variability = fmi3VariabilityContinuous;
+            }
+            else if(variability) {
+                printf("Unknown variability: %s\n", variability);
+                return false;
             }
 
             //Parse arguments common to all except clock type
