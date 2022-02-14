@@ -20,5 +20,6 @@ typedef enum { fmi1ModelExchange, fmi1CoSimulationStandAlone, fmi1CoSimulationTo
 typedef enum { fmi1CausalityInput, fmi1CausalityOutput, fmi1CausalityInternal, fmi1CausalityNone } fmi1Causality;
 typedef enum { fmi1VariabilityConstant, fmi1VariabilityParameter, fmi1VariabilityDiscrete, fmi1VariabilityContinuous } fmi1Variability;
 typedef enum { fmi1DataTypeReal, fmi1DataTypeInteger, fmi1DataTypeBoolean, fmi1DataTypeString, fmi1DataTypeEnumeration } fmi1DataType;
+typedef enum { fmi1AliasNoAlias, fmi1AliasAlias, fmi1AliasNegatedAlias } fmi1Alias;
 
 #endif // FMIC_TYPES_FMI1_H

@@ -64,6 +64,7 @@ FMIC_DLLEXPORT fmi1Real fmi1GetVariableStartReal(fmi1VariableHandle* var);
 FMIC_DLLEXPORT long fmi1GetVariableValueReference(fmi1VariableHandle* var);
 FMIC_DLLEXPORT fmi1Causality fmi1GetVariableCausality(fmi1VariableHandle* var);
 FMIC_DLLEXPORT fmi1Variability fmi1GetVariableVariability(fmi1VariableHandle* var);
+FMIC_DLLEXPORT fmi1Alias fmi1GetAlias(fmi1VariableHandle* var);
 FMIC_DLLEXPORT bool fmi1GetVariableIsFixed(fmi1VariableHandle* var);
 FMIC_DLLEXPORT fmi1DataType fmi1GetVariableDataType(fmi1VariableHandle* var);
 

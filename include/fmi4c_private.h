@@ -59,6 +59,7 @@ typedef struct {
     fmi1String startString;
     fmi1Causality causality;
     fmi1Variability variability;
+    fmi1Alias alias;
     bool fixed;
 } fmi1VariableHandle;
 

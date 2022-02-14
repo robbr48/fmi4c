@@ -154,6 +154,18 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
                 return false;
             }
 
+            const char* alias = "noAlias";
+            parseStringAttributeEzXml(varElement, "alias", &alias);
+            if(!strcmp(alias, "alias")) {
+                var.alias = fmi1AliasAlias;
+            }
+            else if(!strcmp(alias, "negatedAlias")) {
+                var.alias = fmi1AliasNegatedAlias;
+            }
+            else if(!strcmp(alias, "noAlias")) {
+                var.alias = fmi1AliasNoAlias;
+            }
+
             ezxml_t realElement = ezxml_child(varElement, "Real");
             if(realElement) {
                 fmu->fmi1.hasRealVariables = true;
@@ -3338,6 +3350,12 @@ fmi1Variability fmi1GetVariableVariability(fmi1VariableHandle *var)
 {
     TRACEFUNC
     return var->variability;
+}
+
+fmi1Alias fmi1GetAlias(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->alias;
 }
 
 bool fmi1GetVariableIsFixed(fmi1VariableHandle *var)
