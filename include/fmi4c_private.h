@@ -134,6 +134,33 @@ typedef struct {
 } fmi3VariableHandle;
 
 typedef struct {
+    int kg;
+    int m;
+    int s;
+    int A;
+    int K;
+    int mol;
+    int cd;
+    int rad;
+    double factor;
+    double offset;
+} fmi3BaseUnit;
+
+typedef struct {
+    const char* name;
+    double factor;
+    double offset;
+    bool inverse;
+} fmi3DisplayUnitHandle;
+
+typedef struct {
+    const char* name;
+    fmi3BaseUnit *baseUnit;
+    fmi3DisplayUnitHandle *displayUnits;
+    size_t numberOfDisplayUnits;
+} fmi3UnitHandle;
+
+typedef struct {
     const char* modelName;
     const char* modelIdentifier;
     const char* guid;
@@ -465,6 +492,9 @@ typedef struct {
     fmi3EnterStepMode_t enterStepMode;
     fmi3GetOutputDerivatives_t getOutputDerivatives;
     fmi3ActivateModelPartition_t activateModelPartition;
+
+    size_t numberOfUnits;
+    fmi3UnitHandle *units;
 } fmi3Data_t;
 
 

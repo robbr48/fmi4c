@@ -294,6 +294,27 @@ FMIC_DLLEXPORT double fmi3GetDefaultStopTime(fmiHandle *fmu);
 FMIC_DLLEXPORT double fmi3GetDefaultTolerance(fmiHandle *fmu);
 FMIC_DLLEXPORT double fmi3GetDefaultStepSize(fmiHandle *fmu);
 
+FMIC_DLLEXPORT int fmi3GetNumberOfUnits(fmiHandle *fmu);
+FMIC_DLLEXPORT fmi3UnitHandle *fmi3GetUnitByIndex(fmiHandle *fmu, int i);
+FMIC_DLLEXPORT const char* fmi3GetUnitName(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT bool fmi3HasBaseUnit(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT double fmi3GetBaseUnitFactor(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT double fmi3GetBaseUnitOffset(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT int fmi3GetBaseUnit_kg(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT int fmi3GetBaseUnit_m(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT int fmi3GetBaseUnit_s(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT int fmi3GetBaseUnit_A(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT int fmi3GetBaseUnit_K(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT int fmi3GetBaseUnit_mol(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT int fmi3GetBaseUnit_cd(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT int fmi3GetBaseUnit_rad(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT int fmi3GetNumberOfDisplayUnits(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT fmi3DisplayUnitHandle *fmi3GetDisplayUnitByIndex(fmi3UnitHandle *unit, int i);
+FMIC_DLLEXPORT const char* fmi3GetDisplayUnitName(fmi3DisplayUnitHandle *displayUnit);
+FMIC_DLLEXPORT double fmi3GetDisplayUnitFactor(fmi3DisplayUnitHandle *displayUnit);
+FMIC_DLLEXPORT double fmi3GetDisplayUnitOffset(fmi3DisplayUnitHandle *displayUnit);
+FMIC_DLLEXPORT bool fmi3GetDisplayUnitInverse(fmi3DisplayUnitHandle *displayUnit);
+
 FMIC_DLLEXPORT const char* fmi3GetModelIdentifier(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetNeedsExecutionTool(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);
