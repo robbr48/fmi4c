@@ -441,6 +441,8 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
 //! @returns True if parsing was successful
 bool parseModelDescriptionFmi3(fmiHandle *fmu)
 {
+    fmu->fmi3.variableNamingConvention = "flat";
+
     fmu->fmi3.supportsCoSimulation = false;
     fmu->fmi3.supportsModelExchange = false;
     fmu->fmi3.supportsScheduledExecution = false;
