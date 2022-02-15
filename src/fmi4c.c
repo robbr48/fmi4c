@@ -527,51 +527,51 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
     ezxml_t cosimElement = ezxml_child(rootElement, "CoSimulation");
     if(cosimElement) {
         fmu->fmi3.supportsCoSimulation = true;
-        parseStringAttributeEzXml(cosimElement, "modelIdentifier", &fmu->fmi3.modelIdentifier);
-        parseBooleanAttributeEzXml(cosimElement, "needsExecutionTool", &fmu->fmi3.needsExecutionTool);
-        parseBooleanAttributeEzXml(cosimElement, "canBeInstantiatedOnlyOncePerProcess", &fmu->fmi3.canBeInstantiatedOnlyOncePerProcess);
-        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUState", &fmu->fmi3.canGetAndSetFMUState);
-        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUState", &fmu->fmi3.canSerializeFMUState);
-        parseBooleanAttributeEzXml(cosimElement, "providesDirectionalDerivative", &fmu->fmi3.providesDirectionalDerivative);
-        parseBooleanAttributeEzXml(cosimElement, "providesAdjointDerivatives", &fmu->fmi3.providesAdjointDerivatives);
-        parseBooleanAttributeEzXml(cosimElement, "providesPerElementDependencies", &fmu->fmi3.providesPerElementDependencies);
-        parseInt32AttributeEzXml(cosimElement, "maxOutputDerivativeOrder", &fmu->fmi3.maxOutputDerivativeOrder);
-        parseBooleanAttributeEzXml(cosimElement, "providesIntermediateUpdate", &fmu->fmi3.providesIntermediateUpdate);
-        parseBooleanAttributeEzXml(cosimElement, "mightReturnEarlyFromDoStep", &fmu->fmi3.mightReturnEarlyFromDoStep);
-        parseBooleanAttributeEzXml(cosimElement, "providesEvaluateDiscreteStates", &fmu->fmi3.providesEvaluateDiscreteStates);
-        parseInt32AttributeEzXml(cosimElement, "recommendedIntermediateInputSmoothness", &fmu->fmi3.recommendedIntermediateInputSmoothness);
-        parseBooleanAttributeEzXml(cosimElement, "canHandleVariableCommunicationStepSize", &fmu->fmi3.canHandleVariableCommunicationStepSize);
-        parseBooleanAttributeEzXml(cosimElement, "canReturnEarlyAfterIntermediateUpdate", &fmu->fmi3.canReturnEarlyAfterIntermediateUpdate);
-        parseFloat64AttributeEzXml(cosimElement, "fixedInternalStepSize", &fmu->fmi3.fixedInternalStepSize);
-        parseBooleanAttributeEzXml(cosimElement, "hasEventMode", &fmu->fmi3.hasEventMode);
+        parseStringAttributeEzXml(cosimElement,  "modelIdentifier",                         &fmu->fmi3.modelIdentifier);
+        parseBooleanAttributeEzXml(cosimElement, "needsExecutionTool",                      &fmu->fmi3.needsExecutionTool);
+        parseBooleanAttributeEzXml(cosimElement, "canBeInstantiatedOnlyOncePerProcess",     &fmu->fmi3.canBeInstantiatedOnlyOncePerProcess);
+        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUState",                    &fmu->fmi3.canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUState",                    &fmu->fmi3.canSerializeFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "providesDirectionalDerivative",           &fmu->fmi3.providesDirectionalDerivative);
+        parseBooleanAttributeEzXml(cosimElement, "providesAdjointDerivatives",              &fmu->fmi3.providesAdjointDerivatives);
+        parseBooleanAttributeEzXml(cosimElement, "providesPerElementDependencies",          &fmu->fmi3.providesPerElementDependencies);
+        parseInt32AttributeEzXml(cosimElement,   "maxOutputDerivativeOrder",                &fmu->fmi3.maxOutputDerivativeOrder);
+        parseBooleanAttributeEzXml(cosimElement, "providesIntermediateUpdate",              &fmu->fmi3.providesIntermediateUpdate);
+        parseBooleanAttributeEzXml(cosimElement, "mightReturnEarlyFromDoStep",              &fmu->fmi3.mightReturnEarlyFromDoStep);
+        parseBooleanAttributeEzXml(cosimElement, "providesEvaluateDiscreteStates",          &fmu->fmi3.providesEvaluateDiscreteStates);
+        parseInt32AttributeEzXml(cosimElement,   "recommendedIntermediateInputSmoothness",  &fmu->fmi3.recommendedIntermediateInputSmoothness);
+        parseBooleanAttributeEzXml(cosimElement, "canHandleVariableCommunicationStepSize",  &fmu->fmi3.canHandleVariableCommunicationStepSize);
+        parseBooleanAttributeEzXml(cosimElement, "canReturnEarlyAfterIntermediateUpdate",   &fmu->fmi3.canReturnEarlyAfterIntermediateUpdate);
+        parseFloat64AttributeEzXml(cosimElement, "fixedInternalStepSize",                   &fmu->fmi3.fixedInternalStepSize);
+        parseBooleanAttributeEzXml(cosimElement, "hasEventMode",                            &fmu->fmi3.hasEventMode);
     }
 
     ezxml_t modelExchangeElement = ezxml_child(rootElement, "ModelExchange");
     if(modelExchangeElement) {
         fmu->fmi3.supportsModelExchange = true;
-        parseStringAttributeEzXml(modelExchangeElement, "modelIdentifier", &fmu->fmi3.modelIdentifier);
-        parseBooleanAttributeEzXml(modelExchangeElement, "needsExecutionTool", &fmu->fmi3.needsExecutionTool);
+        parseStringAttributeEzXml(modelExchangeElement,  "modelIdentifier",                     &fmu->fmi3.modelIdentifier);
+        parseBooleanAttributeEzXml(modelExchangeElement, "needsExecutionTool",                  &fmu->fmi3.needsExecutionTool);
         parseBooleanAttributeEzXml(modelExchangeElement, "canBeInstantiatedOnlyOncePerProcess", &fmu->fmi3.canBeInstantiatedOnlyOncePerProcess);
-        parseBooleanAttributeEzXml(modelExchangeElement, "canGetAndSetFMUState", &fmu->fmi3.canGetAndSetFMUState);
-        parseBooleanAttributeEzXml(modelExchangeElement, "canSerializeFMUState", &fmu->fmi3.canSerializeFMUState);
-        parseBooleanAttributeEzXml(modelExchangeElement, "providesDirectionalDerivative", &fmu->fmi3.providesDirectionalDerivative);
-        parseBooleanAttributeEzXml(modelExchangeElement, "providesAdjointDerivatives", &fmu->fmi3.providesAdjointDerivatives);
-        parseBooleanAttributeEzXml(modelExchangeElement, "providesPerElementDependencies", &fmu->fmi3.providesPerElementDependencies);
-        parseBooleanAttributeEzXml(modelExchangeElement, "needsCompletedIntegratorStep", &fmu->fmi3.needsCompletedIntegratorStep);
-        parseBooleanAttributeEzXml(modelExchangeElement, "providesEvaluateDiscreteStates", &fmu->fmi3.providesEvaluateDiscreteStates);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canGetAndSetFMUState",                &fmu->fmi3.canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canSerializeFMUState",                &fmu->fmi3.canSerializeFMUState);
+        parseBooleanAttributeEzXml(modelExchangeElement, "providesDirectionalDerivative",       &fmu->fmi3.providesDirectionalDerivative);
+        parseBooleanAttributeEzXml(modelExchangeElement, "providesAdjointDerivatives",          &fmu->fmi3.providesAdjointDerivatives);
+        parseBooleanAttributeEzXml(modelExchangeElement, "providesPerElementDependencies",      &fmu->fmi3.providesPerElementDependencies);
+        parseBooleanAttributeEzXml(modelExchangeElement, "needsCompletedIntegratorStep",        &fmu->fmi3.needsCompletedIntegratorStep);
+        parseBooleanAttributeEzXml(modelExchangeElement, "providesEvaluateDiscreteStates",      &fmu->fmi3.providesEvaluateDiscreteStates);
     }
 
     ezxml_t scheduledExecutionElement = ezxml_child(rootElement, "ScheduledExecution");
     if(scheduledExecutionElement) {
         fmu->fmi3.supportsScheduledExecution = true;
-        parseStringAttributeEzXml(scheduledExecutionElement, "modelIdentifier", &fmu->fmi3.modelIdentifier);
-        parseBooleanAttributeEzXml(scheduledExecutionElement, "needsExecutionTool", &fmu->fmi3.needsExecutionTool);
-        parseBooleanAttributeEzXml(scheduledExecutionElement, "canBeInstantiatedOnlyOncePerProcess", &fmu->fmi3.canBeInstantiatedOnlyOncePerProcess);
-        parseBooleanAttributeEzXml(scheduledExecutionElement, "canGetAndSetFMUState", &fmu->fmi3.canGetAndSetFMUState);
-        parseBooleanAttributeEzXml(scheduledExecutionElement, "canSerializeFMUState", &fmu->fmi3.canSerializeFMUState);
-        parseBooleanAttributeEzXml(scheduledExecutionElement, "providesDirectionalDerivative", &fmu->fmi3.providesDirectionalDerivative);
-        parseBooleanAttributeEzXml(scheduledExecutionElement, "providesAdjointDerivatives", &fmu->fmi3.providesAdjointDerivatives);
-        parseBooleanAttributeEzXml(scheduledExecutionElement, "providesPerElementDependencies", &fmu->fmi3.providesPerElementDependencies);
+        parseStringAttributeEzXml(scheduledExecutionElement,  "modelIdentifier",                        &fmu->fmi3.modelIdentifier);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "needsExecutionTool",                     &fmu->fmi3.needsExecutionTool);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "canBeInstantiatedOnlyOncePerProcess",    &fmu->fmi3.canBeInstantiatedOnlyOncePerProcess);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "canGetAndSetFMUState",                   &fmu->fmi3.canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "canSerializeFMUState",                   &fmu->fmi3.canSerializeFMUState);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "providesDirectionalDerivative",          &fmu->fmi3.providesDirectionalDerivative);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "providesAdjointDerivatives",             &fmu->fmi3.providesAdjointDerivatives);
+        parseBooleanAttributeEzXml(scheduledExecutionElement, "providesPerElementDependencies",         &fmu->fmi3.providesPerElementDependencies);
     }
 
     ezxml_t defaultExperimentElement = ezxml_child(rootElement, "DefaultExperiment");
