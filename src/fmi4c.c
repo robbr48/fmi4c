@@ -534,7 +534,6 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
     parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->fmi3.generationDateAndTime);
     parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->fmi3.variableNamingConvention);
 
-
     ezxml_t cosimElement = ezxml_child(rootElement, "CoSimulation");
     if(cosimElement) {
         fmu->fmi3.supportsCoSimulation = true;
@@ -981,6 +980,26 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 parseUInt64AttributeEzXml(typeElement, "shiftCounter", &fmu->fmi3.clockTypes[iClock].shiftCounter);
                 ++iClock;
             }
+        }
+    }
+
+    ezxml_t logCategoriesElement = ezxml_child(rootElement, "LogCategories");
+    fmu->fmi3.numberOfLogCategories = 0;
+    if(logCategoriesElement) {
+        //Count log categories
+        for(ezxml_t logCategoryElement = logCategoriesElement->child; logCategoryElement; logCategoryElement = logCategoryElement->next) {
+            ++fmu->fmi3.numberOfLogCategories;
+        }
+
+        //Allocate memory for log categories
+        fmu->fmi3.logCategories = malloc(fmu->fmi3.numberOfLogCategories*sizeof(fmi3LogCategory));
+
+        //Read log categories
+        int i=0;
+        for(ezxml_t logCategoryElement = logCategoriesElement->child; logCategoryElement; logCategoryElement = logCategoryElement->next) {
+            parseStringAttributeEzXml(logCategoryElement, "name", &fmu->fmi3.logCategories[i].name);
+            parseStringAttributeEzXml(logCategoryElement, "description", &fmu->fmi3.logCategories[i].description);
+            ++i;
         }
     }
 
@@ -4496,3 +4515,16 @@ void fmi3GetEnumerationItem(fmiHandle *fmu, const char *typeName, int itemId, co
     }
 }
 
+
+int fmi3GetNumberOfLogCategories(fmiHandle *fmu)
+{
+    return fmu->fmi3.numberOfLogCategories;
+}
+
+void fmi3GetLogCategory(fmiHandle *fmu, int id, const char **name, const char **description)
+{
+    if(id < fmu->fmi3.numberOfLogCategories) {
+        *name = fmu->fmi3.logCategories[id].name;
+        *description = fmu->fmi3.logCategories[id].description;
+    }
+}

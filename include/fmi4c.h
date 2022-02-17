@@ -409,6 +409,9 @@ FMIC_DLLEXPORT void fmi3GetClockType(fmiHandle *fmu,
                                      uint64_t *intervalCounter,
                                      uint64_t *shiftCounter);
 
+FMIC_DLLEXPORT int fmi3GetNumberOfLogCategories(fmiHandle *fmu);
+FMIC_DLLEXPORT void fmi3GetLogCategory(fmiHandle *fmu, int id, const char **name, const char **description);
+
 FMIC_DLLEXPORT const char* fmi3GetModelIdentifier(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetNeedsExecutionTool(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);

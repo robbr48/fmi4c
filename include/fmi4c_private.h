@@ -487,6 +487,11 @@ typedef struct {
 } fmi3ClockType;
 
 typedef struct {
+    const char* name;
+    const char* description;
+} fmi3LogCategory;
+
+typedef struct {
     bool supportsModelExchange;
     bool supportsCoSimulation;
     bool supportsScheduledExecution;
@@ -667,6 +672,8 @@ typedef struct {
     fmi3EnumerationType *enumTypes;
     fmi3ClockType *clockTypes;
 
+    int numberOfLogCategories;
+    fmi3LogCategory *logCategories;
 } fmi3Data_t;
 
 
