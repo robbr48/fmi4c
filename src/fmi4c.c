@@ -4046,6 +4046,23 @@ bool fmi3HasBaseUnit(fmi3UnitHandle *unit)
     return (unit->baseUnit != NULL);
 }
 
+void fmi3GetBaseUnit(fmi3UnitHandle *unit, double *factor, double *offset,
+                     int *kg, int *m, int *s, int *A, int *K, int *mol, int *cd, int *rad)
+{
+    if(unit->baseUnit != NULL) {
+        *factor = unit->baseUnit->factor;
+        *offset = unit->baseUnit->offset;
+        *kg = unit->baseUnit->kg;
+        *m= unit->baseUnit->m;
+        *s= unit->baseUnit->s;
+        *A= unit->baseUnit->A;
+        *K= unit->baseUnit->K;
+        *mol= unit->baseUnit->mol;
+        *cd= unit->baseUnit->cd;
+        *rad= unit->baseUnit->rad;
+    }
+}
+
 double fmi3GetBaseUnitFactor(fmi3UnitHandle *unit)
 {
     if(unit->baseUnit != NULL) {
@@ -4131,9 +4148,12 @@ int fmi3GetNumberOfDisplayUnits(fmi3UnitHandle *unit)
     return unit->numberOfDisplayUnits;
 }
 
-fmi3DisplayUnitHandle *fmi3GetDisplayUnitByIndex(fmi3UnitHandle *unit, int i)
+void fmi3GetDisplayUnitByIndex(fmi3UnitHandle *unit, int id, const char **name, double *factor, double *offset, bool *inverse)
 {
-    return &unit->displayUnits[i];
+    *name = unit->displayUnits[id].name;
+    *factor = unit->displayUnits[id].factor;
+    *offset = unit->displayUnits[id].offset;
+    *inverse = unit->displayUnits[id].inverse;
 }
 
 const char *fmi3GetDisplayUnitName(fmi3DisplayUnitHandle *displayUnit)
@@ -4441,3 +4461,4 @@ void fmi3GetEnumerationItem(fmiHandle *fmu, const char *typeName, int itemId, co
         }
     }
 }
+

@@ -298,22 +298,9 @@ FMIC_DLLEXPORT int fmi3GetNumberOfUnits(fmiHandle *fmu);
 FMIC_DLLEXPORT fmi3UnitHandle *fmi3GetUnitByIndex(fmiHandle *fmu, int i);
 FMIC_DLLEXPORT const char* fmi3GetUnitName(fmi3UnitHandle *unit);
 FMIC_DLLEXPORT bool fmi3HasBaseUnit(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT double fmi3GetBaseUnitFactor(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT double fmi3GetBaseUnitOffset(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT int fmi3GetBaseUnit_kg(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT int fmi3GetBaseUnit_m(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT int fmi3GetBaseUnit_s(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT int fmi3GetBaseUnit_A(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT int fmi3GetBaseUnit_K(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT int fmi3GetBaseUnit_mol(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT int fmi3GetBaseUnit_cd(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT int fmi3GetBaseUnit_rad(fmi3UnitHandle *unit);
+FMIC_DLLEXPORT void fmi3GetBaseUnit(fmi3UnitHandle *unit, double *factor, double *offset, int *kg, int *m, int *s, int *A, int *K, int *mol, int *cd, int *rad);
 FMIC_DLLEXPORT int fmi3GetNumberOfDisplayUnits(fmi3UnitHandle *unit);
-FMIC_DLLEXPORT fmi3DisplayUnitHandle *fmi3GetDisplayUnitByIndex(fmi3UnitHandle *unit, int i);
-FMIC_DLLEXPORT const char* fmi3GetDisplayUnitName(fmi3DisplayUnitHandle *displayUnit);
-FMIC_DLLEXPORT double fmi3GetDisplayUnitFactor(fmi3DisplayUnitHandle *displayUnit);
-FMIC_DLLEXPORT double fmi3GetDisplayUnitOffset(fmi3DisplayUnitHandle *displayUnit);
-FMIC_DLLEXPORT bool fmi3GetDisplayUnitInverse(fmi3DisplayUnitHandle *displayUnit);
+FMIC_DLLEXPORT void fmi3GetDisplayUnitByIndex(fmi3UnitHandle *unit, int id, const char **name, double *factor, double *offset, bool *inverse);
 
 FMIC_DLLEXPORT void fmi3GetFloat64Type(fmiHandle* fmu,
                                        const char* name,
