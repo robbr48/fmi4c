@@ -347,6 +347,143 @@ typedef struct {
 } fmi2Data_t;
 
 typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    const char* unit;
+    const char* displayUnit;
+    bool relativeQuantity;
+    bool unbounded;
+    double min;
+    double max;
+    double nominal;
+} fmi3Float64Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    const char* unit;
+    const char* displayUnit;
+    bool relativeQuantity;
+    bool unbounded;
+    float min;
+    float max;
+    float nominal;
+} fmi3Float32Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    int64_t min;
+    int64_t max;
+} fmi3Int64Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    int32_t min;
+    int32_t max;
+} fmi3Int32Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    int16_t min;
+    int16_t max;
+} fmi3Int16Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    int8_t min;
+    int8_t max;
+} fmi3Int8Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    uint64_t min;
+    uint64_t max;
+} fmi3UInt64Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    uint32_t min;
+    uint32_t max;
+} fmi3UInt32Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    uint16_t min;
+    uint16_t max;
+} fmi3UInt16Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    uint8_t min;
+    uint8_t max;
+} fmi3UInt8Type;
+
+typedef struct {
+    const char* name;
+    const char* description;
+} fmi3BooleanType;
+
+typedef struct {
+    const char* name;
+    const char* description;
+} fmi3StringType;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* mimeType;
+    uint32_t maxSize;
+} fmi3BinaryType;
+
+typedef struct {
+    const char* name;
+    int64_t value;
+    const char* description;
+} fmi3EnumerationItem;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    const char* quantity;
+    int64_t min;
+    int64_t max;
+    int numberOfItems;
+    fmi3EnumerationItem *items;
+} fmi3EnumerationType;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    bool canBeDeactivated;
+    uint32_t priority;
+    fmi3IntervalVariability intervalVariability;
+    float intervalDecimal;
+    float shiftDecimal;
+    bool supportsFraction;
+    uint64_t resolution;
+    uint64_t intervalCounter;
+    uint64_t shiftCounter;
+} fmi3ClockType;
+
+typedef struct {
     bool supportsModelExchange;
     bool supportsCoSimulation;
     bool supportsScheduledExecution;
@@ -495,6 +632,38 @@ typedef struct {
 
     size_t numberOfUnits;
     fmi3UnitHandle *units;
+
+    size_t numberOfFloat64Types;
+    size_t numberOfFloat32Types;
+    size_t numberOfInt64Types;
+    size_t numberOfInt32Types;
+    size_t numberOfInt16Types;
+    size_t numberOfInt8Types;
+    size_t numberOfUInt64Types;
+    size_t numberOfUInt32Types;
+    size_t numberOfUInt16Types;
+    size_t numberOfUInt8Types;
+    size_t numberOfBooleanTypes;
+    size_t numberOfStringTypes;
+    size_t numberOfBinaryTypes;
+    size_t numberOfEnumerationTypes;
+    size_t numberOfClockTypes;
+    fmi3Float64Type *float64Types;
+    fmi3Float32Type *float32Types;
+    fmi3Int64Type *int64Types;
+    fmi3Int32Type *int32Types;
+    fmi3Int16Type *int16Types;
+    fmi3Int8Type *int8Types;
+    fmi3UInt64Type *uint64Types;
+    fmi3UInt32Type *uint32Types;
+    fmi3UInt16Type *uint16Types;
+    fmi3UInt8Type *uint8Types;
+    fmi3BooleanType *booleanTypes;
+    fmi3StringType *stringTypes;
+    fmi3BinaryType *binaryTypes;
+    fmi3EnumerationType *enumTypes;
+    fmi3ClockType *clockTypes;
+
 } fmi3Data_t;
 
 

@@ -315,6 +315,113 @@ FMIC_DLLEXPORT double fmi3GetDisplayUnitFactor(fmi3DisplayUnitHandle *displayUni
 FMIC_DLLEXPORT double fmi3GetDisplayUnitOffset(fmi3DisplayUnitHandle *displayUnit);
 FMIC_DLLEXPORT bool fmi3GetDisplayUnitInverse(fmi3DisplayUnitHandle *displayUnit);
 
+FMIC_DLLEXPORT void fmi3GetFloat64Type(fmiHandle* fmu,
+                                       const char* name,
+                                       const char** description,
+                                       const char** quantity,
+                                       const char** unit,
+                                       const char** displayUnit,
+                                       bool* relativeQuantity,
+                                       bool* unbounded,
+                                       double* min,
+                                       double* max,
+                                       double* nominal);
+FMIC_DLLEXPORT void fmi3GetFloat32Type(fmiHandle* fmu,
+                                       const char* name,
+                                       const char** description,
+                                       const char** quantity,
+                                       const char** unit,
+                                       const char** displayUnit,
+                                       bool* relativeQuantity,
+                                       bool* unbounded,
+                                       double* min,
+                                       double* max,
+                                       double* nominal);
+FMIC_DLLEXPORT void fmi3GetInt64Type(fmiHandle *fmu,
+                                     const char *name,
+                                     const char** description,
+                                     const char** quantity,
+                                     double* min,
+                                     double* max);
+FMIC_DLLEXPORT void fmi3GetInt32Type(fmiHandle *fmu,
+                                     const char *name,
+                                     const char** description,
+                                     const char** quantity,
+                                     double* min,
+                                     double* max);
+FMIC_DLLEXPORT void fmi3GetInt16Type(fmiHandle *fmu,
+                                     const char *name,
+                                     const char** description,
+                                     const char** quantity,
+                                     double* min,
+                                     double* max);
+FMIC_DLLEXPORT void fmi3GetInt8Type(fmiHandle *fmu,
+                                     const char *name,
+                                     const char** description,
+                                     const char** quantity,
+                                     double* min,
+                                     double* max);
+FMIC_DLLEXPORT void fmi3GetUInt64Type(fmiHandle *fmu,
+                                     const char *name,
+                                     const char** description,
+                                     const char** quantity,
+                                     double* min,
+                                     double* max);
+FMIC_DLLEXPORT void fmi3GetUInt32Type(fmiHandle *fmu,
+                                     const char *name,
+                                     const char** description,
+                                     const char** quantity,
+                                     double* min,
+                                     double* max);
+FMIC_DLLEXPORT void fmi3GetUInt16Type(fmiHandle *fmu,
+                                     const char *name,
+                                     const char** description,
+                                     const char** quantity,
+                                     double* min,
+                                     double* max);
+FMIC_DLLEXPORT void fmi3GetUInt8Type(fmiHandle *fmu,
+                                     const char *name,
+                                     const char** description,
+                                     const char** quantity,
+                                     double* min,
+                                     double* max);
+FMIC_DLLEXPORT void fmi3GetBooleanType(fmiHandle *fmu,
+                                       const char *name,
+                                       const char **description);
+FMIC_DLLEXPORT void fmi3GetStringType(fmiHandle *fmu,
+                                      const char *name,
+                                      const char **description);
+FMIC_DLLEXPORT void fmi3GetBinaryType(fmiHandle *fmu,
+                                      const char *name,
+                                      const char **description,
+                                      const char **mimeType,
+                                      uint32_t *maxSize);
+FMIC_DLLEXPORT void fmi3GetEnumerationType(fmiHandle *fmu,
+                                           const char *name,
+                                           const char **description,
+                                           const char **quantity,
+                                           int64_t *min,
+                                           int64_t *max,
+                                           int *numberOfItems);
+FMIC_DLLEXPORT void fmi3GetEnumerationItem(fmiHandle *fmu,
+                                           const char *typeName,
+                                           int itemId,
+                                           const char **itemName,
+                                           int64_t *value,
+                                           const char **description);
+FMIC_DLLEXPORT void fmi3GetClockType(fmiHandle *fmu,
+                                     const char *name,
+                                     const char **description,
+                                     bool *canBeDeactivated,
+                                     uint32_t *priority,
+                                     fmi3IntervalVariability *intervalVariability,
+                                     float *intervalDecimal,
+                                     float *shiftDecimal,
+                                     bool *supportsFraction,
+                                     uint64_t *resolution,
+                                     uint64_t *intervalCounter,
+                                     uint64_t *shiftCounter);
+
 FMIC_DLLEXPORT const char* fmi3GetModelIdentifier(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetNeedsExecutionTool(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);

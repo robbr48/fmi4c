@@ -6,6 +6,8 @@
 
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <float.h>
+#include <limits.h>
 #ifndef _WIN32
     #include <dlfcn.h>
 #endif
@@ -504,6 +506,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 #endif
     fmu->unzippedLocation = strdup(tempPath);
 
+
     strcat(tempPath, "/resources");
     fmu->resourcesLocation = strdup(tempPath);
 
@@ -523,6 +526,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
     parseStringAttributeEzXml(rootElement, "generationtool",            &fmu->fmi3.generationTool);
     parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->fmi3.generationDateAndTime);
     parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->fmi3.variableNamingConvention);
+
 
     ezxml_t cosimElement = ezxml_child(rootElement, "CoSimulation");
     if(cosimElement) {
@@ -638,6 +642,338 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
             fmu->fmi3.units[i] = unit;
             ++i;
+        }
+    }
+
+    ezxml_t typeDefinitionsElement = ezxml_child(rootElement, "TypeDefinitions");
+    if(typeDefinitionsElement) {
+        //Count all elements by type
+        fmu->fmi3.numberOfFloat64Types = 0;
+        fmu->fmi3.numberOfFloat32Types = 0;
+        fmu->fmi3.numberOfInt64Types = 0;
+        fmu->fmi3.numberOfInt32Types = 0;
+        fmu->fmi3.numberOfInt16Types = 0;
+        fmu->fmi3.numberOfInt8Types = 0;
+        fmu->fmi3.numberOfUInt64Types = 0;
+        fmu->fmi3.numberOfUInt32Types = 0;
+        fmu->fmi3.numberOfUInt16Types = 0;
+        fmu->fmi3.numberOfUInt8Types = 0;
+        fmu->fmi3.numberOfBooleanTypes = 0;
+        fmu->fmi3.numberOfStringTypes = 0;
+        fmu->fmi3.numberOfBinaryTypes = 0;
+        fmu->fmi3.numberOfEnumerationTypes = 0;
+        fmu->fmi3.numberOfClockTypes = 0;
+        for(ezxml_t typeElement = typeDefinitionsElement->child; typeElement; typeElement = typeElement->next) {
+            if(!strcmp(typeElement->name, "Float64Type")) {
+                ++fmu->fmi3.numberOfFloat64Types;
+            }
+            else if(!strcmp(typeElement->name, "Float32Type")) {
+                ++fmu->fmi3.numberOfFloat32Types;
+            }
+            else if(!strcmp(typeElement->name, "Int64Type")) {
+                ++fmu->fmi3.numberOfInt64Types;
+            }
+            else if(!strcmp(typeElement->name, "Int32Type")) {
+                ++fmu->fmi3.numberOfInt32Types;
+            }
+            else if(!strcmp(typeElement->name, "Int16Type")) {
+                ++fmu->fmi3.numberOfInt16Types;
+            }
+            else if(!strcmp(typeElement->name, "Int8Type")) {
+                ++fmu->fmi3.numberOfInt8Types;
+            }
+            else if(!strcmp(typeElement->name, "UInt64Type")) {
+                ++fmu->fmi3.numberOfUInt64Types;
+            }
+            else if(!strcmp(typeElement->name, "UInt32Type")) {
+                ++fmu->fmi3.numberOfUInt32Types;
+            }
+            else if(!strcmp(typeElement->name, "UInt16Type")) {
+                ++fmu->fmi3.numberOfUInt16Types;
+            }
+            else if(!strcmp(typeElement->name, "UInt8Type")) {
+                ++fmu->fmi3.numberOfUInt8Types;
+            }
+            else if(!strcmp(typeElement->name, "BooleanType")) {
+                ++fmu->fmi3.numberOfBooleanTypes;
+            }
+            else if(!strcmp(typeElement->name, "StringType")) {
+                ++fmu->fmi3.numberOfStringTypes;
+            }
+            else if(!strcmp(typeElement->name, "BinaryType")) {
+                ++fmu->fmi3.numberOfBinaryTypes;
+            }
+            else if(!strcmp(typeElement->name, "EnumerationType")) {
+                ++fmu->fmi3.numberOfEnumerationTypes;
+            }
+            else if(!strcmp(typeElement->name, "ClockType")) {
+                ++fmu->fmi3.numberOfClockTypes;
+            }
+        }
+
+        //Allocate memory
+        fmu->fmi3.float64Types = malloc(fmu->fmi3.numberOfFloat64Types*sizeof(fmi3Float64Type));
+        fmu->fmi3.float32Types = malloc(fmu->fmi3.numberOfFloat32Types*sizeof(fmi3Float32Type));
+        fmu->fmi3.int64Types = malloc(fmu->fmi3.numberOfInt64Types*sizeof(fmi3Int64Type));
+        fmu->fmi3.int32Types = malloc(fmu->fmi3.numberOfInt32Types*sizeof(fmi3Int32Type));
+        fmu->fmi3.int16Types = malloc(fmu->fmi3.numberOfInt16Types*sizeof(fmi3Int16Type));
+        fmu->fmi3.int8Types = malloc(fmu->fmi3.numberOfInt8Types*sizeof(fmi3Int8Type));
+        fmu->fmi3.uint64Types = malloc(fmu->fmi3.numberOfUInt64Types*sizeof(fmi3UInt64Type));
+        fmu->fmi3.uint32Types = malloc(fmu->fmi3.numberOfUInt32Types*sizeof(fmi3UInt32Type));
+        fmu->fmi3.uint16Types = malloc(fmu->fmi3.numberOfUInt16Types*sizeof(fmi3UInt16Type));
+        fmu->fmi3.uint8Types = malloc(fmu->fmi3.numberOfUInt8Types*sizeof(fmi3UInt8Type));
+        fmu->fmi3.booleanTypes = malloc(fmu->fmi3.numberOfBooleanTypes*sizeof(fmi3BooleanType));
+        fmu->fmi3.stringTypes = malloc(fmu->fmi3.numberOfStringTypes*sizeof(fmi3StringType));
+        fmu->fmi3.binaryTypes = malloc(fmu->fmi3.numberOfBinaryTypes*sizeof(fmi3BinaryType));
+        fmu->fmi3.enumTypes = malloc(fmu->fmi3.numberOfEnumerationTypes*sizeof(fmi3EnumerationType));
+        fmu->fmi3.clockTypes = malloc(fmu->fmi3.numberOfClockTypes*sizeof(fmi3ClockType));
+
+        //Read all elements
+        int iFloat64 = 0;
+        int iFloat32 = 0;
+        int iInt64 = 0;
+        int iInt32 = 0;
+        int iInt16 = 0;
+        int iInt8 = 0;
+        int iUInt64 = 0;
+        int iUInt32 = 0;
+        int iUInt16 = 0;
+        int iUInt8 = 0;
+        int iBoolean = 0;
+        int iString = 0;
+        int iBinary = 0;
+        int iEnum = 0;
+        int iClock = 0;
+        for(ezxml_t typeElement = typeDefinitionsElement->child; typeElement; typeElement = typeElement->next) {
+            if(!strcmp(typeElement->name, "Float64Type")) {
+                fmu->fmi3.float64Types[iFloat64].name = "";
+                fmu->fmi3.float64Types[iFloat64].description = "";
+                fmu->fmi3.float64Types[iFloat64].quantity = "";
+                fmu->fmi3.float64Types[iFloat64].unit = "";
+                fmu->fmi3.float64Types[iFloat64].displayUnit = "";
+                fmu->fmi3.float64Types[iFloat64].relativeQuantity = false;
+                fmu->fmi3.float64Types[iFloat64].unbounded = false;
+                fmu->fmi3.float64Types[iFloat64].min = -DBL_MAX;
+                fmu->fmi3.float64Types[iFloat64].max = DBL_MAX;
+                fmu->fmi3.float64Types[iFloat64].nominal = 1;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.float64Types[iFloat64].name);
+                parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.float64Types[iFloat64].description);
+                parseStringAttributeEzXml(typeElement, "quantity", &fmu->fmi3.float64Types[iFloat64].quantity);
+                parseStringAttributeEzXml(typeElement, "unit", &fmu->fmi3.float64Types[iFloat64].unit);
+                parseStringAttributeEzXml(typeElement, "displayUnit", &fmu->fmi3.float64Types[iFloat64].displayUnit);
+                parseBooleanAttributeEzXml(typeElement, "relativeQuantity", &fmu->fmi3.float64Types[iFloat64].relativeQuantity);
+                parseBooleanAttributeEzXml(typeElement, "unbounded", &fmu->fmi3.float64Types[iFloat64].unbounded);
+                parseFloat64AttributeEzXml(typeElement, "min", &fmu->fmi3.float64Types[iFloat64].min);
+                parseFloat64AttributeEzXml(typeElement, "max", &fmu->fmi3.float64Types[iFloat64].max);
+                parseFloat64AttributeEzXml(typeElement, "nominal", &fmu->fmi3.float64Types[iFloat64].nominal);
+                ++iFloat64;
+            }
+            else if(!strcmp(typeElement->name, "Float32Type")) {
+                fmu->fmi3.float32Types[iFloat32].name = "";
+                fmu->fmi3.float32Types[iFloat32].description = "";
+                fmu->fmi3.float32Types[iFloat32].quantity = "";
+                fmu->fmi3.float32Types[iFloat32].unit = "";
+                fmu->fmi3.float32Types[iFloat32].displayUnit = "";
+                fmu->fmi3.float32Types[iFloat32].relativeQuantity = false;
+                fmu->fmi3.float32Types[iFloat32].unbounded = false;
+                fmu->fmi3.float32Types[iFloat32].min = -FLT_MAX;
+                fmu->fmi3.float32Types[iFloat32].max = FLT_MAX;
+                fmu->fmi3.float32Types[iFloat32].nominal = 1;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.float32Types[iFloat32].name);
+                parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.float32Types[iFloat32].description);
+                parseStringAttributeEzXml(typeElement, "quantity", &fmu->fmi3.float32Types[iFloat32].quantity);
+                parseStringAttributeEzXml(typeElement, "unit", &fmu->fmi3.float32Types[iFloat32].unit);
+                parseStringAttributeEzXml(typeElement, "displayUnit", &fmu->fmi3.float32Types[iFloat32].displayUnit);
+                parseBooleanAttributeEzXml(typeElement, "relativeQuantity", &fmu->fmi3.float32Types[iFloat32].relativeQuantity);
+                parseBooleanAttributeEzXml(typeElement, "unbounded", &fmu->fmi3.float32Types[iFloat32].unbounded);
+                parseFloat32AttributeEzXml(typeElement, "min", &fmu->fmi3.float32Types[iFloat32].min);
+                parseFloat32AttributeEzXml(typeElement, "max", &fmu->fmi3.float32Types[iFloat32].max);
+                parseFloat32AttributeEzXml(typeElement, "nominal", &fmu->fmi3.float32Types[iFloat32].nominal);
+                ++iFloat32;
+            }
+            else if(!strcmp(typeElement->name, "Int64Type")) {
+                fmu->fmi3.int64Types[iInt64].name = "";
+                fmu->fmi3.int64Types[iInt64].min = -__INT64_MAX__;
+                fmu->fmi3.int64Types[iInt64].max = __INT64_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.int64Types[iInt64].name);
+                parseInt64AttributeEzXml(typeElement, "min", &fmu->fmi3.int64Types[iInt64].min);
+                parseInt64AttributeEzXml(typeElement, "max", &fmu->fmi3.int64Types[iInt64].max);
+                ++iInt64;
+            }
+            else if(!strcmp(typeElement->name, "Int32Type")) {
+                fmu->fmi3.int32Types[iInt32].name = "";
+                fmu->fmi3.int32Types[iInt32].min = -__INT32_MAX__;
+                fmu->fmi3.int32Types[iInt32].max = __INT32_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.int32Types[iInt32].name);
+                parseInt32AttributeEzXml(typeElement, "min", &fmu->fmi3.int32Types[iInt32].min);
+                parseInt32AttributeEzXml(typeElement, "max", &fmu->fmi3.int32Types[iInt32].max);
+                ++iInt32;
+            }
+            else if(!strcmp(typeElement->name, "Int16Type")) {
+                fmu->fmi3.int16Types[iInt16].name = "";
+                fmu->fmi3.int16Types[iInt16].min = -__INT16_MAX__;
+                fmu->fmi3.int16Types[iInt16].max = __INT16_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.int16Types[iInt16].name);
+                parseInt16AttributeEzXml(typeElement, "min", &fmu->fmi3.int16Types[iInt16].min);
+                parseInt16AttributeEzXml(typeElement, "max", &fmu->fmi3.int16Types[iInt16].max);
+                ++iInt16;
+            }
+            else if(!strcmp(typeElement->name, "Int8Type")) {
+                fmu->fmi3.int8Types[iInt8].name = "";
+                fmu->fmi3.int8Types[iInt8].min = -__INT8_MAX__;
+                fmu->fmi3.int8Types[iInt8].max = __INT8_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.int8Types[iInt8].name);
+                parseInt8AttributeEzXml(typeElement, "min", &fmu->fmi3.int8Types[iInt8].min);
+                parseInt8AttributeEzXml(typeElement, "max", &fmu->fmi3.int8Types[iInt8].max);
+                ++iInt8;
+            }
+            else if(!strcmp(typeElement->name, "UInt64Type")) {
+                fmu->fmi3.uint64Types[iUInt64].name = "";
+                fmu->fmi3.uint64Types[iUInt64].min = 0;
+                fmu->fmi3.uint64Types[iUInt64].max = __UINT64_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.uint64Types[iUInt64].name);
+                parseUInt64AttributeEzXml(typeElement, "min", &fmu->fmi3.uint64Types[iUInt64].min);
+                parseUInt64AttributeEzXml(typeElement, "max", &fmu->fmi3.uint64Types[iUInt64].max);
+                ++iUInt64;
+            }
+            else if(!strcmp(typeElement->name, "UInt32Type")) {
+                fmu->fmi3.uint32Types[iUInt32].name = "";
+                fmu->fmi3.uint32Types[iUInt32].min = 0;
+                fmu->fmi3.uint32Types[iUInt32].max = __UINT32_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.uint32Types[iUInt32].name);
+                parseUInt32AttributeEzXml(typeElement, "min", &fmu->fmi3.uint32Types[iUInt32].min);
+                parseUInt32AttributeEzXml(typeElement, "max", &fmu->fmi3.uint32Types[iUInt32].max);
+                ++iUInt32;
+            }
+            else if(!strcmp(typeElement->name, "UInt16Type")) {
+                fmu->fmi3.uint16Types[iUInt16].name = "";
+                fmu->fmi3.uint16Types[iUInt16].min = 0;
+                fmu->fmi3.uint16Types[iUInt16].max = __UINT16_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.uint16Types[iUInt16].name);
+                parseUInt16AttributeEzXml(typeElement, "min", &fmu->fmi3.uint16Types[iUInt16].min);
+                parseUInt16AttributeEzXml(typeElement, "max", &fmu->fmi3.uint16Types[iUInt16].max);
+                ++iUInt16;
+            }
+            else if(!strcmp(typeElement->name, "UInt8Type")) {
+                fmu->fmi3.uint8Types[iUInt8].name = "";
+                fmu->fmi3.uint8Types[iUInt8].min = 0;
+                fmu->fmi3.uint8Types[iUInt8].max = __UINT8_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.uint8Types[iUInt8].name);
+                parseUInt8AttributeEzXml(typeElement, "min", &fmu->fmi3.uint8Types[iUInt8].min);
+                parseUInt8AttributeEzXml(typeElement, "max", &fmu->fmi3.uint8Types[iUInt8].max);
+                ++iUInt8;
+            }
+            else if(!strcmp(typeElement->name, "BooleanType")) {
+                fmu->fmi3.booleanTypes[iBoolean].name = "";
+                fmu->fmi3.booleanTypes[iBoolean].description = "";
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.booleanTypes[iBoolean].name);
+                parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.booleanTypes[iBoolean].description);
+                ++iBoolean;
+            }
+            else if(!strcmp(typeElement->name, "StringType")) {
+                fmu->fmi3.stringTypes[iString].name = "";
+                fmu->fmi3.stringTypes[iString].description = "";
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.stringTypes[iString].name);
+                parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.stringTypes[iString].description);
+                ++iString;
+            }
+            else if(!strcmp(typeElement->name, "BinaryType")) {
+                fmu->fmi3.binaryTypes[iBinary].name = "";
+                fmu->fmi3.binaryTypes[iBinary].description = "";
+                fmu->fmi3.binaryTypes[iBinary].mimeType = "application/octet-stream";
+                fmu->fmi3.binaryTypes[iBinary].maxSize = __UINT32_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.binaryTypes[iBinary].name);
+                parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.binaryTypes[iBinary].description);
+                parseStringAttributeEzXml(typeElement, "mimeType", &fmu->fmi3.binaryTypes[iBinary].mimeType);
+                parseUInt32AttributeEzXml(typeElement, "maxSize", &fmu->fmi3.binaryTypes[iBinary].maxSize);
+                ++iBinary;
+            }
+            else if(!strcmp(typeElement->name, "EnumerationType")) {
+                fmu->fmi3.enumTypes[iEnum].name = "";
+                fmu->fmi3.enumTypes[iEnum].description = "";
+                fmu->fmi3.enumTypes[iEnum].quantity = "";
+                fmu->fmi3.enumTypes[iEnum].min = -__INT64_MAX__;
+                fmu->fmi3.enumTypes[iEnum].max = __INT64_MAX__;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.enumTypes[iEnum].name);
+                parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.enumTypes[iEnum].description);
+                parseStringAttributeEzXml(typeElement, "quantity", &fmu->fmi3.enumTypes[iEnum].quantity);
+                parseInt64AttributeEzXml(typeElement, "min", &fmu->fmi3.enumTypes[iEnum].min);
+                parseInt64AttributeEzXml(typeElement, "max", &fmu->fmi3.enumTypes[iEnum].max);
+
+                //Count number of enumeration items
+                fmu->fmi3.enumTypes[iEnum].numberOfItems = 0;
+                for(ezxml_t itemElement = typeElement->child; itemElement; itemElement = itemElement->next) {
+                    if(!strcmp(itemElement->name, "Item")) {
+                        ++fmu->fmi3.enumTypes[iEnum].numberOfItems;
+                    }
+                }
+
+                //Allocate memory for enumeration items
+                fmu->fmi3.enumTypes[iEnum].items = malloc(fmu->fmi3.enumTypes[iEnum].numberOfItems*sizeof(fmi3EnumerationItem));
+
+                //Read data for enumeration items
+                int iItem = 0;
+                for(ezxml_t itemElement = typeElement->child; itemElement; itemElement = itemElement->next) {
+                    if(!strcmp(itemElement->name, "Item")) {
+                        parseStringAttributeEzXml(itemElement, "name", &fmu->fmi3.enumTypes[iEnum].items[iItem].name);
+                        parseInt64AttributeEzXml(itemElement, "value", &fmu->fmi3.enumTypes[iEnum].items[iItem].value);
+                        parseStringAttributeEzXml(itemElement, "description", &fmu->fmi3.enumTypes[iEnum].items[iItem].description);
+                    }
+                    ++iItem;
+                }
+                ++iEnum;
+            }
+            else if(!strcmp(typeElement->name, "ClockType")) {
+                fmu->fmi3.clockTypes[iClock].name = "";
+                fmu->fmi3.clockTypes[iClock].description = "";
+                fmu->fmi3.clockTypes[iClock].canBeDeactivated = false;
+                fmu->fmi3.clockTypes[iClock].priority = 0;
+                fmu->fmi3.clockTypes[iClock].intervalVariability = fmi3IntervalVariabilityFixed;
+                fmu->fmi3.clockTypes[iClock].intervalDecimal = __FLT_MAX__;
+                fmu->fmi3.clockTypes[iClock].shiftDecimal = 0;
+                fmu->fmi3.clockTypes[iClock].supportsFraction = false;
+                fmu->fmi3.clockTypes[iClock].resolution = __UINT64_MAX__;
+                fmu->fmi3.clockTypes[iClock].intervalCounter = __UINT64_MAX__;
+                fmu->fmi3.clockTypes[iClock].shiftCounter = 0;
+                parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.clockTypes[iClock].name);
+                parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.clockTypes[iClock].description);
+                parseBooleanAttributeEzXml(typeElement, "canBeDeactivated", &fmu->fmi3.clockTypes[iClock].canBeDeactivated);
+                parseUInt32AttributeEzXml(typeElement, "priority", &fmu->fmi3.clockTypes[iClock].priority);
+                const char* intervalVariability;
+                parseStringAttributeEzXml(typeElement, "intervalVariability", &intervalVariability);
+                if(intervalVariability && !strcmp(intervalVariability, "calculated")) {
+                    fmu->fmi3.clockTypes[iClock].intervalVariability = fmi3IntervalVariabilityCalculated;
+                }
+                else if(intervalVariability && !strcmp(intervalVariability, "changing")) {
+                    fmu->fmi3.clockTypes[iClock].intervalVariability = fmi3IntervalVariabilityChanging;
+                }
+                else if(intervalVariability && !strcmp(intervalVariability, "constant")) {
+                    fmu->fmi3.clockTypes[iClock].intervalVariability = fmi3IntervalVariabilityConstant;
+                }
+                else if(intervalVariability && !strcmp(intervalVariability, "countdown")) {
+                    fmu->fmi3.clockTypes[iClock].intervalVariability = fmi3IntervalVariabilityCountdown;
+                }
+                else if(intervalVariability && !strcmp(intervalVariability, "fixed")) {
+                    fmu->fmi3.clockTypes[iClock].intervalVariability = fmi3IntervalVariabilityFixed;
+                }
+                else if(intervalVariability && !strcmp(intervalVariability, "triggered")) {
+                    fmu->fmi3.clockTypes[iClock].intervalVariability = fmi3IntervalVariabilityTriggered;
+                }
+                else if(intervalVariability && !strcmp(intervalVariability, "tunable")) {
+                    fmu->fmi3.clockTypes[iClock].intervalVariability = fmi3IntervalVariabilityTunable;
+                }
+                else if(intervalVariability) {
+                    printf("Unknown interval variability: %s\n", intervalVariability);
+                    return false;
+                }
+                parseFloat32AttributeEzXml(typeElement, "intervalDecimal", &fmu->fmi3.clockTypes[iClock].intervalDecimal);
+                parseFloat32AttributeEzXml(typeElement, "shiftDecimal", &fmu->fmi3.clockTypes[iClock].shiftDecimal);
+                parseBooleanAttributeEzXml(typeElement, "supportsFraction", &fmu->fmi3.clockTypes[iClock].supportsFraction);
+                parseUInt64AttributeEzXml(typeElement, "resolution", &fmu->fmi3.clockTypes[iClock].resolution);
+                parseUInt64AttributeEzXml(typeElement, "intervalCounter", &fmu->fmi3.clockTypes[iClock].intervalCounter);
+                parseUInt64AttributeEzXml(typeElement, "shiftCounter", &fmu->fmi3.clockTypes[iClock].shiftCounter);
+                ++iClock;
+            }
         }
     }
 
@@ -818,6 +1154,9 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 }
                 else if(initial && !strcmp(initial, "exact")) {
                     var.initial = fmi3InitialExact;
+                }
+                else if(initial && !strcmp(initial, "calculated")) {
+                    var.initial = fmi3InitialCalculated;
                 }
                 else if(initial) {
                     printf("Unknown initial: %s\n", initial);
@@ -3027,6 +3366,7 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
 
     fmiHandle *fmu = malloc(sizeof(fmiHandle));
 
+
     //Decide location for where to unzip
     //! @todo Change to temp folder
     char tempPath[FILENAME_MAX];
@@ -3814,4 +4154,290 @@ double fmi3GetDisplayUnitOffset(fmi3DisplayUnitHandle *displayUnit)
 bool fmi3GetDisplayUnitInverse(fmi3DisplayUnitHandle *displayUnit)
 {
     return displayUnit->inverse;
+}
+
+void fmi3GetFloat64Type(fmiHandle *fmu,
+                        const char *name,
+                        const char **description,
+                        const char **quantity,
+                        const char **unit,
+                        const char **displayUnit,
+                        bool *relativeQuantity,
+                        bool *unbounded,
+                        double *min,
+                        double *max,
+                        double *nominal)
+{
+    for(int i=0; i<fmu->fmi3.numberOfFloat64Types; ++i) {
+        if(!strcmp(fmu->fmi3.float64Types[i].name, name)) {
+            *description = fmu->fmi3.float64Types[i].description;
+            *quantity= fmu->fmi3.float64Types[i].quantity;
+            *unit = fmu->fmi3.float64Types[i].unit;
+            *displayUnit = fmu->fmi3.float64Types[i].displayUnit;
+            *relativeQuantity = fmu->fmi3.float64Types[i].relativeQuantity;
+            *unbounded = fmu->fmi3.float64Types[i].unbounded;
+            *min = fmu->fmi3.float64Types[i].min;
+            *max = fmu->fmi3.float64Types[i].max;
+            *nominal = fmu->fmi3.float64Types[i].nominal;
+        }
+    }
+}
+
+void fmi3GetFloat32Type(fmiHandle *fmu,
+                        const char *name,
+                        const char **description,
+                        const char **quantity,
+                        const char **unit,
+                        const char **displayUnit,
+                        bool *relativeQuantity,
+                        bool *unbounded,
+                        double *min,
+                        double *max,
+                        double *nominal)
+{
+    for(int i=0; i<fmu->fmi3.numberOfFloat32Types; ++i) {
+        if(!strcmp(fmu->fmi3.float32Types[i].name, name)) {
+            *description = fmu->fmi3.float32Types[i].description;
+            *quantity= fmu->fmi3.float32Types[i].quantity;
+            *unit = fmu->fmi3.float32Types[i].unit;
+            *displayUnit = fmu->fmi3.float32Types[i].displayUnit;
+            *relativeQuantity = fmu->fmi3.float32Types[i].relativeQuantity;
+            *unbounded = fmu->fmi3.float32Types[i].unbounded;
+            *min = fmu->fmi3.float32Types[i].min;
+            *max = fmu->fmi3.float32Types[i].max;
+            *nominal = fmu->fmi3.float32Types[i].nominal;
+        }
+    }
+}
+
+void fmi3GetInt64Type(fmiHandle *fmu,
+                      const char *name,
+                      const char **description,
+                      const char **quantity,
+                      double *min,
+                      double *max)
+{
+    for(int i=0; i<fmu->fmi3.numberOfInt64Types; ++i) {
+        if(!strcmp(fmu->fmi3.int64Types[i].name, name)) {
+            *description = fmu->fmi3.int64Types[i].description;
+            *quantity= fmu->fmi3.int64Types[i].quantity;
+            *min = fmu->fmi3.int64Types[i].min;
+            *max = fmu->fmi3.int64Types[i].max;
+        }
+    }
+}
+
+void fmi3GetInt32Type(fmiHandle *fmu,
+                      const char *name,
+                      const char **description,
+                      const char **quantity,
+                      double *min,
+                      double *max)
+{
+    for(int i=0; i<fmu->fmi3.numberOfInt32Types; ++i) {
+        if(!strcmp(fmu->fmi3.int32Types[i].name, name)) {
+            *description = fmu->fmi3.int32Types[i].description;
+            *quantity= fmu->fmi3.int32Types[i].quantity;
+            *min = fmu->fmi3.int32Types[i].min;
+            *max = fmu->fmi3.int32Types[i].max;
+        }
+    }
+}
+
+void fmi3GetInt16Type(fmiHandle *fmu,
+                      const char *name,
+                      const char **description,
+                      const char **quantity,
+                      double *min,
+                      double *max)
+{
+    for(int i=0; i<fmu->fmi3.numberOfInt16Types; ++i) {
+        if(!strcmp(fmu->fmi3.int16Types[i].name, name)) {
+            *description = fmu->fmi3.int16Types[i].description;
+            *quantity= fmu->fmi3.int16Types[i].quantity;
+            *min = fmu->fmi3.int16Types[i].min;
+            *max = fmu->fmi3.int16Types[i].max;
+        }
+    }
+}
+
+void fmi3GetInt8Type(fmiHandle *fmu,
+                      const char *name,
+                      const char **description,
+                      const char **quantity,
+                      double *min,
+                      double *max)
+{
+    for(int i=0; i<fmu->fmi3.numberOfInt8Types; ++i) {
+        if(!strcmp(fmu->fmi3.int8Types[i].name, name)) {
+            *description = fmu->fmi3.int8Types[i].description;
+            *quantity= fmu->fmi3.int8Types[i].quantity;
+            *min = fmu->fmi3.int8Types[i].min;
+            *max = fmu->fmi3.int8Types[i].max;
+        }
+    }
+}
+
+void fmi3GetUInt64Type(fmiHandle *fmu,
+                      const char *name,
+                      const char **description,
+                      const char **quantity,
+                      double *min,
+                      double *max)
+{
+    for(int i=0; i<fmu->fmi3.numberOfUInt64Types; ++i) {
+        if(!strcmp(fmu->fmi3.uint64Types[i].name, name)) {
+            *description = fmu->fmi3.uint64Types[i].description;
+            *quantity= fmu->fmi3.uint64Types[i].quantity;
+            *min = fmu->fmi3.uint64Types[i].min;
+            *max = fmu->fmi3.uint64Types[i].max;
+        }
+    }
+}
+
+void fmi3GetUInt32Type(fmiHandle *fmu,
+                      const char *name,
+                      const char **description,
+                      const char **quantity,
+                      double *min,
+                      double *max)
+{
+    for(int i=0; i<fmu->fmi3.numberOfUInt32Types; ++i) {
+        if(!strcmp(fmu->fmi3.uint32Types[i].name, name)) {
+            *description = fmu->fmi3.uint32Types[i].description;
+            *quantity= fmu->fmi3.uint32Types[i].quantity;
+            *min = fmu->fmi3.uint32Types[i].min;
+            *max = fmu->fmi3.uint32Types[i].max;
+        }
+    }
+}
+
+void fmi3GetUInt16Type(fmiHandle *fmu,
+                      const char *name,
+                      const char **description,
+                      const char **quantity,
+                      double *min,
+                      double *max)
+{
+    for(int i=0; i<fmu->fmi3.numberOfUInt16Types; ++i) {
+        if(!strcmp(fmu->fmi3.uint16Types[i].name, name)) {
+            *description = fmu->fmi3.uint16Types[i].description;
+            *quantity= fmu->fmi3.uint16Types[i].quantity;
+            *min = fmu->fmi3.uint16Types[i].min;
+            *max = fmu->fmi3.uint16Types[i].max;
+        }
+    }
+}
+
+void fmi3GetUInt8Type(fmiHandle *fmu,
+                      const char *name,
+                      const char **description,
+                      const char **quantity,
+                      double *min,
+                      double *max)
+{
+    for(int i=0; i<fmu->fmi3.numberOfUInt8Types; ++i) {
+        if(!strcmp(fmu->fmi3.uint8Types[i].name, name)) {
+            *description = fmu->fmi3.uint8Types[i].description;
+            *quantity= fmu->fmi3.uint8Types[i].quantity;
+            *min = fmu->fmi3.uint8Types[i].min;
+            *max = fmu->fmi3.uint8Types[i].max;
+        }
+    }
+}
+
+void fmi3GetBooleanType(fmiHandle *fmu,
+                      const char *name,
+                      const char **description)
+{
+    for(int i=0; i<fmu->fmi3.numberOfBooleanTypes; ++i) {
+        if(!strcmp(fmu->fmi3.booleanTypes[i].name, name)) {
+            *description = fmu->fmi3.booleanTypes[i].description;
+        }
+    }
+}
+
+void fmi3GetStringType(fmiHandle *fmu,
+                      const char *name,
+                      const char **description)
+{
+    for(int i=0; i<fmu->fmi3.numberOfStringTypes; ++i) {
+        if(!strcmp(fmu->fmi3.stringTypes[i].name, name)) {
+            *description = fmu->fmi3.stringTypes[i].description;
+        }
+    }
+}
+
+void fmi3GetBinaryType(fmiHandle *fmu,
+                       const char *name,
+                       const char **description,
+                       const char **mimeType,
+                       uint32_t *maxSize)
+{
+    for(int i=0; i<fmu->fmi3.numberOfBinaryTypes; ++i) {
+        if(!strcmp(fmu->fmi3.binaryTypes[i].name, name)) {
+            *description = fmu->fmi3.binaryTypes[i].description;
+            *mimeType = fmu->fmi3.binaryTypes[i].mimeType;
+            *maxSize = fmu->fmi3.binaryTypes[i].maxSize;
+        }
+    }
+}
+
+void fmi3GetEnumerationType(fmiHandle *fmu,
+                            const char *name,
+                            const char **description,
+                            const char **quantity,
+                            int64_t *min,
+                            int64_t *max)
+{
+    for(int i=0; i<fmu->fmi3.numberOfEnumerationTypes; ++i) {
+        if(!strcmp(fmu->fmi3.enumTypes[i].name, name)) {
+            *description = fmu->fmi3.enumTypes[i].description;
+            *quantity = fmu->fmi3.enumTypes[i].quantity;
+            *min = fmu->fmi3.enumTypes[i].min;
+            *max = fmu->fmi3.enumTypes[i].max;
+        }
+    }
+}
+
+void fmi3GetClockType(fmiHandle *fmu,
+                      const char *name,
+                      const char **description,
+                      bool *canBeDeactivated,
+                      uint32_t *priority,
+                      fmi3IntervalVariability *intervalVariability,
+                      float *intervalDecimal,
+                      float *shiftDecimal,
+                      bool *supportsFraction,
+                      uint64_t *resolution,
+                      uint64_t *intervalCounter,
+                      uint64_t *shiftCounter)
+{
+    for(int i=0; i<fmu->fmi3.numberOfClockTypes; ++i) {
+        if(!strcmp(fmu->fmi3.clockTypes[i].name, name)) {
+            *description = fmu->fmi3.clockTypes[i].description;
+            *canBeDeactivated = fmu->fmi3.clockTypes[i].canBeDeactivated;
+            *priority = fmu->fmi3.clockTypes[i].priority;
+            *intervalVariability = fmu->fmi3.clockTypes[i].intervalVariability;
+            *intervalDecimal = fmu->fmi3.clockTypes[i].intervalDecimal;
+            *shiftDecimal = fmu->fmi3.clockTypes[i].shiftDecimal;
+            *supportsFraction = fmu->fmi3.clockTypes[i].supportsFraction;
+            *resolution = fmu->fmi3.clockTypes[i].resolution;
+            *intervalCounter = fmu->fmi3.clockTypes[i].intervalCounter;
+            *shiftCounter = fmu->fmi3.clockTypes[i].shiftCounter;
+        }
+    }
+}
+
+void fmi3GetEnumerationItem(fmiHandle *fmu, const char *typeName, int itemId, const char **itemName, int64_t *value, const char **description)
+{
+    for(int i=0; i<fmu->fmi3.numberOfEnumerationTypes; ++i) {
+        if(!strcmp(fmu->fmi3.enumTypes[i].name, typeName)) {
+            if(i < fmu->fmi3.enumTypes[i].numberOfItems) {
+                *itemName = fmu->fmi3.enumTypes[i].items[itemId].name;
+                *value = fmu->fmi3.enumTypes[i].items[itemId].value;
+                *description = fmu->fmi3.enumTypes[i].items[itemId].description;
+            }
+        }
+    }
 }
