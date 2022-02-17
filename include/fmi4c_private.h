@@ -130,6 +130,8 @@ typedef struct {
     int64_t resolution;
     int64_t intervalCounter;
     int64_t shiftCounter;
+    int numberOfClocks;
+    int *clocks;
 
 } fmi3VariableHandle;
 

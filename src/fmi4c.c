@@ -998,7 +998,34 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             parseBooleanAttributeEzXml(varElement, "intermediateUpdate", &var.intermediateUpdate);
             parseInt32AttributeEzXml(varElement, "previous", &var.previous);
             parseStringAttributeEzXml(varElement, "declaredType", &var.declaredType);
-            //! @todo Read "clocks" argument (space separated list of value references)
+            const char* clocks = "";
+            parseStringAttributeEzXml(varElement, "clocks", &clocks);
+            char* nonConstClocks = strdup(clocks);
+
+            //Count number of clocks
+            var.numberOfClocks = 0;
+            if(nonConstClocks[0]) {
+                var.numberOfClocks = 1;
+            }
+            for(int i=0; nonConstClocks[i]; ++i) {
+                if(nonConstClocks[i] == ' ') {
+                    ++var.numberOfClocks;
+                }
+            }
+
+            //Allocate memory for clocks
+            var.clocks = malloc(var.numberOfClocks*sizeof(int));
+
+            //Read clocks
+            const char* delim = " ";
+            for(int i=0; i<var.numberOfClocks; ++i) {
+                if(i == 0) {
+                    var.clocks[i] = atoi(strtok(nonConstClocks, delim));
+                }
+                else {
+                    var.clocks[i] = atoi(strtok(NULL, delim));
+                }
+            }
 
             //Figure out data type
             if(!strcmp(varElement->name, "Float64")) {
