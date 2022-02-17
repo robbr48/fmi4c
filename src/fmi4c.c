@@ -302,7 +302,14 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
     ezxml_t modelExchangeElement = ezxml_child(rootElement, "ModelExchange");
     if(modelExchangeElement) {
         fmu->fmi2.supportsModelExchange = true;
-        //! @todo Read model exchange data
+        parseStringAttributeEzXml(cosimElement, "modelIdentifier",                          &fmu->fmi2.modelIdentifier);
+        parseBooleanAttributeEzXml(cosimElement, "needsExecutionTool",                      &fmu->fmi2.needsExecutionTool);
+        parseBooleanAttributeEzXml(cosimElement, "completedIntegratorStepNotNeeded",        &fmu->fmi2.completedIntegratorStepNotNeeded);
+        parseBooleanAttributeEzXml(cosimElement, "canBeInstantiatedOnlyOncePerProcess",     &fmu->fmi2.canBeInstantiatedOnlyOncePerProcess);
+        parseBooleanAttributeEzXml(cosimElement, "canNotUseMemoryManagementFunctions",      &fmu->fmi2.canNotUseMemoryManagementFunctions);
+        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUState",                    &fmu->fmi2.canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUState",                    &fmu->fmi2.canSerializeFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "providesDirectionalDerivative",           &fmu->fmi2.providesDirectionalDerivative);
     }
 
     ezxml_t defaultExperimentElement = ezxml_child(rootElement, "DefaultExperiment");

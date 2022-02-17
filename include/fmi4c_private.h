@@ -276,6 +276,7 @@ typedef struct {
     bool canGetAndSetFMUState;
     bool canSerializeFMUState;
     bool providesDirectionalDerivative;
+    bool completedIntegratorStepNotNeeded;
 
     bool hasRealVariables;
     bool hasIntegerVariables;
