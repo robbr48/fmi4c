@@ -412,6 +412,67 @@ FMIC_DLLEXPORT void fmi3GetClockType(fmiHandle *fmu,
 FMIC_DLLEXPORT int fmi3GetNumberOfLogCategories(fmiHandle *fmu);
 FMIC_DLLEXPORT void fmi3GetLogCategory(fmiHandle *fmu, int id, const char **name, const char **description);
 
+FMIC_DLLEXPORT int fmi3GetNumberOfModelStructureOutputs(fmiHandle *fmu);
+FMIC_DLLEXPORT void fmi3GetModelStructureOutput(fmiHandle *fmu,
+                                      int id,
+                                      fmi3ValueReference *vr,
+                                      int *numberOfDependencies,
+                                      bool *dependencyKindsDefined);
+FMIC_DLLEXPORT fmi3ValueReference fmi3GetModelStructureOutputDependency(fmiHandle *fmu,
+                                                          int outputId,
+                                                          int dependencyId);
+FMIC_DLLEXPORT fmi3ValueReference fmi3GetModelStructureOutputDependencyKind(fmiHandle *fmu,
+                                                              int outputId,
+                                                              int dependencyId);
+FMIC_DLLEXPORT int fmi3GetNumberOfModelStructureContinuousStateDerivatives(fmiHandle *fmu);
+FMIC_DLLEXPORT void fmi3GetModelStructureContinuousStateDerivative(fmiHandle *fmu,
+                                      int id,
+                                      fmi3ValueReference *vr,
+                                      int *numberOfDependencies,
+                                      bool *dependencyKindsDefined);
+FMIC_DLLEXPORT fmi3ValueReference fmi3GetModelStructureContinuousStateDerivativeDependency(fmiHandle *fmu,
+                                                          int derId,
+                                                          int dependencyId);
+FMIC_DLLEXPORT fmi3ValueReference fmi3GetModelStructureContinuousStateDerivativeDependencyKind(fmiHandle *fmu,
+                                                              int derId,
+                                                              int dependencyId);
+FMIC_DLLEXPORT int fmi3GetNumberOfModelStructureClockedStates(fmiHandle *fmu);
+FMIC_DLLEXPORT void fmi3GetModelStructureClockedState(fmiHandle *fmu,
+                                      int id,
+                                      fmi3ValueReference *vr,
+                                      int *numberOfDependencies,
+                                      bool *dependencyKindsDefined);
+FMIC_DLLEXPORT fmi3ValueReference fmi3GetModelStructureClockedStateDependency(fmiHandle *fmu,
+                                                          int clockId,
+                                                          int dependencyId);
+FMIC_DLLEXPORT fmi3ValueReference fmi3GetModelStructureClockedStateDependencyKind(fmiHandle *fmu,
+                                                              int clockId,
+                                                              int dependencyId);
+FMIC_DLLEXPORT int fmi3GetNumberOfModelStructureInitialUnknowns(fmiHandle *fmu);
+FMIC_DLLEXPORT void fmi3GetModelStructureInitialUnknown(fmiHandle *fmu,
+                                      int id,
+                                      fmi3ValueReference *vr,
+                                      int *numberOfDependencies,
+                                      bool *dependencyKindsDefined);
+FMIC_DLLEXPORT fmi3ValueReference fmi3GetModelStructureInitialUnknownDependency(fmiHandle *fmu,
+                                                          int unknownId,
+                                                          int dependencyId);
+FMIC_DLLEXPORT fmi3ValueReference fmi3ModelStructureGetInitialUnknownDependencyKind(fmiHandle *fmu,
+                                                              int unknownId,
+                                                              int dependencyId);
+FMIC_DLLEXPORT int fmi3GetNumberOfModelStructureEventIndicators(fmiHandle *fmu);
+FMIC_DLLEXPORT void fmi3GetModelStructureEventIndicator(fmiHandle *fmu,
+                                      int id,
+                                      fmi3ValueReference *vr,
+                                      int *numberOfDependencies,
+                                      bool *dependencyKindsDefined);
+FMIC_DLLEXPORT fmi3ValueReference fmi3GetModelStructureEventIndicatorDependency(fmiHandle *fmu,
+                                                          int indicatorId,
+                                                          int dependencyId);
+FMIC_DLLEXPORT fmi3ValueReference fmi3GetModelStructureEventIndicatorDependencyKind(fmiHandle *fmu,
+                                                              int indicatorId,
+                                                              int dependencyId);
+
 FMIC_DLLEXPORT const char* fmi3GetModelIdentifier(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetNeedsExecutionTool(fmiHandle* fmu);
 FMIC_DLLEXPORT bool fmi3GetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);

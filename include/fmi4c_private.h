@@ -492,6 +492,14 @@ typedef struct {
 } fmi3LogCategory;
 
 typedef struct {
+    fmi3ValueReference valueReference;
+    int numberOfDependencies;
+    bool dependencyKindsDefined;
+    fmi3ValueReference *dependencies;
+    fmi3DependencyKind *dependencyKinds;
+} fmi3ModelStructureElement;
+
+typedef struct {
     bool supportsModelExchange;
     bool supportsCoSimulation;
     bool supportsScheduledExecution;
@@ -674,6 +682,17 @@ typedef struct {
 
     int numberOfLogCategories;
     fmi3LogCategory *logCategories;
+
+    int numberOfOutputs;
+    int numberOfContinuousStateDerivatives;
+    int numberOfClockedStates;
+    int numberOfInitialUnknowns;
+    int numberOfEventIndicators;
+    fmi3ModelStructureElement *outputs;
+    fmi3ModelStructureElement *continuousStateDerivatives;
+    fmi3ModelStructureElement *clockedStates;
+    fmi3ModelStructureElement *initialUnknowns;
+    fmi3ModelStructureElement *eventIndicators;
 } fmi3Data_t;
 
 

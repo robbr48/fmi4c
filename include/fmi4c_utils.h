@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "3rdparty/ezxml/ezxml.h"
+#include "fmi4c_private.h"
 
 const char* getFunctionName(const char* modelName, const char* functionName);
 
@@ -19,5 +20,7 @@ bool parseUInt64AttributeEzXml(ezxml_t element, const char* attributeName, uint6
 bool parseUInt32AttributeEzXml(ezxml_t element, const char* attributeName, uint32_t* target);
 bool parseUInt16AttributeEzXml(ezxml_t element, const char *attributeName, uint16_t* target);
 bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, uint8_t *target);
+
+bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *element);
 
 #endif // FMIC_UTILS_H
