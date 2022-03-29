@@ -1013,6 +1013,11 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
     if(modelVariablesElement) {
         for(ezxml_t varElement = modelVariablesElement->child; varElement; varElement = varElement->next) {
             fmi3VariableHandle var;
+            var.name = NULL;
+            var.description = NULL;
+            var.quantity = NULL;
+            var.unit = NULL;
+            var.displayUnit = NULL;
             var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
 
             parseStringAttributeEzXml(varElement, "name", &var.name);
@@ -2386,6 +2391,84 @@ fmi3Float64 fmi3GetVariableStartFloat64(fmi3VariableHandle *var)
     return var->startFloat64;
 }
 
+fmi3Float32 fmi3GetVariableStartFloat32(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startFloat32;
+}
+
+fmi3Int64 fmi3GetVariableStartInt64(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startInt64;
+}
+
+fmi3Int32 fmi3GetVariableStartInt32(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startInt32;
+}
+
+fmi3Int16 fmi3GetVariableStartInt16(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startInt16;
+}
+
+fmi3Int8 fmi3GetVariableStartInt8(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startInt8;
+}
+
+fmi3UInt64 fmi3GetVariableStartUInt64(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startUInt64;
+}
+
+fmi3UInt32 fmi3GetVariableStartUInt32(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startUInt32;
+}
+
+fmi3UInt16 fmi3GetVariableStartUInt16(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startUInt16;
+}
+
+fmi3UInt8 fmi3GetVariableStartUInt8(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startUInt8;
+}
+
+fmi3Boolean fmi3GetVariableStartBoolean(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startBoolean;
+}
+
+fmi3String fmi3GetVariableStartString(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startString;
+}
+
+fmi3Binary fmi3GetVariableStartBinary(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startBinary;
+}
+
+fmi3Boolean fmi3GetVariableStartEnumeration(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startEnumeration;
+}
+
 fmi3ValueReference fmi3GetVariableValueReference(fmi3VariableHandle *var)
 {
     TRACEFUNC
@@ -2971,6 +3054,25 @@ fmi2Real fmi2GetVariableStartReal(fmi2VariableHandle *var)
 {
     TRACEFUNC
     return var->startReal;
+}
+
+
+fmi2Integer fmi2GetVariableStartInteger(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startInteger;
+}
+
+fmi2Boolean fmi2GetVariableStartBoolean(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startBoolean;
+}
+
+fmi2String fmi2GetVariableStartString(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startString;
 }
 
 long fmi2GetVariableValueReference(fmi2VariableHandle *var)
@@ -3875,6 +3977,24 @@ fmi1Real fmi1GetVariableStartReal(fmi1VariableHandle *var)
 {
     TRACEFUNC
     return var->startReal;
+}
+
+fmi1Integer fmi1GetVariableStartInteger(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startInteger;
+}
+
+fmi1Boolean fmi1GetVariableStartBoolean(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startBoolean;
+}
+
+fmi1String fmi1GetVariableStartString(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->startString;
 }
 
 long fmi1GetVariableValueReference(fmi1VariableHandle *var)
