@@ -1,6 +1,9 @@
 #ifndef FMIC_FUNCTIONS_FMI3_H
 #define FMIC_FUNCTIONS_FMI3_H
 
+#include "fmi4c_types_fmi3.h"
+#include <stddef.h>
+
 #ifdef _WIN32
 # define STDCALL __stdcall
 #else

@@ -2,8 +2,6 @@
 #define FMIC_PRIVATE_H
 
 #include <stdlib.h>
-#include <stdbool.h>
-#include <stdint.h>
 
 #include "fmi4c_types.h"
 #include "fmi4c_types_fmi1.h"

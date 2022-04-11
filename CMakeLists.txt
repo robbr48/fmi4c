@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(fmi4c C)
+set(CMAKE_C_STANDARD 99)
 
 set(target_name fmi4c)
 

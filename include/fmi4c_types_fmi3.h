@@ -1,6 +1,9 @@
 #ifndef FMI_TYPES_FMI3_H
 #define FMI_TYPES_FMI3_H
 
+#include <stdbool.h>
+#include <stdint.h>
+
 //Defines
 #define fmi3True  true
 #define fmi3False false

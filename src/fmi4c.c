@@ -5,11 +5,13 @@
 #include "3rdparty/ezxml/ezxml.h"
 
 #include <sys/stat.h>
+#include <string.h>
 #include <stdlib.h>
 #include <float.h>
 #include <limits.h>
 #ifndef _WIN32
     #include <dlfcn.h>
+    #include <unistd.h>
 #endif
 
 #include "fmi4c_utils.h"
