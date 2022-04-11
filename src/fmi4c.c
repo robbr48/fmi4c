@@ -4552,6 +4552,7 @@ fmi3ValueReference fmi3GetModelStructureOutputDependency(fmiHandle *fmu, int out
        dependencyId < fmu->fmi3.outputs[outputId].numberOfDependencies) {
         return fmu->fmi3.outputs[outputId].dependencies[dependencyId];
     }
+    // TODO return value if failure ?
 }
 
 fmi3ValueReference fmi3GetModelStructureOutputDependencyKind(fmiHandle *fmu, int outputId, int dependencyId)
@@ -4561,6 +4562,7 @@ fmi3ValueReference fmi3GetModelStructureOutputDependencyKind(fmiHandle *fmu, int
        fmu->fmi3.outputs[outputId].dependencyKindsDefined) {
         return fmu->fmi3.outputs[outputId].dependencyKinds[dependencyId];
     }
+    // TODO return value if failure ?
 }
 
 int fmi3GetNumberOfModelStructureContinuousStateDerivatives(fmiHandle *fmu)
@@ -4589,6 +4591,7 @@ fmi3ValueReference fmi3GetModelStructureContinuousStateDerivativeDependency(fmiH
        dependencyId < fmu->fmi3.continuousStateDerivatives[derId].numberOfDependencies) {
         return fmu->fmi3.continuousStateDerivatives[derId].dependencies[dependencyId];
     }
+    // TODO return value if failure ?
 }
 
 fmi3ValueReference fmi3GetModelStructureContinuousStateDerivativeDependencyKind(fmiHandle *fmu,
@@ -4600,6 +4603,7 @@ fmi3ValueReference fmi3GetModelStructureContinuousStateDerivativeDependencyKind(
        fmu->fmi3.continuousStateDerivatives[derId].dependencyKindsDefined) {
         return fmu->fmi3.continuousStateDerivatives[derId].dependencyKinds[dependencyId];
     }
+    // TODO return value if failure ?
 }
 
 int fmi3GetNumberOfModelStructureClockedStates(fmiHandle *fmu)
@@ -4628,6 +4632,7 @@ fmi3ValueReference fmi3GetModelStructureClockedStateDependency(fmiHandle *fmu,
        dependencyId < fmu->fmi3.clockedStates[clockId].numberOfDependencies) {
         return fmu->fmi3.clockedStates[clockId].dependencies[dependencyId];
     }
+    // TODO return value if failure ?
 }
 
 fmi3ValueReference fmi3GetModelStructureClockedStateDependencyKind(fmiHandle *fmu,
@@ -4639,6 +4644,7 @@ fmi3ValueReference fmi3GetModelStructureClockedStateDependencyKind(fmiHandle *fm
        fmu->fmi3.clockedStates[clockId].dependencyKindsDefined) {
         return fmu->fmi3.clockedStates[clockId].dependencyKinds[dependencyId];
     }
+    // TODO return value if failure ?
 }
 
 int fmi3GetNumberOfModelStructureInitialUnknowns(fmiHandle *fmu)
@@ -4667,6 +4673,7 @@ fmi3ValueReference fmi3GetModelStructureInitialUnknownDependency(fmiHandle *fmu,
        dependencyId < fmu->fmi3.initialUnknowns[unknownId].numberOfDependencies) {
         return fmu->fmi3.initialUnknowns[unknownId].dependencies[dependencyId];
     }
+    // TODO return value if failure ?
 }
 
 fmi3ValueReference fmi3ModelStructureGetInitialUnknownDependencyKind(fmiHandle *fmu,
@@ -4678,6 +4685,7 @@ fmi3ValueReference fmi3ModelStructureGetInitialUnknownDependencyKind(fmiHandle *
        fmu->fmi3.initialUnknowns[unknownId].dependencyKindsDefined) {
         return fmu->fmi3.initialUnknowns[unknownId].dependencyKinds[dependencyId];
     }
+    // TODO return value if failure ?
 }
 
 int fmi3GetNumberOfModelStructureEventIndicators(fmiHandle *fmu)
@@ -4706,6 +4714,7 @@ fmi3ValueReference fmi3GetModelStructureEventIndicatorDependency(fmiHandle *fmu,
        dependencyId < fmu->fmi3.eventIndicators[indicatorId].numberOfDependencies) {
         return fmu->fmi3.eventIndicators[indicatorId].dependencies[dependencyId];
     }
+    // TODO return value if failure ?
 }
 
 fmi3ValueReference fmi3GetModelStructureEventIndicatorDependencyKind(fmiHandle *fmu,
@@ -4717,4 +4726,5 @@ fmi3ValueReference fmi3GetModelStructureEventIndicatorDependencyKind(fmiHandle *
        fmu->fmi3.eventIndicators[indicatorId].dependencyKindsDefined) {
         return fmu->fmi3.eventIndicators[indicatorId].dependencyKinds[dependencyId];
     }
+    // TODO return value if failure ?
 }
