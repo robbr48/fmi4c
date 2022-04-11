@@ -1,8 +1,6 @@
 #ifndef FMIC_PRIVATE_H
 #define FMIC_PRIVATE_H
 
-#include <stdlib.h>
-
 #include "fmi4c_types.h"
 #include "fmi4c_types_fmi1.h"
 #include "fmi4c_types_fmi2.h"
@@ -11,8 +9,11 @@
 #include "fmi4c_functions_fmi2.h"
 #include "fmi4c_functions_fmi3.h"
 
+#include <stdlib.h>
 #ifdef _WIN32
-#include <windows.h>
+    #include <windows.h>
+#else
+    #include <dlfcn.h>
 #endif
 
 #ifdef DEBUG

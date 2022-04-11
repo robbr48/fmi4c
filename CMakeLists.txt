@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 project(fmi4c C)
 set(CMAKE_C_STANDARD 99)
 
@@ -56,9 +56,12 @@ target_include_directories(${target_name} PRIVATE src)
 target_include_directories(${target_name} PUBLIC include)
 target_include_directories(${target_name} PUBLIC 3rdparty)
 
+target_link_libraries(${target_name} PRIVATE ${CMAKE_DL_LIBS}) # for libdl on Linux
+
 install(TARGETS ${target_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 if (${BUILD_TEST})
+    find_package(Threads REQUIRED)
     set(test_target_name fmi4ctest)
     set(TESTSRCFILES
 	src/test/fmi4c_test.c
@@ -75,7 +78,7 @@ if (${BUILD_TEST})
     target_include_directories(${test_target_name} PUBLIC include)
     target_include_directories(${test_target_name} PUBLIC include/test)
     install(TARGETS ${test_target_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
-    target_link_libraries(${test_target_name} -lm fmi4c)
+    target_link_libraries(${test_target_name} fmi4c Threads::Threads m)
 
     #Test FMU (FMI 1.0 for co-simulation)
     set(fmi1cs_target_name fmi1cs)
