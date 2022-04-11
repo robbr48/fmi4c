@@ -118,7 +118,7 @@ int testFMI2ME(fmiHandle *fmu)
     printf("  Simulating from %f to %f...\n",startTime, stopTime);
     for(double time=startTime; time < stopTime;) {
         if(eventInfo.terminateSimulation || terminateSimulation) {
-            printf("Terminating simulation at time = %d\n", time);
+            printf("Terminating simulation at time = %f\n", time);
             break;
         }
 

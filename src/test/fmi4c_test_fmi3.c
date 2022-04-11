@@ -248,7 +248,7 @@ int testFMI3ME(fmiHandle *fmu) {
 
     for(double time=startTime; time <= stopTime; time+=stepSize) {
         if(terminateSimulation || terminateSimulation) {
-            printf("Terminating simulation at time = %d\n", time);
+            printf("Terminating simulation at time = %f\n", time);
             break;
         }
 
