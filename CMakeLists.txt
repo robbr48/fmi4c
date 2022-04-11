@@ -4,14 +4,12 @@ set(CMAKE_C_STANDARD 99)
 
 set(target_name fmi4c)
 
-option(BUILD_DOCUMENTATION "Build Doxtygen documentation" OFF])
-option(BUILD_TEST "Build test executable" OFF])
+option(BUILD_DOCUMENTATION "Build Doxygen documentation" OFF)
+option(BUILD_TEST "Build test executable" OFF)
 
 if (${BUILD_DOCUMENTATION})
     add_subdirectory(doc)
 endif()
-
-include_directories(src)
 
 set(SRCFILES
     src/fmi4c.c
@@ -54,10 +52,9 @@ add_library(${target_name} SHARED ${SRCFILES})
 
 target_compile_definitions(${target_name} PUBLIC HAVE_MEMMOVE=1 EZXML_NOMMAP)
 
-target_include_directories(${target_name} PUBLIC .)
+target_include_directories(${target_name} PRIVATE src)
 target_include_directories(${target_name} PUBLIC include)
-target_include_directories(${target_name} PUBLIC 3rdparty/minizip)
-target_include_directories(${target_name} PUBLIC 3rdparty/zlib-1.2.6)
+target_include_directories(${target_name} PUBLIC 3rdparty)
 
 install(TARGETS ${target_name} DESTINATION ${CMAKE_INSTALL_PREFIX})
 

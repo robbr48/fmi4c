@@ -1,8 +1,8 @@
 #include "fmi4c_private.h"
 #include "fmi4c_placeholders.h"
-#include "3rdparty/minizip/miniunz.h"
+#include "minizip/miniunz.h"
 
-#include "3rdparty/ezxml/ezxml.h"
+#include "ezxml/ezxml.h"
 
 #include <sys/stat.h>
 #include <string.h>

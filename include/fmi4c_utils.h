@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "3rdparty/ezxml/ezxml.h"
+#include "ezxml/ezxml.h"
 #include "fmi4c_private.h"
 
 const char* getFunctionName(const char* modelName, const char* functionName);
