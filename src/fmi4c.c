@@ -1435,7 +1435,7 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
     getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #endif
 
-    char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
+    char dllPath[FILENAME_MAX];
     dllPath[0] = '\0';
     strcat(dllPath, fmu->unzippedLocation);
 #ifdef _WIN32
@@ -1458,7 +1458,7 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
 #else
     void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
     if(NULL == dll) {
-        printf("Loading DLL failed: %s (%s)\n",dllPath, dlerror());
+        printf("Loading shared object failed: %s (%s)\n",dllPath, dlerror());
         return false;
     }
 #endif
@@ -1536,7 +1536,7 @@ bool loadFunctionsFmi2(fmiHandle *fmu)
     getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #endif
 
-    char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
+    char dllPath[FILENAME_MAX];
     dllPath[0] = '\0';
     strcat(dllPath, fmu->unzippedLocation);
 #ifdef _WIN32
@@ -1559,7 +1559,7 @@ bool loadFunctionsFmi2(fmiHandle *fmu)
 #else
     void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
     if(NULL == dll) {
-        printf("Loading DLL failed: %s (%s)\n", dllPath, dlerror());
+        printf("Loading shared object failed: %s (%s)\n", dllPath, dlerror());
         return false;
     }
 #endif
@@ -1643,7 +1643,7 @@ bool loadFunctionsFmi3(fmiHandle *fmu)
     getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #endif
 
-    char *dllPath = (char*)malloc(sizeof(char)*FILENAME_MAX);
+    char dllPath[FILENAME_MAX];
     dllPath[0] = '\0';
     strcat(dllPath, fmu->unzippedLocation);
 #ifdef _WIN32
@@ -1666,7 +1666,7 @@ bool loadFunctionsFmi3(fmiHandle *fmu)
 #else
     void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
     if(NULL == dll) {
-        printf("Loading DLL failed: %s (%s)\n", dllPath, dlerror());
+        printf("Loading shared object failed: %s (%s)\n", dllPath, dlerror());
         return false;
     }
 #endif
@@ -3368,7 +3368,7 @@ bool fmi3GetNeedsCompletedIntegratorStep(fmiHandle *fmu)
 //! @returns Handle to FMU with FMI version 1
 fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
 {
-    char *cwd = (char*)malloc(sizeof(char)*FILENAME_MAX);
+   char cwd[FILENAME_MAX];
 #ifdef _WIN32
     _getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #else
@@ -3429,6 +3429,7 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
 
     if(strcmp(rootElement->name, "fmiModelDescription")) {
         printf("Wrong root tag name: %s\n", rootElement->name);
+        free(fmu);
         return false;
     }
 
@@ -3448,6 +3449,7 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
     }
     else {
         printf("Unsupported FMI version: %s\n", version);
+        free(fmu);
         return NULL;
     }
 
@@ -3618,9 +3620,11 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
         fmu->fmi1.numberOfVariables = 0;
         if(!parseModelDescriptionFmi1(fmu)) {
             printf("Failed to parse modelDescription.xml\n");
+            free(fmu);
             return NULL;
         }
         if(!loadFunctionsFmi1(fmu)) {
+            free(fmu);
             return NULL;    //Error message should already have been printed
         }
     }
@@ -3630,9 +3634,11 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
         fmu->fmi2.numberOfVariables = 0;
         if(!parseModelDescriptionFmi2(fmu)) {
             printf("Failed to parse modelDescription.xml\n");
+            free(fmu);
             return NULL;
         }
         if(!loadFunctionsFmi2(fmu)) {
+            free(fmu);
             return NULL;    //Error message should already have been printed
         }
     }
@@ -3642,9 +3648,11 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
         fmu->fmi3.numberOfVariables = 0;
         if(!parseModelDescriptionFmi3(fmu)) {
             printf("Failed to parse modelDescription.xml\n");
+            free(fmu);
             return NULL;
         }
         if(!loadFunctionsFmi3(fmu)) {
+            free(fmu);
             return NULL;
         }
     }
