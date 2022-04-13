@@ -12,6 +12,7 @@ add_executable(fmi4ctest fmi4c_test.c
                          fmi4c_test_tlm.h)
 target_include_directories(fmi4ctest PRIVATE .)
 target_link_libraries(fmi4ctest fmi4c Threads::Threads m)
+install(TARGETS fmi4ctest RUNTIME DESTINATION bin)
 
 # 3rdparty locations
 set(3rdparty ${CMAKE_CURRENT_LIST_DIR}/../3rdparty)

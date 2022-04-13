@@ -59,7 +59,8 @@ target_include_directories(${target_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRE
 target_link_libraries(${target_name} PRIVATE ${CMAKE_DL_LIBS}) # for libdl on Linux
 
 install(TARGETS ${target_name}
-        DESTINATION .)
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib)
 install(DIRECTORY include
         DESTINATION .)
 install(DIRECTORY 3rdparty/fmi
