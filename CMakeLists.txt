@@ -66,5 +66,6 @@ install(DIRECTORY 3rdparty/fmi
         DESTINATION include)
 
 if (${BUILD_TEST})
+  enable_testing()
   add_subdirectory(test)
 endif()
