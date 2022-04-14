@@ -134,6 +134,9 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
         for(ezxml_t varElement = ezxml_child(modelVariablesElement, "ScalarVariable"); varElement; varElement = varElement->next) {
 
             fmi1VariableHandle var;
+            var.name = NULL;
+            var.description = NULL;
+
             parseStringAttributeEzXml(varElement, "name", &var.name);
             parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
             parseStringAttributeEzXml(varElement, "description", &var.description);
@@ -343,6 +346,8 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
         for(ezxml_t varElement = ezxml_child(modelVariablesElement, "ScalarVariable"); varElement; varElement = varElement->next) {
             fmi2VariableHandle var;
             var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
+            var.name = NULL;
+            var.description = NULL;
 
             parseStringAttributeEzXml(varElement, "name", &var.name);
             parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
