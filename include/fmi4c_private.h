@@ -23,29 +23,6 @@
 #define TRACEFUNC
 #endif
 
-#ifdef _WIN32
-#define LOADFUNCTION2(FUNCNAME) (FUNCNAME ## _t)GetProcAddress(dll, getFunctionName(fmu->fmi1.modelName, #FUNCNAME));
-#define LOADFUNCTION(FUNCNAME) (FUNCNAME ## _t)GetProcAddress(dll, #FUNCNAME);
-#else
-#define LOADFUNCTION2(FUNCNAME) (FUNCNAME ## _t)dlsym(dll, getFunctionName(fmu->modelName, #FUNCNAME));
-#define LOADFUNCTION(FUNCNAME) (FUNCNAME ## _t)dlsym(dll, #FUNCNAME);
-#endif
-
-#define CHECKFUNCTION2(FMIVERSION, FUNCNAME) ({ \
-    if(fmu->fmi##FMIVERSION.FUNCNAME == NULL) { \
-        printf("Failed to load function \"%s\"\n",#FUNCNAME); \
-        return NULL; \
-    } \
-})
-
-
-#define CHECKFUNCTION(FUNCNAME) ({ \
-    if(fmu->FUNCNAME == NULL) { \
-        printf("Failed to load function \"%s\"\n",#FUNCNAME); \
-        return NULL; \
-    } \
-})
-
 extern const char* fmi4cErrorMessage;
 
 typedef struct {

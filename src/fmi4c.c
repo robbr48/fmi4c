@@ -14,6 +14,26 @@
 
 #include "fmi4c_utils.h"
 
+#ifdef _WIN32
+FARPROC loadDllFunction(HINSTANCE dll, const char *name, bool *ok) {
+    FARPROC fnc = GetProcAddress(dll, name);
+    if(fnc == NULL) {
+        printf("Failed to load function \"%s\"\n", name);
+        (*ok) = false;
+    }
+    return fnc;
+}
+#else
+void *loadDllFunction(void *dll, const char *name, bool *ok) {
+    void* fnc = dlsym(dll, name);
+    if(fnc == NULL) {
+        printf("Failed to load function \"%s\"\n", name);
+        (*ok) = false;
+    }
+    return fnc;
+}
+#endif
+
 const char* fmi4cErrorMessage = "";
 
 const char* fmi4c_getErrorMessages()
@@ -1438,114 +1458,60 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
 
     fmu->dll = dll;
 
+    bool ok = true;
 
-    fmu->fmi1.getVersion =                   LOADFUNCTION2(fmiGetVersion);
-    fmu->fmi1.setDebugLogging =              LOADFUNCTION2(fmiSetDebugLogging);
-    CHECKFUNCTION2(1,getVersion);
-    CHECKFUNCTION2(1,setDebugLogging);
-
-    if(fmu->fmi1.hasRealVariables) {
-        fmu->fmi1.getReal = LOADFUNCTION2(fmiGetReal);
-        fmu->fmi1.setReal = LOADFUNCTION2(fmiSetReal);
-        CHECKFUNCTION2(1,getReal);
-        CHECKFUNCTION2(1,setReal);
-    }
-
-    if(fmu->fmi1.hasIntegerVariables) {
-        fmu->fmi1.getInteger = LOADFUNCTION2(fmiGetInteger);
-        fmu->fmi1.setInteger = LOADFUNCTION2(fmiSetInteger);
-        CHECKFUNCTION2(1,getInteger);
-        CHECKFUNCTION2(1,setInteger);
-    }
-
-    if(fmu->fmi1.hasBooleanVariables) {
-        fmu->fmi1.getBoolean = LOADFUNCTION2(fmiGetBoolean);
-        fmu->fmi1.setBoolean = LOADFUNCTION2(fmiSetBoolean);
-        CHECKFUNCTION2(1,getBoolean);
-        CHECKFUNCTION2(1,setBoolean);
-    }
-
-    if(fmu->fmi1.hasStringVariables) {
-        fmu->fmi1.getString = LOADFUNCTION2(fmiGetString);
-        fmu->fmi1.setString = LOADFUNCTION2(fmiSetString);
-        CHECKFUNCTION2(1,getString);
-        CHECKFUNCTION2(1,setString);
-    }
+    //Load all common functions
+    fmu->fmi1.getVersion = (fmiGetVersion_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetVersion"), &ok);
+    fmu->fmi1.setDebugLogging = (fmiSetDebugLogging_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetDebugLogging"), &ok);
+    fmu->fmi1.getReal = (fmiGetReal_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetReal"), &ok);
+    fmu->fmi1.setReal = (fmiSetReal_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetReal"), &ok);
+    fmu->fmi1.getInteger = (fmiGetInteger_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetInteger"), &ok);
+    fmu->fmi1.setInteger = (fmiSetInteger_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetInteger"), &ok);
+    fmu->fmi1.getBoolean = (fmiGetBoolean_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetBoolean"), &ok);
+    fmu->fmi1.setBoolean = (fmiSetBoolean_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetBoolean"), &ok);
+    fmu->fmi1.getString = (fmiGetString_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetString"), &ok);
+    fmu->fmi1.setString = (fmiSetString_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetString"), &ok);
 
     if(fmu->fmi1.type == fmi1ModelExchange) {
-        fmu->fmi1.instantiateModel = LOADFUNCTION2(fmiInstantiateModel);
-        fmu->fmi1.freeModelInstance = LOADFUNCTION2(fmiFreeModelInstance);
-        fmu->fmi1.initialize = LOADFUNCTION2(fmiInitialize);
-        fmu->fmi1.getDerivatives = LOADFUNCTION2(fmiGetDerivatives);
-        fmu->fmi1.terminate = LOADFUNCTION2(fmiTerminate);
-        fmu->fmi1.setTime = LOADFUNCTION2(fmiSetTime);
-        fmu->fmi1.getModelTypesPlatform = LOADFUNCTION2(fmiGetModelTypesPlatform);
-        fmu->fmi1.setContinuousStates = LOADFUNCTION2(fmiSetContinuousStates);
-        fmu->fmi1.completedIntegratorStep = LOADFUNCTION2(fmiCompletedIntegratorStep);
-        fmu->fmi1.getEventIndicators = LOADFUNCTION2(fmiGetEventIndicators);
-        fmu->fmi1.eventUpdate = LOADFUNCTION2(fmiEventUpdate);
-        fmu->fmi1.getContinuousStates = LOADFUNCTION2(fmiGetContinuousStates);
-        fmu->fmi1.getNominalContinuousStates = LOADFUNCTION2(fmiGetNominalContinuousStates);
-        fmu->fmi1.getStateValueReferences = LOADFUNCTION2(fmiGetStateValueReferences);
-        CHECKFUNCTION2(1,instantiateModel);
-        CHECKFUNCTION2(1,freeModelInstance);
-        CHECKFUNCTION2(1,initialize);
-        CHECKFUNCTION2(1,getDerivatives);
-        CHECKFUNCTION2(1,terminate);
-        CHECKFUNCTION2(1,setTime);
-        CHECKFUNCTION2(1,getModelTypesPlatform);
-        CHECKFUNCTION2(1,setContinuousStates);
-        CHECKFUNCTION2(1,completedIntegratorStep);
-        CHECKFUNCTION2(1,getEventIndicators);
-        CHECKFUNCTION2(1,eventUpdate);
-        CHECKFUNCTION2(1,getContinuousStates);
-        CHECKFUNCTION2(1,getNominalContinuousStates);
-        CHECKFUNCTION2(1,getStateValueReferences);
+        //Load model exchange functions
+        fmu->fmi1.instantiateModel = (fmiInstantiateModel_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiInstantiateModel"), &ok);
+        fmu->fmi1.freeModelInstance = (fmiFreeModelInstance_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiFreeModelInstance"), &ok);
+        fmu->fmi1.initialize = (fmiInitialize_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiInitialize"), &ok);
+        fmu->fmi1.getDerivatives = (fmiGetDerivatives_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetDerivatives"), &ok);
+        fmu->fmi1.terminate = (fmiTerminate_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiTerminate"), &ok);
+        fmu->fmi1.setTime = (fmiSetTime_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiSetTime"), &ok);
+        fmu->fmi1.getModelTypesPlatform = (fmiGetModelTypesPlatform_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetModelTypesPlatform"), &ok);
+        fmu->fmi1.setContinuousStates = (fmiSetContinuousStates_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiSetContinuousStates"), &ok);
+        fmu->fmi1.completedIntegratorStep = (fmiCompletedIntegratorStep_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiCompletedIntegratorStep"), &ok);
+        fmu->fmi1.getEventIndicators = (fmiGetEventIndicators_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetEventIndicators"), &ok);
+        fmu->fmi1.eventUpdate = (fmiEventUpdate_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiEventUpdate"), &ok);
+        fmu->fmi1.getContinuousStates = (fmiGetContinuousStates_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetContinuousStates"), &ok);
+        fmu->fmi1.getNominalContinuousStates = (fmiGetNominalContinuousStates_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetNominalContinuousStates"), &ok);
+        fmu->fmi1.getStateValueReferences = (fmiGetStateValueReferences_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetStateValueReferences"), &ok);
     }
 
     if(fmu->fmi1.type == fmi1CoSimulationStandAlone || fmu->fmi1.type == fmi1CoSimulationTool) {
-        fmu->fmi1.getTypesPlatform = LOADFUNCTION2(fmiGetTypesPlatform);
-        fmu->fmi1.instantiateSlave = LOADFUNCTION2(fmiInstantiateSlave);
-        fmu->fmi1.initializeSlave = LOADFUNCTION2(fmiInitializeSlave);
-        fmu->fmi1.terminateSlave = LOADFUNCTION2(fmiTerminateSlave);
-        fmu->fmi1.resetSlave = LOADFUNCTION2(fmiResetSlave);
-        fmu->fmi1.freeSlaveInstance = LOADFUNCTION2(fmiFreeSlaveInstance);
-
-        CHECKFUNCTION2(1,getTypesPlatform);
-        CHECKFUNCTION2(1,instantiateSlave);
-        CHECKFUNCTION2(1,initializeSlave);
-        CHECKFUNCTION2(1,terminateSlave);
-        CHECKFUNCTION2(1,resetSlave);
-        CHECKFUNCTION2(1,freeSlaveInstance);
-        if(fmu->fmi1.canInterpolateInputs) {
-            fmu->fmi1.setRealInputDerivatives = LOADFUNCTION2(fmiSetRealInputDerivatives);
-            CHECKFUNCTION2(1,setRealInputDerivatives);
-        }
-        if(fmu->fmi1.maxOutputDerivativeOrder > 0) {
-            fmu->fmi1.getRealOutputDerivatives = LOADFUNCTION2(fmiGetRealOutputDerivatives);
-            CHECKFUNCTION2(1,getRealOutputDerivatives);
-        }
-        fmu->fmi1.doStep = LOADFUNCTION2(fmiDoStep);
-        CHECKFUNCTION2(1,doStep);
-        if(fmu->fmi1.canRunAsynchronuously) {
-            fmu->fmi1.cancelStep = LOADFUNCTION2(fmiCancelStep);
-            fmu->fmi1.getStatus = LOADFUNCTION2(fmiGetStatus);
-            fmu->fmi1.getRealStatus = LOADFUNCTION2(fmiGetRealStatus);
-            fmu->fmi1.getIntegerStatus = LOADFUNCTION2(fmiGetIntegerStatus);
-            fmu->fmi1.getBooleanStatus = LOADFUNCTION2(fmiGetBooleanStatus);
-            fmu->fmi1.getStringStatus = LOADFUNCTION2(fmiGetStringStatus);
-            CHECKFUNCTION2(1,cancelStep);
-            CHECKFUNCTION2(1,getStatus);
-            CHECKFUNCTION2(1,getRealStatus);
-            CHECKFUNCTION2(1,getIntegerStatus);
-            CHECKFUNCTION2(1,getBooleanStatus);
-            CHECKFUNCTION2(1,getStringStatus);
-        }
+        //Load all co-simulation functions
+        fmu->fmi1.getTypesPlatform = (fmiGetTypesPlatform_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetTypesPlatform"), &ok);
+        fmu->fmi1.instantiateSlave = (fmiInstantiateSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiInstantiateSlave"), &ok);
+        fmu->fmi1.initializeSlave = (fmiInitializeSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiInitializeSlave"), &ok);
+        fmu->fmi1.terminateSlave = (fmiTerminateSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiTerminateSlave"), &ok);
+        fmu->fmi1.resetSlave =  (fmiResetSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiResetSlave"), &ok);
+        fmu->fmi1.freeSlaveInstance = (fmiFreeSlaveInstance_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiFreeSlaveInstance"), &ok);
+        fmu->fmi1.setRealInputDerivatives = (fmiSetRealInputDerivatives_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetRealInputDerivatives"), &ok);
+        fmu->fmi1.getRealOutputDerivatives = (fmiGetRealOutputDerivatives_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetRealOutputDerivatives"), &ok);
+        fmu->fmi1.doStep = (fmiDoStep_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiDoStep"), &ok);
+        fmu->fmi1.cancelStep = (fmiCancelStep_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiCancelStep"), &ok);
+        fmu->fmi1.getStatus = (fmiGetStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetStatus"), &ok);
+        fmu->fmi1.getRealStatus = (fmiGetRealStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetRealStatus"), &ok);
+        fmu->fmi1.getIntegerStatus = (fmiGetIntegerStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetIntegerStatus"), &ok);
+        fmu->fmi1.getBooleanStatus = (fmiGetBooleanStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetBooleanStatus"), &ok);
+        fmu->fmi1.getStringStatus = (fmiGetStringStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetStringStatus"), &ok);
     }
 
     chdir(cwd);
 
-    return true;
+    return ok;
 }
 
 
@@ -1593,128 +1559,66 @@ bool loadFunctionsFmi2(fmiHandle *fmu)
 
     fmu->dll = dll;
 
-    fmu->fmi2.getTypesPlatform = LOADFUNCTION(fmi2GetTypesPlatform);
-    fmu->fmi2.getVersion = LOADFUNCTION(fmi2GetVersion);
-    fmu->fmi2.setDebugLogging= LOADFUNCTION(fmi2SetDebugLogging);
-    fmu->fmi2.instantiate= LOADFUNCTION(fmi2Instantiate);
-    fmu->fmi2.freeInstance= LOADFUNCTION(fmi2FreeInstance);
-    fmu->fmi2.setupExperiment = LOADFUNCTION(fmi2SetupExperiment);
-    fmu->fmi2.enterInitializationMode= LOADFUNCTION(fmi2EnterInitializationMode);
-    fmu->fmi2.exitInitializationMode= LOADFUNCTION(fmi2ExitInitializationMode);
-    fmu->fmi2.terminate= LOADFUNCTION(fmi2Terminate);
-    fmu->fmi2.reset= LOADFUNCTION(fmi2Reset);
-    if(fmu->fmi2.hasRealVariables) {
-        fmu->fmi2.getReal= LOADFUNCTION(fmi2GetReal);
-        fmu->fmi2.setReal= LOADFUNCTION(fmi2SetReal);
-        CHECKFUNCTION2(2,getReal);
-        CHECKFUNCTION2(2,setReal);
-    }
-    if(fmu->fmi2.hasIntegerVariables) {
-        fmu->fmi2.getInteger= LOADFUNCTION(fmi2GetInteger);
-        fmu->fmi2.setInteger= LOADFUNCTION(fmi2SetInteger);
-        CHECKFUNCTION2(2,getInteger);
-        CHECKFUNCTION2(2,setInteger);
-    }
-    if(fmu->fmi2.hasBooleanVariables) {
-        fmu->fmi2.getBoolean= LOADFUNCTION(fmi2GetBoolean);
-        fmu->fmi2.setBoolean= LOADFUNCTION(fmi2SetBoolean);
-        CHECKFUNCTION2(2,getBoolean);
-        CHECKFUNCTION2(2,setBoolean);
-    }
-    if(fmu->fmi2.hasStringVariables) {
-        fmu->fmi2.getString= LOADFUNCTION(fmi2GetString);
-        fmu->fmi2.setString= LOADFUNCTION(fmi2SetString);
-        CHECKFUNCTION2(2,getString);
-        CHECKFUNCTION2(2,setString);
-    }
-    if(fmu->fmi2.canGetAndSetFMUState) {
-        fmu->fmi2.getFMUstate= LOADFUNCTION(fmi2GetFMUstate);
-        fmu->fmi2.setFMUstate= LOADFUNCTION(fmi2SetFMUstate);
-        CHECKFUNCTION2(2,getFMUstate);
-        CHECKFUNCTION2(2,setFMUstate);
-    }
+    bool ok = true;
 
-    if(fmu->fmi2.canSerializeFMUState) {
-        fmu->fmi2.freeFMUstate= LOADFUNCTION(fmi2FreeFMUstate);
-        fmu->fmi2.serializedFMUstateSize= LOADFUNCTION(fmi2SerializedFMUstateSize);
-        fmu->fmi2.serializeFMUstate= LOADFUNCTION(fmi2SerializeFMUstate);
-        fmu->fmi2.deSerializeFMUstate= LOADFUNCTION(fmi2DeSerializeFMUstate);
-        CHECKFUNCTION2(2,serializedFMUstateSize);
-        CHECKFUNCTION2(2,serializeFMUstate);
-        CHECKFUNCTION2(2,deSerializeFMUstate);
-        CHECKFUNCTION2(2,freeFMUstate);
-    }
-    if(fmu->fmi2.providesDirectionalDerivative) {
-        fmu->fmi2.getDirectionalDerivative= LOADFUNCTION(fmi2GetDirectionalDerivative);
-    }
-    fmu->fmi2.setRealInputDerivatives= LOADFUNCTION(fmi2SetRealInputDerivatives);
-    fmu->fmi2.getRealOutputDerivatives= LOADFUNCTION(fmi2GetRealOutputDerivatives);
-    fmu->fmi2.doStep= LOADFUNCTION(fmi2DoStep);
-    fmu->fmi2.cancelStep= LOADFUNCTION(fmi2CancelStep);
-    fmu->fmi2.getStatus= LOADFUNCTION(fmi2GetStatus);
-    fmu->fmi2.getRealStatus= LOADFUNCTION(fmi2GetRealStatus);
-    fmu->fmi2.getIntegerStatus= LOADFUNCTION(fmi2GetIntegerStatus);
-    fmu->fmi2.getBooleanStatus= LOADFUNCTION(fmi2GetBooleanStatus);
-    fmu->fmi2.getStringStatus= LOADFUNCTION(fmi2GetStringStatus);
-
-    CHECKFUNCTION2(2,getTypesPlatform);
-    CHECKFUNCTION2(2,getVersion);
-    CHECKFUNCTION2(2,setDebugLogging);
-    CHECKFUNCTION2(2,instantiate);
-    CHECKFUNCTION2(2,freeInstance);
-    CHECKFUNCTION2(2,setupExperiment);
-    CHECKFUNCTION2(2,enterInitializationMode);
-    CHECKFUNCTION2(2,exitInitializationMode);
-    CHECKFUNCTION2(2,terminate);
-    CHECKFUNCTION2(2,reset);
-
-    if(fmu->fmi2.supportsModelExchange) {
-        fmu->fmi2.enterEventMode= LOADFUNCTION(fmi2EnterEventMode);
-        fmu->fmi2.newDiscreteStates= LOADFUNCTION(fmi2NewDiscreteStates);
-        fmu->fmi2.enterContinuousTimeMode= LOADFUNCTION(fmi2EnterContinuousTimeMode);
-        fmu->fmi2.completedIntegratorStep= LOADFUNCTION(fmi2CompletedIntegratorStep);
-        fmu->fmi2.setTime= LOADFUNCTION(fmi2SetTime);
-        fmu->fmi2.setContinuousStates= LOADFUNCTION(fmi2SetContinuousStates);
-        fmu->fmi2.getEventIndicators= LOADFUNCTION(fmi2GetEventIndicators);
-        fmu->fmi2.getContinuousStates= LOADFUNCTION(fmi2GetContinuousStates);
-        fmu->fmi2.getDerivatives= LOADFUNCTION(fmi2GetDerivatives);
-        fmu->fmi2.getNominalsOfContinuousStates= LOADFUNCTION(fmi2GetNominalsOfContinuousStates);
-        CHECKFUNCTION2(2,enterEventMode);
-        CHECKFUNCTION2(2,newDiscreteStates);
-        CHECKFUNCTION2(2,enterContinuousTimeMode);
-        CHECKFUNCTION2(2,completedIntegratorStep);
-        CHECKFUNCTION2(2,setTime);
-        CHECKFUNCTION2(2,setContinuousStates);
-        CHECKFUNCTION2(2,getEventIndicators);
-        CHECKFUNCTION2(2,getContinuousStates);
-        CHECKFUNCTION2(2,getDerivatives);
-        CHECKFUNCTION2(2,getNominalsOfContinuousStates);
-    }
+    //Load all common functions
+    fmu->fmi2.getVersion = (fmi2GetVersion_t)loadDllFunction(dll, "fmi2GetVersion", &ok);
+    fmu->fmi2.getVersion = (fmi2GetVersion_t)loadDllFunction(dll, "fmi2GetVersion", &ok);
+    fmu->fmi2.getTypesPlatform = (fmi2GetTypesPlatform_t)loadDllFunction(dll, "fmi2GetTypesPlatform", &ok);
+    fmu->fmi2.setDebugLogging = (fmi2SetDebugLogging_t)loadDllFunction(dll, "fmi2SetDebugLogging", &ok);
+    fmu->fmi2.instantiate = (fmi2Instantiate_t)loadDllFunction(dll, "fmi2Instantiate", &ok);
+    fmu->fmi2.freeInstance = (fmi2FreeInstance_t)loadDllFunction(dll, "fmi2FreeInstance", &ok);
+    fmu->fmi2.setupExperiment = (fmi2SetupExperiment_t)loadDllFunction(dll, "fmi2SetupExperiment", &ok);
+    fmu->fmi2.enterInitializationMode = (fmi2EnterInitializationMode_t)loadDllFunction(dll, "fmi2EnterInitializationMode", &ok);
+    fmu->fmi2.exitInitializationMode = (fmi2ExitInitializationMode_t)loadDllFunction(dll, "fmi2ExitInitializationMode", &ok);
+    fmu->fmi2.terminate = (fmi2Terminate_t)loadDllFunction(dll, "fmi2Terminate", &ok);
+    fmu->fmi2.reset = (fmi2Reset_t)loadDllFunction(dll,"fmi2Reset", &ok);
+    fmu->fmi2.getReal = (fmi2GetReal_t)loadDllFunction(dll, "fmi2GetReal", &ok);
+    fmu->fmi2.setReal = (fmi2SetReal_t)loadDllFunction(dll, "fmi2SetReal", &ok);
+    fmu->fmi2.getInteger = (fmi2GetInteger_t)loadDllFunction(dll, "fmi2GetInteger", &ok);
+    fmu->fmi2.setInteger = (fmi2SetInteger_t)loadDllFunction(dll, "fmi2SetInteger", &ok);
+    fmu->fmi2.getBoolean = (fmi2GetBoolean_t)loadDllFunction(dll, "fmi2GetBoolean", &ok);
+    fmu->fmi2.setBoolean = (fmi2SetBoolean_t)loadDllFunction(dll, "fmi2SetBoolean", &ok);
+    fmu->fmi2.getString = (fmi2GetString_t)loadDllFunction(dll, "fmi2GetString", &ok);
+    fmu->fmi2.setString = (fmi2SetString_t)loadDllFunction(dll, "fmi2SetString", &ok);
+    fmu->fmi2.getFMUstate = (fmi2GetFMUstate_t)loadDllFunction(dll, "fmi2GetFMUstate", &ok);
+    fmu->fmi2.setFMUstate = (fmi2SetFMUstate_t)loadDllFunction(dll, "fmi2SetFMUstate", &ok);
+    fmu->fmi2.freeFMUstate = (fmi2FreeFMUstate_t)loadDllFunction(dll, "fmi2FreeFMUstate", &ok);
+    fmu->fmi2.serializedFMUstateSize = (fmi2SerializedFMUstateSize_t)loadDllFunction(dll, "fmi2SerializedFMUstateSize", &ok);
+    fmu->fmi2.serializeFMUstate = (fmi2SerializeFMUstate_t)loadDllFunction(dll, "fmi2SerializeFMUstate", &ok);
+    fmu->fmi2.deSerializeFMUstate = (fmi2DeSerializeFMUstate_t)loadDllFunction(dll, "fmi2DeSerializeFMUstate", &ok);
+    fmu->fmi2.getDirectionalDerivative = (fmi2GetDirectionalDerivative_t)loadDllFunction(dll, "fmi2GetDirectionalDerivative", &ok);
 
     if(fmu->fmi2.supportsCoSimulation) {
-        if(fmu->fmi2.canInterpolateInputs) {
-            CHECKFUNCTION2(2,setRealInputDerivatives);
-            CHECKFUNCTION2(2,getRealOutputDerivatives);
-        }
-        CHECKFUNCTION2(2,doStep);
-        if(fmu->fmi2.canRunAsynchronuously) {
-            CHECKFUNCTION2(2,cancelStep);
-            CHECKFUNCTION2(2,getStatus);
-            CHECKFUNCTION2(2,getRealStatus);
-            CHECKFUNCTION2(2,getIntegerStatus);
-            CHECKFUNCTION2(2,getBooleanStatus);
-            CHECKFUNCTION2(2,getStringStatus);
-        }
+        //Load co-simulation specific functions
+        fmu->fmi2.setRealInputDerivatives = (fmi2SetRealInputDerivatives_t)loadDllFunction(dll, "fmi2SetRealInputDerivatives", &ok);
+        fmu->fmi2.getRealOutputDerivatives = (fmi2GetRealOutputDerivatives_t)loadDllFunction(dll, "fmi2GetRealOutputDerivatives", &ok);
+        fmu->fmi2.doStep = (fmi2DoStep_t)loadDllFunction(dll,"fmi2DoStep", &ok);
+        fmu->fmi2.cancelStep = (fmi2CancelStep_t)loadDllFunction(dll, "fmi2CancelStep", &ok);
+        fmu->fmi2.getStatus = (fmi2GetStatus_t)loadDllFunction(dll, "fmi2GetStatus", &ok);
+        fmu->fmi2.getRealStatus = (fmi2GetRealStatus_t)loadDllFunction(dll, "fmi2GetRealStatus", &ok);
+        fmu->fmi2.getIntegerStatus = (fmi2GetIntegerStatus_t)loadDllFunction(dll, "fmi2GetIntegerStatus", &ok);
+        fmu->fmi2.getBooleanStatus = (fmi2GetBooleanStatus_t)loadDllFunction(dll, "fmi2GetBooleanStatus", &ok);
+        fmu->fmi2.getStringStatus = (fmi2GetStringStatus_t)loadDllFunction(dll, "fmi2GetStringStatus", &ok);
     }
 
-
-    if(fmu->fmi2.providesDirectionalDerivative) {
-        CHECKFUNCTION2(2,getDirectionalDerivative);
+    if(fmu->fmi2.supportsModelExchange) {
+        //Load model exchange specific functions
+         fmu->fmi2.enterEventMode = (fmi2EnterEventMode_t)loadDllFunction(dll, "fmi2EnterEventMode", &ok);
+         fmu->fmi2.newDiscreteStates = (fmi2NewDiscreteStates_t)loadDllFunction(dll, "fmi2NewDiscreteStates", &ok);
+         fmu->fmi2.enterContinuousTimeMode = (fmi2EnterContinuousTimeMode_t)loadDllFunction(dll, "fmi2EnterContinuousTimeMode", &ok);
+         fmu->fmi2.completedIntegratorStep = (fmi2CompletedIntegratorStep_t)loadDllFunction(dll, "fmi2CompletedIntegratorStep", &ok);
+         fmu->fmi2.setTime = (fmi2SetTime_t)loadDllFunction(dll,"fmi2SetTime", &ok);
+         fmu->fmi2.setContinuousStates = (fmi2SetContinuousStates_t)loadDllFunction(dll, "fmi2SetContinuousStates", &ok);
+         fmu->fmi2.getEventIndicators = (fmi2GetEventIndicators_t)loadDllFunction(dll, "fmi2GetEventIndicators", &ok);
+         fmu->fmi2.getContinuousStates = (fmi2GetContinuousStates_t)loadDllFunction(dll, "fmi2GetContinuousStates", &ok);
+         fmu->fmi2.getDerivatives = (fmi2GetDerivatives_t)loadDllFunction(dll, "fmi2GetDerivatives", &ok);
+         fmu->fmi2.getNominalsOfContinuousStates = (fmi2GetNominalsOfContinuousStates_t)loadDllFunction(dll, "fmi2GetNominalsOfContinuousStates", &ok);
     }
 
     chdir(cwd);
 
-    return true;
+    return ok;
 }
 
 
@@ -1763,231 +1667,118 @@ bool loadFunctionsFmi3(fmiHandle *fmu)
     fmu->dll = dll;
 
     printf("Loading FMI version 3...\n");
-    fmu->fmi3.getVersion = LOADFUNCTION(fmi3GetVersion);
-    fmu->fmi3.setDebugLogging = LOADFUNCTION(fmi3SetDebugLogging);
-    fmu->fmi3.freeInstance = LOADFUNCTION(fmi3FreeInstance);
-    fmu->fmi3.enterInitializationMode = LOADFUNCTION(fmi3EnterInitializationMode);
-    fmu->fmi3.exitInitializationMode = LOADFUNCTION(fmi3ExitInitializationMode);
-    fmu->fmi3.terminate = LOADFUNCTION(fmi3Terminate);
-    fmu->fmi3.reset = LOADFUNCTION(fmi3Reset);
 
-    CHECKFUNCTION2(3,getVersion);
-    CHECKFUNCTION2(3,setDebugLogging);
-    CHECKFUNCTION2(3,freeInstance);
-    CHECKFUNCTION2(3,enterInitializationMode);
-    CHECKFUNCTION2(3,exitInitializationMode);
-    CHECKFUNCTION2(3,terminate);
-    CHECKFUNCTION2(3,reset);
-    if(fmu->fmi3.hasEventMode) {
-        fmu->fmi3.enterEventMode = LOADFUNCTION(fmi3EnterEventMode);
-        CHECKFUNCTION2(3,enterEventMode);
-    }
-    if(fmu->fmi3.hasFloat64Variables) {
-        fmu->fmi3.setFloat64 = LOADFUNCTION(fmi3SetFloat64);
-        fmu->fmi3.getFloat64 = LOADFUNCTION(fmi3GetFloat64);
-        CHECKFUNCTION2(3,setFloat64);
-        CHECKFUNCTION2(3,getFloat64);
-    }
-    if(fmu->fmi3.hasFloat32Variables) {
-        fmu->fmi3.getFloat32 = LOADFUNCTION(fmi3GetFloat32);
-        fmu->fmi3.setFloat32 = LOADFUNCTION(fmi3SetFloat32);
-        CHECKFUNCTION2(3,setFloat32);
-        CHECKFUNCTION2(3,getFloat32);
-    }
-    if(fmu->fmi3.hasInt64Variables) {
-        fmu->fmi3.setInt64 = LOADFUNCTION(fmi3SetInt64);
-        fmu->fmi3.getInt64 = LOADFUNCTION(fmi3GetInt64);
-        CHECKFUNCTION2(3,getInt64);
-        CHECKFUNCTION2(3,setInt64);
-    }
-    if(fmu->fmi3.hasInt32Variables) {
-        fmu->fmi3.setInt32 = LOADFUNCTION(fmi3SetInt32);
-        fmu->fmi3.getInt32 = LOADFUNCTION(fmi3GetInt32);
-        CHECKFUNCTION2(3,getInt32);
-        CHECKFUNCTION2(3,setInt32);
-    }
-    if(fmu->fmi3.hasInt16Variables) {
-        fmu->fmi3.setInt16 = LOADFUNCTION(fmi3SetInt16);
-        fmu->fmi3.getInt16 = LOADFUNCTION(fmi3GetInt16);
-        CHECKFUNCTION2(3,getInt16);
-        CHECKFUNCTION2(3,setInt16);
-    }
-    if(fmu->fmi3.hasInt8Variables) {
-        fmu->fmi3.getInt8 = LOADFUNCTION(fmi3GetInt8);
-        fmu->fmi3.setInt8 = LOADFUNCTION(fmi3SetInt8);
-        CHECKFUNCTION2(3,getInt8);
-        CHECKFUNCTION2(3,setInt8);
-    }
-    if(fmu->fmi3.hasUInt64Variables) {
-        fmu->fmi3.getUInt64 = LOADFUNCTION(fmi3GetUInt64);
-        fmu->fmi3.setUInt64 = LOADFUNCTION(fmi3SetUInt64);
-        CHECKFUNCTION2(3,getUInt64);
-        CHECKFUNCTION2(3,setUInt64);
-    }
-    if(fmu->fmi3.hasUInt32Variables) {
-        fmu->fmi3.getUInt32 = LOADFUNCTION(fmi3GetUInt32);
-        fmu->fmi3.setUInt32 = LOADFUNCTION(fmi3SetUInt32);
-        CHECKFUNCTION2(3,getUInt32);
-        CHECKFUNCTION2(3,setUInt32);
-    }
-    if(fmu->fmi3.hasUInt16Variables) {
-        fmu->fmi3.getUInt16 = LOADFUNCTION(fmi3GetUInt16);
-        fmu->fmi3.setUInt16 = LOADFUNCTION(fmi3SetUInt16);
-        CHECKFUNCTION2(3,getUInt16);
-        CHECKFUNCTION2(3,setUInt16);
-    }
-    if(fmu->fmi3.hasUInt8Variables) {
-        fmu->fmi3.setUInt8 = LOADFUNCTION(fmi3SetUInt8);
-        fmu->fmi3.getUInt8 = LOADFUNCTION(fmi3GetUInt8);
-        CHECKFUNCTION2(3,getUInt8);
-        CHECKFUNCTION2(3,setUInt8);
-    }
-    if(fmu->fmi3.hasBooleanVariables) {
-        fmu->fmi3.setBoolean = LOADFUNCTION(fmi3SetBoolean);
-        fmu->fmi3.getBoolean = LOADFUNCTION(fmi3GetBoolean);
-        CHECKFUNCTION2(3,getBoolean);
-        CHECKFUNCTION2(3,setBoolean);
-    }
-    if(fmu->fmi3.hasStringVariables)  {
-        fmu->fmi3.getString = LOADFUNCTION(fmi3GetString);
-        fmu->fmi3.setString = LOADFUNCTION(fmi3SetString);
-        CHECKFUNCTION2(3,getString);
-        CHECKFUNCTION2(3,setString);
-    }
-    if(fmu->fmi3.hasBinaryVariables) {
-        fmu->fmi3.getBinary = LOADFUNCTION(fmi3GetBinary);
-        fmu->fmi3.setBinary = LOADFUNCTION(fmi3SetBinary);
-        CHECKFUNCTION2(3,getBinary);
-        CHECKFUNCTION2(3,setBinary);
-    }
-    if(fmu->fmi3.hasClockVariables) {
-        fmu->fmi3.getClock = LOADFUNCTION(fmi3GetClock);
-        fmu->fmi3.setClock = LOADFUNCTION(fmi3SetClock);
-        fmu->fmi3.getIntervalDecimal = LOADFUNCTION(fmi3GetIntervalDecimal);
-        fmu->fmi3.getIntervalFraction = LOADFUNCTION(fmi3GetIntervalFraction);
-        fmu->fmi3.getShiftDecimal = LOADFUNCTION(fmi3GetShiftDecimal);
-        fmu->fmi3.getShiftFraction = LOADFUNCTION(fmi3GetShiftFraction);
-        fmu->fmi3.setIntervalDecimal = LOADFUNCTION(fmi3SetIntervalDecimal);
-        fmu->fmi3.setIntervalFraction = LOADFUNCTION(fmi3SetIntervalFraction);
-        CHECKFUNCTION2(3,getClock);
-        CHECKFUNCTION2(3,setClock);
-        CHECKFUNCTION2(3,getIntervalDecimal);
-        CHECKFUNCTION2(3,getIntervalFraction);
-        CHECKFUNCTION2(3,getShiftDecimal);
-        CHECKFUNCTION2(3,getShiftFraction);
-        CHECKFUNCTION2(3,setIntervalDecimal);
-        CHECKFUNCTION2(3,setIntervalFraction);
-    }
-    if(fmu->fmi3.providesPerElementDependencies) {
-        fmu->fmi3.getNumberOfVariableDependencies = LOADFUNCTION(fmi3GetNumberOfVariableDependencies);
-        fmu->fmi3.getVariableDependencies = LOADFUNCTION(fmi3GetVariableDependencies);
-        CHECKFUNCTION2(3,getNumberOfVariableDependencies);
-        CHECKFUNCTION2(3,getVariableDependencies);
-    }
-    if(fmu->fmi3.hasStructuralParameters) {
-        fmu->fmi3.enterConfigurationMode = LOADFUNCTION(fmi3EnterConfigurationMode);
-        fmu->fmi3.exitConfigurationMode = LOADFUNCTION(fmi3ExitConfigurationMode);
-        CHECKFUNCTION2(3,enterConfigurationMode);
-        CHECKFUNCTION2(3,exitConfigurationMode);
-    }
-    if(fmu->fmi3.maxOutputDerivativeOrder > 0) {
-        fmu->fmi3.getOutputDerivatives = LOADFUNCTION(fmi3GetOutputDerivatives);
-        CHECKFUNCTION2(3,getOutputDerivatives);
-    }
+    //Load all common functions
+
+
+
+
+//#define fmi3InstantiateModelExchange         fmi3FullName(fmi3InstantiateModelExchange)
+//#define fmi3InstantiateCoSimulation          fmi3FullName(fmi3InstantiateCoSimulation)
+//#define fmi3InstantiateScheduledExecution    fmi3FullName(fmi3InstantiateScheduledExecution)
+
+///* Getting and setting variable values */
+
+
+
+///* Getting Variable Dependency Information */
+//#define fmi3GetNumberOfVariableDependencies fmi3FullName(fmi3GetNumberOfVariableDependencies)
+//#define fmi3GetVariableDependencies         fmi3FullName(fmi3GetVariableDependencies)
+
+    bool ok = true;
+
+    //Load common functions
+    fmu->fmi3.getVersion = (fmi3GetVersion_t)loadDllFunction(dll,"fmi3GetVersion", &ok);
+    fmu->fmi3.setDebugLogging = (fmi3SetDebugLogging_t)loadDllFunction(dll,    "fmi3SetDebugLogging", &ok);
+    fmu->fmi3.instantiateModelExchange = (fmi3InstantiateModelExchange_t)loadDllFunction(dll,    "fmi3InstantiateModelExchange", &ok);
+    fmu->fmi3.instantiateCoSimulation = (fmi3InstantiateCoSimulation_t)loadDllFunction(dll,    "fmi3InstantiateCoSimulation", &ok);
+    fmu->fmi3.instantiateScheduledExecution = (fmi3InstantiateScheduledExecution_t)loadDllFunction(dll,    "fmi3InstantiateScheduledExecution", &ok);
+    fmu->fmi3.freeInstance = (fmi3FreeInstance_t)loadDllFunction(dll,"fmi3FreeInstance", &ok);
+    fmu->fmi3.enterInitializationMode = (fmi3EnterInitializationMode_t)loadDllFunction(dll,    "fmi3EnterInitializationMode", &ok);
+    fmu->fmi3.exitInitializationMode = (fmi3ExitInitializationMode_t)loadDllFunction(dll,    "fmi3ExitInitializationMode", &ok);
+    fmu->fmi3.enterEventMode = (fmi3EnterEventMode_t)loadDllFunction(dll,    "fmi3EnterEventMode", &ok);
+    fmu->fmi3.terminate = (fmi3Terminate_t)loadDllFunction(dll,"fmi3Terminate", &ok);
+    fmu->fmi3.reset = (fmi3Reset_t)loadDllFunction(dll,"fmi3Reset", &ok);
+    fmu->fmi3.setFloat64 = (fmi3SetFloat64_t)loadDllFunction(dll,"fmi3SetFloat64", &ok);
+    fmu->fmi3.getFloat64 = (fmi3GetFloat64_t)loadDllFunction(dll,"fmi3GetFloat64", &ok);
+    fmu->fmi3.getFloat32 = (fmi3GetFloat32_t)loadDllFunction(dll,"fmi3GetFloat32", &ok);
+    fmu->fmi3.setFloat32 = (fmi3SetFloat32_t)loadDllFunction(dll,"fmi3SetFloat32", &ok);
+    fmu->fmi3.setInt64 = (fmi3SetInt64_t)loadDllFunction(dll,"fmi3SetInt64", &ok);
+    fmu->fmi3.getInt64 = (fmi3GetInt64_t)loadDllFunction(dll,"fmi3GetInt64", &ok);
+    fmu->fmi3.setInt32 = (fmi3SetInt32_t)loadDllFunction(dll,"fmi3SetInt32", &ok);
+    fmu->fmi3.getInt32 = (fmi3GetInt32_t)loadDllFunction(dll,"fmi3GetInt32", &ok);
+    fmu->fmi3.setInt16 = (fmi3SetInt16_t)loadDllFunction(dll,"fmi3SetInt16", &ok);
+    fmu->fmi3.getInt16 = (fmi3GetInt16_t)loadDllFunction(dll,"fmi3GetInt16", &ok);
+    fmu->fmi3.getInt8 = (fmi3GetInt8_t)loadDllFunction(dll,"fmi3GetInt8", &ok);
+    fmu->fmi3.setInt8 = (fmi3SetInt8_t)loadDllFunction(dll,"fmi3SetInt8", &ok);
+    fmu->fmi3.getUInt64 = (fmi3GetUInt64_t)loadDllFunction(dll,"fmi3GetUInt64", &ok);
+    fmu->fmi3.setUInt64 = (fmi3SetUInt64_t)loadDllFunction(dll,"fmi3SetUInt64", &ok);
+    fmu->fmi3.getUInt32 = (fmi3GetUInt32_t)loadDllFunction(dll,"fmi3GetUInt32", &ok);
+    fmu->fmi3.setUInt32 = (fmi3SetUInt32_t)loadDllFunction(dll,"fmi3SetUInt32", &ok);
+    fmu->fmi3.getUInt16 = (fmi3GetUInt16_t)loadDllFunction(dll,"fmi3GetUInt16", &ok);
+    fmu->fmi3.setUInt16 = (fmi3SetUInt16_t)loadDllFunction(dll,"fmi3SetUInt16", &ok);
+    fmu->fmi3.setUInt8 = (fmi3SetUInt8_t)loadDllFunction(dll,"fmi3SetUInt8", &ok);
+    fmu->fmi3.getUInt8 = (fmi3GetUInt8_t)loadDllFunction(dll,"fmi3GetUInt8", &ok);
+    fmu->fmi3.setBoolean = (fmi3SetBoolean_t)loadDllFunction(dll,"fmi3SetBoolean", &ok);
+    fmu->fmi3.getBoolean = (fmi3GetBoolean_t)loadDllFunction(dll,"fmi3GetBoolean", &ok);
+    fmu->fmi3.getString = (fmi3GetString_t)loadDllFunction(dll,"fmi3GetString", &ok);
+    fmu->fmi3.setString = (fmi3SetString_t)loadDllFunction(dll,"fmi3SetString", &ok);
+    fmu->fmi3.getBinary = (fmi3GetBinary_t)loadDllFunction(dll,"fmi3GetBinary", &ok);
+    fmu->fmi3.setBinary = (fmi3SetBinary_t)loadDllFunction(dll,"fmi3SetBinary", &ok);
+    fmu->fmi3.getClock = (fmi3GetClock_t)loadDllFunction(dll,"fmi3GetClock", &ok);
+    fmu->fmi3.setClock = (fmi3SetClock_t)loadDllFunction(dll,"fmi3SetClock", &ok);
+    fmu->fmi3.getNumberOfVariableDependencies =(fmi3GetNumberOfVariableDependencies_t)loadDllFunction(dll,    "fmi3GetNumberOfVariableDependencies", &ok);
+    fmu->fmi3.getVariableDependencies = (fmi3GetVariableDependencies_t)loadDllFunction(dll,    "fmi3GetVariableDependencies", &ok);
+    fmu->fmi3.getFMUState = (fmi3GetFMUState_t)loadDllFunction(dll,"fmi3GetFMUState", &ok);
+    fmu->fmi3.setFMUState = (fmi3SetFMUState_t)loadDllFunction(dll,"fmi3SetFMUState", &ok);
+    fmu->fmi3.freeFMUState = (fmi3FreeFMUState_t)loadDllFunction(dll,"fmi3FreeFMUState", &ok);
+    fmu->fmi3.serializedFMUStateSize = (fmi3SerializedFMUStateSize_t)loadDllFunction(dll,    "fmi3SerializedFMUStateSize", &ok);
+    fmu->fmi3.serializeFMUState = (fmi3SerializeFMUState_t)loadDllFunction(dll,    "fmi3SerializeFMUState", &ok);
+    fmu->fmi3.deserializeFMUState = (fmi3DeserializeFMUState_t)loadDllFunction(dll,    "fmi3DeserializeFMUState", &ok);
+    fmu->fmi3.getDirectionalDerivative = (fmi3GetDirectionalDerivative_t)loadDllFunction(dll,    "fmi3GetDirectionalDerivative", &ok);
+    fmu->fmi3.getAdjointDerivative = (fmi3GetAdjointDerivative_t)loadDllFunction(dll,    "fmi3GetAdjointDerivative", &ok);
+    fmu->fmi3.enterConfigurationMode = (fmi3EnterConfigurationMode_t)loadDllFunction(dll,    "fmi3EnterConfigurationMode", &ok);
+    fmu->fmi3.exitConfigurationMode = (fmi3ExitConfigurationMode_t)loadDllFunction(dll,    "fmi3ExitConfigurationMode", &ok);
+    fmu->fmi3.getIntervalDecimal = (fmi3GetIntervalDecimal_t)loadDllFunction(dll,    "fmi3GetIntervalDecimal", &ok);
+    fmu->fmi3.getIntervalFraction = (fmi3GetIntervalFraction_t)loadDllFunction(dll,    "fmi3GetIntervalFraction", &ok);
+    fmu->fmi3.getShiftDecimal = (fmi3GetShiftDecimal_t)loadDllFunction(dll,    "fmi3GetShiftDecimal", &ok);
+    fmu->fmi3.getShiftFraction = (fmi3GetShiftFraction_t)loadDllFunction(dll,    "fmi3GetShiftFraction", &ok);
+    fmu->fmi3.setIntervalDecimal = (fmi3SetIntervalDecimal_t)loadDllFunction(dll,    "fmi3SetIntervalDecimal", &ok);
+    fmu->fmi3.setIntervalFraction = (fmi3SetIntervalFraction_t)loadDllFunction(dll,    "fmi3SetIntervalFraction", &ok);
+    fmu->fmi3.setShiftDecimal = (fmi3SetShiftDecimal_t)loadDllFunction(dll,    "fmi3SetShiftDecimal", &ok);
+    fmu->fmi3.setShiftFraction = (fmi3SetShiftFraction_t)loadDllFunction(dll,    "fmi3SetShiftFraction", &ok);
 
     if(fmu->fmi3.supportsCoSimulation) {
-        fmu->fmi3.instantiateCoSimulation = LOADFUNCTION(fmi3InstantiateCoSimulation);
-        fmu->fmi3.doStep = LOADFUNCTION(fmi3DoStep);
-        CHECKFUNCTION2(3,instantiateCoSimulation);
-        CHECKFUNCTION2(3,doStep);
-        if(fmu->fmi3.hasEventMode) {
-            fmu->fmi3.enterStepMode = LOADFUNCTION(fmi3EnterStepMode);
-            fmu->fmi3.updateDiscreteStates = LOADFUNCTION(fmi3UpdateDiscreteStates);
-            CHECKFUNCTION2(3,enterStepMode);
-            CHECKFUNCTION2(3,updateDiscreteStates);
-        }
-        if(fmu->fmi3.providesEvaluateDiscreteStates) {
-            fmu->fmi3.evaluateDiscreteStates = LOADFUNCTION(fmi3EvaluateDiscreteStates);
-            CHECKFUNCTION2(3,evaluateDiscreteStates);
-        }
-        if(fmu->fmi3.providesDirectionalDerivative) {
-            fmu->fmi3.getDirectionalDerivative = LOADFUNCTION(fmi3GetDirectionalDerivative);
-            CHECKFUNCTION2(3,getDirectionalDerivative);
-        }
-        if(fmu->fmi3.providesAdjointDerivatives) {
-            fmu->fmi3.getAdjointDerivative = LOADFUNCTION(fmi3GetAdjointDerivative);
-            CHECKFUNCTION2(3,getAdjointDerivative);
-        }
+        //Load co-simulation specific functions
+        fmu->fmi3.enterStepMode = (fmi3EnterStepMode_t)loadDllFunction(dll, "fmi3EnterStepMode", &ok);
+        fmu->fmi3.getOutputDerivatives = (fmi3GetOutputDerivatives_t)loadDllFunction(dll, "fmi3GetOutputDerivatives", &ok);
+        fmu->fmi3.doStep = (fmi3DoStep_t)loadDllFunction(dll, "fmi3DoStep", &ok);
     }
 
     if(fmu->fmi3.supportsModelExchange) {
-        fmu->fmi3.updateDiscreteStates = LOADFUNCTION(fmi3UpdateDiscreteStates);
-        fmu->fmi3.instantiateModelExchange = LOADFUNCTION(fmi3InstantiateModelExchange);
-        fmu->fmi3.setTime = LOADFUNCTION(fmi3SetTime);
-        fmu->fmi3.enterContinuousTimeMode = LOADFUNCTION(fmi3EnterContinuousTimeMode);
-        fmu->fmi3.completedIntegratorStep = LOADFUNCTION(fmi3CompletedIntegratorStep);
-        fmu->fmi3.setContinuousStates = LOADFUNCTION(fmi3SetContinuousStates);
-        fmu->fmi3.getContinuousStateDerivatives = LOADFUNCTION(fmi3GetContinuousStateDerivatives);
-        fmu->fmi3.getEventIndicators = LOADFUNCTION(fmi3GetEventIndicators);
-        fmu->fmi3.getContinuousStates = LOADFUNCTION(fmi3GetContinuousStates);
-        fmu->fmi3.getNominalsOfContinuousStates = LOADFUNCTION(fmi3GetNominalsOfContinuousStates);
-        fmu->fmi3.getNumberOfEventIndicators = LOADFUNCTION(fmi3GetNumberOfEventIndicators);
-        fmu->fmi3.getNumberOfContinuousStates = LOADFUNCTION(fmi3GetNumberOfContinuousStates);
-        CHECKFUNCTION2(3,updateDiscreteStates);
-        CHECKFUNCTION2(3,instantiateModelExchange);
-        CHECKFUNCTION2(3,setTime);
-        CHECKFUNCTION2(3,enterContinuousTimeMode);
-        CHECKFUNCTION2(3,completedIntegratorStep);
-        CHECKFUNCTION2(3,setContinuousStates);
-        CHECKFUNCTION2(3,getContinuousStateDerivatives);
-        CHECKFUNCTION2(3,getEventIndicators);
-        CHECKFUNCTION2(3,getContinuousStates);
-        CHECKFUNCTION2(3,getNominalsOfContinuousStates);
-        CHECKFUNCTION2(3,getNumberOfEventIndicators);
-        CHECKFUNCTION2(3,getNumberOfContinuousStates);
-        CHECKFUNCTION2(3,updateDiscreteStates);
-        if(fmu->fmi3.providesEvaluateDiscreteStates) {
-            fmu->fmi3.evaluateDiscreteStates = LOADFUNCTION(fmi3EvaluateDiscreteStates);
-            CHECKFUNCTION2(3,evaluateDiscreteStates);
-        }
-        if(fmu->fmi3.providesDirectionalDerivative) {
-            fmu->fmi3.getDirectionalDerivative = LOADFUNCTION(fmi3GetDirectionalDerivative);
-            CHECKFUNCTION2(3,getDirectionalDerivative);
-        }
-        if(fmu->fmi3.providesAdjointDerivatives) {
-            fmu->fmi3.getAdjointDerivative = LOADFUNCTION(fmi3GetAdjointDerivative);
-            CHECKFUNCTION2(3,getAdjointDerivative);
-        }
+        //Load model exchange specific functions
+        fmu->fmi3.enterContinuousTimeMode = (fmi3EnterContinuousTimeMode_t)loadDllFunction(dll, "fmi3EnterContinuousTimeMode", &ok);
+        fmu->fmi3.completedIntegratorStep = (fmi3CompletedIntegratorStep_t)loadDllFunction(dll, "fmi3CompletedIntegratorStep", &ok);
+        fmu->fmi3.setTime = (fmi3SetTime_t)loadDllFunction(dll,"fmi3SetTime", &ok);
+        fmu->fmi3.setContinuousStates = (fmi3SetContinuousStates_t)loadDllFunction(dll, "fmi3SetContinuousStates", &ok);
+        fmu->fmi3.getContinuousStateDerivatives = (fmi3GetContinuousStateDerivatives_t)loadDllFunction(dll, "fmi3GetContinuousStateDerivatives", &ok);
+        fmu->fmi3.getEventIndicators = (fmi3GetEventIndicators_t)loadDllFunction(dll, "fmi3GetEventIndicators", &ok);
+        fmu->fmi3.getContinuousStates = (fmi3GetContinuousStates_t)loadDllFunction(dll, "fmi3GetContinuousStates", &ok);
+        fmu->fmi3.getNominalsOfContinuousStates = (fmi3GetNominalsOfContinuousStates_t)loadDllFunction(dll, "fmi3GetNominalsOfContinuousStates", &ok);
+        fmu->fmi3.getNumberOfEventIndicators = (fmi3GetNumberOfEventIndicators_t)loadDllFunction(dll, "fmi3GetNumberOfEventIndicators", &ok);
+        fmu->fmi3.getNumberOfContinuousStates = (fmi3GetNumberOfContinuousStates_t)loadDllFunction(dll, "fmi3GetNumberOfContinuousStates", &ok);
+        fmu->fmi3.evaluateDiscreteStates = (fmi3EvaluateDiscreteStates_t)loadDllFunction(dll, "fmi3EvaluateDiscreteStates", &ok);
+        fmu->fmi3.updateDiscreteStates = (fmi3UpdateDiscreteStates_t)loadDllFunction(dll, "fmi3UpdateDiscreteStates", &ok);
     }
 
     if(fmu->fmi3.supportsScheduledExecution) {
-        fmu->fmi3.instantiateScheduledExecution = LOADFUNCTION(fmi3InstantiateScheduledExecution);
-        fmu->fmi3.activateModelPartition = LOADFUNCTION(fmi3ActivateModelPartition);
-        CHECKFUNCTION2(3,instantiateScheduledExecution);
-        CHECKFUNCTION2(3,activateModelPartition);
-    }
-
-    if(fmu->fmi3.canGetAndSetFMUState) {
-        fmu->fmi3.getFMUState = LOADFUNCTION(fmi3GetFMUState);
-        fmu->fmi3.setFMUState = LOADFUNCTION(fmi3SetFMUState);
-        fmu->fmi3.freeFMUState = LOADFUNCTION(fmi3FreeFMUState);
-        CHECKFUNCTION2(3,getFMUState);
-        CHECKFUNCTION2(3,setFMUState);
-        CHECKFUNCTION2(3,freeFMUState);
-    }
-
-    if(fmu->fmi3.canSerializeFMUState) {
-        fmu->fmi3.serializedFMUStateSize = LOADFUNCTION(fmi3SerializedFMUStateSize);
-        fmu->fmi3.serializeFMUState = LOADFUNCTION(fmi3SerializeFMUState);
-        fmu->fmi3.deSerializeFMUState = LOADFUNCTION(fmi3DeSerializeFMUState);
-        CHECKFUNCTION2(3,serializedFMUStateSize);
-        CHECKFUNCTION2(3,serializeFMUState);
-        CHECKFUNCTION2(3,deSerializeFMUState);
+        //Load all scheduled execution specific functions
+        fmu->fmi3.activateModelPartition = (fmi3ActivateModelPartition_t)loadDllFunction(dll, "fmi3ActivateModelPartition", &ok);
     }
 
     chdir(cwd);
 
-    return true;
+    return ok;
 }
 
 
