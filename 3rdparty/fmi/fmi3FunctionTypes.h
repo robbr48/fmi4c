@@ -283,8 +283,7 @@ typedef fmi3Status fmi3GetBinaryTYPE (fmi3Instance instance,
 typedef fmi3Status fmi3GetClockTYPE  (fmi3Instance instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
-                                      fmi3Clock values[],
-                                      size_t nValues);
+                                      fmi3Clock values[]);
 /* end::GetClock[] */
 
 /* tag::Setters[] */
@@ -418,12 +417,12 @@ typedef fmi3Status fmi3SerializeFMUStateTYPE     (fmi3Instance instance,
                                                   size_t size);
 /* end::SerializeFMUState[] */
 
-/* tag::DeSerializeFMUState[] */
-typedef fmi3Status fmi3DeSerializeFMUStateTYPE   (fmi3Instance instance,
+/* tag::DeserializeFMUState[] */
+typedef fmi3Status fmi3DeserializeFMUStateTYPE   (fmi3Instance instance,
                                                   const fmi3Byte serializedState[],
                                                   size_t size,
                                                   fmi3FMUState* FMUState);
-/* end::DeSerializeFMUState[] */
+/* end::DeserializeFMUState[] */
 
 /* Getting partial derivatives */
 /* tag::GetDirectionalDerivative[] */

@@ -66,7 +66,7 @@ typedef fmi3Status (STDCALL *fmi3GetUInt64_t)(fmi3Instance, const fmi3ValueRefer
 typedef fmi3Status (STDCALL *fmi3GetBoolean_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Boolean[], size_t);
 typedef fmi3Status (STDCALL *fmi3GetString_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3String[], size_t);
 typedef fmi3Status (STDCALL *fmi3GetBinary_t)(fmi3Instance, const fmi3ValueReference[], size_t, size_t[], fmi3Binary[], size_t);
-typedef fmi3Status (STDCALL *fmi3GetClock_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Clock[], size_t);
+typedef fmi3Status (STDCALL *fmi3GetClock_t)(fmi3Instance, const fmi3ValueReference[], size_t, fmi3Clock[]);
 typedef fmi3Status (STDCALL *fmi3SetFloat32_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Float32[], size_t);
 typedef fmi3Status (STDCALL *fmi3SetInt8_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3Int8[], size_t);
 typedef fmi3Status (STDCALL *fmi3SetUInt8_t)(fmi3Instance, const fmi3ValueReference[], size_t, const fmi3UInt8[], size_t);
@@ -88,7 +88,7 @@ typedef fmi3Status (STDCALL *fmi3SetFMUState_t)(fmi3Instance, fmi3FMUState);
 typedef fmi3Status (STDCALL *fmi3FreeFMUState_t)(fmi3Instance, fmi3FMUState*);
 typedef fmi3Status (STDCALL *fmi3SerializedFMUStateSize_t)(fmi3Instance, fmi3FMUState, size_t*);
 typedef fmi3Status (STDCALL *fmi3SerializeFMUState_t)(fmi3Instance, fmi3FMUState, fmi3Byte[], size_t);
-typedef fmi3Status (STDCALL *fmi3DeSerializeFMUState_t)(fmi3Instance, const fmi3Byte[], size_t, fmi3FMUState*);
+typedef fmi3Status (STDCALL *fmi3DeserializeFMUState_t)(fmi3Instance, const fmi3Byte[], size_t, fmi3FMUState*);
 typedef fmi3Status (STDCALL *fmi3GetDirectionalDerivative_t)(fmi3Instance, const fmi3ValueReference[], size_t,
                                                                const fmi3ValueReference[], size_t, const fmi3Float64[],
                                                                size_t, fmi3Float64[], size_t);
@@ -108,6 +108,12 @@ typedef fmi3Status (STDCALL *fmi3SetIntervalDecimal_t)(fmi3Instance, const fmi3V
                                                          size_t, const fmi3Float64[]);
 typedef fmi3Status (STDCALL *fmi3SetIntervalFraction_t)(fmi3Instance, const fmi3ValueReference[],
                                                           size_t, const fmi3UInt64[], const fmi3UInt64[]);
+typedef fmi3Status (STDCALL *fmi3SetShiftDecimal_t)(fmi3Instance instance, const fmi3ValueReference valueReferences[],
+                                                  size_t nValueReferences, const fmi3Float64 shifts[]);
+typedef fmi3Status (STDCALL *fmi3SetShiftFraction_t)(fmi3Instance instance, const fmi3ValueReference valueReferences[],
+                                                    size_t nValueReferences, const fmi3UInt64 counters[],
+                                                    const fmi3UInt64 resolutions[]);
+
 typedef fmi3Status (STDCALL *fmi3EvaluateDiscreteStates_t)(fmi3Instance);
 typedef fmi3Status (STDCALL *fmi3UpdateDiscreteStates_t)(fmi3Instance, fmi3Boolean*, fmi3Boolean*, fmi3Boolean*,
                                                            fmi3Boolean*, fmi3Boolean*, fmi3Float64*);

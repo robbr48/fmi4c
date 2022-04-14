@@ -1177,13 +1177,11 @@ fmi3Status placeholder_fmi3GetBinary(fmi3Instance instance,
 fmi3Status placeholder_fmi3GetClock(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
-                                    fmi3Clock values[],
-                                    size_t nValues) {
+                                    fmi3Clock values[]) {
     UNUSED(instance);
     UNUSED(valueReferences);
     UNUSED(nValueReferences);
     UNUSED(values);
-    UNUSED(nValues);
     NOT_IMPLEMENTED(fmi3GetClock);
     return fmi3Error;
 }
@@ -1446,7 +1444,7 @@ fmi3Status placeholder_fmi3SerializeFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3DeSerializeFMUState(fmi3Instance instance,
+fmi3Status placeholder_fmi3DeserializeFMUState(fmi3Instance instance,
                                                const fmi3Byte serializedState[],
                                                size_t size,
                                                fmi3FMUState* FMUState) {
@@ -1454,7 +1452,7 @@ fmi3Status placeholder_fmi3DeSerializeFMUState(fmi3Instance instance,
     UNUSED(serializedState);
     UNUSED(size);
     UNUSED(FMUState);
-    NOT_IMPLEMENTED(fmi3DeSerializeFMUState);
+    NOT_IMPLEMENTED(fmi3DeserializeFMUState);
     return fmi3Error;
 }
 

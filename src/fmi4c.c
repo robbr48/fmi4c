@@ -340,7 +340,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             else if(!strcmp(causality, "parameter")) {
                 var.causality = fmi2CausalityParameter;
             }
-            else if(!strcmp(causality, "calculatedparameter")) {
+            else if(!strcmp(causality, "calculatedParameter")) {
                 var.causality = fmi2CausalityCalculatedParameter;
             }
             else if(!strcmp(causality, "local")) {
@@ -1138,7 +1138,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             if(!strcmp(causality, "parameter")) {
                 var.causality = fmi3CausalityParameter;
             }
-            else if(!strcmp(causality, "calculatedparameter")) {
+            else if(!strcmp(causality, "calculatedParameter")) {
                 var.causality = fmi3CausalityCalculatedParameter;
             }
             else if(!strcmp(causality, "input")) {
@@ -2559,10 +2559,10 @@ fmi3Status fmi3GetBinary(fmiHandle *fmu, const fmi3ValueReference valueReference
     return fmu->fmi3.getBinary(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, valueSizes, values, nValues);
 }
 
-fmi3Status fmi3GetClock(fmiHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Clock values[], size_t nValues)
+fmi3Status fmi3GetClock(fmiHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Clock values[])
 {
 
-    return fmu->fmi3.getClock(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return fmu->fmi3.getClock(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values);
 }
 
 fmi3Status fmi3SetFloat32(fmiHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Float32 values[], size_t nValues)
@@ -2685,10 +2685,10 @@ fmi3Status fmi3SerializeFMUState(fmiHandle *fmu, fmi3FMUState FMUState, fmi3Byte
     return fmu->fmi3.serializeFMUState(fmu->fmi3.fmi3Instance, FMUState, serializedState, size);
 }
 
-fmi3Status fmi3DeSerializeFMUState(fmiHandle *fmu, const fmi3Byte serializedState[], size_t size, fmi3FMUState *FMUState)
+fmi3Status fmi3DeserializeFMUState(fmiHandle *fmu, const fmi3Byte serializedState[], size_t size, fmi3FMUState *FMUState)
 {
 
-    return fmu->fmi3.deSerializeFMUState(fmu->fmi3.fmi3Instance, serializedState, size, FMUState);
+    return fmu->fmi3.deserializeFMUState(fmu->fmi3.fmi3Instance, serializedState, size, FMUState);
 }
 
 fmi3Status fmi3GetDirectionalDerivative(fmiHandle *fmu, const fmi3ValueReference unknowns[], size_t nUnknowns, const fmi3ValueReference knowns[], size_t nKnowns, const fmi3Float64 seed[], size_t nSeed, fmi3Float64 sensitivity[], size_t nSensitivity)
@@ -3787,7 +3787,7 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
     fmu->fmi3.freeFMUState = placeholder_fmi3FreeFMUState;
     fmu->fmi3.serializedFMUStateSize = placeholder_fmi3SerializedFMUStateSize;
     fmu->fmi3.serializeFMUState = placeholder_fmi3SerializeFMUState;
-    fmu->fmi3.deSerializeFMUState = placeholder_fmi3DeSerializeFMUState;
+    fmu->fmi3.deserializeFMUState = placeholder_fmi3DeserializeFMUState;
     fmu->fmi3.getDirectionalDerivative = placeholder_fmi3GetDirectionalDerivative;
     fmu->fmi3.getAdjointDerivative = placeholder_fmi3GetAdjointDerivative;
     fmu->fmi3.enterConfigurationMode = placeholder_fmi3EnterConfigurationMode;

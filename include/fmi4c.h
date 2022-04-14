@@ -652,8 +652,7 @@ FMIC_DLLEXPORT fmi3Status fmi3GetBinary(fmiHandle *fmu,
 FMIC_DLLEXPORT fmi3Status fmi3GetClock(fmiHandle *fmu,
                                            const fmi3ValueReference valueReferences[],
                                            size_t nValueReferences,
-                                           fmi3Clock values[],
-                                           size_t nValues);
+                                           fmi3Clock values[]);
 
 FMIC_DLLEXPORT fmi3Status fmi3SetFloat32(fmiHandle *fmu,
                                              const fmi3ValueReference valueReferences[],
@@ -761,10 +760,10 @@ FMIC_DLLEXPORT fmi3Status fmi3SerializeFMUState(fmiHandle *fmu,
                                                     fmi3Byte serializedState[],
                                                     size_t size);
 
-FMIC_DLLEXPORT fmi3Status fmi3DeSerializeFMUState(fmiHandle *fmu,
-                                                      const fmi3Byte serializedState[],
-                                                      size_t size,
-                                                      fmi3FMUState* FMUState);
+FMIC_DLLEXPORT fmi3Status fmi3DeserializeFMUState(fmiHandle *fmu,
+                                                  const fmi3Byte serializedState[],
+                                                  size_t size,
+                                                  fmi3FMUState* FMUState);
 
 FMIC_DLLEXPORT fmi3Status fmi3GetDirectionalDerivative(fmiHandle *fmu,
                                                            const fmi3ValueReference unknowns[],

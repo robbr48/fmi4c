@@ -619,7 +619,7 @@ typedef struct {
     fmi3FreeFMUState_t freeFMUState;
     fmi3SerializedFMUStateSize_t serializedFMUStateSize;
     fmi3SerializeFMUState_t serializeFMUState;
-    fmi3DeSerializeFMUState_t deSerializeFMUState;
+    fmi3DeserializeFMUState_t deserializeFMUState;
     fmi3GetDirectionalDerivative_t getDirectionalDerivative;
     fmi3GetAdjointDerivative_t getAdjointDerivative;
     fmi3EnterConfigurationMode_t enterConfigurationMode;
@@ -630,6 +630,8 @@ typedef struct {
     fmi3GetShiftFraction_t getShiftFraction;
     fmi3SetIntervalDecimal_t setIntervalDecimal;
     fmi3SetIntervalFraction_t setIntervalFraction;
+    fmi3SetShiftDecimal_t setShiftDecimal;
+    fmi3SetShiftFraction_t setShiftFraction;
     fmi3EvaluateDiscreteStates_t evaluateDiscreteStates;
     fmi3UpdateDiscreteStates_t updateDiscreteStates;
     fmi3EnterContinuousTimeMode_t enterContinuousTimeMode;
