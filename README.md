@@ -6,6 +6,13 @@ All kinds of FMUs (model exchange, co-simulation and scheduled execution) are su
 
 The library is intended to be lightweight, easy to implement and to have an intuitive interface.
 
+## Features
+
+- Import FMUs for FMI 1.0 (co-simulation and model exchange)
+- Import FMUs for FMI 2.0 (co-simulation and model exchange)
+- Import FMUs for FMI 3.0 (co-simulation, model exchange and scheduled execution)
+- Placeholder functions for all API functions, to prevent crash when calling functions not available in FMU
+
 ## Third Party Dependencies
 Dependencies have been chosen to minimize implementation effort and to make the code easy to understand.
 - [ezxml](https://github.com/lxfontes/ezxml)
