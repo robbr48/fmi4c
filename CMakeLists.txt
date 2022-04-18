@@ -69,4 +69,9 @@ install(DIRECTORY 3rdparty/fmi
 if (${BUILD_TEST})
   enable_testing()
   add_subdirectory(test)
+  if (WIN32)
+    # On Windows there is no RPATH, so fmi4c.dll must be copied to the test directory if test should be runnable from any directory
+    add_custom_command(TARGET fmi4c POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi4c> ${CMAKE_CURRENT_BINARY_DIR}/test)
+  endif()
 endif()
