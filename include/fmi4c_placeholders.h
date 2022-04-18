@@ -1,7 +1,6 @@
 #ifndef FMI4C_PLACEHOLDERS_H
 #define FMI4C_PLACEHOLDERS_H
 
-#include <stdio.h>
 #include "fmi4c_types_fmi1.h"
 #include "fmi4c_types_fmi2.h"
 #include "fmi4c_types_fmi3.h"
@@ -10,6 +9,8 @@
 #include "fmi4c_functions_fmi3.h"
 #include "fmi/fmiPlatformTypes.h"
 #include "fmi/fmiFunctions.h"
+
+#include <stdio.h>
 
 fmi1Status placeholder(fmi1Component_t component, fmi1Boolean x) {
     return fmi1Error;

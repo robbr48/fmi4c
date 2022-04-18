@@ -1,16 +1,6 @@
 #ifndef FMIC_H
 #define FMIC_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <stdint.h>
-
-#ifdef _WIN32
-#include <direct.h>
-#include <windows.h>
-#endif
-
 #include "fmi4c_types.h"
 #include "fmi4c_types_fmi1.h"
 #include "fmi4c_types_fmi2.h"
@@ -19,6 +9,14 @@
 #include "fmi4c_functions_fmi2.h"
 #include "fmi4c_functions_fmi3.h"
 #include "fmi4c_public.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#ifdef _WIN32
+#include <direct.h>
+#include <windows.h>
+#endif
 
 #undef fmiVersion
 

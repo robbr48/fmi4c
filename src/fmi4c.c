@@ -1,7 +1,8 @@
 #include "fmi4c_private.h"
 #include "fmi4c_placeholders.h"
-#include "minizip/miniunz.h"
+#include "fmi4c_utils.h"
 
+#include "minizip/miniunz.h"
 #include "ezxml/ezxml.h"
 
 #include <sys/stat.h>
@@ -13,8 +14,6 @@
     #include <dlfcn.h>
     #include <unistd.h>
 #endif
-
-#include "fmi4c_utils.h"
 
 #ifdef _WIN32
 FARPROC loadDllFunction(HINSTANCE dll, const char *name, bool *ok) {
