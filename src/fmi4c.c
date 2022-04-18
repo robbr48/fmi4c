@@ -824,8 +824,8 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
             else if(!strcmp(typeElement->name, "Int64Type")) {
                 fmu->fmi3.int64Types[iInt64].name = "";
-                fmu->fmi3.int64Types[iInt64].min = -__INT64_MAX__;
-                fmu->fmi3.int64Types[iInt64].max = __INT64_MAX__;
+                fmu->fmi3.int64Types[iInt64].min = -INT64_MAX;
+                fmu->fmi3.int64Types[iInt64].max = INT64_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.int64Types[iInt64].name);
                 parseInt64AttributeEzXml(typeElement, "min", &fmu->fmi3.int64Types[iInt64].min);
                 parseInt64AttributeEzXml(typeElement, "max", &fmu->fmi3.int64Types[iInt64].max);
@@ -833,8 +833,8 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
             else if(!strcmp(typeElement->name, "Int32Type")) {
                 fmu->fmi3.int32Types[iInt32].name = "";
-                fmu->fmi3.int32Types[iInt32].min = -__INT32_MAX__;
-                fmu->fmi3.int32Types[iInt32].max = __INT32_MAX__;
+                fmu->fmi3.int32Types[iInt32].min = -INT32_MAX;
+                fmu->fmi3.int32Types[iInt32].max = INT32_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.int32Types[iInt32].name);
                 parseInt32AttributeEzXml(typeElement, "min", &fmu->fmi3.int32Types[iInt32].min);
                 parseInt32AttributeEzXml(typeElement, "max", &fmu->fmi3.int32Types[iInt32].max);
@@ -842,8 +842,8 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
             else if(!strcmp(typeElement->name, "Int16Type")) {
                 fmu->fmi3.int16Types[iInt16].name = "";
-                fmu->fmi3.int16Types[iInt16].min = -__INT16_MAX__;
-                fmu->fmi3.int16Types[iInt16].max = __INT16_MAX__;
+                fmu->fmi3.int16Types[iInt16].min = -INT16_MAX;
+                fmu->fmi3.int16Types[iInt16].max = INT16_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.int16Types[iInt16].name);
                 parseInt16AttributeEzXml(typeElement, "min", &fmu->fmi3.int16Types[iInt16].min);
                 parseInt16AttributeEzXml(typeElement, "max", &fmu->fmi3.int16Types[iInt16].max);
@@ -851,8 +851,8 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
             else if(!strcmp(typeElement->name, "Int8Type")) {
                 fmu->fmi3.int8Types[iInt8].name = "";
-                fmu->fmi3.int8Types[iInt8].min = -__INT8_MAX__;
-                fmu->fmi3.int8Types[iInt8].max = __INT8_MAX__;
+                fmu->fmi3.int8Types[iInt8].min = -INT8_MAX;
+                fmu->fmi3.int8Types[iInt8].max = INT8_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.int8Types[iInt8].name);
                 parseInt8AttributeEzXml(typeElement, "min", &fmu->fmi3.int8Types[iInt8].min);
                 parseInt8AttributeEzXml(typeElement, "max", &fmu->fmi3.int8Types[iInt8].max);
@@ -861,7 +861,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             else if(!strcmp(typeElement->name, "UInt64Type")) {
                 fmu->fmi3.uint64Types[iUInt64].name = "";
                 fmu->fmi3.uint64Types[iUInt64].min = 0;
-                fmu->fmi3.uint64Types[iUInt64].max = __UINT64_MAX__;
+                fmu->fmi3.uint64Types[iUInt64].max = UINT64_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.uint64Types[iUInt64].name);
                 parseUInt64AttributeEzXml(typeElement, "min", &fmu->fmi3.uint64Types[iUInt64].min);
                 parseUInt64AttributeEzXml(typeElement, "max", &fmu->fmi3.uint64Types[iUInt64].max);
@@ -870,7 +870,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             else if(!strcmp(typeElement->name, "UInt32Type")) {
                 fmu->fmi3.uint32Types[iUInt32].name = "";
                 fmu->fmi3.uint32Types[iUInt32].min = 0;
-                fmu->fmi3.uint32Types[iUInt32].max = __UINT32_MAX__;
+                fmu->fmi3.uint32Types[iUInt32].max = UINT32_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.uint32Types[iUInt32].name);
                 parseUInt32AttributeEzXml(typeElement, "min", &fmu->fmi3.uint32Types[iUInt32].min);
                 parseUInt32AttributeEzXml(typeElement, "max", &fmu->fmi3.uint32Types[iUInt32].max);
@@ -879,7 +879,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             else if(!strcmp(typeElement->name, "UInt16Type")) {
                 fmu->fmi3.uint16Types[iUInt16].name = "";
                 fmu->fmi3.uint16Types[iUInt16].min = 0;
-                fmu->fmi3.uint16Types[iUInt16].max = __UINT16_MAX__;
+                fmu->fmi3.uint16Types[iUInt16].max = UINT16_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.uint16Types[iUInt16].name);
                 parseUInt16AttributeEzXml(typeElement, "min", &fmu->fmi3.uint16Types[iUInt16].min);
                 parseUInt16AttributeEzXml(typeElement, "max", &fmu->fmi3.uint16Types[iUInt16].max);
@@ -888,7 +888,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             else if(!strcmp(typeElement->name, "UInt8Type")) {
                 fmu->fmi3.uint8Types[iUInt8].name = "";
                 fmu->fmi3.uint8Types[iUInt8].min = 0;
-                fmu->fmi3.uint8Types[iUInt8].max = __UINT8_MAX__;
+                fmu->fmi3.uint8Types[iUInt8].max = UINT8_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.uint8Types[iUInt8].name);
                 parseUInt8AttributeEzXml(typeElement, "min", &fmu->fmi3.uint8Types[iUInt8].min);
                 parseUInt8AttributeEzXml(typeElement, "max", &fmu->fmi3.uint8Types[iUInt8].max);
@@ -912,7 +912,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 fmu->fmi3.binaryTypes[iBinary].name = "";
                 fmu->fmi3.binaryTypes[iBinary].description = "";
                 fmu->fmi3.binaryTypes[iBinary].mimeType = "application/octet-stream";
-                fmu->fmi3.binaryTypes[iBinary].maxSize = __UINT32_MAX__;
+                fmu->fmi3.binaryTypes[iBinary].maxSize = UINT32_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.binaryTypes[iBinary].name);
                 parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.binaryTypes[iBinary].description);
                 parseStringAttributeEzXml(typeElement, "mimeType", &fmu->fmi3.binaryTypes[iBinary].mimeType);
@@ -923,8 +923,8 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 fmu->fmi3.enumTypes[iEnum].name = "";
                 fmu->fmi3.enumTypes[iEnum].description = "";
                 fmu->fmi3.enumTypes[iEnum].quantity = "";
-                fmu->fmi3.enumTypes[iEnum].min = -__INT64_MAX__;
-                fmu->fmi3.enumTypes[iEnum].max = __INT64_MAX__;
+                fmu->fmi3.enumTypes[iEnum].min = -INT64_MAX;
+                fmu->fmi3.enumTypes[iEnum].max = INT64_MAX;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.enumTypes[iEnum].name);
                 parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.enumTypes[iEnum].description);
                 parseStringAttributeEzXml(typeElement, "quantity", &fmu->fmi3.enumTypes[iEnum].quantity);
@@ -960,11 +960,11 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 fmu->fmi3.clockTypes[iClock].canBeDeactivated = false;
                 fmu->fmi3.clockTypes[iClock].priority = 0;
                 fmu->fmi3.clockTypes[iClock].intervalVariability = fmi3IntervalVariabilityFixed;
-                fmu->fmi3.clockTypes[iClock].intervalDecimal = __FLT_MAX__;
+                fmu->fmi3.clockTypes[iClock].intervalDecimal = FLT_MAX;
                 fmu->fmi3.clockTypes[iClock].shiftDecimal = 0;
                 fmu->fmi3.clockTypes[iClock].supportsFraction = false;
-                fmu->fmi3.clockTypes[iClock].resolution = __UINT64_MAX__;
-                fmu->fmi3.clockTypes[iClock].intervalCounter = __UINT64_MAX__;
+                fmu->fmi3.clockTypes[iClock].resolution = UINT64_MAX;
+                fmu->fmi3.clockTypes[iClock].intervalCounter = UINT64_MAX;
                 fmu->fmi3.clockTypes[iClock].shiftCounter = 0;
                 parseStringAttributeEzXml(typeElement, "name", &fmu->fmi3.clockTypes[iClock].name);
                 parseStringAttributeEzXml(typeElement, "description", &fmu->fmi3.clockTypes[iClock].description);
