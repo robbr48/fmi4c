@@ -34,7 +34,7 @@ add_custom_command(TARGET fmi1cs POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi1cs> ${CMAKE_CURRENT_BINARY_DIR}/fmi1cs/binaries/${binfolder}
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/fmi1cs/modelDescription.xml ${CMAKE_CURRENT_BINARY_DIR}/fmi1cs
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fmi1cs"
-  COMMAND zip -r "${CMAKE_CURRENT_BINARY_DIR}/fmi1cs.fmu" .)
+  COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${CMAKE_CURRENT_BINARY_DIR}/fmi1cs.fmu" --format=zip .)
 add_test(NAME fmi1cs COMMAND $<TARGET_FILE_NAME:fmi4ctest> fmi1cs.fmu fmi1cs.out)
 
 # Test FMU (FMI 1.0 for model exchange)
@@ -47,7 +47,7 @@ add_custom_command(TARGET fmi1me POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi1me> ${CMAKE_CURRENT_BINARY_DIR}/fmi1me/binaries/${binfolder}
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/fmi1me/modelDescription.xml ${CMAKE_CURRENT_BINARY_DIR}/fmi1me
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fmi1me"
-  COMMAND zip -r "${CMAKE_CURRENT_BINARY_DIR}/fmi1me.fmu" .)
+  COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${CMAKE_CURRENT_BINARY_DIR}/fmi1me.fmu" --format=zip .)
 add_test(NAME fmi1me COMMAND $<TARGET_FILE_NAME:fmi4ctest> fmi1me.fmu fmi1me.out)
 
 # Test FMU (FMI 2.0 for co-simulation and model exchange)
@@ -60,7 +60,7 @@ add_custom_command(TARGET fmi2 POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi2> ${CMAKE_CURRENT_BINARY_DIR}/fmi2/binaries/${binfolder}
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/fmi2/modelDescription.xml ${CMAKE_CURRENT_BINARY_DIR}/fmi2/
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fmi2"
-  COMMAND zip -r "${CMAKE_CURRENT_BINARY_DIR}/fmi2.fmu" .)
+  COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${CMAKE_CURRENT_BINARY_DIR}/fmi2.fmu" --format=zip .)
 add_test(NAME fmi2 COMMAND $<TARGET_FILE_NAME:fmi4ctest> fmi2.fmu fmi2.out)
 
 # Test FMU (FMI 3.0 for co-simulation and model exchange)
@@ -79,7 +79,7 @@ add_custom_command(TARGET fmi3 POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi3> ${CMAKE_CURRENT_BINARY_DIR}/fmi3/binaries/${binfolder}
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/fmi3/modelDescription.xml ${CMAKE_CURRENT_BINARY_DIR}/fmi3
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fmi3"
-  COMMAND zip -r "${CMAKE_CURRENT_BINARY_DIR}/fmi3.fmu" .)
+  COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${CMAKE_CURRENT_BINARY_DIR}/fmi3.fmu" --format=zip .)
 add_test(NAME fmi3 COMMAND $<TARGET_FILE_NAME:fmi4ctest> fmi3.fmu fmi3.out)
 
 # Test FMU (FMI 3.0 for TLM using intermediate update)
@@ -107,5 +107,5 @@ add_custom_command(TARGET fmi3tlm POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi3tlm> ${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm/binaries/${binfolder}
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/fmi3tlm/modelDescription.xml ${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm"
-  COMMAND zip -r "${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm.fmu" .)
+  COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm.fmu" --format=zip .)
 add_test(NAME fmi3tlm COMMAND $<TARGET_FILE_NAME:fmi4ctest> fmi3tlm.fmu fmi3tlm.out)
