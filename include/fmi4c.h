@@ -100,7 +100,7 @@ FMIC_DLLEXPORT fmi1Status fmi1GetBooleanStatus(fmiHandle* fmu, const fmi1StatusK
 FMIC_DLLEXPORT fmi1Status fmi1GetStringStatus(fmiHandle* fmu, const fmi1StatusKind statusKind, fmi1String* value);
 
 FMIC_DLLEXPORT const char *fmi1GetModelTypesPlatform(fmiHandle* fmu);
-FMIC_DLLEXPORT bool fmi1InstantiateModel(fmiHandle *fmu, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished,fmi1Boolean loggingOn);
+FMIC_DLLEXPORT bool fmi1InstantiateModel(fmiHandle *fmu, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1Boolean loggingOn);
 FMIC_DLLEXPORT void fmi1FreeModelInstance(fmiHandle* fmu);
 FMIC_DLLEXPORT fmi1Status fmi1SetTime(fmiHandle* fmu, fmi1Real);
 FMIC_DLLEXPORT fmi1Status fmi1SetContinuousStates(fmiHandle* fmu, const fmi1Real[], size_t);
@@ -272,7 +272,7 @@ FMIC_DLLEXPORT fmi3DataType fmi3GetVariableDataType(fmi3VariableHandle* var);
 FMIC_DLLEXPORT const char *fmi3GetVariableDescription(fmi3VariableHandle* var);
 FMIC_DLLEXPORT const char *fmi3GetVariableQuantity(fmi3VariableHandle* var);
 FMIC_DLLEXPORT const char *fmi3GetVariableUnit(fmi3VariableHandle* var);
-FMIC_DLLEXPORT char *fmi3GetVariableDisplayUnit(fmi3VariableHandle* var);
+FMIC_DLLEXPORT const char *fmi3GetVariableDisplayUnit(fmi3VariableHandle* var);
 FMIC_DLLEXPORT fmi3Float64 fmi3GetVariableStartFloat64(fmi3VariableHandle* var);
 FMIC_DLLEXPORT fmi3Float32 fmi3GetVariableStartFloat32(fmi3VariableHandle *var);
 FMIC_DLLEXPORT fmi3Int64 fmi3GetVariableStartInt64(fmi3VariableHandle *var);

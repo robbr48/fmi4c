@@ -24,7 +24,7 @@ void loggerFmi1(fmi1Component_t component,
 
 int testFMI1ME(fmiHandle *fmu) {
     //Instantiate FMU
-    if(!fmi1InstantiateModel(fmu, loggerFmi1, calloc, free, NULL, fmi1True)) {
+    if(!fmi1InstantiateModel(fmu, loggerFmi1, calloc, free, fmi1True)) {
         printf("  fmi2Instantiate() failed\n");
         exit(1);
     }

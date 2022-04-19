@@ -2742,7 +2742,7 @@ double fmi2GetDefaultStepSize(fmiHandle *fmu)
     return fmu->fmi2.defaultStepSize;
 }
 
-void *fmi3GetVariableByName(fmiHandle *fmu, fmi3String name)
+fmi3VariableHandle *fmi3GetVariableByName(fmiHandle *fmu, fmi3String name)
 {
     for(int i=0; i<fmu->fmi3.numberOfVariables; ++i) {
         if(!strcmp(fmu->fmi3.variables[i].name, name)) {
@@ -2753,7 +2753,7 @@ void *fmi3GetVariableByName(fmiHandle *fmu, fmi3String name)
     return NULL;
 }
 
-void *fmi3GetVariableByIndex(fmiHandle *fmu, int i)
+fmi3VariableHandle *fmi3GetVariableByIndex(fmiHandle *fmu, int i)
 {
 
     if(i >= fmu->fmi3.numberOfVariables) {
@@ -2763,7 +2763,7 @@ void *fmi3GetVariableByIndex(fmiHandle *fmu, int i)
     return &fmu->fmi3.variables[i];
 }
 
-void *fmi3GetVariableByValueReference(fmiHandle *fmu, fmi3ValueReference vr)
+fmi3VariableHandle *fmi3GetVariableByValueReference(fmiHandle *fmu, fmi3ValueReference vr)
 {
 
     for(int i=0; i<fmu->fmi3.numberOfVariables; ++i) {
@@ -2782,7 +2782,7 @@ int fmi2GetNumberOfVariables(fmiHandle *fmu)
     return fmu->fmi2.numberOfVariables;
 }
 
-void *fmi2GetVariableByIndex(fmiHandle *fmu, int i)
+fmi2VariableHandle *fmi2GetVariableByIndex(fmiHandle *fmu, int i)
 {
     TRACEFUNC
 
@@ -2793,7 +2793,7 @@ void *fmi2GetVariableByIndex(fmiHandle *fmu, int i)
     return &fmu->fmi2.variables[i];
 }
 
-void *fmi2GetVariableByValueReference(fmiHandle *fmu, fmi2ValueReference vr)
+fmi2VariableHandle *fmi2GetVariableByValueReference(fmiHandle *fmu, fmi2ValueReference vr)
 {
     TRACEFUNC
 
@@ -2806,7 +2806,7 @@ void *fmi2GetVariableByValueReference(fmiHandle *fmu, fmi2ValueReference vr)
     return NULL;
 }
 
-void *fmi2GetVariableByName(fmiHandle *fmu, fmi2String name)
+fmi2VariableHandle *fmi2GetVariableByName(fmiHandle *fmu, fmi2String name)
 {
     for(int i=0; i<fmu->fmi2.numberOfVariables; ++i) {
         if(!strcmp(fmu->fmi2.variables[i].name, name)) {
@@ -3755,7 +3755,7 @@ fmi1VariableHandle *fmi1GetVariableByValueReference(fmiHandle *fmu, fmi1ValueRef
     return NULL;
 }
 
-void *fmi1GetVariableByName(fmiHandle *fmu, fmi1String name)
+fmi1VariableHandle *fmi1GetVariableByName(fmiHandle *fmu, fmi1String name)
 {
     for(int i=0; i<fmu->fmi1.numberOfVariables; ++i) {
         if(!strcmp(fmu->fmi1.variables[i].name, name)) {
@@ -4010,7 +4010,7 @@ bool fmi1InstantiateModel(fmiHandle *fmu, fmi1CallbackLogger_t logger, fmi1Callb
 void fmi1FreeModelInstance(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1.freeModelInstance(fmu->fmi1.component);
+    fmu->fmi1.freeModelInstance(fmu->fmi1.component);
 }
 
 fmi1Status fmi1SetTime(fmiHandle *fmu, fmi1Real time)
@@ -4467,7 +4467,8 @@ void fmi3GetEnumerationType(fmiHandle *fmu,
                             const char **description,
                             const char **quantity,
                             int64_t *min,
-                            int64_t *max)
+                            int64_t *max,
+                            int *numberOfItems)
 {
     for(int i=0; i<fmu->fmi3.numberOfEnumerationTypes; ++i) {
         if(!strcmp(fmu->fmi3.enumTypes[i].name, name)) {
@@ -4477,6 +4478,7 @@ void fmi3GetEnumerationType(fmiHandle *fmu,
             *max = fmu->fmi3.enumTypes[i].max;
         }
     }
+    // TODO numberOfItems
 }
 
 void fmi3GetClockType(fmiHandle *fmu,
