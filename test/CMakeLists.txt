@@ -1,5 +1,10 @@
 find_package(Threads REQUIRED)
 
+set(libmath "")
+if (NOT MSVC)
+  set(libmath m)
+endif()
+
 add_executable(fmi4ctest fmi4c_test.c
                          fmi4c_test_fmi1.c
                          fmi4c_test_fmi2.c
@@ -11,7 +16,7 @@ add_executable(fmi4ctest fmi4c_test.c
                          fmi4c_test_fmi3.h
                          fmi4c_test_tlm.h)
 target_include_directories(fmi4ctest PRIVATE .)
-target_link_libraries(fmi4ctest fmi4c Threads::Threads m)
+target_link_libraries(fmi4ctest fmi4c Threads::Threads ${libmath})
 install(TARGETS fmi4ctest RUNTIME DESTINATION bin)
 
 # 3rdparty locations
@@ -100,7 +105,7 @@ add_library(fmi3tlm SHARED fmi3tlm/fmi3tlm.c
 set_target_properties(fmi3tlm PROPERTIES PREFIX "")
 target_include_directories(fmi3tlm PRIVATE ${3rdparty}/fmi)
 target_include_directories(fmi3tlm PRIVATE ${sundials}/include)
-target_link_libraries(fmi3tlm m)
+target_link_libraries(fmi3tlm ${libmath})
 add_custom_command(TARGET fmi3tlm POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm/binaries/${binfolder})
 add_custom_command(TARGET fmi3tlm POST_BUILD
