@@ -27,7 +27,9 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <sys/types.h>
 #ifndef EZXML_NOMMAP
 #include <sys/mman.h>
@@ -655,10 +657,10 @@ ezxml_t ezxml_parse_fd(int fd)
 // a wrapper for ezxml_parse_fd that accepts a file name
 ezxml_t ezxml_parse_file(const char *file)
 {
-    int fd = open(file, O_RDONLY, 0);
-    ezxml_t xml = ezxml_parse_fd(fd);
+    FILE* fp = fopen(file, "r");
+    ezxml_t xml = ezxml_parse_fp(fp);
     
-    if (fd >= 0) close(fd);
+    if (fp != 0) fclose(fp);
     return xml;
 }
 
