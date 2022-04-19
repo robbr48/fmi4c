@@ -1,4 +1,6 @@
 #include "fmi4c_private.h"
+#define FMI4C_H_INTERNAL_INCLUDE
+#include "fmi4c.h"
 #include "fmi4c_placeholders.h"
 #include "fmi4c_utils.h"
 

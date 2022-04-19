@@ -8,7 +8,9 @@
 #include "fmi4c_functions_fmi1.h"
 #include "fmi4c_functions_fmi2.h"
 #include "fmi4c_functions_fmi3.h"
+#ifndef FMI4C_H_INTERNAL_INCLUDE
 #include "fmi4c_public.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,15 +22,20 @@
 
 #undef fmiVersion
 
-#ifdef __cplusplus
 #ifdef _WIN32
+#ifdef FMI4C_DLLEXPORT
+// TODO Rename FMIC_DLLEXPORT to FMI4C_DLLAPI or similar
 #define FMIC_DLLEXPORT __declspec(dllexport)
+#else
+// TODO Possibly use dllimport
+#define FMIC_DLLEXPORT
+#endif
 #else
 #define FMIC_DLLEXPORT
 #endif
+
+#ifdef __cplusplus
 extern "C" {
-#else
-#define FMIC_DLLEXPORT
 #endif
 
 // FMU access functions

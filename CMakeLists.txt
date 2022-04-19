@@ -60,6 +60,7 @@ endif()
 add_library(${target_name} SHARED ${SRCFILES})
 
 target_compile_definitions(${target_name} PUBLIC HAVE_MEMMOVE=1 EZXML_NOMMAP)
+target_compile_definitions(${target_name} PRIVATE FMI4C_DLLEXPORT)
 
 target_include_directories(${target_name} PUBLIC include)
 target_include_directories(${target_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/3rdparty>)
