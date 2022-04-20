@@ -5,19 +5,26 @@ if (NOT MSVC)
   set(libmath m)
 endif()
 
-add_executable(fmi4ctest fmi4c_test.c
-                         fmi4c_test_fmi1.c
-                         fmi4c_test_fmi2.c
-                         fmi4c_test_fmi3.c
-                         fmi4c_test_tlm.c
-                         fmi4c_test.h
-                         fmi4c_test_fmi1.h
-                         fmi4c_test_fmi2.h
-                         fmi4c_test_fmi3.h
-                         fmi4c_test_tlm.h)
+set(fmi4ctest_src fmi4c_test.c
+                  fmi4c_test_fmi1.c
+                  fmi4c_test_fmi2.c
+                  fmi4c_test_fmi3.c
+                  fmi4c_test.h
+                  fmi4c_test_fmi1.h
+                  fmi4c_test_fmi2.h
+                  fmi4c_test_fmi3.h)
+if(NOT MSVC)
+  # TODO Implement thread support for MSVC, right now pthreads are expected
+  set(fmi4ctest_src ${fmi4ctest_src} fmi4c_test_tlm.c fmi4c_test_tlm.h)
+endif()
+
+add_executable(fmi4ctest ${fmi4ctest_src})
 target_include_directories(fmi4ctest PRIVATE .)
 target_link_libraries(fmi4ctest fmi4c Threads::Threads ${libmath})
 install(TARGETS fmi4ctest RUNTIME DESTINATION bin)
+if(MSVC)
+  target_compile_definitions(fmi4ctest PRIVATE FMI4CTEST_NO_TLM)
+endif()
 
 # 3rdparty locations
 set(3rdparty ${CMAKE_CURRENT_LIST_DIR}/../3rdparty)

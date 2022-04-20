@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <pthread.h>
 #include <math.h>
 
 #include "fmi4c.h"
@@ -187,7 +186,12 @@ int main(int argc, char *argv[])
             return 1;
         }
 
+#ifdef FMI4CTEST_NO_TLM
+        printf("FMI TLM support not available\n");
+        return 1;
+#else
         return testFMI3TLM(fmu, fmu2);
+#endif
     }
 
     if(version == fmiVersion1) {
