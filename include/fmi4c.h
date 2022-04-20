@@ -192,68 +192,68 @@ FMI4C_DLLAPI fmi2Status fmi2SetBoolean(fmiHandle* fmu, const fmi2ValueReference 
 FMI4C_DLLAPI fmi2Status fmi2SetString(fmiHandle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, const fmi2String values[]);
 
 FMI4C_DLLAPI fmi2Status fmi2GetFMUstate(fmiHandle* fmu,
-                                          fmi2FMUstate* FMUstate);
+                                        fmi2FMUstate* FMUstate);
 FMI4C_DLLAPI fmi2Status fmi2SetFMUstate(fmiHandle* fmu,
-                                          fmi2FMUstate FMUstate);
+                                        fmi2FMUstate FMUstate);
 FMI4C_DLLAPI fmi2Status fmi2FreeFMUstate(fmiHandle* fmu,
-                                           fmi2FMUstate* FMUstate);
+                                         fmi2FMUstate* FMUstate);
 FMI4C_DLLAPI fmi2Status fmi2SerializedFMUstateSize(fmiHandle* fmu,
-                                                     fmi2FMUstate FMUstate,
-                                                     size_t* size);
+                                                   fmi2FMUstate FMUstate,
+                                                   size_t* size);
 FMI4C_DLLAPI fmi2Status fmi2SerializeFMUstate(fmiHandle* fmu,
-                                                fmi2FMUstate FMUstate,
-                                                fmi2Byte serializedState[],
-                                                size_t size);
+                                              fmi2FMUstate FMUstate,
+                                              fmi2Byte serializedState[],
+                                              size_t size);
 FMI4C_DLLAPI fmi2Status fmi2DeSerializeFMUstate(fmiHandle* fmu,
-                                                  const fmi2Byte serializedState[],
-                                                  size_t size,
-                                                  fmi2FMUstate* FMUstate);
+                                                const fmi2Byte serializedState[],
+                                                size_t size,
+                                                fmi2FMUstate* FMUstate);
 
 FMI4C_DLLAPI fmi2Status fmi2GetDirectionalDerivative(fmiHandle* fmu,
-                                                       const fmi2ValueReference unknownReferences[],
-                                                       size_t nUnknown,
-                                                       const fmi2ValueReference knownReferences[],
-                                                       size_t nKnown,
-                                                       const fmi2Real dvKnown[],
-                                                       fmi2Real dvUnknown[]);
+                                                     const fmi2ValueReference unknownReferences[],
+                                                     size_t nUnknown,
+                                                     const fmi2ValueReference knownReferences[],
+                                                     size_t nKnown,
+                                                     const fmi2Real dvKnown[],
+                                                     fmi2Real dvUnknown[]);
 
 FMI4C_DLLAPI fmi2Status fmi2EnterEventMode(fmiHandle* fmu);
 FMI4C_DLLAPI fmi2Status fmi2NewDiscreteStates(fmiHandle* fmu, fmi2EventInfo* eventInfo);
 FMI4C_DLLAPI fmi2Status fmi2EnterContinuousTimeMode(fmiHandle* fmu);
 FMI4C_DLLAPI fmi2Status fmi2CompletedIntegratorStep(fmiHandle* fmu,
-                                                      fmi2Boolean noSetFMUStatePriorToCurrentPoint,
-                                                      fmi2Boolean* enterEventMode,
-                                                      fmi2Boolean* terminateSimulation);
+                                                    fmi2Boolean noSetFMUStatePriorToCurrentPoint,
+                                                    fmi2Boolean* enterEventMode,
+                                                    fmi2Boolean* terminateSimulation);
 
 FMI4C_DLLAPI fmi2Status fmi2SetTime(fmiHandle* fmu,
-                                      fmi2Real time);
+                                    fmi2Real time);
 FMI4C_DLLAPI fmi2Status fmi2SetContinuousStates(fmiHandle* fmu,
-                                                  const fmi2Real x[],
-                                                  size_t nx);
+                                                const fmi2Real x[],
+                                                size_t nx);
 
 FMI4C_DLLAPI fmi2Status fmi2GetDerivatives(fmiHandle* fmu,
-                                             fmi2Real derivatives[],
-                                             size_t nx);
+                                           fmi2Real derivatives[],
+                                           size_t nx);
 FMI4C_DLLAPI fmi2Status fmi2GetEventIndicators(fmiHandle* fmu,
-                                                 fmi2Real eventIndicators[],
-                                                 size_t ni);
+                                               fmi2Real eventIndicators[],
+                                               size_t ni);
 FMI4C_DLLAPI fmi2Status fmi2GetContinuousStates(fmiHandle* fmu,
-                                                  fmi2Real x[],
-                                                  size_t nx);
+                                                fmi2Real x[],
+                                                size_t nx);
 FMI4C_DLLAPI fmi2Status fmi2GetNominalsOfContinuousStates(fmiHandle* fmu,
-                                                            fmi2Real x_nominal[],
-                                                            size_t nx);
+                                                          fmi2Real x_nominal[],
+                                                          size_t nx);
 
 FMI4C_DLLAPI fmi2Status fmi2SetRealInputDerivatives(fmiHandle* fmu,
+                                                    const fmi2ValueReference vr[],
+                                                    size_t nvr,
+                                                    const fmi2Integer order[],
+                                                    const fmi2Real value[]);
+FMI4C_DLLAPI fmi2Status fmi2GetRealOutputDerivatives (fmiHandle* fmu,
                                                       const fmi2ValueReference vr[],
                                                       size_t nvr,
                                                       const fmi2Integer order[],
-                                                      const fmi2Real value[]);
-FMI4C_DLLAPI fmi2Status fmi2GetRealOutputDerivatives (fmiHandle* fmu,
-                                                        const fmi2ValueReference vr[],
-                                                        size_t nvr,
-                                                        const fmi2Integer order[],
-                                                        fmi2Real value[]);
+                                                      fmi2Real value[]);
 
 FMI4C_DLLAPI fmi2Status fmi2DoStep(fmiHandle *fmu, fmi2Real, fmi2Real, fmi2Boolean);
 FMI4C_DLLAPI fmi2Status fmi2CancelStep(fmiHandle* fmu);
@@ -325,175 +325,175 @@ FMI4C_DLLAPI int fmi3GetNumberOfDisplayUnits(fmi3UnitHandle *unit);
 FMI4C_DLLAPI void fmi3GetDisplayUnitByIndex(fmi3UnitHandle *unit, int id, const char **name, double *factor, double *offset, bool *inverse);
 
 FMI4C_DLLAPI void fmi3GetFloat64Type(fmiHandle* fmu,
-                                       const char* name,
-                                       const char** description,
-                                       const char** quantity,
-                                       const char** unit,
-                                       const char** displayUnit,
-                                       bool* relativeQuantity,
-                                       bool* unbounded,
-                                       double* min,
-                                       double* max,
-                                       double* nominal);
+                                     const char* name,
+                                     const char** description,
+                                     const char** quantity,
+                                     const char** unit,
+                                     const char** displayUnit,
+                                     bool* relativeQuantity,
+                                     bool* unbounded,
+                                     double* min,
+                                     double* max,
+                                     double* nominal);
 FMI4C_DLLAPI void fmi3GetFloat32Type(fmiHandle* fmu,
-                                       const char* name,
-                                       const char** description,
-                                       const char** quantity,
-                                       const char** unit,
-                                       const char** displayUnit,
-                                       bool* relativeQuantity,
-                                       bool* unbounded,
-                                       double* min,
-                                       double* max,
-                                       double* nominal);
+                                     const char* name,
+                                     const char** description,
+                                     const char** quantity,
+                                     const char** unit,
+                                     const char** displayUnit,
+                                     bool* relativeQuantity,
+                                     bool* unbounded,
+                                     double* min,
+                                     double* max,
+                                     double* nominal);
 FMI4C_DLLAPI void fmi3GetInt64Type(fmiHandle *fmu,
-                                     const char *name,
-                                     const char** description,
-                                     const char** quantity,
-                                     double* min,
-                                     double* max);
+                                   const char *name,
+                                   const char** description,
+                                   const char** quantity,
+                                   double* min,
+                                   double* max);
 FMI4C_DLLAPI void fmi3GetInt32Type(fmiHandle *fmu,
-                                     const char *name,
-                                     const char** description,
-                                     const char** quantity,
-                                     double* min,
-                                     double* max);
+                                   const char *name,
+                                   const char** description,
+                                   const char** quantity,
+                                   double* min,
+                                   double* max);
 FMI4C_DLLAPI void fmi3GetInt16Type(fmiHandle *fmu,
-                                     const char *name,
-                                     const char** description,
-                                     const char** quantity,
-                                     double* min,
-                                     double* max);
+                                   const char *name,
+                                   const char** description,
+                                   const char** quantity,
+                                   double* min,
+                                   double* max);
 FMI4C_DLLAPI void fmi3GetInt8Type(fmiHandle *fmu,
-                                     const char *name,
-                                     const char** description,
-                                     const char** quantity,
-                                     double* min,
-                                     double* max);
+                                  const char *name,
+                                  const char** description,
+                                  const char** quantity,
+                                  double* min,
+                                  double* max);
 FMI4C_DLLAPI void fmi3GetUInt64Type(fmiHandle *fmu,
-                                     const char *name,
-                                     const char** description,
-                                     const char** quantity,
-                                     double* min,
-                                     double* max);
+                                    const char *name,
+                                    const char** description,
+                                    const char** quantity,
+                                    double* min,
+                                    double* max);
 FMI4C_DLLAPI void fmi3GetUInt32Type(fmiHandle *fmu,
-                                     const char *name,
-                                     const char** description,
-                                     const char** quantity,
-                                     double* min,
-                                     double* max);
+                                    const char *name,
+                                    const char** description,
+                                    const char** quantity,
+                                    double* min,
+                                    double* max);
 FMI4C_DLLAPI void fmi3GetUInt16Type(fmiHandle *fmu,
-                                     const char *name,
-                                     const char** description,
-                                     const char** quantity,
-                                     double* min,
-                                     double* max);
+                                    const char *name,
+                                    const char** description,
+                                    const char** quantity,
+                                    double* min,
+                                    double* max);
 FMI4C_DLLAPI void fmi3GetUInt8Type(fmiHandle *fmu,
-                                     const char *name,
-                                     const char** description,
-                                     const char** quantity,
-                                     double* min,
-                                     double* max);
+                                   const char *name,
+                                   const char** description,
+                                   const char** quantity,
+                                   double* min,
+                                   double* max);
 FMI4C_DLLAPI void fmi3GetBooleanType(fmiHandle *fmu,
-                                       const char *name,
-                                       const char **description);
-FMI4C_DLLAPI void fmi3GetStringType(fmiHandle *fmu,
-                                      const char *name,
-                                      const char **description);
-FMI4C_DLLAPI void fmi3GetBinaryType(fmiHandle *fmu,
-                                      const char *name,
-                                      const char **description,
-                                      const char **mimeType,
-                                      uint32_t *maxSize);
-FMI4C_DLLAPI void fmi3GetEnumerationType(fmiHandle *fmu,
-                                           const char *name,
-                                           const char **description,
-                                           const char **quantity,
-                                           int64_t *min,
-                                           int64_t *max,
-                                           int *numberOfItems);
-FMI4C_DLLAPI void fmi3GetEnumerationItem(fmiHandle *fmu,
-                                           const char *typeName,
-                                           int itemId,
-                                           const char **itemName,
-                                           int64_t *value,
-                                           const char **description);
-FMI4C_DLLAPI void fmi3GetClockType(fmiHandle *fmu,
                                      const char *name,
-                                     const char **description,
-                                     bool *canBeDeactivated,
-                                     uint32_t *priority,
-                                     fmi3IntervalVariability *intervalVariability,
-                                     float *intervalDecimal,
-                                     float *shiftDecimal,
-                                     bool *supportsFraction,
-                                     uint64_t *resolution,
-                                     uint64_t *intervalCounter,
-                                     uint64_t *shiftCounter);
+                                     const char **description);
+FMI4C_DLLAPI void fmi3GetStringType(fmiHandle *fmu,
+                                    const char *name,
+                                    const char **description);
+FMI4C_DLLAPI void fmi3GetBinaryType(fmiHandle *fmu,
+                                    const char *name,
+                                    const char **description,
+                                    const char **mimeType,
+                                    uint32_t *maxSize);
+FMI4C_DLLAPI void fmi3GetEnumerationType(fmiHandle *fmu,
+                                         const char *name,
+                                         const char **description,
+                                         const char **quantity,
+                                         int64_t *min,
+                                         int64_t *max,
+                                         int *numberOfItems);
+FMI4C_DLLAPI void fmi3GetEnumerationItem(fmiHandle *fmu,
+                                         const char *typeName,
+                                         int itemId,
+                                         const char **itemName,
+                                         int64_t *value,
+                                         const char **description);
+FMI4C_DLLAPI void fmi3GetClockType(fmiHandle *fmu,
+                                   const char *name,
+                                   const char **description,
+                                   bool *canBeDeactivated,
+                                   uint32_t *priority,
+                                   fmi3IntervalVariability *intervalVariability,
+                                   float *intervalDecimal,
+                                   float *shiftDecimal,
+                                   bool *supportsFraction,
+                                   uint64_t *resolution,
+                                   uint64_t *intervalCounter,
+                                   uint64_t *shiftCounter);
 
 FMI4C_DLLAPI int fmi3GetNumberOfLogCategories(fmiHandle *fmu);
 FMI4C_DLLAPI void fmi3GetLogCategory(fmiHandle *fmu, int id, const char **name, const char **description);
 
 FMI4C_DLLAPI int fmi3GetNumberOfModelStructureOutputs(fmiHandle *fmu);
 FMI4C_DLLAPI void fmi3GetModelStructureOutput(fmiHandle *fmu,
-                                      int id,
-                                      fmi3ValueReference *vr,
-                                      int *numberOfDependencies,
-                                      bool *dependencyKindsDefined);
+                                              int id,
+                                              fmi3ValueReference *vr,
+                                              int *numberOfDependencies,
+                                              bool *dependencyKindsDefined);
 FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureOutputDependency(fmiHandle *fmu,
-                                                          int outputId,
-                                                          int dependencyId);
+                                                                      int outputId,
+                                                                      int dependencyId);
 FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureOutputDependencyKind(fmiHandle *fmu,
-                                                              int outputId,
-                                                              int dependencyId);
+                                                                          int outputId,
+                                                                          int dependencyId);
 FMI4C_DLLAPI int fmi3GetNumberOfModelStructureContinuousStateDerivatives(fmiHandle *fmu);
 FMI4C_DLLAPI void fmi3GetModelStructureContinuousStateDerivative(fmiHandle *fmu,
-                                      int id,
-                                      fmi3ValueReference *vr,
-                                      int *numberOfDependencies,
-                                      bool *dependencyKindsDefined);
+                                                                 int id,
+                                                                 fmi3ValueReference *vr,
+                                                                 int *numberOfDependencies,
+                                                                 bool *dependencyKindsDefined);
 FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureContinuousStateDerivativeDependency(fmiHandle *fmu,
-                                                          int derId,
-                                                          int dependencyId);
+                                                                                         int derId,
+                                                                                         int dependencyId);
 FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureContinuousStateDerivativeDependencyKind(fmiHandle *fmu,
-                                                              int derId,
-                                                              int dependencyId);
+                                                                                             int derId,
+                                                                                             int dependencyId);
 FMI4C_DLLAPI int fmi3GetNumberOfModelStructureClockedStates(fmiHandle *fmu);
 FMI4C_DLLAPI void fmi3GetModelStructureClockedState(fmiHandle *fmu,
-                                      int id,
-                                      fmi3ValueReference *vr,
-                                      int *numberOfDependencies,
-                                      bool *dependencyKindsDefined);
+                                                    int id,
+                                                    fmi3ValueReference *vr,
+                                                    int *numberOfDependencies,
+                                                    bool *dependencyKindsDefined);
 FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureClockedStateDependency(fmiHandle *fmu,
-                                                          int clockId,
-                                                          int dependencyId);
+                                                                            int clockId,
+                                                                            int dependencyId);
 FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureClockedStateDependencyKind(fmiHandle *fmu,
-                                                              int clockId,
-                                                              int dependencyId);
+                                                                                int clockId,
+                                                                                int dependencyId);
 FMI4C_DLLAPI int fmi3GetNumberOfModelStructureInitialUnknowns(fmiHandle *fmu);
 FMI4C_DLLAPI void fmi3GetModelStructureInitialUnknown(fmiHandle *fmu,
-                                      int id,
-                                      fmi3ValueReference *vr,
-                                      int *numberOfDependencies,
-                                      bool *dependencyKindsDefined);
+                                                      int id,
+                                                      fmi3ValueReference *vr,
+                                                      int *numberOfDependencies,
+                                                      bool *dependencyKindsDefined);
 FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureInitialUnknownDependency(fmiHandle *fmu,
-                                                          int unknownId,
-                                                          int dependencyId);
+                                                                              int unknownId,
+                                                                              int dependencyId);
 FMI4C_DLLAPI fmi3ValueReference fmi3ModelStructureGetInitialUnknownDependencyKind(fmiHandle *fmu,
-                                                              int unknownId,
-                                                              int dependencyId);
+                                                                                  int unknownId,
+                                                                                  int dependencyId);
 FMI4C_DLLAPI int fmi3GetNumberOfModelStructureEventIndicators(fmiHandle *fmu);
 FMI4C_DLLAPI void fmi3GetModelStructureEventIndicator(fmiHandle *fmu,
-                                      int id,
-                                      fmi3ValueReference *vr,
-                                      int *numberOfDependencies,
-                                      bool *dependencyKindsDefined);
+                                                      int id,
+                                                      fmi3ValueReference *vr,
+                                                      int *numberOfDependencies,
+                                                      bool *dependencyKindsDefined);
 FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureEventIndicatorDependency(fmiHandle *fmu,
-                                                          int indicatorId,
-                                                          int dependencyId);
+                                                                              int indicatorId,
+                                                                              int dependencyId);
 FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureEventIndicatorDependencyKind(fmiHandle *fmu,
-                                                              int indicatorId,
-                                                              int dependencyId);
+                                                                                  int indicatorId,
+                                                                                  int dependencyId);
 
 FMI4C_DLLAPI const char* fmi3GetModelIdentifier(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi3GetNeedsExecutionTool(fmiHandle* fmu);
@@ -514,47 +514,47 @@ FMI4C_DLLAPI bool fmi3GetRecommendedIntermediateInputSmoothness(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi3GetNeedsCompletedIntegratorStep(fmiHandle* fmu);
 
 FMI4C_DLLAPI bool fmi3InstantiateCoSimulation(fmiHandle *fmu,
-                             fmi3Boolean                    visible,
-                             fmi3Boolean                    loggingOn,
-                             fmi3Boolean                    eventModeUsed,
-                             fmi3Boolean                    earlyReturnAllowed,
-                             const fmi3ValueReference       requiredIntermediateVariables[],
-                             size_t                         nRequiredIntermediateVariables,
-                             fmi3InstanceEnvironment        instanceEnvironment,
-                             fmi3CallbackLogMessage         logMessage,
-                             fmi3CallbackIntermediateUpdate intermediateUpdate);
+                                              fmi3Boolean                    visible,
+                                              fmi3Boolean                    loggingOn,
+                                              fmi3Boolean                    eventModeUsed,
+                                              fmi3Boolean                    earlyReturnAllowed,
+                                              const fmi3ValueReference       requiredIntermediateVariables[],
+                                              size_t                         nRequiredIntermediateVariables,
+                                              fmi3InstanceEnvironment        instanceEnvironment,
+                                              fmi3CallbackLogMessage         logMessage,
+                                              fmi3CallbackIntermediateUpdate intermediateUpdate);
 
 FMI4C_DLLAPI bool fmi3InstantiateModelExchange(fmiHandle *fmu,
-                                                 fmi3Boolean                visible,
-                                                 fmi3Boolean                loggingOn,
-                                                 fmi3InstanceEnvironment    instanceEnvironment,
-                                                 fmi3CallbackLogMessage     logMessage);
+                                               fmi3Boolean                visible,
+                                               fmi3Boolean                loggingOn,
+                                               fmi3InstanceEnvironment    instanceEnvironment,
+                                               fmi3CallbackLogMessage     logMessage);
 
 FMI4C_DLLAPI const char* fmi3GetVersion(fmiHandle *fmu);
 
 FMI4C_DLLAPI fmi3Status fmi3SetDebugLogging(fmiHandle *fmu,
-                           fmi3Boolean loggingOn,
-                           size_t nCategories,
-                           const fmi3String categories[]);
+                                            fmi3Boolean loggingOn,
+                                            size_t nCategories,
+                                            const fmi3String categories[]);
 
 FMI4C_DLLAPI fmi3Status fmi3GetFloat64(fmiHandle *fmu,
-                      const fmi3ValueReference valueReferences[],
-                      size_t nValueReferences,
-                      fmi3Float64 values[],
-                      size_t nValues);
+                                       const fmi3ValueReference valueReferences[],
+                                       size_t nValueReferences,
+                                       fmi3Float64 values[],
+                                       size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetFloat64(fmiHandle *fmu,
-                      const fmi3ValueReference valueReferences[],
-                      size_t nValueReferences,
-                      fmi3Float64 values[],
-                      size_t nValues);
+                                       const fmi3ValueReference valueReferences[],
+                                       size_t nValueReferences,
+                                       fmi3Float64 values[],
+                                       size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3EnterInitializationMode(fmiHandle *fmu,
-                                   fmi3Boolean toleranceDefined,
-                                   fmi3Float64 tolerance,
-                                   fmi3Float64 startTime,
-                                   fmi3Boolean stopTimeDefined,
-                                   fmi3Float64 stopTime);
+                                                    fmi3Boolean toleranceDefined,
+                                                    fmi3Float64 tolerance,
+                                                    fmi3Float64 startTime,
+                                                    fmi3Boolean stopTimeDefined,
+                                                    fmi3Float64 stopTime);
 
 FMI4C_DLLAPI fmi3Status fmi3ExitInitializationMode(fmiHandle *fmu);
 
@@ -563,191 +563,191 @@ FMI4C_DLLAPI fmi3Status fmi3Terminate(fmiHandle *fmu);
 FMI4C_DLLAPI void fmi3FreeInstance(fmiHandle *fmu);
 
 FMI4C_DLLAPI fmi3Status fmi3DoStep(fmiHandle *fmu,
-                  fmi3Float64 currentCommunicationPoint,
-                  fmi3Float64 communicationStepSize,
-                  fmi3Boolean noSetFMUStatePriorToCurrentPoint,
-                  fmi3Boolean *eventEncountered,
-                  fmi3Boolean *terminateSimulation,
-                  fmi3Boolean *earlyReturn,
-                  fmi3Float64 *lastSuccessfulTime);
+                                   fmi3Float64 currentCommunicationPoint,
+                                   fmi3Float64 communicationStepSize,
+                                   fmi3Boolean noSetFMUStatePriorToCurrentPoint,
+                                   fmi3Boolean *eventEncountered,
+                                   fmi3Boolean *terminateSimulation,
+                                   fmi3Boolean *earlyReturn,
+                                   fmi3Float64 *lastSuccessfulTime);
 
 FMI4C_DLLAPI fmi3Status fmi3EnterEventMode(fmiHandle *fmu,
-                                                 fmi3Boolean stepEvent,
-                                                 fmi3Boolean stateEvent,
-                                                 const fmi3Int32 rootsFound[],
-                                                 size_t nEventIndicators,
-                                                 fmi3Boolean timeEvent);
+                                           fmi3Boolean stepEvent,
+                                           fmi3Boolean stateEvent,
+                                           const fmi3Int32 rootsFound[],
+                                           size_t nEventIndicators,
+                                           fmi3Boolean timeEvent);
 
 FMI4C_DLLAPI fmi3Status fmi3Reset(fmiHandle *fmu);
 
 FMI4C_DLLAPI fmi3Status fmi3GetFloat32(fmiHandle *fmu,
-                                             const fmi3ValueReference valueReferences[],
-                                             size_t nValueReferences,
-                                             fmi3Float32 values[],
-                                             size_t nValues);
+                                       const fmi3ValueReference valueReferences[],
+                                       size_t nValueReferences,
+                                       fmi3Float32 values[],
+                                       size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetInt8(fmiHandle *fmu,
-                                          const fmi3ValueReference valueReferences[],
-                                          size_t nValueReferences,
-                                          fmi3Int8 values[],
-                                          size_t nValues);
+                                    const fmi3ValueReference valueReferences[],
+                                    size_t nValueReferences,
+                                    fmi3Int8 values[],
+                                    size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetUInt8(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           fmi3UInt8 values[],
-                                           size_t nValues);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     fmi3UInt8 values[],
+                                     size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetInt16(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           fmi3Int16 values[],
-                                           size_t nValues);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     fmi3Int16 values[],
+                                     size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetUInt16(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            fmi3UInt16 values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      fmi3UInt16 values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetInt32(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           fmi3Int32 values[],
-                                           size_t nValues);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     fmi3Int32 values[],
+                                     size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetUInt32(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            fmi3UInt32 values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      fmi3UInt32 values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetInt64(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           fmi3Int64 values[],
-                                           size_t nValues);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     fmi3Int64 values[],
+                                     size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetUInt64(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            fmi3UInt64 values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      fmi3UInt64 values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetBoolean(fmiHandle *fmu,
-                                             const fmi3ValueReference valueReferences[],
-                                             size_t nValueReferences,
-                                             fmi3Boolean values[],
-                                             size_t nValues);
+                                       const fmi3ValueReference valueReferences[],
+                                       size_t nValueReferences,
+                                       fmi3Boolean values[],
+                                       size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetString(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            fmi3String values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      fmi3String values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetBinary(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            size_t valueSizes[],
-                                            fmi3Binary values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      size_t valueSizes[],
+                                      fmi3Binary values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetClock(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           fmi3Clock values[]);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     fmi3Clock values[]);
 
 FMI4C_DLLAPI fmi3Status fmi3SetFloat32(fmiHandle *fmu,
-                                             const fmi3ValueReference valueReferences[],
-                                             size_t nValueReferences,
-                                             const fmi3Float32 values[],
-                                             size_t nValues);
+                                       const fmi3ValueReference valueReferences[],
+                                       size_t nValueReferences,
+                                       const fmi3Float32 values[],
+                                       size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetInt8(fmiHandle *fmu,
-                                          const fmi3ValueReference valueReferences[],
-                                          size_t nValueReferences,
-                                          const fmi3Int8 values[],
-                                          size_t nValues);
+                                    const fmi3ValueReference valueReferences[],
+                                    size_t nValueReferences,
+                                    const fmi3Int8 values[],
+                                    size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetUInt8(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           const fmi3UInt8 values[],
-                                           size_t nValues);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     const fmi3UInt8 values[],
+                                     size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetInt16(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           const fmi3Int16 values[],
-                                           size_t nValues);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     const fmi3Int16 values[],
+                                     size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetUInt16(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            const fmi3UInt16 values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      const fmi3UInt16 values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetInt32(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           const fmi3Int32 values[],
-                                           size_t nValues);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     const fmi3Int32 values[],
+                                     size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetUInt32(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            const fmi3UInt32 values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      const fmi3UInt32 values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetInt64(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           const fmi3Int64 values[],
-                                           size_t nValues);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     const fmi3Int64 values[],
+                                     size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetUInt64(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            const fmi3UInt64 values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      const fmi3UInt64 values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetBoolean(fmiHandle *fmu,
-                                             const fmi3ValueReference valueReferences[],
-                                             size_t nValueReferences,
-                                             const fmi3Boolean values[],
-                                             size_t nValues);
+                                       const fmi3ValueReference valueReferences[],
+                                       size_t nValueReferences,
+                                       const fmi3Boolean values[],
+                                       size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetString(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            const fmi3String values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      const fmi3String values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetBinary(fmiHandle *fmu,
-                                            const fmi3ValueReference valueReferences[],
-                                            size_t nValueReferences,
-                                            const size_t valueSizes[],
-                                            const fmi3Binary values[],
-                                            size_t nValues);
+                                      const fmi3ValueReference valueReferences[],
+                                      size_t nValueReferences,
+                                      const size_t valueSizes[],
+                                      const fmi3Binary values[],
+                                      size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3SetClock(fmiHandle *fmu,
-                                           const fmi3ValueReference valueReferences[],
-                                           size_t nValueReferences,
-                                           const fmi3Clock values[],
-                                           size_t nValues);
+                                     const fmi3ValueReference valueReferences[],
+                                     size_t nValueReferences,
+                                     const fmi3Clock values[],
+                                     size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3GetNumberOfVariableDependencies(fmiHandle *fmu,
-                                                                  fmi3ValueReference valueReference,
-                                                                  size_t* nDependencies);
+                                                            fmi3ValueReference valueReference,
+                                                            size_t* nDependencies);
 
 FMI4C_DLLAPI fmi3Status fmi3GetVariableDependencies(fmiHandle *fmu,
-                                                          fmi3ValueReference dependent,
-                                                          size_t elementIndicesOfDependent[],
-                                                          fmi3ValueReference independents[],
-                                                          size_t elementIndicesOfIndependents[],
-                                                          fmi3DependencyKind dependencyKinds[],
-                                                          size_t nDependencies);
+                                                    fmi3ValueReference dependent,
+                                                    size_t elementIndicesOfDependent[],
+                                                    fmi3ValueReference independents[],
+                                                    size_t elementIndicesOfIndependents[],
+                                                    fmi3DependencyKind dependencyKinds[],
+                                                    size_t nDependencies);
 
 FMI4C_DLLAPI fmi3Status fmi3GetFMUState(fmiHandle *fmu, fmi3FMUState* FMUState);
 
@@ -756,135 +756,135 @@ FMI4C_DLLAPI fmi3Status fmi3SetFMUState(fmiHandle *fmu, fmi3FMUState  FMUState);
 FMI4C_DLLAPI fmi3Status fmi3FreeFMUState(fmiHandle *fmu, fmi3FMUState* FMUState);
 
 FMI4C_DLLAPI fmi3Status fmi3SerializedFMUStateSize(fmiHandle *fmu,
-                                                         fmi3FMUState  FMUState,
-                                                         size_t* size);
+                                                   fmi3FMUState  FMUState,
+                                                   size_t* size);
 
 FMI4C_DLLAPI fmi3Status fmi3SerializeFMUState(fmiHandle *fmu,
-                                                    fmi3FMUState  FMUState,
-                                                    fmi3Byte serializedState[],
-                                                    size_t size);
+                                              fmi3FMUState  FMUState,
+                                              fmi3Byte serializedState[],
+                                              size_t size);
 
 FMI4C_DLLAPI fmi3Status fmi3DeserializeFMUState(fmiHandle *fmu,
-                                                  const fmi3Byte serializedState[],
-                                                  size_t size,
-                                                  fmi3FMUState* FMUState);
+                                                const fmi3Byte serializedState[],
+                                                size_t size,
+                                                fmi3FMUState* FMUState);
 
 FMI4C_DLLAPI fmi3Status fmi3GetDirectionalDerivative(fmiHandle *fmu,
-                                                           const fmi3ValueReference unknowns[],
-                                                           size_t nUnknowns,
-                                                           const fmi3ValueReference knowns[],
-                                                           size_t nKnowns,
-                                                           const fmi3Float64 seed[],
-                                                           size_t nSeed,
-                                                           fmi3Float64 sensitivity[],
-                                                           size_t nSensitivity);
+                                                     const fmi3ValueReference unknowns[],
+                                                     size_t nUnknowns,
+                                                     const fmi3ValueReference knowns[],
+                                                     size_t nKnowns,
+                                                     const fmi3Float64 seed[],
+                                                     size_t nSeed,
+                                                     fmi3Float64 sensitivity[],
+                                                     size_t nSensitivity);
 
 FMI4C_DLLAPI fmi3Status fmi3GetAdjointDerivative(fmiHandle *fmu,
-                                                       const fmi3ValueReference unknowns[],
-                                                       size_t nUnknowns,
-                                                       const fmi3ValueReference knowns[],
-                                                       size_t nKnowns,
-                                                       const fmi3Float64 seed[],
-                                                       size_t nSeed,
-                                                       fmi3Float64 sensitivity[],
-                                                       size_t nSensitivity);
+                                                 const fmi3ValueReference unknowns[],
+                                                 size_t nUnknowns,
+                                                 const fmi3ValueReference knowns[],
+                                                 size_t nKnowns,
+                                                 const fmi3Float64 seed[],
+                                                 size_t nSeed,
+                                                 fmi3Float64 sensitivity[],
+                                                 size_t nSensitivity);
 
 FMI4C_DLLAPI fmi3Status fmi3EnterConfigurationMode(fmiHandle *fmu);
 
 FMI4C_DLLAPI fmi3Status fmi3ExitConfigurationMode(fmiHandle *fmu);
 
 FMI4C_DLLAPI fmi3Status fmi3GetIntervalDecimal(fmiHandle *fmu,
-                                                     const fmi3ValueReference valueReferences[],
-                                                     size_t nValueReferences,
-                                                     fmi3Float64 intervals[],
-                                                     fmi3IntervalQualifier qualifiers[]);
+                                               const fmi3ValueReference valueReferences[],
+                                               size_t nValueReferences,
+                                               fmi3Float64 intervals[],
+                                               fmi3IntervalQualifier qualifiers[]);
 
 FMI4C_DLLAPI fmi3Status fmi3GetIntervalFraction(fmiHandle *fmu,
-                                                      const fmi3ValueReference valueReferences[],
-                                                      size_t nValueReferences,
-                                                      fmi3UInt64 intervalCounters[],
-                                                      fmi3UInt64 resolutions[],
-                                                      fmi3IntervalQualifier qualifiers[]);
+                                                const fmi3ValueReference valueReferences[],
+                                                size_t nValueReferences,
+                                                fmi3UInt64 intervalCounters[],
+                                                fmi3UInt64 resolutions[],
+                                                fmi3IntervalQualifier qualifiers[]);
 
 FMI4C_DLLAPI fmi3Status fmi3GetShiftDecimal(fmiHandle *fmu,
-                                                  const fmi3ValueReference valueReferences[],
-                                                  size_t nValueReferences,
-                                                  fmi3Float64 shifts[]);
+                                            const fmi3ValueReference valueReferences[],
+                                            size_t nValueReferences,
+                                            fmi3Float64 shifts[]);
 
 FMI4C_DLLAPI fmi3Status fmi3GetShiftFraction(fmiHandle *fmu,
-                                                   const fmi3ValueReference valueReferences[],
-                                                   size_t nValueReferences,
-                                                   fmi3UInt64 shiftCounters[],
-                                                   fmi3UInt64 resolutions[]);
+                                             const fmi3ValueReference valueReferences[],
+                                             size_t nValueReferences,
+                                             fmi3UInt64 shiftCounters[],
+                                             fmi3UInt64 resolutions[]);
 
 FMI4C_DLLAPI fmi3Status fmi3SetIntervalDecimal(fmiHandle *fmu,
-                                                     const fmi3ValueReference valueReferences[],
-                                                     size_t nValueReferences,
-                                                     const fmi3Float64 intervals[]);
+                                               const fmi3ValueReference valueReferences[],
+                                               size_t nValueReferences,
+                                               const fmi3Float64 intervals[]);
 
 FMI4C_DLLAPI fmi3Status fmi3SetIntervalFraction(fmiHandle *fmu,
-                                                      const fmi3ValueReference valueReferences[],
-                                                      size_t nValueReferences,
-                                                      const fmi3UInt64 intervalCounters[],
-                                                      const fmi3UInt64 resolutions[]);
+                                                const fmi3ValueReference valueReferences[],
+                                                size_t nValueReferences,
+                                                const fmi3UInt64 intervalCounters[],
+                                                const fmi3UInt64 resolutions[]);
 
 FMI4C_DLLAPI fmi3Status fmi3EvaluateDiscreteStates(fmiHandle *fmu);
 
 FMI4C_DLLAPI fmi3Status fmi3UpdateDiscreteStates(fmiHandle *fmu,
-                                                       fmi3Boolean* discreteStatesNeedUpdate,
-                                                       fmi3Boolean* terminateSimulation,
-                                                       fmi3Boolean* nominalsOfContinuousStatesChanged,
-                                                       fmi3Boolean* valuesOfContinuousStatesChanged,
-                                                       fmi3Boolean* nextEventTimeDefined,
-                                                       fmi3Float64* nextEventTime);
+                                                 fmi3Boolean* discreteStatesNeedUpdate,
+                                                 fmi3Boolean* terminateSimulation,
+                                                 fmi3Boolean* nominalsOfContinuousStatesChanged,
+                                                 fmi3Boolean* valuesOfContinuousStatesChanged,
+                                                 fmi3Boolean* nextEventTimeDefined,
+                                                 fmi3Float64* nextEventTime);
 
 FMI4C_DLLAPI fmi3Status fmi3EnterContinuousTimeMode(fmiHandle *fmu);
 
 FMI4C_DLLAPI fmi3Status fmi3CompletedIntegratorStep(fmiHandle *fmu,
-                                                          fmi3Boolean  noSetFMUStatePriorToCurrentPoint,
-                                                          fmi3Boolean* enterEventMode,
-                                                          fmi3Boolean* terminateSimulation);
+                                                    fmi3Boolean  noSetFMUStatePriorToCurrentPoint,
+                                                    fmi3Boolean* enterEventMode,
+                                                    fmi3Boolean* terminateSimulation);
 
 FMI4C_DLLAPI fmi3Status fmi3SetTime(fmiHandle *fmu, fmi3Float64 time);
 
 FMI4C_DLLAPI fmi3Status fmi3SetContinuousStates(fmiHandle *fmu,
-                                                      const fmi3Float64 continuousStates[],
-                                                      size_t nContinuousStates);
+                                                const fmi3Float64 continuousStates[],
+                                                size_t nContinuousStates);
 
 FMI4C_DLLAPI fmi3Status fmi3GetContinuousStateDerivatives(fmiHandle *fmu,
-                                                                fmi3Float64 derivatives[],
-                                                                size_t nContinuousStates);
+                                                          fmi3Float64 derivatives[],
+                                                          size_t nContinuousStates);
 
 FMI4C_DLLAPI fmi3Status fmi3GetEventIndicators(fmiHandle *fmu,
-                                                     fmi3Float64 eventIndicators[],
-                                                     size_t nEventIndicators);
+                                               fmi3Float64 eventIndicators[],
+                                               size_t nEventIndicators);
 
 FMI4C_DLLAPI fmi3Status fmi3GetContinuousStates(fmiHandle *fmu,
-                                                      fmi3Float64 continuousStates[],
-                                                      size_t nContinuousStates);
+                                                fmi3Float64 continuousStates[],
+                                                size_t nContinuousStates);
 
 FMI4C_DLLAPI fmi3Status fmi3GetNominalsOfContinuousStates(fmiHandle *fmu,
-                                                                fmi3Float64 nominals[],
-                                                                size_t nContinuousStates);
+                                                          fmi3Float64 nominals[],
+                                                          size_t nContinuousStates);
 
 FMI4C_DLLAPI fmi3Status fmi3GetNumberOfEventIndicators(fmiHandle *fmu,
-                                                             size_t* nEventIndicators);
+                                                       size_t* nEventIndicators);
 
 FMI4C_DLLAPI fmi3Status fmi3GetNumberOfContinuousStates(fmiHandle *fmu,
-                                                              size_t* nContinuousStates);
+                                                        size_t* nContinuousStates);
 
 FMI4C_DLLAPI fmi3Status fmi3EnterStepMode(fmiHandle *fmu);
 
 FMI4C_DLLAPI fmi3Status fmi3GetOutputDerivatives(fmiHandle *fmu,
-                                                       const fmi3ValueReference valueReferences[],
-                                                       size_t nValueReferences,
-                                                       const fmi3Int32 orders[],
-                                                       fmi3Float64 values[],
-                                                       size_t nValues);
+                                                 const fmi3ValueReference valueReferences[],
+                                                 size_t nValueReferences,
+                                                 const fmi3Int32 orders[],
+                                                 fmi3Float64 values[],
+                                                 size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3ActivateModelPartition(fmiHandle *fmu,
-                                                         fmi3ValueReference clockReference,
-                                                         fmi3Float64 activationTime);
+                                                   fmi3ValueReference clockReference,
+                                                   fmi3Float64 activationTime);
 
 #ifdef __cplusplus
 }
