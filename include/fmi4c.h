@@ -23,11 +23,12 @@
 #undef fmiVersion
 
 #ifdef _WIN32
-#ifdef FMI4C_DLLEXPORT
+#if defined(FMI4C_STATIC)
+#define FMI4C_DLLAPI
+#elif defined(FMI4C_DLLEXPORT)
 #define FMI4C_DLLAPI __declspec(dllexport)
 #else
-// TODO Maybe use dllimport
-#define FMI4C_DLLAPI
+#define FMI4C_DLLAPI __declspec(dllimport)
 #endif
 #else
 #define FMI4C_DLLAPI

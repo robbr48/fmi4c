@@ -6,6 +6,7 @@ set(target_name fmi4c)
 
 option(BUILD_DOCUMENTATION "Build Doxygen documentation" OFF)
 option(BUILD_TEST "Build test executable" OFF)
+option(BUILD_SHARED "Build as shared library (DLL)" ON)
 option(USE_INCLUDED_ZLIB "Use the included zlib (statically linked) even if a system version is available" OFF)
 
 if (${BUILD_DOCUMENTATION})
@@ -57,10 +58,22 @@ if (WIN32)
     SET(SRCFILES ${SRCFILES} 3rdparty/minizip/iowin32.c)
 endif()
 
-add_library(${target_name} SHARED ${SRCFILES})
+if (BUILD_SHARED)
+    add_library(${target_name} SHARED ${SRCFILES})
+else()
+    add_library(${target_name} STATIC ${SRCFILES})
+endif()
 
 target_compile_definitions(${target_name} PUBLIC HAVE_MEMMOVE=1 EZXML_NOMMAP)
-target_compile_definitions(${target_name} PRIVATE FMI4C_DLLEXPORT)
+if (BUILD_SHARED)
+    # Only set DLLEXPORT when producing the library, when consumed dllimport will be assumed
+    target_compile_definitions(${target_name} PRIVATE FMI4C_DLLEXPORT)
+else()
+    # When using as a static library (on windows) FMI4C_STATIC must be defined, otherwise dllimport will be assumed
+    target_compile_definitions(${target_name} PUBLIC FMI4C_STATIC)
+    # Must use position independent code if intend to include static fmi4c lib into shared (dll) consumer
+    set_target_properties(${target_name} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
 target_include_directories(${target_name} PUBLIC include)
 target_include_directories(${target_name} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/3rdparty>)
@@ -77,11 +90,18 @@ install(DIRECTORY include
         DESTINATION .)
 install(DIRECTORY 3rdparty/fmi
         DESTINATION include)
+# If building a static library, also include the local static zlib if it was built
+if (NOT BUILD_SHARED AND TARGET zlib)
+    install(TARGETS zlib
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib)
+endif()
 
 if (${BUILD_TEST})
   enable_testing()
   add_subdirectory(test)
-  if (WIN32)
+  if (WIN32 AND BUILD_SHARED)
     # On Windows there is no RPATH, so fmi4c.dll must be copied to the test directory if test should be runnable from any directory
     add_custom_command(TARGET fmi4c POST_BUILD
                        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi4c> ${CMAKE_CURRENT_BINARY_DIR}/test)
