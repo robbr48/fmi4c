@@ -45,6 +45,7 @@
 #include <time.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <stdarg.h>
 
 #ifdef _WIN32
@@ -67,14 +68,12 @@
 #include "iowin32.h"
 #endif
 
-
 /* MODIFICATION Replace all stdout prints with this function for better control */
-static int minizip_printf( const char * format, ... )
-{
-    //printf(format);
-	return 1;
-} 
-
+static int minizip_printf( const char * format, ... ) {
+  //printf(format);
+  (void)format;
+  return 1;
+}
 
 /*
   mini unzip, demo of unzip package
@@ -91,7 +90,10 @@ static int minizip_printf( const char * format, ... )
     filename : the filename of the file where date/time must be modified
     dosdate : the new date at the MSDos format (4 bytes)
     tmu_date : the SAME new date at the tm_unz format */
-void change_file_date(const char *filename,uLong dosdate,tm_unz tmu_date)
+static void change_file_date(filename,dosdate,tmu_date)
+    const char *filename;
+    uLong dosdate;
+    tm_unz tmu_date;
 {
 #ifdef _WIN32
   HANDLE hFile;
@@ -105,7 +107,8 @@ void change_file_date(const char *filename,uLong dosdate,tm_unz tmu_date)
   SetFileTime(hFile,&ftm,&ftLastAcc,&ftm);
   CloseHandle(hFile);
 #else
-#ifdef unix || __APPLE__
+#if defined(unix) || defined(__APPLE__)
+  (void)dosdate;
   struct utimbuf ut;
   struct tm newdate;
   newdate.tm_sec = tmu_date.tm_sec;
@@ -129,7 +132,7 @@ void change_file_date(const char *filename,uLong dosdate,tm_unz tmu_date)
 /* mymkdir and change_file_date are not 100 % portable
    As I don't know well Unix, I wait feedback for the unix portion */
 
-int mymkdir(dirname)
+static int mymkdir(dirname)
     const char* dirname;
 {
     int ret=0;
@@ -145,14 +148,14 @@ int mymkdir(dirname)
     return ret;
 }
 
-int makedir (newdir)
-    char *newdir;
+static int makedir (newdir)
+    const char *newdir;
 {
   char *buffer ;
   char *p;
-  int  len = (int)strlen(newdir);
+  size_t len = strlen(newdir);
 
-  if (len <= 0)
+  if (len == 0)
     return 0;
 
   buffer = (char*)malloc(len+1);
@@ -197,10 +200,10 @@ int makedir (newdir)
 
 static void do_banner()
 {
-	/*
+    /*
     minizip_printf("MiniUnz 1.01b, demo of zLib + Unz package written by Gilles Vollant\n");
     minizip_printf("more info at http://www.winimage.com/zLibDll/unzip.html\n\n");
-	*/
+    */
 }
 
 static void do_help()
@@ -215,7 +218,7 @@ static void do_help()
            "  -p  extract crypted file using password\n\n");
 }
 
-void Display64BitsSize(ZPOS64_T n, int size_char)
+static void Display64BitsSize(ZPOS64_T n, int size_char)
 {
   /* to avoid compatibility problem , we do here the conversion */
   char number[21];
@@ -243,7 +246,7 @@ void Display64BitsSize(ZPOS64_T n, int size_char)
   minizip_printf("%s",&number[pos_string]);
 }
 
-int do_list(uf)
+static int do_list(uf)
     unzFile uf;
 {
     uLong i;
@@ -321,7 +324,7 @@ int do_list(uf)
 }
 
 
-int do_extract_currentfile(uf,popt_extract_without_path,popt_overwrite,password)
+static int do_extract_currentfile(uf,popt_extract_without_path,popt_overwrite,password)
     unzFile uf;
     const int* popt_extract_without_path;
     int* popt_overwrite;
@@ -336,7 +339,6 @@ int do_extract_currentfile(uf,popt_extract_without_path,popt_overwrite,password)
     uInt size_buf;
 
     unz_file_info64 file_info;
-    uLong ratio=0;
     err = unzGetCurrentFileInfo64(uf,&file_info,filename_inzip,sizeof(filename_inzip),NULL,0,NULL,0);
 
     if (err!=UNZ_OK)
@@ -402,7 +404,7 @@ int do_extract_currentfile(uf,popt_extract_without_path,popt_overwrite,password)
                     ret = scanf("%1s",answer);
                     if (ret != 1)
                     {
-                       exit(EXIT_FAILURE);
+                        return -1; //exit(EXIT_FAILURE);
                     }
                     rep = answer[0] ;
                     if ((rep>='a') && (rep<='z'))
@@ -451,7 +453,7 @@ int do_extract_currentfile(uf,popt_extract_without_path,popt_overwrite,password)
                     break;
                 }
                 if (err>0)
-                    if (fwrite(buf,err,1,fout)!=1)
+                    if (fwrite(buf,(unsigned)err,1,fout)!=1)
                     {
                         minizip_printf("error in writing extracted file\n");
                         err=UNZ_ERRNO;
@@ -484,7 +486,7 @@ int do_extract_currentfile(uf,popt_extract_without_path,popt_overwrite,password)
 }
 
 
-int do_extract(uf,opt_extract_without_path,opt_overwrite,password)
+static int do_extract(uf,opt_extract_without_path,opt_overwrite,password)
     unzFile uf;
     int opt_extract_without_path;
     int opt_overwrite;
@@ -493,7 +495,6 @@ int do_extract(uf,opt_extract_without_path,opt_overwrite,password)
     uLong i;
     unz_global_info64 gi;
     int err;
-    FILE* fout=NULL;
 
     err = unzGetGlobalInfo64(uf,&gi);
     if (err!=UNZ_OK)
@@ -520,14 +521,13 @@ int do_extract(uf,opt_extract_without_path,opt_overwrite,password)
     return 0;
 }
 
-int do_extract_onefile(uf,filename,opt_extract_without_path,opt_overwrite,password)
+static int do_extract_onefile(uf,filename,opt_extract_without_path,opt_overwrite,password)
     unzFile uf;
     const char* filename;
     int opt_extract_without_path;
     int opt_overwrite;
     const char* password;
 {
-    int err = UNZ_OK;
     if (unzLocateFile(uf,filename,CASESENSITIVITY)!=UNZ_OK)
     {
         minizip_printf("file %s not found in the zipfile\n",filename);
@@ -657,7 +657,7 @@ int miniunz(argc,argv)
 #endif
         {
           minizip_printf("Error changing into %s, aborting\n", dirname);
-          return -1; /*exit(-1); */
+          return -1; //exit(-1);
         }
 
         if (filename_to_extract == NULL)

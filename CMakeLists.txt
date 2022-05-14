@@ -18,7 +18,7 @@ if(NOT USE_INCLUDED_ZLIB)
 endif()
 # If zlib can not be found in the system, then build local version
 if (NOT ZLIB_FOUND)
-    set(zlib_dir "3rdparty/zlib-1.2.6")
+    set(zlib_dir "3rdparty/zlib")
     message(STATUS "Using included ZLIB: ${zlib_dir}")
     # Build as static lib as it will be used only internally in fmi4c
     set(BUILD_SHARED_LIBS OFF)
