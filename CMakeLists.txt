@@ -20,17 +20,15 @@ endif()
 if (NOT ZLIB_FOUND)
     set(zlib_dir "3rdparty/zlib")
     message(STATUS "Using included ZLIB: ${zlib_dir}")
-    # Build as static lib as it will be used only internally in fmi4c
-    set(BUILD_SHARED_LIBS OFF)
     # Must use position independent code if intend to include static zlib into shared (dll) fmi4c lib
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     # Add bundled sources, (EXCLUDE_FROM_ALL prevents zlib from being installed with fmi4c)
     add_subdirectory(${zlib_dir} EXCLUDE_FROM_ALL)
-    # We highjack the zlib target from the original build system, but it does not have the include directory properties set, so lets add them here
-    set_target_properties(zlib PROPERTIES
-                               INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/${zlib_dir};${CMAKE_CURRENT_BINARY_DIR}/${zlib_dir}")
+    # We highjack the zlibstatic target from the original build system, but it does not have the include directory properties set, so lets add them here
+    set_target_properties(zlibstatic PROPERTIES
+                                     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_LIST_DIR}/${zlib_dir};${CMAKE_CURRENT_BINARY_DIR}/${zlib_dir}")
     # Use alias to match name that find-module uses
-    add_library(ZLIB::ZLIB ALIAS zlib)
+    add_library(ZLIB::ZLIB ALIAS zlibstatic)
 endif()
 
 set(SRCFILES
