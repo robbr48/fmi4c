@@ -53,3 +53,7 @@ dkms.conf
 
 # IDE Files
 CMakeLists.txt.user
+
+# Backup Files
+*~
+\#*
