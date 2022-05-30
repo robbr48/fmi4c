@@ -34,6 +34,7 @@ fmi2Status  fmi2SetDebugLogging(fmi2Component c, fmi2Boolean loggingOn, size_t n
     UNUSED(categories);
     fmuContext *fmu = (fmuContext*)c;
     fmu->loggingOn = loggingOn;
+    return fmi2OK;
 }
 
 /* Creation and destruction of FMU instances and setting debug status */
@@ -218,6 +219,7 @@ fmi2Status fmi2NewDiscreteStates(fmi2Component c, fmi2EventInfo* eventInfo)
     eventInfo->nominalsOfContinuousStatesChanged = fmi2False;
     eventInfo->terminateSimulation = fmi2False;
     eventInfo->valuesOfContinuousStatesChanged = fmi2False;
+    return fmi2OK;
 }
 
 fmi2Status fmi2EnterContinuousTimeMode(fmi2Component c)

@@ -37,6 +37,7 @@ fmi3Status fmi3SetDebugLogging(fmi3Instance instance,
     UNUSED(categories);
     fmuContext *fmu =(fmuContext*)instance;
     fmu->loggingOn = loggingOn;
+    return fmi3OK;
 }
 
 fmi3Instance fmi3InstantiateModelExchange(fmi3String instanceName,
