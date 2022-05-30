@@ -1,6 +1,6 @@
 ---
 name: ghactions-ci-build
-on: [pull_request]
+on: [push]
 
 jobs:
   cmake-msvc2019:
