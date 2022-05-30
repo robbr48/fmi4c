@@ -165,6 +165,7 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
     fmu->mem = CVodeCreate(CV_BDF, CV_NEWTON);
     if(fmu->mem == NULL) {
         fmu->logger(fmu->instanceEnvironment, fmi3Error, 0, "Failed to allocate memory for CVODE solver");
+        free(fmu);
         return NULL;
     }
 
@@ -174,37 +175,44 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
         char errstr[1024];
         sprintf(errstr, "Failed to initialize CVODE solver, error code: %i", flag);
         fmu->logger(fmu->instanceEnvironment, fmi3Error, 0, errstr);
+        free(fmu);
         return NULL;
     }
 
     flag = CVodeSVtolerances(fmu->mem, fmu->reltol, fmu->abstol);
     if(flag != CV_SUCCESS) {
         fmu->logger(fmu->instanceEnvironment, fmi3Error, 0, "Failed to set CVODE tolerances");
+        free(fmu);
         return NULL;
     }
     flag = CVDense(fmu->mem, fmu->n_states);
     if(flag != CV_SUCCESS) {
         fmu->logger(fmu->instanceEnvironment, fmi3Error, 0, "Failed to specify linear (dense) solver for CVODE");
+        free(fmu);
         return NULL;
     }
     flag = CVodeSetMinStep(fmu->mem, 0);
     if(flag != CV_SUCCESS) {
         fmu->logger(fmu->instanceEnvironment, fmi3Error, 0, "Failed to set minimum step for CVODE solver");
+        free(fmu);
         return NULL;
     }
     CVodeSetMaxStep(fmu->mem, fmu->solverStep); //!< @todo Initialize!
     if(flag != CV_SUCCESS) {
         fmu->logger(fmu->instanceEnvironment, fmi3Error, 0, "Failed to set maximum step for CVODE solver");
+        free(fmu);
         return NULL;
     }
     CVodeSetUserData(fmu->mem, fmu);
     if(flag != CV_SUCCESS) {
         fmu->logger(fmu->instanceEnvironment, fmi3Error, 0, "Failed to set user data pointer for CVODE solver");
+        free(fmu);
         return NULL;
     }
     CVodeSetMaxNumSteps(fmu->mem, 1000000);
     if(flag != CV_SUCCESS) {
         fmu->logger(fmu->instanceEnvironment, fmi3Error, 0, "Failed to set maximum number of steps for CVODE solver");
+        free(fmu);
         return NULL;
     }
 
