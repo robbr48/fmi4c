@@ -4,6 +4,10 @@
 #include <string.h>
 #include <math.h>
 
+//#ifndef _WIN32
+//#include <unistd.h>
+//#endif
+
 #include "fmi4c.h"
 #include "fmi4c_test.h"
 #include "fmi4c_test_fmi1.h"
@@ -132,12 +136,12 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    char *cwd = (char*)malloc(sizeof(char)*FILENAME_MAX);
-#ifdef _WIN32
-    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#else
-    getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#endif
+//    char *cwd = (char*)malloc(sizeof(char)*FILENAME_MAX);
+//#ifdef _WIN32
+//    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+//#else
+//    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+//#endif
 
     if(strcmp(inputCsvPath, "") != 0) {
         FILE *inputFile = fopen(inputCsvPath, "r");
