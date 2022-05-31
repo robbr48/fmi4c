@@ -32,6 +32,7 @@ DllExport const char* fmiGetVersion() {
 DllExport fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn) {
     fmuContext *fmu =(fmuContext*)c;
     fmu->loggingOn = loggingOn;
+    return fmiOK;
 }
 
 /* Data Exchange Functions*/
