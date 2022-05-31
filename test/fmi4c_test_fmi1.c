@@ -70,7 +70,7 @@ int testFMI1ME(fmiHandle *fmu) {
     states = malloc(nStates*sizeof(double));
     derivatives = malloc(nStates*sizeof(double));
     eventIndicators = malloc(nEventIndicators*sizeof(double));
-    eventIndicatorsPrev = malloc(nEventIndicators*sizeof(double));
+    eventIndicatorsPrev = calloc(nEventIndicators, sizeof(double));
 
     status = fmi1GetContinuousStates(fmu, states, nStates);
     if(status != fmi1OK) {
