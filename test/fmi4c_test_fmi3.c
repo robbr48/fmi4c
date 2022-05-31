@@ -198,7 +198,7 @@ int testFMI3ME(fmiHandle *fmu) {
     fmi3Boolean timeEvent;
     fmi3Boolean stateEvent;
     fmi3Boolean stepEvent;
-    fmi3Int32* rootsFound;
+    fmi3Int64* rootsFound;
 
     status = fmi3GetNumberOfContinuousStates(fmu, &nStates);
     if(status != fmi3OK) {
