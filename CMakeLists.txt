@@ -89,8 +89,8 @@ install(DIRECTORY include
 install(DIRECTORY 3rdparty/fmi
         DESTINATION include)
 # If building a static library, also include the local static zlib if it was built
-if (NOT FMI4C_BUILD_SHARED AND TARGET zlib)
-    install(TARGETS zlib
+if (NOT FMI4C_BUILD_SHARED AND TARGET zlibstatic)
+    install(TARGETS zlibstatic
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION lib
             ARCHIVE DESTINATION lib)
