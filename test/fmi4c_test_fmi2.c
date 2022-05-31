@@ -249,6 +249,7 @@ int testFMI2ME(fmiHandle *fmu)
     printf("  FMU successfully terminated.\n");
 
     fmi2FreeInstance(fmu);
+    return 0;
 }
 
 
@@ -300,7 +301,7 @@ int testFMI2CS(fmiHandle *fmu)
     }
     printf("  FMU successfully initialized.\n");
 
-    printf("  Simulajting from %f to %f...\n",startTime, stopTime);
+    printf("  Simulating from %f to %f...\n",startTime, stopTime);
     outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
@@ -344,6 +345,7 @@ int testFMI2CS(fmiHandle *fmu)
     fmi2Terminate(fmu);
     printf("  FMU successfully terminated.\n");
     fmi2FreeInstance(fmu);
+    return 0;
 }
 
 
@@ -373,7 +375,7 @@ int testFMI2(fmiHandle *fmu, bool forceModelExchange)
     if(fmi2GetSupportsCoSimulation(fmu) && !forceModelExchange) {
         return testFMI2CS(fmu);
     }
-    else if(fmi2GetSupportsModelExchange){
+    else if(fmi2GetSupportsModelExchange(fmu)){
         return testFMI2ME(fmu);
     }
     else {
