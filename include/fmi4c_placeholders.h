@@ -844,8 +844,8 @@ fmi3Instance placeholder_fmi3InstantiateCoSimulation(fmi3String instanceName,
                                                        const fmi3ValueReference requiredIntermediateVariables[],
                                                        size_t nRequiredIntermediateVariables,
                                                        fmi3InstanceEnvironment instanceEnvironment,
-                                                       fmi3CallbackLogMessage logMessage,
-                                                       fmi3CallbackIntermediateUpdate intermediateUpdate) {
+                                                       fmi3LogMessageCallback logMessage,
+                                                       fmi3IntermediateUpdateCallback intermediateUpdate) {
     UNUSED(instanceName);
     UNUSED(instantiationToken);
     UNUSED(resourcePath);
@@ -868,7 +868,7 @@ fmi3Instance placeholder_fmi3InstantiateModelExchange(fmi3String instanceName,
                                                         fmi3Boolean visible,
                                                         fmi3Boolean loggingOn,
                                                         fmi3InstanceEnvironment instanceEnvironment,
-                                                        fmi3CallbackLogMessage logMessage) {
+                                                        fmi3LogMessageCallback logMessage) {
     UNUSED(instanceName);
     UNUSED(instantiationToken);
     UNUSED(resourcePath);
@@ -886,8 +886,8 @@ fmi3Instance placeholder_fmi3InstantiateScheduledExecution(fmi3String instanceNa
                                                              fmi3Boolean visible,
                                                              fmi3Boolean loggingOn,
                                                              fmi3InstanceEnvironment instanceEnvironment,
-                                                             fmi3CallbackLogMessage logMessage,
-                                                             fmi3CallbackIntermediateUpdate intermediateUpdate,
+                                                             fmi3LogMessageCallback logMessage,
+                                                             fmi3IntermediateUpdateCallback intermediateUpdate,
                                                              fmi3CallbackLockPreemption lockPreemption,
                                                              fmi3CallbackUnlockPreemption unlockPreemption) {
     UNUSED(instanceName);
@@ -958,18 +958,8 @@ fmi3Status placeholder_fmi3DoStep(fmi3Instance instance,
 
 }
 
-fmi3Status placeholder_fmi3EnterEventMode(fmi3Instance instance,
-                                          fmi3Boolean stepEvent,
-                                          fmi3Boolean stateEvent,
-                                          const fmi3Int32 rootsFound[],
-                                          size_t nEventIndicators,
-                                          fmi3Boolean timeEvent) {
+fmi3Status placeholder_fmi3EnterEventMode(fmi3Instance instance) {
     UNUSED(instance);
-    UNUSED(stepEvent);
-    UNUSED(stateEvent);
-    UNUSED(rootsFound);
-    UNUSED(nEventIndicators);
-    UNUSED(timeEvent);
     NOT_IMPLEMENTED(fmi3EnterEventMode);
     return fmi3Error;
 }
@@ -1363,13 +1353,11 @@ fmi3Status placeholder_fmi3SetBinary(fmi3Instance instance,
 fmi3Status placeholder_fmi3SetClock(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
-                                    const fmi3Clock values[],
-                                    size_t nValues) {
+                                    const fmi3Clock values[]) {
     UNUSED(instance);
     UNUSED(valueReferences);
     UNUSED(nValueReferences);
     UNUSED(values);
-    UNUSED(nValues);
     NOT_IMPLEMENTED(fmi3SetClock);
     return fmi3Error;
 }
@@ -1597,6 +1585,33 @@ fmi3Status placeholder_fmi3SetIntervalFraction(fmi3Instance instance,
     NOT_IMPLEMENTED(fmi3SetIntervalFraction);
     return fmi3Error;
 }
+
+fmi3Status placeholder_fmi3SetShiftDecimal(fmi3Instance instance,
+                                           const fmi3ValueReference valueReferences[],
+                                           size_t nValueReferences,
+                                           const fmi3Float64 shifts[]) {
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(shifts);
+    NOT_IMPLEMENTED(placeholder_fmi3SetShiftDecimal);
+    return fmi3Error;
+}
+
+fmi3Status placeholder_fmi3SetShiftFraction(fmi3Instance instance,
+                                            const fmi3ValueReference valueReferences[],
+                                            size_t nValueReferences,
+                                            const fmi3UInt64 counters[],
+                                            const fmi3UInt64 resolutions[]) {
+    UNUSED(instance);
+    UNUSED(valueReferences);
+    UNUSED(nValueReferences);
+    UNUSED(counters);
+    UNUSED(resolutions);
+    NOT_IMPLEMENTED(placeholder_fmi3SetShiftFraction);
+    return fmi3Error;
+}
+
 
 fmi3Status placeholder_fmi3EvaluateDiscreteStates(fmi3Instance instance) {
     UNUSED(instance);

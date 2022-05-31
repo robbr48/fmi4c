@@ -30,8 +30,8 @@ typedef struct {
     fmi3String instanceName;
     fmi3String instantiationToken;
     fmi3InstanceEnvironment instanceEnvironment;
-    fmi3CallbackLogMessage logger;
-    fmi3CallbackIntermediateUpdate intermediateUpdate;
+    fmi3LogMessageCallback logger;
+    fmi3IntermediateUpdateCallback intermediateUpdate;
     bool loggingOn;
     fmi3Float64 v; //Speed (output)
     fmi3Float64 f; //TLM force (input)
@@ -77,7 +77,7 @@ int rhs(realtype t, FMIC_N_Vector yy, FMIC_N_Vector yp, void *user_data)
 {
     fmuContext* fmu = (fmuContext*)user_data;
 
-    fmu->intermediateUpdate(fmu->instanceEnvironment, t, fmi3False, fmi3True, fmi3True, fmi3False, fmi3False, NULL, NULL);
+    fmu->intermediateUpdate(fmu->instanceEnvironment, t, fmi3True, fmi3True, fmi3False, fmi3False, NULL, NULL);
 
     Ith(yp,1) = -fmu->c/fmu->m*Ith(yy,1) - fmu->k/fmu->m*Ith(yy,2) - fmu->f/fmu->m - fmu->fd/fmu->m;
     Ith(yp,2) = Ith(yy,1);
@@ -115,8 +115,8 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
                                          const fmi3ValueReference requiredIntermediateVariables[],
                                          size_t nRequiredIntermediateVariables,
                                          fmi3InstanceEnvironment instanceEnvironment,
-                                         fmi3CallbackLogMessage logMessage,
-                                         fmi3CallbackIntermediateUpdate intermediateUpdate)
+                                         fmi3LogMessageCallback logMessage,
+                                         fmi3IntermediateUpdateCallback intermediateUpdate)
 {
     UNUSED(resourcePath);
     UNUSED(visible);
@@ -147,7 +147,7 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
     fmu->hfactor = 1;
 
     if(fmu->loggingOn) {
-        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3OK, "info", "Successfully instantiated FMU");
+        fmu->logger(fmu->instanceEnvironment, fmi3OK, "info", "Successfully instantiated FMU");
     }
 
     fmu->mem = NULL;
@@ -164,7 +164,7 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
 
     fmu->mem = CVodeCreate(CV_BDF, CV_NEWTON);
     if(fmu->mem == NULL) {
-        fmu->logger(fmu->instanceEnvironment, fmu->instanceName, fmi3Error, 0, "Failed to allocate memory for CVODE solver");
+        fmu->logger(fmu->instanceEnvironment, fmi3Error, 0, "Failed to allocate memory for CVODE solver");
         return NULL;
     }
 
@@ -258,19 +258,9 @@ fmi3Status fmi3ExitInitializationMode(fmi3Instance instance)
     return fmi3OK;  //Nothing to do
 }
 
-fmi3Status fmi3EnterEventMode(fmi3Instance instance,
-                              fmi3Boolean stepEvent,
-                              fmi3Boolean stateEvent,
-                              const fmi3Int32 rootsFound[],
-                              size_t nEventIndicators,
-                              fmi3Boolean timeEvent)
+fmi3Status fmi3EnterEventMode(fmi3Instance instance)
 {
     UNUSED(instance);
-    UNUSED(stepEvent);
-    UNUSED(stateEvent);
-    UNUSED(rootsFound);
-    UNUSED(nEventIndicators);
-    UNUSED(timeEvent);
     return fmi3OK;  //Nothing to do
 }
 

@@ -522,14 +522,14 @@ FMI4C_DLLAPI bool fmi3InstantiateCoSimulation(fmiHandle *fmu,
                                               const fmi3ValueReference       requiredIntermediateVariables[],
                                               size_t                         nRequiredIntermediateVariables,
                                               fmi3InstanceEnvironment        instanceEnvironment,
-                                              fmi3CallbackLogMessage         logMessage,
-                                              fmi3CallbackIntermediateUpdate intermediateUpdate);
+                                              fmi3LogMessageCallback         logMessage,
+                                              fmi3IntermediateUpdateCallback intermediateUpdate);
 
 FMI4C_DLLAPI bool fmi3InstantiateModelExchange(fmiHandle *fmu,
                                                fmi3Boolean                visible,
                                                fmi3Boolean                loggingOn,
                                                fmi3InstanceEnvironment    instanceEnvironment,
-                                               fmi3CallbackLogMessage     logMessage);
+                                               fmi3LogMessageCallback     logMessage);
 
 FMI4C_DLLAPI const char* fmi3GetVersion(fmiHandle *fmu);
 
@@ -572,12 +572,7 @@ FMI4C_DLLAPI fmi3Status fmi3DoStep(fmiHandle *fmu,
                                    fmi3Boolean *earlyReturn,
                                    fmi3Float64 *lastSuccessfulTime);
 
-FMI4C_DLLAPI fmi3Status fmi3EnterEventMode(fmiHandle *fmu,
-                                           fmi3Boolean stepEvent,
-                                           fmi3Boolean stateEvent,
-                                           const fmi3Int32 rootsFound[],
-                                           size_t nEventIndicators,
-                                           fmi3Boolean timeEvent);
+FMI4C_DLLAPI fmi3Status fmi3EnterEventMode(fmiHandle *fmu);
 
 FMI4C_DLLAPI fmi3Status fmi3Reset(fmiHandle *fmu);
 
@@ -735,8 +730,7 @@ FMI4C_DLLAPI fmi3Status fmi3SetBinary(fmiHandle *fmu,
 FMI4C_DLLAPI fmi3Status fmi3SetClock(fmiHandle *fmu,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
-                                     const fmi3Clock values[],
-                                     size_t nValues);
+                                     const fmi3Clock values[]);
 
 FMI4C_DLLAPI fmi3Status fmi3GetNumberOfVariableDependencies(fmiHandle *fmu,
                                                             fmi3ValueReference valueReference,

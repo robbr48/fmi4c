@@ -12,8 +12,8 @@ typedef struct {
     fmi3String instanceName;
     fmi3String instantiationToken;
     fmi3InstanceEnvironment fmi3InstanceEnvironment;
-    fmi3CallbackLogMessage logger;
-    fmi3CallbackIntermediateUpdate intermediateUpdate;
+    fmi3LogMessageCallback logger;
+    fmi3IntermediateUpdateCallback intermediateUpdate;
     bool loggingOn;
     fmi3Float64 dx; //Input
     fmi3Float64 dxold; //Delayed variable(internal)
@@ -45,7 +45,7 @@ fmi3Instance fmi3InstantiateModelExchange(fmi3String instanceName,
                                           fmi3Boolean visible,
                                           fmi3Boolean loggingOn,
                                           fmi3InstanceEnvironment instanceEnvironment,
-                                          fmi3CallbackLogMessage logMessage)
+                                          fmi3LogMessageCallback logMessage)
 {
     UNUSED(resourcePath);
     UNUSED(visible);
@@ -70,8 +70,8 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
                                          const fmi3ValueReference requiredIntermediateVariables[],
                                          size_t nRequiredIntermediateVariables,
                                          fmi3InstanceEnvironment instanceEnvironment,
-                                         fmi3CallbackLogMessage logMessage,
-                                         fmi3CallbackIntermediateUpdate intermediateUpdate)
+                                         fmi3LogMessageCallback logMessage,
+                                         fmi3IntermediateUpdateCallback intermediateUpdate)
 {
     UNUSED(resourcePath);
     UNUSED(visible);
@@ -125,22 +125,11 @@ fmi3Status fmi3ExitInitializationMode(fmi3Instance instance) {
     return fmi3OK;  //Nothing to do
 }
 
-fmi3Status fmi3EnterEventMode(fmi3Instance instance,
-                              fmi3Boolean stepEvent,
-                              fmi3Boolean stateEvent,
-                              const fmi3Int32 rootsFound[],
-                              size_t nEventIndicators,
-                              fmi3Boolean timeEvent)
+fmi3Status fmi3EnterEventMode(fmi3Instance instance)
 {
     UNUSED(instance);
-    UNUSED(stepEvent);
-    UNUSED(stateEvent);
-    UNUSED(rootsFound);
-    UNUSED(nEventIndicators);
-    UNUSED(timeEvent);
     return fmi3OK;  //Nothing to do
 }
-
 
 fmi3Status fmi3Terminate(fmi3Instance instance) {
     UNUSED(instance);

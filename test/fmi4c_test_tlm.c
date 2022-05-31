@@ -108,7 +108,6 @@ double getInterpolatedForce2(double time)
 void intermediateUpdateTLM(
         fmi3InstanceEnvironment instanceEnvironment,
         fmi3Float64  intermediateUpdateTime,
-        fmi3Boolean  clocksTicked,
         fmi3Boolean  intermediateVariableSetRequested,
         fmi3Boolean  intermediateVariableGetAllowed,
         fmi3Boolean  intermediateStepFinished,
@@ -116,7 +115,6 @@ void intermediateUpdateTLM(
         fmi3Boolean* earlyReturnRequested,
         fmi3Float64* earlyReturnTime)
 {
-    UNUSED(clocksTicked);
     UNUSED(canReturnEarly);
     UNUSED(earlyReturnRequested);
     UNUSED(earlyReturnTime);

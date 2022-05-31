@@ -1809,8 +1809,8 @@ bool fmi3InstantiateCoSimulation(fmiHandle *fmu,
                              const fmi3ValueReference       requiredIntermediateVariables[],
                              size_t                         nRequiredIntermediateVariables,
                              fmi3InstanceEnvironment        instanceEnvironment,
-                             fmi3CallbackLogMessage         logMessage,
-                             fmi3CallbackIntermediateUpdate intermediateUpdate)
+                             fmi3LogMessageCallback         logMessage,
+                             fmi3IntermediateUpdateCallback intermediateUpdate)
 {
 
     fmu->fmi3.fmi3Instance = fmu->fmi3.instantiateCoSimulation(fmu->instanceName,
@@ -1833,7 +1833,7 @@ bool fmi3InstantiateModelExchange(fmiHandle *fmu,
                                   fmi3Boolean               visible,
                                   fmi3Boolean                loggingOn,
                                   fmi3InstanceEnvironment    instanceEnvironment,
-                                  fmi3CallbackLogMessage     logMessage)
+                                  fmi3LogMessageCallback     logMessage)
 {
     fmu->fmi3.fmi3Instance = fmu->fmi3.instantiateModelExchange(fmu->instanceName,
                                                            fmu->fmi3.instantiationToken,
@@ -2274,9 +2274,9 @@ fmi3ValueReference fmi3GetVariableValueReference(fmi3VariableHandle *var)
     return var->valueReference;
 }
 
-fmi3Status fmi3EnterEventMode(fmiHandle *fmu, fmi3Boolean stepEvent, fmi3Boolean stateEvent, const fmi3Int32 rootsFound[], size_t nEventIndicators, fmi3Boolean timeEvent)
+fmi3Status fmi3EnterEventMode(fmiHandle *fmu)
 {
-    return fmu->fmi3.enterEventMode(fmu->fmi3.fmi3Instance, stepEvent, stateEvent, rootsFound, nEventIndicators, timeEvent);
+    return fmu->fmi3.enterEventMode(fmu->fmi3.fmi3Instance);
 }
 
 fmi3Status fmi3Reset(fmiHandle *fmu)
@@ -2436,10 +2436,10 @@ fmi3Status fmi3SetBinary(fmiHandle *fmu, const fmi3ValueReference valueReference
     return fmu->fmi3.setBinary(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, valueSizes, values, nValues);
 }
 
-fmi3Status fmi3SetClock(fmiHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Clock values[], size_t nValues)
+fmi3Status fmi3SetClock(fmiHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Clock values[])
 {
 
-    return fmu->fmi3.setClock(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return fmu->fmi3.setClock(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values);
 }
 
 fmi3Status fmi3GetNumberOfVariableDependencies(fmiHandle *fmu, fmi3ValueReference valueReference, size_t *nDependencies)
@@ -3599,6 +3599,8 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
     fmu->fmi3.getShiftFraction = placeholder_fmi3GetShiftFraction;
     fmu->fmi3.setIntervalDecimal = placeholder_fmi3SetIntervalDecimal;
     fmu->fmi3.setIntervalFraction = placeholder_fmi3SetIntervalFraction;
+    fmu->fmi3.setShiftDecimal = placeholder_fmi3SetShiftDecimal;
+    fmu->fmi3.setShiftFraction = placeholder_fmi3SetShiftFraction;
     fmu->fmi3.evaluateDiscreteStates = placeholder_fmi3EvaluateDiscreteStates;
     fmu->fmi3.updateDiscreteStates = placeholder_fmi3UpdateDiscreteStates;
     fmu->fmi3.enterContinuousTimeMode = placeholder_fmi3EnterContinuousTimeMode;
