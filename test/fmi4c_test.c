@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
         while(fgets(lineStr , sizeof(lineStr) , inputFile) != NULL) {
             lineStr[strcspn(lineStr, "\r\n")] = 0;
             char* word = strtok(lineStr, ",");
-            int i=0;
+            int j=0;
             while(word != NULL && strcmp(word, "")) {
                 if(lineNumber == 0) {
                     namedData data;
@@ -154,11 +154,11 @@ int main(int argc, char *argv[])
                     ++nInterpolators;
                 }
                 else {
-                    interpolationData[i].data[lineNumber-1] = atof(word);
+                    interpolationData[j].data[lineNumber-1] = atof(word);
                 }
                 word = strtok(NULL, ",");
 
-                ++i;
+                ++j;
             }
             lineNumber++;
         }
