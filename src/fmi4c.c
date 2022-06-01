@@ -537,11 +537,11 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 #else
     getcwd(tempPath, sizeof(char)*FILENAME_MAX);
 #endif
-    fmu->unzippedLocation = strdup(tempPath);
+    fmu->unzippedLocation = _strdup(tempPath);
 
 
     strcat(tempPath, "/resources");
-    fmu->resourcesLocation = strdup(tempPath);
+    fmu->resourcesLocation = _strdup(tempPath);
 
     ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
     if(strcmp(rootElement->name, "fmiModelDescription")) {
@@ -1057,7 +1057,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             parseStringAttributeEzXml(varElement, "declaredType", &var.declaredType);
             const char* clocks = "";
             parseStringAttributeEzXml(varElement, "clocks", &clocks);
-            char* nonConstClocks = strdup(clocks);
+            char* nonConstClocks = _strdup(clocks);
 
             //Count number of clocks
             var.numberOfClocks = 0;
@@ -3410,10 +3410,10 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
 #else
     getcwd(tempPath, sizeof(char)*FILENAME_MAX);
 #endif
-    fmu->unzippedLocation = strdup(tempPath);
+    fmu->unzippedLocation = _strdup(tempPath);
 
     strcat(tempPath, "/resources");
-    fmu->resourcesLocation = strdup(tempPath);
+    fmu->resourcesLocation = _strdup(tempPath);
 
     fmu->instanceName = instanceName;
 
