@@ -425,7 +425,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 fmu->fmi2.hasRealVariables = true;
                 var.datatype = fmi2DataTypeReal;
                 parseFloat64AttributeEzXml(realElement, "start", &var.startReal);
-                if(parseInt32AttributeEzXml(realElement, "derivative", &var.derivative)) {
+                if(parseUInt32AttributeEzXml(realElement, "derivative", &var.derivative)) {
                     fmu->fmi2.numberOfContinuousStates++;
                 }
             }
@@ -1091,7 +1091,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             parseStringAttributeEzXml(varElement, "description", &var.description);
             parseBooleanAttributeEzXml(varElement, "canHandleMultipleSetPerTimeInstant", &var.canHandleMultipleSetPerTimeInstant);
             parseBooleanAttributeEzXml(varElement, "intermediateUpdate", &var.intermediateUpdate);
-            parseInt32AttributeEzXml(varElement, "previous", &var.previous);
+            parseUInt32AttributeEzXml(varElement, "previous", &var.previous);
             parseStringAttributeEzXml(varElement, "declaredType", &var.declaredType);
             const char* clocks = "";
             parseStringAttributeEzXml(varElement, "clocks", &clocks);
@@ -1313,7 +1313,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 parseBooleanAttributeEzXml(varElement, "relativeQuantity", &var.relativeQuantity);
                 parseBooleanAttributeEzXml(varElement, "unbounded", &var.unbounded);
                 parseFloat64AttributeEzXml(varElement,  "nominal", &var.nominal);
-                parseInt32AttributeEzXml(varElement, "derivative", &var.derivative);
+                parseUInt32AttributeEzXml(varElement, "derivative", &var.derivative);
                 parseBooleanAttributeEzXml(varElement, "reinit", &var.reInit);
             }
 
