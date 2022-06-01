@@ -56,7 +56,7 @@ double getInterpolatedForce1(double time)
     while(tlm.table1[0][i] > time) {
         --i;
         if(i < 0) {
-            i = TABLE_SIZE-1;
+            i = TABLE_SIZE-2;
         }
     }
     int j = i+1;
@@ -90,7 +90,7 @@ double getInterpolatedForce2(double time)
     while(tlm.table2[0][i] > time) {
         --i;
         if(i < 0) {
-            i = TABLE_SIZE-1;
+            i = TABLE_SIZE-2;
         }
     }
     int j = i+1;
