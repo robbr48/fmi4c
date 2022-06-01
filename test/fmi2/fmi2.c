@@ -233,8 +233,8 @@ fmi2Status fmi2CompletedIntegratorStep(fmi2Component c,
 {
     UNUSED(c);
     UNUSED(noSetFMUStatePriorToCurrentPoint);
-    enterEventMode = fmi2False;
-    terminateSimulation = fmi2False;
+    *enterEventMode = fmi2False;
+    *terminateSimulation = fmi2False;
     return fmi2OK;
 }
 
