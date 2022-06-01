@@ -201,7 +201,15 @@ int testFMI3ME(fmiHandle *fmu) {
     fmi3Int32* rootsFound;
 
     status = fmi3GetNumberOfContinuousStates(fmu, &nStates);
+    if(status != fmi3OK) {
+        printf("  fmi3GetNumberOfContinuousStates() failed\n");
+        exit(1);
+    }
     status = fmi3GetNumberOfEventIndicators(fmu, &nEventIndicators);
+    if(status != fmi3OK) {
+        printf("  fmi3GetNumberOfEventIndicators() failed\n");
+        exit(1);
+    }
 
     states = malloc(nStates*sizeof(fmi3Float64));
     derivatives = malloc(nStates*sizeof(fmi3Float64));
@@ -230,8 +238,20 @@ int testFMI3ME(fmiHandle *fmu) {
     fmi3EnterContinuousTimeMode(fmu);
 
     status = fmi3GetContinuousStates(fmu, states, nStates);
+    if(status != fmi3OK) {
+        printf("  fmi3GetContinuousStates() failed\n");
+        exit(1);
+    }
     status = fmi3GetNominalsOfContinuousStates(fmu, nominalStates, nStates);
+    if(status != fmi3OK) {
+        printf("  fmi3GetNominalsOfContinuousStates() failed\n");
+        exit(1);
+    }
     status = fmi3GetEventIndicators(fmu, eventIndicators, nEventIndicators);
+    if(status != fmi3OK) {
+        printf("  fmi3GetEventIndicators() failed\n");
+        exit(1);
+    }
 
     outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
