@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
             while(word != NULL && strcmp(word, "")) {
                 if(lineNumber == 0) {
                     namedData data;
-                    data.name = _strdup(word);
+                    data.name = strdup(word);
                     interpolationData[nInterpolators] = data;
                     ++nInterpolators;
                 }
