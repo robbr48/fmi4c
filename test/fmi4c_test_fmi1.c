@@ -70,10 +70,18 @@ int testFMI1ME(fmiHandle *fmu) {
     states = malloc(nStates*sizeof(double));
     derivatives = malloc(nStates*sizeof(double));
     eventIndicators = malloc(nEventIndicators*sizeof(double));
-    eventIndicatorsPrev = malloc(nEventIndicators*sizeof(double));
+    eventIndicatorsPrev = calloc(nEventIndicators, sizeof(double));
 
     status = fmi1GetContinuousStates(fmu, states, nStates);
+    if(status != fmi1OK) {
+        printf("fmi1Sefmi1GetContinuousStatestTime() failed\n");
+        exit(1);
+    }
     status = fmi1GetEventIndicators(fmu, eventIndicators, nEventIndicators);
+    if(status != fmi1OK) {
+        printf("fmi1GetEventIndicators() failed\n");
+        exit(1);
+    }
 
     outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
@@ -102,8 +110,16 @@ int testFMI1ME(fmiHandle *fmu) {
         int zeroCrossingEvent = 0;
 
         status = fmi1SetTime(fmu, time);
+        if(status != fmi1OK) {
+            printf("fmi1SetTime() failed\n");
+            exit(1);
+        }
 
         status = fmi1GetEventIndicators(fmu, eventIndicators, nEventIndicators);
+        if(status != fmi1OK) {
+            printf("fmi1GetEventIndicators() failed\n");
+            exit(1);
+        }
         for (k = 0; k < nEventIndicators; k++) {
             if ((eventIndicators[k] > 0) != (eventIndicatorsPrev[k] > 0)) {
                 zeroCrossingEvent = 1;
@@ -115,9 +131,25 @@ int testFMI1ME(fmiHandle *fmu) {
         if (callEventUpdate || zeroCrossingEvent ||
                 (eventInfo.upcomingTimeEvent && time == eventInfo.nextEventTime)) {
             status = fmi1EventUpdate(fmu, intermediateResults, &eventInfo);
+            if(status != fmi1OK) {
+                printf("fmi1EventUpdate() failed\n");
+                exit(1);
+            }
             status = fmi1GetContinuousStates(fmu, states, nStates);
+            if(status != fmi1OK) {
+                printf("fmi1GetContinuousStates() failed\n");
+                exit(1);
+            }
             status = fmi1GetEventIndicators(fmu, eventIndicators, nEventIndicators);
+            if(status != fmi1OK) {
+                printf("fmi1GetEventIndicators() failed\n");
+                exit(1);
+            }
             status = fmi1GetEventIndicators(fmu, eventIndicatorsPrev, nEventIndicators);
+            if(status != fmi1OK) {
+                printf("fmi1GetEventIndicators() failed\n");
+                exit(1);
+            }
         }
 
         //Update actual time stpe
@@ -141,12 +173,24 @@ int testFMI1ME(fmiHandle *fmu) {
 
         //Perform integration
         status = fmi1GetDerivatives(fmu, derivatives, nStates);
+        if(status != fmi1OK) {
+            printf("fmi1GetDerivatives() failed\n");
+            exit(1);
+        }
         for (k = 0; k < nStates; k++) {
             states[k] = states[k] + actualStepSize*derivatives[k];
         }
 
         status = fmi1SetContinuousStates(fmu, states, nStates);
+        if(status != fmi1OK) {
+            printf("fmi1SetContinuousStates() failed\n");
+            exit(1);
+        }
         status = fmi1CompletedIntegratorStep(fmu, &callEventUpdate);
+        if(status != fmi1OK) {
+            printf("fmi1CompletedIntegratorStep() failed\n");
+            exit(1);
+        }
 
         //Print all output variables to CSV file
         double value;

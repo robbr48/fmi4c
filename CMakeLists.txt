@@ -34,9 +34,11 @@ endif()
 set(SRCFILES
     src/fmi4c.c
     src/fmi4c_utils.c
+    src/fmi4c_private.h
+    src/fmi4c_utils.h
+    src/fmi4c_placeholders.h
     include/fmi4c.h
     include/fmi4c_public.h
-    include/fmi4c_private.h
     include/fmi4c_types.h
     include/fmi4c_types_fmi1.h
     include/fmi4c_types_fmi2.h
@@ -44,8 +46,6 @@ set(SRCFILES
     include/fmi4c_functions_fmi1.h
     include/fmi4c_functions_fmi2.h
     include/fmi4c_functions_fmi3.h
-    include/fmi4c_utils.h
-    include/fmi4c_placeholders.h
     3rdparty/minizip/miniunz.c
     3rdparty/minizip/ioapi.c
     3rdparty/minizip/mztools.c
@@ -89,8 +89,8 @@ install(DIRECTORY include
 install(DIRECTORY 3rdparty/fmi
         DESTINATION include)
 # If building a static library, also include the local static zlib if it was built
-if (NOT FMI4C_BUILD_SHARED AND TARGET zlib)
-    install(TARGETS zlib
+if (NOT FMI4C_BUILD_SHARED AND TARGET zlibstatic)
+    install(TARGETS zlibstatic
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION lib
             ARCHIVE DESTINATION lib)

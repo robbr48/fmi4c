@@ -425,7 +425,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 fmu->fmi2.hasRealVariables = true;
                 var.datatype = fmi2DataTypeReal;
                 parseFloat64AttributeEzXml(realElement, "start", &var.startReal);
-                if(parseInt32AttributeEzXml(realElement, "derivative", &var.derivative)) {
+                if(parseUInt32AttributeEzXml(realElement, "derivative", &var.derivative)) {
                     fmu->fmi2.numberOfContinuousStates++;
                 }
             }
@@ -619,7 +619,9 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 ++fmu->fmi3.numberOfUnits;
             }
         }
-        fmu->fmi3.units = malloc(fmu->fmi3.numberOfUnits*sizeof(fmi3UnitHandle));
+        if(fmu->fmi3.numberOfUnits > 0) {
+            fmu->fmi3.units = malloc(fmu->fmi3.numberOfUnits*sizeof(fmi3UnitHandle));
+        }
         int i=0;
         for(ezxml_t unitElement = unitDefinitionsElement->child; unitElement; unitElement = unitElement->next) {
             if(strcmp(unitElement->name, "Unit")) {
@@ -658,7 +660,9 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                     ++unit.numberOfDisplayUnits;  //Just count them for now, so we can allocate memory before loading them
                 }
             }
-            unit.displayUnits = malloc(unit.numberOfDisplayUnits*sizeof(fmi3DisplayUnitHandle));
+            if(unit.numberOfDisplayUnits > 0) {
+                unit.displayUnits = malloc(unit.numberOfDisplayUnits*sizeof(fmi3DisplayUnitHandle));
+            }
             int j=0;
             for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
                 if(!strcmp(unitSubElement->name, "DisplayUnit")) {
@@ -744,21 +748,51 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         }
 
         //Allocate memory
-        fmu->fmi3.float64Types = malloc(fmu->fmi3.numberOfFloat64Types*sizeof(fmi3Float64Type));
-        fmu->fmi3.float32Types = malloc(fmu->fmi3.numberOfFloat32Types*sizeof(fmi3Float32Type));
-        fmu->fmi3.int64Types = malloc(fmu->fmi3.numberOfInt64Types*sizeof(fmi3Int64Type));
-        fmu->fmi3.int32Types = malloc(fmu->fmi3.numberOfInt32Types*sizeof(fmi3Int32Type));
-        fmu->fmi3.int16Types = malloc(fmu->fmi3.numberOfInt16Types*sizeof(fmi3Int16Type));
-        fmu->fmi3.int8Types = malloc(fmu->fmi3.numberOfInt8Types*sizeof(fmi3Int8Type));
-        fmu->fmi3.uint64Types = malloc(fmu->fmi3.numberOfUInt64Types*sizeof(fmi3UInt64Type));
-        fmu->fmi3.uint32Types = malloc(fmu->fmi3.numberOfUInt32Types*sizeof(fmi3UInt32Type));
-        fmu->fmi3.uint16Types = malloc(fmu->fmi3.numberOfUInt16Types*sizeof(fmi3UInt16Type));
-        fmu->fmi3.uint8Types = malloc(fmu->fmi3.numberOfUInt8Types*sizeof(fmi3UInt8Type));
-        fmu->fmi3.booleanTypes = malloc(fmu->fmi3.numberOfBooleanTypes*sizeof(fmi3BooleanType));
-        fmu->fmi3.stringTypes = malloc(fmu->fmi3.numberOfStringTypes*sizeof(fmi3StringType));
-        fmu->fmi3.binaryTypes = malloc(fmu->fmi3.numberOfBinaryTypes*sizeof(fmi3BinaryType));
-        fmu->fmi3.enumTypes = malloc(fmu->fmi3.numberOfEnumerationTypes*sizeof(fmi3EnumerationType));
-        fmu->fmi3.clockTypes = malloc(fmu->fmi3.numberOfClockTypes*sizeof(fmi3ClockType));
+        if(fmu->fmi3.numberOfFloat64Types > 0) {
+            fmu->fmi3.float64Types = malloc(fmu->fmi3.numberOfFloat64Types*sizeof(fmi3Float64Type));
+        }
+        if(fmu->fmi3.numberOfFloat32Types > 0) {
+            fmu->fmi3.float32Types = malloc(fmu->fmi3.numberOfFloat32Types*sizeof(fmi3Float32Type));
+        }
+        if(fmu->fmi3.numberOfInt64Types > 0) {
+            fmu->fmi3.int64Types = malloc(fmu->fmi3.numberOfInt64Types*sizeof(fmi3Int64Type));
+        }
+        if(fmu->fmi3.numberOfInt32Types > 0) {
+            fmu->fmi3.int32Types = malloc(fmu->fmi3.numberOfInt32Types*sizeof(fmi3Int32Type));
+        }
+        if(fmu->fmi3.numberOfInt16Types > 0) {
+            fmu->fmi3.int16Types = malloc(fmu->fmi3.numberOfInt16Types*sizeof(fmi3Int16Type));
+        }
+        if(fmu->fmi3.numberOfInt8Types > 0) {
+            fmu->fmi3.int8Types = malloc(fmu->fmi3.numberOfInt8Types*sizeof(fmi3Int8Type));
+        }
+        if(fmu->fmi3.numberOfUInt64Types > 0) {
+            fmu->fmi3.uint64Types = malloc(fmu->fmi3.numberOfUInt64Types*sizeof(fmi3UInt64Type));
+        }
+        if(fmu->fmi3.numberOfUInt32Types > 0) {
+            fmu->fmi3.uint32Types = malloc(fmu->fmi3.numberOfUInt32Types*sizeof(fmi3UInt32Type));
+        }
+        if(fmu->fmi3.numberOfUInt16Types > 0) {
+            fmu->fmi3.uint16Types = malloc(fmu->fmi3.numberOfUInt16Types*sizeof(fmi3UInt16Type));
+        }
+        if(fmu->fmi3.numberOfUInt8Types > 0) {
+            fmu->fmi3.uint8Types = malloc(fmu->fmi3.numberOfUInt8Types*sizeof(fmi3UInt8Type));
+        }
+        if(fmu->fmi3.numberOfBooleanTypes > 0) {
+            fmu->fmi3.booleanTypes = malloc(fmu->fmi3.numberOfBooleanTypes*sizeof(fmi3BooleanType));
+        }
+        if(fmu->fmi3.numberOfStringTypes > 0) {
+            fmu->fmi3.stringTypes = malloc(fmu->fmi3.numberOfStringTypes*sizeof(fmi3StringType));
+        }
+        if(fmu->fmi3.numberOfBinaryTypes > 0) {
+            fmu->fmi3.binaryTypes = malloc(fmu->fmi3.numberOfBinaryTypes*sizeof(fmi3BinaryType));
+        }
+        if(fmu->fmi3.numberOfEnumerationTypes > 0) {
+            fmu->fmi3.enumTypes = malloc(fmu->fmi3.numberOfEnumerationTypes*sizeof(fmi3EnumerationType));
+        }
+        if(fmu->fmi3.numberOfClockTypes > 0) {
+            fmu->fmi3.clockTypes = malloc(fmu->fmi3.numberOfClockTypes*sizeof(fmi3ClockType));
+        }
 
         //Read all elements
         int iFloat64 = 0;
@@ -941,7 +975,9 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 }
 
                 //Allocate memory for enumeration items
-                fmu->fmi3.enumTypes[iEnum].items = malloc(fmu->fmi3.enumTypes[iEnum].numberOfItems*sizeof(fmi3EnumerationItem));
+                if(fmu->fmi3.enumTypes[iEnum].numberOfItems > 0) {
+                    fmu->fmi3.enumTypes[iEnum].items = malloc(fmu->fmi3.enumTypes[iEnum].numberOfItems*sizeof(fmi3EnumerationItem));
+                }
 
                 //Read data for enumeration items
                 int iItem = 0;
@@ -1018,7 +1054,9 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         }
 
         //Allocate memory for log categories
-        fmu->fmi3.logCategories = malloc(fmu->fmi3.numberOfLogCategories*sizeof(fmi3LogCategory));
+        if(fmu->fmi3.numberOfLogCategories > 0) {
+            fmu->fmi3.logCategories = malloc(fmu->fmi3.numberOfLogCategories*sizeof(fmi3LogCategory));
+        }
 
         //Read log categories
         int i=0;
@@ -1053,7 +1091,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             parseStringAttributeEzXml(varElement, "description", &var.description);
             parseBooleanAttributeEzXml(varElement, "canHandleMultipleSetPerTimeInstant", &var.canHandleMultipleSetPerTimeInstant);
             parseBooleanAttributeEzXml(varElement, "intermediateUpdate", &var.intermediateUpdate);
-            parseInt32AttributeEzXml(varElement, "previous", &var.previous);
+            parseUInt32AttributeEzXml(varElement, "previous", &var.previous);
             parseStringAttributeEzXml(varElement, "declaredType", &var.declaredType);
             const char* clocks = "";
             parseStringAttributeEzXml(varElement, "clocks", &clocks);
@@ -1071,7 +1109,9 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
 
             //Allocate memory for clocks
-            var.clocks = malloc(var.numberOfClocks*sizeof(int));
+            if(var.numberOfClocks > 0) {
+                var.clocks = malloc(var.numberOfClocks*sizeof(int));
+            }
 
             //Read clocks
             const char* delim = " ";
@@ -1273,7 +1313,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 parseBooleanAttributeEzXml(varElement, "relativeQuantity", &var.relativeQuantity);
                 parseBooleanAttributeEzXml(varElement, "unbounded", &var.unbounded);
                 parseFloat64AttributeEzXml(varElement,  "nominal", &var.nominal);
-                parseInt32AttributeEzXml(varElement, "derivative", &var.derivative);
+                parseUInt32AttributeEzXml(varElement, "derivative", &var.derivative);
                 parseBooleanAttributeEzXml(varElement, "reinit", &var.reInit);
             }
 
@@ -1357,7 +1397,9 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         }
 
         //Allocate memory for each element type
-        fmu->fmi3.outputs = malloc(fmu->fmi3.numberOfOutputs*sizeof(fmi3ModelStructureElement));
+        if(fmu->fmi3.numberOfOutputs > 0) {
+            fmu->fmi3.outputs = malloc(fmu->fmi3.numberOfOutputs*sizeof(fmi3ModelStructureElement));
+        }
         fmu->fmi3.continuousStateDerivatives = malloc(fmu->fmi3.numberOfContinuousStateDerivatives*sizeof(fmi3ModelStructureElement));
         fmu->fmi3.clockedStates = malloc(fmu->fmi3.numberOfClockedStates*sizeof(fmi3ModelStructureElement));
         fmu->fmi3.initialUnknowns = malloc(fmu->fmi3.numberOfInitialUnknowns*sizeof(fmi3ModelStructureElement));
@@ -1809,8 +1851,8 @@ bool fmi3InstantiateCoSimulation(fmiHandle *fmu,
                              const fmi3ValueReference       requiredIntermediateVariables[],
                              size_t                         nRequiredIntermediateVariables,
                              fmi3InstanceEnvironment        instanceEnvironment,
-                             fmi3CallbackLogMessage         logMessage,
-                             fmi3CallbackIntermediateUpdate intermediateUpdate)
+                             fmi3LogMessageCallback         logMessage,
+                             fmi3IntermediateUpdateCallback intermediateUpdate)
 {
 
     fmu->fmi3.fmi3Instance = fmu->fmi3.instantiateCoSimulation(fmu->instanceName,
@@ -1833,7 +1875,7 @@ bool fmi3InstantiateModelExchange(fmiHandle *fmu,
                                   fmi3Boolean               visible,
                                   fmi3Boolean                loggingOn,
                                   fmi3InstanceEnvironment    instanceEnvironment,
-                                  fmi3CallbackLogMessage     logMessage)
+                                  fmi3LogMessageCallback     logMessage)
 {
     fmu->fmi3.fmi3Instance = fmu->fmi3.instantiateModelExchange(fmu->instanceName,
                                                            fmu->fmi3.instantiationToken,
@@ -2274,9 +2316,9 @@ fmi3ValueReference fmi3GetVariableValueReference(fmi3VariableHandle *var)
     return var->valueReference;
 }
 
-fmi3Status fmi3EnterEventMode(fmiHandle *fmu, fmi3Boolean stepEvent, fmi3Boolean stateEvent, const fmi3Int32 rootsFound[], size_t nEventIndicators, fmi3Boolean timeEvent)
+fmi3Status fmi3EnterEventMode(fmiHandle *fmu)
 {
-    return fmu->fmi3.enterEventMode(fmu->fmi3.fmi3Instance, stepEvent, stateEvent, rootsFound, nEventIndicators, timeEvent);
+    return fmu->fmi3.enterEventMode(fmu->fmi3.fmi3Instance);
 }
 
 fmi3Status fmi3Reset(fmiHandle *fmu)
@@ -2436,10 +2478,10 @@ fmi3Status fmi3SetBinary(fmiHandle *fmu, const fmi3ValueReference valueReference
     return fmu->fmi3.setBinary(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, valueSizes, values, nValues);
 }
 
-fmi3Status fmi3SetClock(fmiHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Clock values[], size_t nValues)
+fmi3Status fmi3SetClock(fmiHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Clock values[])
 {
 
-    return fmu->fmi3.setClock(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return fmu->fmi3.setClock(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values);
 }
 
 fmi3Status fmi3GetNumberOfVariableDependencies(fmiHandle *fmu, fmi3ValueReference valueReference, size_t *nDependencies)
@@ -3599,6 +3641,8 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
     fmu->fmi3.getShiftFraction = placeholder_fmi3GetShiftFraction;
     fmu->fmi3.setIntervalDecimal = placeholder_fmi3SetIntervalDecimal;
     fmu->fmi3.setIntervalFraction = placeholder_fmi3SetIntervalFraction;
+    fmu->fmi3.setShiftDecimal = placeholder_fmi3SetShiftDecimal;
+    fmu->fmi3.setShiftFraction = placeholder_fmi3SetShiftFraction;
     fmu->fmi3.evaluateDiscreteStates = placeholder_fmi3EvaluateDiscreteStates;
     fmu->fmi3.updateDiscreteStates = placeholder_fmi3UpdateDiscreteStates;
     fmu->fmi3.enterContinuousTimeMode = placeholder_fmi3EnterContinuousTimeMode;

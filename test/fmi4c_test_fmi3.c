@@ -2,25 +2,22 @@
 #include "fmi4c_test.h"
 #include "fmi4c_test_fmi3.h"
 
-void  loggerFmi3(fmi3InstanceEnvironment instanceEnvironment,
-                 fmi3String instanceName,
+void loggerFmi3(fmi3InstanceEnvironment instanceEnvironment,
                  fmi3Status status,
                  fmi3String category,
                  fmi3String message)
 {
     UNUSED(instanceEnvironment)
-            UNUSED(instanceName)
-            UNUSED(status)
-            UNUSED(category)
+    UNUSED(status)
+    UNUSED(category)
 
-            printf("%s\n",message);
+    printf("%s\n",message);
 }
 
 
 void intermediateUpdate(
         fmi3InstanceEnvironment instanceEnvironment,
         fmi3Float64  intermediateUpdateTime,
-        fmi3Boolean  clocksTicked,
         fmi3Boolean  intermediateVariableSetRequested,
         fmi3Boolean  intermediateVariableGetAllowed,
         fmi3Boolean  intermediateStepFinished,
@@ -28,7 +25,6 @@ void intermediateUpdate(
         fmi3Boolean* earlyReturnRequested,
         fmi3Float64* earlyReturnTime)
 {
-    UNUSED(clocksTicked);
     UNUSED(intermediateVariableSetRequested);
     UNUSED(canReturnEarly);
     UNUSED(earlyReturnRequested);
@@ -202,10 +198,18 @@ int testFMI3ME(fmiHandle *fmu) {
     fmi3Boolean timeEvent;
     fmi3Boolean stateEvent;
     fmi3Boolean stepEvent;
-    fmi3Int32* rootsFound;
+    fmi3Int64* rootsFound;
 
     status = fmi3GetNumberOfContinuousStates(fmu, &nStates);
+    if(status != fmi3OK) {
+        printf("  fmi3GetNumberOfContinuousStates() failed\n");
+        exit(1);
+    }
     status = fmi3GetNumberOfEventIndicators(fmu, &nEventIndicators);
+    if(status != fmi3OK) {
+        printf("  fmi3GetNumberOfEventIndicators() failed\n");
+        exit(1);
+    }
 
     states = malloc(nStates*sizeof(fmi3Float64));
     derivatives = malloc(nStates*sizeof(fmi3Float64));
@@ -234,8 +238,20 @@ int testFMI3ME(fmiHandle *fmu) {
     fmi3EnterContinuousTimeMode(fmu);
 
     status = fmi3GetContinuousStates(fmu, states, nStates);
+    if(status != fmi3OK) {
+        printf("  fmi3GetContinuousStates() failed\n");
+        exit(1);
+    }
     status = fmi3GetNominalsOfContinuousStates(fmu, nominalStates, nStates);
+    if(status != fmi3OK) {
+        printf("  fmi3GetNominalsOfContinuousStates() failed\n");
+        exit(1);
+    }
     status = fmi3GetEventIndicators(fmu, eventIndicators, nEventIndicators);
+    if(status != fmi3OK) {
+        printf("  fmi3GetEventIndicators() failed\n");
+        exit(1);
+    }
 
     outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
@@ -255,7 +271,7 @@ int testFMI3ME(fmiHandle *fmu) {
         timeEvent = nextEventTimeDefined && time >= nextEventTime;
 
         if (fmi3GetHasEventMode(fmu) && (timeEvent || stateEvent || stepEvent)) {
-            fmi3EnterEventMode(fmu, stepEvent, stateEvent, rootsFound, nEventIndicators, timeEvent);
+            fmi3EnterEventMode(fmu);
 
             nominalsOfContinuousStatesChanged = fmi3False;
             valuesOfContinuousStatesChanged   = fmi3False;

@@ -34,6 +34,7 @@ fmi2Status  fmi2SetDebugLogging(fmi2Component c, fmi2Boolean loggingOn, size_t n
     UNUSED(categories);
     fmuContext *fmu = (fmuContext*)c;
     fmu->loggingOn = loggingOn;
+    return fmi2OK;
 }
 
 /* Creation and destruction of FMU instances and setting debug status */
@@ -136,6 +137,72 @@ fmi2Status fmi2SetReal(fmi2Component c, const fmi2ValueReference vr[], size_t nv
     return status;
 }
 
+fmi2Status fmi2GetInteger(fmi2Component c,
+                          const fmi2ValueReference vr[],
+                          size_t nvr,
+                          fmi2Integer value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2GetBoolean(fmi2Component c,
+                          const fmi2ValueReference vr[],
+                          size_t nvr,
+                          fmi2Boolean value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2GetString(fmi2Component c,
+                         const fmi2ValueReference vr[],
+                         size_t nvr,
+                         fmi2String value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2SetInteger(fmi2Component c,
+                          const fmi2ValueReference vr[],
+                          size_t nvr,
+                          const fmi2Integer value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2SetBoolean(fmi2Component c,
+                          const fmi2ValueReference vr[],
+                          size_t nvr,
+                          const fmi2Boolean value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2SetString(fmi2Component c,
+                         const fmi2ValueReference vr[],
+                         size_t nvr,
+                         const fmi2String value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
 //Model exchange
 fmi2Status fmi2EnterEventMode(fmi2Component c)
 {
@@ -152,6 +219,7 @@ fmi2Status fmi2NewDiscreteStates(fmi2Component c, fmi2EventInfo* eventInfo)
     eventInfo->nominalsOfContinuousStatesChanged = fmi2False;
     eventInfo->terminateSimulation = fmi2False;
     eventInfo->valuesOfContinuousStatesChanged = fmi2False;
+    return fmi2OK;
 }
 
 fmi2Status fmi2EnterContinuousTimeMode(fmi2Component c)
@@ -167,8 +235,8 @@ fmi2Status fmi2CompletedIntegratorStep(fmi2Component c,
 {
     UNUSED(c);
     UNUSED(noSetFMUStatePriorToCurrentPoint);
-    enterEventMode = fmi2False;
-    terminateSimulation = fmi2False;
+    *enterEventMode = fmi2False;
+    *terminateSimulation = fmi2False;
     return fmi2OK;
 }
 
@@ -237,4 +305,141 @@ fmi2Status fmi2DoStep(fmi2Component c, fmi2Real currentCommunicationPoint, fmi2R
     fmu->dxold = fmu->dx;
 
     return fmi2OK;
+}
+
+fmi2Status fmi2GetFMUstate(fmi2Component c,
+                           fmi2FMUstate* FMUstate) {
+    UNUSED(c);
+    UNUSED(FMUstate);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2SetFMUstate(fmi2Component c,
+                           fmi2FMUstate FMUstate) {
+    UNUSED(c);
+    UNUSED(FMUstate);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2FreeFMUstate(fmi2Component c,
+                            fmi2FMUstate* FMUstate) {
+    UNUSED(c);
+    UNUSED(FMUstate);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2SerializedFMUstateSize(fmi2Component c,
+                                      fmi2FMUstate FMUstate,
+                                      size_t* size) {
+    UNUSED(c);
+    UNUSED(FMUstate);
+    UNUSED(size);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2SerializeFMUstate(fmi2Component c,
+                                 fmi2FMUstate FMUstate,
+                                 fmi2Byte serializedState[],
+                                 size_t size) {
+    UNUSED(c);
+    UNUSED(FMUstate);
+    UNUSED(serializedState);
+    UNUSED(size);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2DeSerializeFMUstate(fmi2Component c,
+                                   const fmi2Byte serializedState[],
+                                   size_t size,
+                                   fmi2FMUstate* FMUstate) {
+    UNUSED(c);
+    UNUSED(serializedState);
+    UNUSED(size);
+    UNUSED(FMUstate);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2GetDirectionalDerivative(fmi2Component c,
+                                        const fmi2ValueReference vUnknownRef[],
+                                        size_t nUnknown,
+                                        const fmi2ValueReference vKnownRef[],
+                                        size_t nKnown,
+                                        const fmi2Real dvKnown[],
+                                        fmi2Real dvUnknown[]) {
+    UNUSED(c);
+    UNUSED(vUnknownRef);
+    UNUSED(nUnknown);
+    UNUSED(vKnownRef);
+    UNUSED(nKnown);
+    UNUSED(dvKnown);
+    UNUSED(dvUnknown);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2SetRealInputDerivatives(fmi2Component c,
+                                       const fmi2ValueReference vr[],
+                                       size_t nvr,
+                                       const fmi2Integer order[],
+                                       const fmi2Real value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(order);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2GetRealOutputDerivatives(fmi2Component c,
+                                        const fmi2ValueReference vr[],
+                                        size_t nvr,
+                                        const fmi2Integer order[],
+                                        fmi2Real value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(order);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2CancelStep(fmi2Component c) {
+    UNUSED(c);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2GetStatus(fmi2Component c, const fmi2StatusKind s, fmi2Status* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2GetRealStatus(fmi2Component c, const fmi2StatusKind s, fmi2Real* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2GetIntegerStatus(fmi2Component c, const fmi2StatusKind s, fmi2Integer* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2GetBooleanStatus(fmi2Component c, const fmi2StatusKind s, fmi2Boolean* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmi2Warning;
+}
+
+fmi2Status fmi2GetStringStatus(fmi2Component c,
+                               const fmi2StatusKind s,
+                               fmi2String* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmi2Warning;
 }

@@ -234,7 +234,6 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
             output->dependencies = malloc(output->numberOfDependencies*sizeof(fmi3ValueReference));
 
             //Read dependency kinds
-            const char* delim = " ";
             for(int j=0; j<output->numberOfDependencies; ++j) {
                 const char* kind;
                 if(j == 0) {

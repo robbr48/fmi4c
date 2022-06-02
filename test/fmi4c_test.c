@@ -4,6 +4,10 @@
 #include <string.h>
 #include <math.h>
 
+//#ifndef _WIN32
+//#include <unistd.h>
+//#endif
+
 #include "fmi4c.h"
 #include "fmi4c_test.h"
 #include "fmi4c_test_fmi1.h"
@@ -21,7 +25,7 @@ static double stepSize = 0.001;
 static double stopTime = 1;
 static double tolerance = 0;
 
-const char* outputCsvPath = "\0";
+const char* outputCsvPath = "";
 size_t nInterpolators = 0;
 namedData interpolationData[20];
 size_t dataSize = 0;
@@ -49,7 +53,7 @@ int main(int argc, char *argv[])
     bool testTLM = false;
     int i=1;
     int nFlags = 0;
-    const char* inputCsvPath = "\0";
+    const char* inputCsvPath = "";
     while(argv[i]) {
         if(!strcmp(argv[i],"--me")) {
             printf("Forcing model exchange mode.\n");
@@ -59,6 +63,7 @@ int main(int argc, char *argv[])
         else if(!strcmp(argv[i],"--tlm")) {
             printf("Running TLM test with intermediate update.\n");
             testTLM = true;
+            ++nFlags;
         }
         ++i;
     }
@@ -96,7 +101,7 @@ int main(int argc, char *argv[])
     if(testTLM) {
         printf("  FMU path (2): %s\n", fmuPath2);
     }
-    if(inputCsvPath != "\0") {
+    if(strcmp(inputCsvPath, "") != 0) {
         printf("  Input CSV path:  %s\n", inputCsvPath);
     }
     printf("  Output CSV path: %s\n", outputCsvPath);
@@ -131,21 +136,21 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    char *cwd = (char*)malloc(sizeof(char)*FILENAME_MAX);
-#ifdef _WIN32
-    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#else
-    getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#endif
+//    char *cwd = (char*)malloc(sizeof(char)*FILENAME_MAX);
+//#ifdef _WIN32
+//    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+//#else
+//    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+//#endif
 
-    if(strcmp(inputCsvPath, "\0")) {
+    if(strcmp(inputCsvPath, "") != 0) {
         FILE *inputFile = fopen(inputCsvPath, "r");
         char lineStr[1024];
         size_t lineNumber = 0;
         while(fgets(lineStr , sizeof(lineStr) , inputFile) != NULL) {
             lineStr[strcspn(lineStr, "\r\n")] = 0;
             char* word = strtok(lineStr, ",");
-            int i=0;
+            int j=0;
             while(word != NULL && strcmp(word, "")) {
                 if(lineNumber == 0) {
                     namedData data;
@@ -154,11 +159,11 @@ int main(int argc, char *argv[])
                     ++nInterpolators;
                 }
                 else {
-                    interpolationData[i].data[lineNumber-1] = atof(word);
+                    interpolationData[j].data[lineNumber-1] = atof(word);
                 }
                 word = strtok(NULL, ",");
 
-                ++i;
+                ++j;
             }
             lineNumber++;
         }
