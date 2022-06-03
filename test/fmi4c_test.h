@@ -2,8 +2,7 @@
 #define FMIC_TEST_H
 
 #include "fmi4c.h"
-
-#define UNUSED(x) (void)(x);
+#include "fmi4c_common.h"
 
 #define VAR_MAX 1024
 

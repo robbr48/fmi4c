@@ -2,13 +2,12 @@
 
 #include "fmiFunctions.h"
 #include "fmiPlatformTypes.h"
+#include "fmi4c_common.h"
 #include <stdbool.h>
 #include <stdio.h>
 
 #define VR_DX 1
 #define VR_X 2
-#define UNUSED(x)(void)(x)
-//
 
 typedef struct {
     fmiString instanceName;
@@ -33,6 +32,7 @@ DllExport const char* fmiGetVersion() {
 DllExport fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn) {
     fmuContext *fmu =(fmuContext*)c;
     fmu->loggingOn = loggingOn;
+    return fmiOK;
 }
 
 /* Data Exchange Functions*/
@@ -73,6 +73,54 @@ DllExport fmiStatus fmiSetReal(fmiComponent c, const fmiValueReference vr[], siz
     }
 
     return status;
+}
+
+DllExport fmiStatus fmiGetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiInteger value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiSetInteger(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiInteger value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiGetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiBoolean value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiSetBoolean(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiBoolean value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiGetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, fmiString value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiSetString(fmiComponent c, const fmiValueReference vr[], size_t nvr, const fmiString value[]) {
+    UNUSED(c);
+    UNUSED(vr);
+    UNUSED(nvr);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
 }
 
 DllExport fmiComponent fmiInstantiateSlave(fmiString  instanceName,
@@ -135,13 +183,17 @@ DllExport fmiStatus fmiSetRealInputDerivatives(fmiComponent c,
                                                const  fmiValueReference vr[],
                                                size_t nvr,
                                                const  fmiInteger order[],
-                                               const  fmiReal value[]);
+                                               const  fmiReal value[]) {
+    return fmiError;
+}
 
 DllExport fmiStatus fmiGetRealOutputDerivatives(fmiComponent c,
                                                 const   fmiValueReference vr[],
                                                 size_t  nvr,
                                                 const   fmiInteger order[],
-                                                fmiReal value[]);
+                                                fmiReal value[]) {
+    return fmiError;
+}
 
 DllExport fmiStatus fmiDoStep(fmiComponent c,
                                   fmiReal      currentCommunicationPoint,
@@ -160,3 +212,42 @@ DllExport fmiStatus fmiDoStep(fmiComponent c,
     return fmiOK;
 }
 
+DllExport fmiStatus fmiCancelStep(fmiComponent c) {
+    UNUSED(c);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiGetStatus(fmiComponent c, const fmiStatusKind s, fmiStatus* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiGetRealStatus(fmiComponent c, const fmiStatusKind s, fmiReal* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiGetIntegerStatus(fmiComponent c, const fmiStatusKind s, fmiInteger* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiGetBooleanStatus(fmiComponent c, const fmiStatusKind s, fmiBoolean* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
+
+DllExport fmiStatus fmiGetStringStatus(fmiComponent c, const fmiStatusKind s, fmiString* value) {
+    UNUSED(c);
+    UNUSED(s);
+    UNUSED(value);
+    return fmiWarning;  //This function should not be called
+}
