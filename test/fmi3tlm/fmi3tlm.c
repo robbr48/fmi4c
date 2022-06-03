@@ -1,6 +1,7 @@
 #define MODEL_IDENTIFIER fmi3tlm
 
 #include "fmi3Functions.h"
+#include "fmi4c_common.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
@@ -17,7 +18,6 @@
 #define VR_V 0
 #define VR_F 1
 #define VR_FD 2
-#define UNUSED(x)(void)(x)
 
 #define Ith(v,i)    NV_Ith_S(v,i-1)       /* Ith numbers components 1..NEQ */
 #define IJth(A,i,j) DENSE_ELEM(A,i-1,j-1) /* IJth numbers rows,cols 1..NEQ */

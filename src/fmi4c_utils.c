@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fmi4c_utils.h"
+#include "fmi4c_common.h"
 
 
 //! @brief Concatenates model name and function name into "modelName_functionName" (for FMI 1)

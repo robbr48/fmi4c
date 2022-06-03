@@ -3,6 +3,7 @@
 #include "fmi4c.h"
 #include "fmi4c_placeholders.h"
 #include "fmi4c_utils.h"
+#include "fmi4c_common.h"
 
 #include "minizip/miniunz.h"
 #include "ezxml/ezxml.h"

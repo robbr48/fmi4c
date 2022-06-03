@@ -1,6 +1,7 @@
 #ifndef FMI4C_PLACEHOLDERS_H
 #define FMI4C_PLACEHOLDERS_H
 
+#include "fmi4c_common.h"
 #include "fmi4c_types_fmi1.h"
 #include "fmi4c_types_fmi2.h"
 #include "fmi4c_types_fmi3.h"
@@ -16,7 +17,6 @@ fmi1Status placeholder(fmi1Component_t component, fmi1Boolean x) {
     return fmi1Error;
 }
 
-#define UNUSED(x) (void)(x);
 #define NOT_IMPLEMENTED(FUNCNAME) printf("Function \"%s\" is not provided by this FMU.\n",#FUNCNAME);
 
 const char* placeholder_fmiGetVersion() {

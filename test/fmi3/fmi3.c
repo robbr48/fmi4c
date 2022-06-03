@@ -1,12 +1,12 @@
 #define MODEL_IDENTIFIER fmi2
 
 #include "fmi3Functions.h"
+#include "fmi4c_common.h"
 #include <stdbool.h>
 #include <stdio.h>
 
 #define VR_DX 1
 #define VR_X 2
-#define UNUSED(x)(void)(x)
 
 typedef struct {
     fmi3String instanceName;

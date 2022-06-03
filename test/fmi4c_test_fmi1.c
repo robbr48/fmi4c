@@ -12,11 +12,11 @@ void loggerFmi1(fmi1Component_t component,
                 ...)
 {
     UNUSED(component)
-            UNUSED(instanceName)
-            UNUSED(status)
-            UNUSED(category)
+    UNUSED(instanceName)
+    UNUSED(status)
+    UNUSED(category)
 
-            va_list args;
+    va_list args;
     va_start(args, message);
     printf(message, args);
     va_end(args);

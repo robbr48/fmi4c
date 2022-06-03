@@ -39,6 +39,7 @@ set(SRCFILES
     src/fmi4c_placeholders.h
     include/fmi4c.h
     include/fmi4c_public.h
+    include/fmi4c_common.h
     include/fmi4c_types.h
     include/fmi4c_types_fmi1.h
     include/fmi4c_types_fmi2.h

@@ -12,9 +12,9 @@ void loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
                 ...)
 {
     UNUSED(componentEnvironment)
-            UNUSED(instanceName)
-            UNUSED(status)
-            UNUSED(category)
+    UNUSED(instanceName)
+    UNUSED(status)
+    UNUSED(category)
 
             va_list args;
     va_start(args, message);
