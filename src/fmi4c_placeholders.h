@@ -16,10 +16,6 @@ fmi1Status placeholder(fmi1Component_t component, fmi1Boolean x) {
     return fmi1Error;
 }
 
-#define PLACEHOLDER(NAME) int (placeholder_ ## NAME)(fmiHandle fmu, ...) {\
-    fmi4cErrorMessage = strdup("Function \"" #NAME "\" is not available in this FMU."); \
-}
-
 #define UNUSED(x) (void)(x);
 #define NOT_IMPLEMENTED(FUNCNAME) printf("Function \"%s\" is not provided by this FMU.\n",#FUNCNAME);
 
