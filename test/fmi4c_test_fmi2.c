@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <string.h>
 
 #include "fmi4c.h"
 #include "fmi4c_test.h"
@@ -80,7 +81,7 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     }
     printf("  FMU successfully initialized.\n");
 
-    double actualStepSize = stepSize;
+    double actualStepSize;
     fmi2Boolean terminateSimulation = fmi2False;
     fmi2Boolean callEventUpdate = fmi2False;
     fmi2EventInfo eventInfo;
@@ -332,7 +333,8 @@ int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     }
     fprintf(outputFile,"\n");
 
-    for(double time=startTime; time <= stopTime; time+=stepSize) {
+    double time=startTime;
+    while(time <= stopTime) {
 
         //Interpolate inputs from CSV file
         for(int i=1; i<nInterpolators; ++i) {
@@ -361,6 +363,8 @@ int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             fprintf(outputFile,",%f",value);
         }
         fprintf(outputFile,"\n");
+
+        time+=stepSize;
     }
     fclose(outputFile);
     printf("  Simulation finished.\n");
@@ -378,8 +382,6 @@ int testFMI2(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, dou
     for(size_t i=0; i<fmi2_getNumberOfVariables(fmu); ++i)
     {
         fmi2VariableHandle* var = fmi2_getVariableByIndex(fmu, i);
-        const char* name = fmi2_getVariableName(var);
-        fmi2DataType type = fmi2_getVariableDataType(var);
         fmi2Causality causality = fmi2_getVariableCausality(var);
         unsigned int vr = fmi2_getVariableValueReference(var);
 
