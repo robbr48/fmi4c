@@ -230,9 +230,11 @@ endif()
 # Example binaries
 #============================================================================
 
-add_executable(example test/example.c)
-target_link_libraries(example zlib)
-add_test(example example)
+if(NOT MSVC)
+    add_executable(example test/example.c)
+    target_link_libraries(example zlib)
+    add_test(example example)
+endif()
 
 add_executable(minigzip test/minigzip.c)
 target_link_libraries(minigzip zlib)

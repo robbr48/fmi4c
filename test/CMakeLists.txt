@@ -39,7 +39,7 @@ endif()
 
 add_library(fmi1cs SHARED fmi1cs/fmi1cs.c)
 set_target_properties(fmi1cs PROPERTIES PREFIX "")
-target_include_directories(fmi1cs PRIVATE ${3rdparty}/fmi)
+target_include_directories(fmi1cs PRIVATE ../include/ ${3rdparty}/fmi)
 add_custom_command(TARGET fmi1cs POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/fmi1cs/binaries/${binfolder})
 add_custom_command(TARGET fmi1cs POST_BUILD
@@ -52,7 +52,7 @@ add_test(NAME fmi1cs COMMAND $<TARGET_FILE_NAME:fmi4ctest> fmi1cs.fmu fmi1cs.out
 # Test FMU (FMI 1.0 for model exchange)
 add_library(fmi1me SHARED fmi1me/fmi1me.c)
 set_target_properties(fmi1me PROPERTIES PREFIX "")
-target_include_directories(fmi1me PRIVATE ${3rdparty}/fmi)
+target_include_directories(fmi1me PRIVATE ../include/ ${3rdparty}/fmi)
 add_custom_command(TARGET fmi1me POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/fmi1me/binaries/${binfolder})
 add_custom_command(TARGET fmi1me POST_BUILD
@@ -65,7 +65,7 @@ add_test(NAME fmi1me COMMAND $<TARGET_FILE_NAME:fmi4ctest> fmi1me.fmu fmi1me.out
 # Test FMU (FMI 2.0 for co-simulation and model exchange)
 add_library(fmi2 SHARED fmi2/fmi2.c)
 set_target_properties(fmi2 PROPERTIES PREFIX "")
-target_include_directories(fmi2 PRIVATE ${3rdparty}/fmi)
+target_include_directories(fmi2 PRIVATE ../include/ ${3rdparty}/fmi)
 add_custom_command(TARGET fmi2 POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/fmi2/binaries/${binfolder})
 add_custom_command(TARGET fmi2 POST_BUILD
@@ -84,7 +84,7 @@ endif()
 
 add_library(fmi3 SHARED fmi3/fmi3.c)
 set_target_properties(fmi3 PROPERTIES PREFIX "")
-target_include_directories(fmi3 PRIVATE ${3rdparty}/fmi)
+target_include_directories(fmi3 PRIVATE ../include/ ${3rdparty}/fmi)
 add_custom_command(TARGET fmi3 POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/fmi3/binaries/${binfolder})
 add_custom_command(TARGET fmi3 POST_BUILD
@@ -110,7 +110,7 @@ add_library(fmi3tlm SHARED fmi3tlm/fmi3tlm.c
                            ${sundials}/src/sundials/sundials_timer.c
                            ${sundials}/src/cvode/cvode_io.c)
 set_target_properties(fmi3tlm PROPERTIES PREFIX "")
-target_include_directories(fmi3tlm PRIVATE ${3rdparty}/fmi)
+target_include_directories(fmi3tlm PRIVATE ../include/ ${3rdparty}/fmi)
 target_include_directories(fmi3tlm PRIVATE ${sundials}/include)
 target_link_libraries(fmi3tlm ${libmath})
 add_custom_command(TARGET fmi3tlm POST_BUILD
@@ -120,4 +120,6 @@ add_custom_command(TARGET fmi3tlm POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/fmi3tlm/modelDescription.xml ${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm"
   COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm.fmu" --format=zip .)
-add_test(NAME fmi3tlm COMMAND $<TARGET_FILE_NAME:fmi4ctest> fmi3tlm.fmu fmi3tlm.out)
+if(NOT MSVC)
+  add_test(NAME fmi3tlm COMMAND $<TARGET_FILE_NAME:fmi4ctest> --tlm fmi3tlm.fmu fmi3tlm.fmu fmi3tlm.out)
+endif()

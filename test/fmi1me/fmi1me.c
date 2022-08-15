@@ -1,13 +1,12 @@
 #define MODEL_IDENTIFIER fmi1me
 
 #include "fmiModelFunctions.h"
+#include "fmi4c_common.h"
 #include <stdbool.h>
 #include <stdio.h>
 
 #define VR_DX 1
 #define VR_X 2
-#define UNUSED(x)(void)(x)
-//
 
 typedef struct {
     fmiString instanceName;
@@ -32,6 +31,7 @@ DllExport const char* fmiGetVersion() {
 DllExport fmiStatus fmiSetDebugLogging(fmiComponent c, fmiBoolean loggingOn) {
     fmuContext *fmu =(fmuContext*)c;
     fmu->loggingOn = loggingOn;
+    return fmiOK;
 }
 
 /* Data Exchange Functions*/

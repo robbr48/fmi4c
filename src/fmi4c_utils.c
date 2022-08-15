@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fmi4c_utils.h"
+#include "fmi4c_common.h"
 
 
 //! @brief Concatenates model name and function name into "modelName_functionName" (for FMI 1)
@@ -26,7 +27,7 @@ const char* getFunctionName(const char* modelName, const char* functionName) {
 bool parseStringAttributeEzXml(ezxml_t element, const char *attributeName, const char **target)
 {
     if(ezxml_attr(element, attributeName)) {
-        (*target) = strdup(ezxml_attr(element, attributeName));
+        (*target) = _strdup(ezxml_attr(element, attributeName));
         return true;
     }
     return false;
@@ -192,7 +193,7 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
     output->numberOfDependencies = 0;
     const char* dependencies = NULL;
     if(parseStringAttributeEzXml(*element, "dependencies", &dependencies)) {
-        char* nonConstDependencies = strdup(dependencies);
+        char* nonConstDependencies = _strdup(dependencies);
         free((char*)dependencies);
 
         //Count number of dependencies
@@ -227,14 +228,13 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
         const char* dependencyKinds = NULL;
         parseStringAttributeEzXml(*element, "dependencyKinds", &dependencyKinds);
         if(dependencyKinds) {
-            char* nonConstDependencyKinds = strdup(dependencyKinds);
+            char* nonConstDependencyKinds = _strdup(dependencyKinds);
             free((char*)dependencyKinds);
 
             //Allocate memory for dependencies (assume same number as dependencies, according to FMI3 specification)
             output->dependencies = malloc(output->numberOfDependencies*sizeof(fmi3ValueReference));
 
             //Read dependency kinds
-            const char* delim = " ";
             for(int j=0; j<output->numberOfDependencies; ++j) {
                 const char* kind;
                 if(j == 0) {
@@ -245,7 +245,7 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
                 }
 
                 if(!strcmp(kind, "independent")) {
-                    fmi4cErrorMessage = strdup("Dependency kind = \"independent\" is not allowed for output dependencies.");
+                    fmi4cErrorMessage = _strdup("Dependency kind = \"independent\" is not allowed for output dependencies.");
                     free(nonConstDependencyKinds);
                     free(nonConstDependencies);
                     return false;
@@ -266,7 +266,7 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
                     output->dependencyKinds[j] = fmi3Dependent;
                 }
                 else {
-                    fmi4cErrorMessage = strdup("Unknown dependency kind for output dependency.");
+                    fmi4cErrorMessage = _strdup("Unknown dependency kind for output dependency.");
                     free(nonConstDependencyKinds);
                     free(nonConstDependencies);
                     return false;
