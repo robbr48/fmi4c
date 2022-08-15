@@ -101,7 +101,8 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         fprintf(outputFile,",%s",fmi3_getVariableName(fmi3_getVariableByValueReference(fmu, outputRefs[i])));
     }
     fprintf(outputFile,"\n");
-    for(double time=startTime; time <= stopTime; time+=stepSize) {
+    double time=startTime;
+    while(time <= stopTime) {
 
         //Interpolate inputs from CSV file
         for(int i=1; i<nInterpolators; ++i) {
@@ -128,7 +129,10 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             fprintf(outputFile,",%f",value);
         }
         fprintf(outputFile,"\n");
+
+        time+=stepSize;
     }
+
     fclose(outputFile);
 
     printf("  Simulation finished.\n");
@@ -154,7 +158,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     double startTime = 0;
     double stepSize = 0.001;
     double stopTime = 1;
-    double tolerance;
+    double tolerance = 1e-4;
 
     if(fmi3_defaultStartTimeDefined(fmu)) {
         startTime = fmi3_getDefaultStartTime(fmu);
@@ -198,7 +202,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     fmi3Boolean terminateSimulation = fmi3False;
     size_t nStates;
     fmi3Float64* states;
-    fmi3Float64* nominalStates;
+    fmi3Float64* nominalStates = NULL;
     fmi3Float64* derivatives;
     size_t nEventIndicators;
     fmi3Float64* eventIndicators;
@@ -206,11 +210,11 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     fmi3Boolean discreteStatesNeedUpdate = fmi3False;
     fmi3Boolean nominalsOfContinuousStatesChanged;
     fmi3Boolean valuesOfContinuousStatesChanged;
-    fmi3Boolean nextEventTimeDefined;
+    fmi3Boolean nextEventTimeDefined = fmi3False;
     fmi3Float64 nextEventTime;
     fmi3Boolean timeEvent;
-    fmi3Boolean stateEvent;
-    fmi3Boolean stepEvent;
+    fmi3Boolean stateEvent = fmi3False;
+    fmi3Boolean stepEvent = fmi3False;
     fmi3Int32* rootsFound;
 
     status = fmi3_getNumberOfContinuousStates(fmu, &nStates);
@@ -228,9 +232,10 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     derivatives = malloc(nStates*sizeof(fmi3Float64));
     eventIndicators = malloc(nEventIndicators*sizeof(fmi3Float64));
     eventIndicatorsPrev = malloc(nEventIndicators*sizeof(fmi3Float64));
-    rootsFound = malloc(nEventIndicators*sizeof(fmi3Int64));
+    rootsFound = malloc(nEventIndicators*sizeof(fmi3Int32));
 
     for(int i=0; i<nEventIndicators; ++i) {
+        eventIndicatorsPrev[i] = 0;
         rootsFound[i] = 0;
     }
 
@@ -275,7 +280,8 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
     printf("  Simulating from %f to %f with a step size of %f...\n",startTime, stopTime, stepSize);
 
-    for(double time=startTime; time <= stopTime; time+=stepSize) {
+    double time=startTime;
+    while(time <= stopTime) {
         if(terminateSimulation || terminateSimulation) {
             printf("Terminating simulation at time = %f\n", time);
             break;
@@ -341,6 +347,8 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         fprintf(outputFile,"\n");
 
         fmi3_completedIntegratorStep(fmu, fmi3True, &stepEvent, &terminateSimulation);
+
+        time+=stepSize;
     }
     free(derivatives);
     free(eventIndicatorsPrev);
@@ -365,8 +373,6 @@ int testFMI3(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, dou
     for(size_t i=0; i<fmi3_getNumberOfVariables(fmu); ++i)
     {
         fmi3VariableHandle* var = fmi3_getVariableByIndex(fmu, i);
-        const char* name = fmi3_getVariableName(var);
-        fmi3DataType type = fmi3_getVariableDataType(var);
         fmi3Causality causality = fmi3_getVariableCausality(var);
         unsigned int vr = fmi3_getVariableValueReference(var);
 

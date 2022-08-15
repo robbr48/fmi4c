@@ -808,12 +808,6 @@ bool steadyState(fmuContext *fmu)
         }
     }
     else if(method == 3) {
-
-            double hfac = 1;
-            if(nlog > 1) {
-                hfac = (fmu->tlog[fmu->logend] - fmu->tlog[fmu->logend-2])/fmu->minStepSize;
-            }
-
             double lambda1=0.3;
             double lambda2=0.2;
             double lambda3=0.001;

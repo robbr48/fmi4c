@@ -74,7 +74,7 @@ int testFMI1ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     size_t nEventIndicators;
     fmi1Real* eventIndicators;
     fmi1Real *eventIndicatorsPrev;
-    double actualStepSize = stepSize;
+    double actualStepSize;
     fmi1Boolean callEventUpdate = fmi1False;
     fmi1Boolean intermediateResults = fmi1False;
 
@@ -116,6 +116,8 @@ int testFMI1ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             fmi1VariableHandle *var = fmi1_getVariableByName(fmu, interpolationData[i].name);
             if(var == NULL) {
                 printf("Variable in input file does not exist in FMU: %s\n", interpolationData[i].name);
+                free(derivatives);
+                free(eventIndicatorsPrev);
                 return 1;
             }
             fmi1Real value = interpolate(&interpolationData[0], &interpolationData[i], time, dataSize);
@@ -278,7 +280,8 @@ int testfmi1_cS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, 
     }
     fprintf(outputFile,"\n");
 
-    for(double time=startTime; time <= stopTime; time+=stepSize) {
+    double time = startTime;
+    while(time <= stopTime) {
 
         //Interpolate inputs from CSV file
         for(int i=1; i<nInterpolators; ++i) {
@@ -307,6 +310,8 @@ int testfmi1_cS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, 
             fprintf(outputFile,",%f",value);
         }
         fprintf(outputFile,"\n");
+
+        time+=stepSize;
     }
     fclose(outputFile);
 
@@ -328,10 +333,7 @@ int testFMI1(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, boo
     for(size_t i=0; i<fmi1_getNumberOfVariables(fmu); ++i)
     {
         fmi1VariableHandle* var = fmi1_getVariableByIndex(fmu, i);
-        const char* name = fmi1_getVariableName(var);
-        fmi1DataType type = fmi1_getVariableDataType(var);
         fmi1Causality causality = fmi1_getVariableCausality(var);
-        fmi1Variability variability = fmi1_getVariableVariability(var);
         long vr = fmi1_getVariableValueReference(var);
 
         if(causality == fmi1CausalityOutput)

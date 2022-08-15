@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
     if(testTLM) {
         printf("  FMU path (2): %s\n", fmuPath2);
     }
-    if(strcmp(inputCsvPath, "") != 0) {
+    if(inputCsvPath != NULL && strcmp(inputCsvPath, "") != 0) {
         printf("  Input CSV path:  %s\n", inputCsvPath);
     }
     printf("  Output CSV path: %s\n", outputCsvPath);
@@ -212,14 +212,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    char *cwd = (char*)malloc(sizeof(char)*FILENAME_MAX);
-#ifdef _WIN32
-    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#else
-    getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#endif
-
-    if(strcmp(inputCsvPath, "") != 0) {
+    if(inputCsvPath != NULL && strcmp(inputCsvPath, "") != 0) {
         FILE *inputFile = fopen(inputCsvPath, "r");
         char lineStr[1024];
         size_t lineNumber = 0;

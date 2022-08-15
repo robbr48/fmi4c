@@ -13,9 +13,10 @@ const char* getFunctionName(const char* modelName, const char* functionName) {
         return functionName;    //!< Do not change function name if model name is empty
     }
     char* fullName = (char*)malloc(strlen(modelName)+strlen(functionName)+2);
-    strcpy(fullName, modelName);
-    strcat(fullName, "_");
-    strcat(fullName, functionName);
+    strncpy(fullName, modelName, strlen(modelName)+strlen(functionName)+2);
+    fullName[strlen(modelName)] = '\0';
+    strncat(fullName,  "_", strlen(modelName)+strlen(functionName)+2);
+    strncat(fullName, functionName, strlen(modelName)+strlen(functionName)+2);
     return fullName;
 }
 

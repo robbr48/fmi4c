@@ -66,10 +66,6 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
     fmu->fmi1.defaultStopTimeDefined = false;
     fmu->fmi1.defaultToleranceDefined = false;
 
-    fmu->fmi1.defaultStartTimeDefined = false;
-    fmu->fmi1.defaultStopTimeDefined = false;
-    fmu->fmi1.defaultToleranceDefined = false;
-
     fmu->fmi1.canHandleVariableCommunicationStepSize = false;
     fmu->fmi1.canInterpolateInputs = false;
     fmu->fmi1.canRunAsynchronuously = false;
@@ -151,6 +147,10 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
             fmi1VariableHandle var;
             var.name = NULL;
             var.description = NULL;
+            var.startReal = 0;
+            var.startInteger = 0;
+            var.startBoolean = 0;
+            var.startString = "";
 
             parseStringAttributeEzXml(varElement, "name", &var.name);
             parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
@@ -304,11 +304,6 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
     fmu->fmi2.defaultToleranceDefined = false;
     fmu->fmi2.defaultStepSizeDefined = false;
 
-    fmu->fmi2.defaultStartTimeDefined = false;
-    fmu->fmi2.defaultStopTimeDefined = false;
-    fmu->fmi2.defaultToleranceDefined = false;
-    fmu->fmi2.defaultStepSizeDefined = false;
-
     fmu->fmi2.numberOfContinuousStates = 0;
 
     fmu->fmi2.supportsCoSimulation = false;
@@ -392,6 +387,10 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
             var.name = NULL;
             var.description = NULL;
+            var.quantity = NULL;
+            var.unit = NULL;
+            var.displayUnit = NULL;
+            var.derivative = 0;
 
             parseStringAttributeEzXml(varElement, "name", &var.name);
             parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
@@ -1149,6 +1148,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             var.unit = NULL;
             var.displayUnit = NULL;
             var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
+            var.startBinary = NULL;
 
             parseStringAttributeEzXml(varElement, "name", &var.name);
             parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
@@ -1187,6 +1187,8 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                     var.clocks[i] = atoi(strtok(NULL, delim));
                 }
             }
+
+            free(nonConstClocks);
 
             //Figure out data type
             if(!strcmp(varElement->name, "Float64")) {
@@ -1437,8 +1439,13 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 fmu->fmi3.variables = realloc(fmu->fmi3.variables, fmu->fmi3.variablesSize*sizeof(fmi3VariableHandle));
             }
 
+
+
             fmu->fmi3.variables[fmu->fmi3.numberOfVariables] = var;
             fmu->fmi3.numberOfVariables++;
+            if(var.numberOfClocks > 0) {
+                free(var.clocks);
+            }
         }
     }
 
@@ -1556,19 +1563,19 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
 
     char dllPath[FILENAME_MAX];
     dllPath[0] = '\0';
-    strcat(dllPath, fmu->unzippedLocation);
+    strncat(dllPath, fmu->unzippedLocation, sizeof(dllPath)-strlen(dllPath)-1);
 #if defined(_WIN32 )
-    strcat(dllPath, "\\binaries\\win64\\");
+    strncat(dllPath, "\\binaries\\win64\\", sizeof(dllPath)-strlen(dllPath)-1);
 #elif defined(__CYGWIN__)
-    strcat(dllPath, "/binaries/win64/");
+    strncat(dllPath, "/binaries/win64/", sizeof(dllPath)-strlen(dllPath)-1);
 #else
-    strcat(dllPath,"/binaries/linux64/");
+    strncat(dllPath, "/binaries/linux64/", sizeof(dllPath)-strlen(dllPath)-1);
 #endif
-    strcat(dllPath, fmu->fmi1.modelIdentifier);
+    strncat(dllPath, fmu->fmi1.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
 #if defined(_WIN32) || defined(__CYGWIN__)
-    strcat(dllPath, ".dll");
+    strncat(dllPath, ".dll", sizeof(dllPath)-strlen(dllPath)-1);
 #else
-    strcat(dllPath,".so");
+    strncat(dllPath, ".so", sizeof(dllPath)-strlen(dllPath)-1);
 #endif
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
@@ -1665,26 +1672,26 @@ bool loadFunctionsFmi2(fmiHandle *fmu, fmi2Type fmuType)
 
     char dllPath[FILENAME_MAX];
     dllPath[0] = '\0';
-    strcat(dllPath, fmu->unzippedLocation);
+    strncat(dllPath, fmu->unzippedLocation, sizeof(dllPath)-strlen(dllPath)-1);
 #if defined(_WIN32)
-    strcat(dllPath, "\\binaries\\win64\\");
+    strncat(dllPath, "\\binaries\\win64\\", sizeof(dllPath)-strlen(dllPath)-1);
 #elif defined(__CYGWIN__)
-    strcat(dllPath, "/binaries/win64/");
+    strncat(dllPath, "/binaries/win64/", sizeof(dllPath)-strlen(dllPath)-1);
 #else
-    strcat(dllPath,"/binaries/linux64/");
+    strncat(dllPath, "/binaries/linux64/", sizeof(dllPath)-strlen(dllPath)-1);
 #endif
 
     if(fmuType == fmi2CoSimulation) {
-        strcat(dllPath, fmu->fmi2.cs.modelIdentifier);
+        strncat(dllPath, fmu->fmi2.cs.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
     }
     else {
-        strcat(dllPath, fmu->fmi2.me.modelIdentifier);
+        strncat(dllPath, fmu->fmi2.me.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
     }
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-    strcat(dllPath, ".dll");
+    strncat(dllPath, ".dll", sizeof(dllPath)-strlen(dllPath)-1);
 #else
-    strcat(dllPath,".so");
+    strncat(dllPath, ".so", sizeof(dllPath)-strlen(dllPath)-1);
 #endif
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
@@ -1784,31 +1791,33 @@ bool loadFunctionsFmi3(fmiHandle *fmu, fmi3Type fmuType)
 #else
     getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #endif
-
     char dllPath[FILENAME_MAX];
     dllPath[0] = '\0';
-    strcat(dllPath, fmu->unzippedLocation);
+    strncat(dllPath, fmu->unzippedLocation, sizeof(dllPath)-strlen(dllPath)-1);
 #if defined(_WIN32)
-    strcat(dllPath, "\\binaries\\x86_64-windows\\");
+    strncat(dllPath, "\\binaries\\x86_64-windows\\", sizeof(dllPath)-strlen(dllPath)-1);
 #elif defined(__CYGWIN__)
-    strcat(dllPath, "/binaries/x86_64-windows/");
+    strncat(dllPath, "/binaries/x86_64-windows/", sizeof(dllPath)-strlen(dllPath)-1);
 #else
-    strcat(dllPath,"/binaries/x86_64-linux/");
+    strncat(dllPath, "/binaries/x86_64-linux/", sizeof(dllPath)-strlen(dllPath)-1);
 #endif
+
     if(fmuType == fmi3CoSimulation) {
-        strcat(dllPath, fmu->fmi3.cs.modelIdentifier);
+        strncat(dllPath, fmu->fmi3.cs.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
     }
     else if(fmuType == fmi3ModelExchange) {
-        strcat(dllPath, fmu->fmi3.me.modelIdentifier);
+        strncat(dllPath, fmu->fmi3.me.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
     }
     else {
-        strcat(dllPath, fmu->fmi3.se.modelIdentifier);
+        strncat(dllPath, fmu->fmi3.se.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
     }
+
 #if defined(_WIN32) || defined(__CYGWIN__)
-    strcat(dllPath, ".dll");
+    strncat(dllPath, ".dll", sizeof(dllPath)-strlen(dllPath)-1);
 #else
-    strcat(dllPath,".so");
+    strncat(dllPath, ".so", sizeof(dllPath)-strlen(dllPath)-1);
 #endif
+
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
     if(NULL == dll) {
@@ -3735,7 +3744,7 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 #endif
     fmu->unzippedLocation = _strdup(tempPath);
 
-    strcat(tempPath, "/resources");
+    strncat(tempPath, "/resources", sizeof(tempPath)-strlen(tempPath)-1);
     fmu->resourcesLocation = _strdup(tempPath);
 
     fmu->instanceName = _strdup(instanceName);
@@ -3752,8 +3761,9 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
     if(strcmp(rootElement->name, "fmiModelDescription")) {
         printf("Wrong root tag name: %s\n", rootElement->name);
+        free((char*)fmu->unzippedLocation);
         free(fmu);
-        return false;
+        return NULL;
     }
 
     chdir(cwd);
