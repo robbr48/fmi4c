@@ -10,6 +10,6 @@ void loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
                 fmi2String message,
                 ...);
 
-int testFMI2(fmiHandle *fmu, bool forceModelExchange);
+int testFMI2(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride);
 
 #endif //FMIC_TEST_FMI2_H

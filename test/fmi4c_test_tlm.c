@@ -194,7 +194,7 @@ void* doStepInThread(void* argsptr)
 }
 
 
-int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub)
+int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //TLM coupling parameters
     fmi3Float64 mtlm = 1;       //Distributed inertia [kg]
@@ -203,7 +203,13 @@ int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub)
     //Simulation parameters
     fmi3Float64 tcur = 0;       //Current simulation time
     fmi3Float64 tstop = 2;      //Simulation stop time
+    if(overrideStopTime) {
+        tstop = overrideStopTime;
+    }
     fmi3Float64 tstep = 0.001;  //Simulation time step
+    if(overrideTimeStep) {
+        tstep = timeStepOverride;
+    }
 
     //Model parameters
     fmi3Float64 fd = 100;       //Disturbance force

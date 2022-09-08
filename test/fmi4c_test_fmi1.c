@@ -22,7 +22,7 @@ void loggerFmi1(fmi1Component_t component,
     va_end(args);
 }
 
-int testFMI1ME(fmiHandle *fmu) {
+int testFMI1ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride) {
     //Instantiate FMU
     if(!fmi1InstantiateModel(fmu, loggerFmi1, calloc, free, fmi1True)) {
         printf("  fmi2Instantiate() failed\n");
@@ -32,7 +32,13 @@ int testFMI1ME(fmiHandle *fmu) {
 
     double startTime = 0;
     double stepSize = 0.001;
+    if(overrideTimeStep) {
+        stepSize = timeStepOverride;
+    }
     double stopTime = 1;
+    if(overrideStopTime) {
+        stopTime = stopTimeOverride;
+    }
 
     if(fmi1DefaultStartTimeDefined(fmu)) {
         startTime = fmi1GetDefaultStartTime(fmu);
@@ -215,7 +221,7 @@ int testFMI1ME(fmiHandle *fmu) {
 }
 
 
-int testFMI1CS(fmiHandle *fmu)
+int testFMI1CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Instantiate FMU
     if(!fmi1InstantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, loggerFmi1, calloc, free, NULL, fmi1True)) {
@@ -226,7 +232,13 @@ int testFMI1CS(fmiHandle *fmu)
 
     double startTime = 0;
     double stepSize = 0.001;
+    if(overrideTimeStep) {
+        stepSize = timeStepOverride;
+    }
     double stopTime = 1;
+    if(overrideStopTime) {
+        stopTime = stopTimeOverride;
+    }
 
     if(fmi1DefaultStartTimeDefined(fmu)) {
         startTime = fmi1GetDefaultStartTime(fmu);
@@ -295,7 +307,7 @@ int testFMI1CS(fmiHandle *fmu)
 }
 
 
-int testFMI1(fmiHandle *fmu)
+int testFMI1(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Loop through variables in FMU
     for(size_t i=0; i<fmi1GetNumberOfVariables(fmu); ++i)
@@ -320,9 +332,9 @@ int testFMI1(fmiHandle *fmu)
     }
 
     if(fmi1GetType(fmu) == fmi1ModelExchange) {
-        return testFMI1ME(fmu);
+        return testFMI1ME(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
     else {
-        return testFMI1CS(fmu);
+        return testFMI1CS(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
 }

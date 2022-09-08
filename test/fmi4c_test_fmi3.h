@@ -8,6 +8,6 @@ void loggerFmi3(fmi3InstanceEnvironment instanceEnvironment,
                 fmi3String category,
                 fmi3String message);
 
-int testFMI3(fmiHandle *fmu, bool forceModelExchange);
+int testFMI3(fmiHandle *fmu, bool forceModelExchange,  bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride);
 
 #endif //FMIC_TEST_FMI3_H

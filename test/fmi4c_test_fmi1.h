@@ -10,6 +10,6 @@ void loggerFmi1(fmi1Component_t component,
                 fmi1String message,
                 ...);
 
-int testFMI1(fmiHandle *fmu);
+int testFMI1(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride);
 
 #endif //FMIC_TEST_FMI1_H
