@@ -18,7 +18,7 @@ void loggerFmi1(fmi1Component_t component,
 
     va_list args;
     va_start(args, message);
-    printf(message, args);
+    printf("%s: %s", category, message, args);
     va_end(args);
 }
 
