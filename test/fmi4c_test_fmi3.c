@@ -12,7 +12,7 @@ void loggerFmi3(fmi3InstanceEnvironment instanceEnvironment,
     UNUSED(status)
     UNUSED(category)
 
-    printf("%s\n",message);
+    printf("%s: %s\n",category, message);
 }
 
 

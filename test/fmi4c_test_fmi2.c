@@ -16,9 +16,9 @@ void loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
     UNUSED(status)
     UNUSED(category)
 
-            va_list args;
+    va_list args;
     va_start(args, message);
-    printf("%s: %s\n",message, args);
+    printf("%s: %s\n", category, message, args);
     va_end(args);
 }
 
