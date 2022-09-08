@@ -46,7 +46,7 @@ void intermediateUpdate(
 }
 
 
-int testFMI3CS(fmiHandle *fmu)
+int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     fmi3Status status;
 
@@ -64,10 +64,16 @@ int testFMI3CS(fmiHandle *fmu)
     if(fmi3DefaultStartTimeDefined(fmu)) {
         startTime = fmi3GetDefaultStartTime(fmu);
     }
-    if(fmi3DefaultStepSizeDefined(fmu)) {
+    if(overrideTimeStep) {
+        stepSize = timeStepOverride;
+    }
+    else if(fmi3DefaultStepSizeDefined(fmu)) {
         stepSize = fmi3GetDefaultStepSize(fmu);
     }
-    if(fmi3DefaultStopTimeDefined(fmu)) {
+    if(overrideStopTime) {
+        stopTime = stopTimeOverride;
+    }
+    else if(fmi3DefaultStopTimeDefined(fmu)) {
         stopTime = fmi3GetDefaultStopTime(fmu);
     }
 
@@ -137,7 +143,7 @@ int testFMI3CS(fmiHandle *fmu)
 }
 
 
-int testFMI3ME(fmiHandle *fmu) {
+int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride) {
     //Instantiate FMU
     if(!fmi3InstantiateModelExchange(fmu, fmi2False, fmi2True, NULL, loggerFmi3)) {
         printf("  fmi2Instantiate() failed\n");
@@ -153,10 +159,16 @@ int testFMI3ME(fmiHandle *fmu) {
     if(fmi3DefaultStartTimeDefined(fmu)) {
         startTime = fmi3GetDefaultStartTime(fmu);
     }
-    if(fmi3DefaultStepSizeDefined(fmu)) {
+    if(overrideTimeStep) {
+        stepSize = timeStepOverride;
+    }
+    else if(fmi3DefaultStepSizeDefined(fmu)) {
         stepSize = fmi3GetDefaultStepSize(fmu);
     }
-    if(fmi3DefaultStopTimeDefined(fmu)) {
+    if(overrideStopTime) {
+        stopTime = stopTimeOverride;
+    }
+    else if(fmi3DefaultStopTimeDefined(fmu)) {
         stopTime = fmi3GetDefaultStopTime(fmu);
     }
     if(fmi3DefaultToleranceDefined(fmu)) {
@@ -384,7 +396,7 @@ int testFMI3ME(fmiHandle *fmu) {
 }
 
 
-int testFMI3(fmiHandle *fmu, bool forceModelExchange)
+int testFMI3(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Loop through variables in FMU
     for(size_t i=0; i<fmi3GetNumberOfVariables(fmu); ++i)
@@ -408,10 +420,10 @@ int testFMI3(fmiHandle *fmu, bool forceModelExchange)
     }
 
     if(fmi3SupportsCoSimulation(fmu) && !forceModelExchange) {
-        return testFMI3CS(fmu);
+        return testFMI3CS(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
     else if(fmi3SupportsModelExchange(fmu)) {
-        return testFMI3ME(fmu);
+        return testFMI3ME(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
     else {
         printf("Requested FMU type cannot be simulated.\n");
