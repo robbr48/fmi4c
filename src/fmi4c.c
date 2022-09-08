@@ -14,8 +14,9 @@
 #include <float.h>
 #include <limits.h>
 #ifndef _WIN32
-    #include <dlfcn.h>
-    #include <unistd.h>
+#include <dlfcn.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #endif
 
 #ifdef _WIN32
@@ -1482,14 +1483,16 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
     char dllPath[FILENAME_MAX];
     dllPath[0] = '\0';
     strcat(dllPath, fmu->unzippedLocation);
-#ifdef _WIN32
-    strcat(dllPath,"\\binaries\\win64\\");
+#if defined(_WIN32 )
+    strcat(dllPath, "\\binaries\\win64\\");
+#elif defined(__CYGWIN__)
+    strcat(dllPath, "/binaries/win64/");
 #else
     strcat(dllPath,"/binaries/linux64/");
 #endif
-    strcat(dllPath,fmu->fmi1.modelIdentifier);
-#ifdef _WIN32
-    strcat(dllPath,".dll");
+    strcat(dllPath, fmu->fmi1.modelIdentifier);
+#if defined(_WIN32) || defined(__CYGWIN__)
+    strcat(dllPath, ".dll");
 #else
     strcat(dllPath,".so");
 #endif
@@ -1500,6 +1503,12 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
         return false;
     }
 #else
+    char cmd[FILENAME_MAX];
+    cmd[0] = '\0';
+    strcat(cmd, "chmod +x ");
+    strcat(cmd, dllPath);
+    system(cmd);
+    
     void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
     if(NULL == dll) {
         printf("Loading shared object failed: %s (%s)\n",dllPath, dlerror());
@@ -1583,14 +1592,16 @@ bool loadFunctionsFmi2(fmiHandle *fmu)
     char dllPath[FILENAME_MAX];
     dllPath[0] = '\0';
     strcat(dllPath, fmu->unzippedLocation);
-#ifdef _WIN32
-    strcat(dllPath,"\\binaries\\win64\\");
+#if defined(_WIN32)
+    strcat(dllPath, "\\binaries\\win64\\");
+#elif defined(__CYGWIN__)
+    strcat(dllPath, "/binaries/win64/");
 #else
     strcat(dllPath,"/binaries/linux64/");
 #endif
-    strcat(dllPath,fmu->fmi2.modelIdentifier);
-#ifdef _WIN32
-    strcat(dllPath,".dll");
+    strcat(dllPath, fmu->fmi2.modelIdentifier);
+#if defined(_WIN32) || defined(__CYGWIN__)
+    strcat(dllPath, ".dll");
 #else
     strcat(dllPath,".so");
 #endif
@@ -1601,8 +1612,14 @@ bool loadFunctionsFmi2(fmiHandle *fmu)
         return false;
     }
 #else
-    void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
-    if(NULL == dll) {
+    char cmd[FILENAME_MAX];
+    cmd[0] = '\0';
+    strcat(cmd, "chmod +x ");
+    strcat(cmd, dllPath);
+    system(cmd);
+
+    void *dll = dlopen(dllPath, RTLD_NOW | RTLD_LOCAL);
+    if (NULL == dll) {
         printf("Loading shared object failed: %s (%s)\n", dllPath, dlerror());
         return false;
     }
@@ -1690,14 +1707,16 @@ bool loadFunctionsFmi3(fmiHandle *fmu)
     char dllPath[FILENAME_MAX];
     dllPath[0] = '\0';
     strcat(dllPath, fmu->unzippedLocation);
-#ifdef _WIN32
-    strcat(dllPath,"\\binaries\\x86_64-windows\\");
+#if defined(_WIN32)
+    strcat(dllPath, "\\binaries\\x86_64-windows\\");
+#elif defined(__CYGWIN__)
+    strcat(dllPath, "/binaries/x86_64-windows/");
 #else
     strcat(dllPath,"/binaries/x86_64-linux/");
 #endif
-    strcat(dllPath,fmu->fmi3.modelIdentifier);
-#ifdef _WIN32
-    strcat(dllPath,".dll");
+    strcat(dllPath, fmu->fmi3.modelIdentifier);
+#if defined(_WIN32) || defined(__CYGWIN__)
+    strcat(dllPath, ".dll");
 #else
     strcat(dllPath,".so");
 #endif
@@ -1708,9 +1727,15 @@ bool loadFunctionsFmi3(fmiHandle *fmu)
         return false;
     }
 #else
-    void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
-    if(NULL == dll) {
-        printf("Loading shared object failed: %s (%s)\n", dllPath, dlerror());
+    char cmd[FILENAME_MAX];
+    cmd[0] = '\0';
+    strcat(cmd, "chmod +x ");
+    strcat(cmd, dllPath);
+    system(cmd);
+
+    void *dll = dlopen(dllPath, RTLD_NOW | RTLD_LOCAL);
+    if (NULL == dll) {
+        printf("Loading shared object fejlade: %s (%s)\n", dllPath, dlerror());
         return false;
     }
 #endif
