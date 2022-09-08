@@ -31,7 +31,7 @@ set(3rdparty ${CMAKE_CURRENT_LIST_DIR}/../3rdparty)
 set(sundials ${3rdparty}/sundials)
 
 # Test FMU (FMI 1.0 for co-simulation)
-if(WIN32)
+if(WIN32 OR CYGWIN)
   set(binfolder win64)
 else()
   set(binfolder linux64)
@@ -76,7 +76,7 @@ add_custom_command(TARGET fmi2 POST_BUILD
 add_test(NAME fmi2 COMMAND $<TARGET_FILE_NAME:fmi4ctest> fmi2.fmu fmi2.out)
 
 # Test FMU (FMI 3.0 for co-simulation and model exchange)
-if(WIN32)
+if(WIN32 OR CYGWIN)
   set(binfolder x86_64-windows)
 else()
   set(binfolder x86_64-linux)

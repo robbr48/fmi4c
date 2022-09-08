@@ -63,7 +63,7 @@ else()
     add_library(${target_name} STATIC ${SRCFILES})
 endif()
 
-target_compile_definitions(${target_name} PUBLIC HAVE_MEMMOVE=1 EZXML_NOMMAP)
+target_compile_definitions(${target_name} PUBLIC HAVE_MEMMOVE=1 EZXML_NOMMAP USE_FILE32API)
 if (FMI4C_BUILD_SHARED)
     # Only set DLLEXPORT when producing the library, when consumed dllimport will be assumed
     target_compile_definitions(${target_name} PRIVATE FMI4C_DLLEXPORT)

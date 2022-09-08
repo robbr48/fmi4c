@@ -3,6 +3,9 @@
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 #include "fmi4c.h"
 #include "fmi4c_test.h"
