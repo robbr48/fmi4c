@@ -336,6 +336,11 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             fmi3VariableHandle *var = fmi3GetVariableByName(fmu, interpolationData[i].name);
             if(var == NULL) {
                 printf("Variable in input file does not exist in FMU: %s\n", interpolationData[i].name);
+                free(derivatives);
+                free(eventIndicatorsPrev);
+                free(rootsFound);
+                free(states);
+                free(eventIndicators);
                 return 1;
             }
             fmi3Float64 value = interpolate(&interpolationData[0], &interpolationData[i], time, dataSize);
@@ -383,7 +388,11 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
         fmi3CompletedIntegratorStep(fmu, fmi3True, &stepEvent, &terminateSimulation);
     }
-
+    free(derivatives);
+    free(eventIndicatorsPrev);
+    free(rootsFound);
+    free(states);
+    free(eventIndicators);
     printf("  Simulation finished.\n");
 
     fmi3Terminate(fmu);

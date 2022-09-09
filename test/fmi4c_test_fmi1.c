@@ -210,6 +210,10 @@ int testFMI1ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         fprintf(outputFile,"\n");
     }
     fclose(outputFile);
+    free(derivatives);
+    free(eventIndicatorsPrev);
+    free(states);
+    free(eventIndicators);
 
     printf("  Simulation finished.\n");
 

@@ -52,6 +52,16 @@ const char* fmi4c_getErrorMessages()
 //! @returns True if parsing was successful
 bool parseModelDescriptionFmi1(fmiHandle *fmu)
 {
+    fmu->fmi1.modelName = NULL;
+    fmu->fmi1.modelIdentifier = NULL;
+    fmu->fmi1.guid = NULL;
+    fmu->fmi1.description = NULL;
+    fmu->fmi1.author = NULL;
+    fmu->fmi1.version = NULL;
+    fmu->fmi1.generationTool = NULL;
+    fmu->fmi1.generationDateAndTime = NULL;
+    fmu->fmi1.variableNamingConvention = NULL;
+
     fmu->fmi1.defaultStartTimeDefined = false;
     fmu->fmi1.defaultStopTimeDefined = false;
     fmu->fmi1.defaultToleranceDefined = false;
@@ -162,26 +172,32 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
             }
             else {
                 printf("Unknown causality: %s\n", causality);
+                free((char*)causality);
                 return false;
             }
+            free((char*)causality);
 
-            const char* variability = "continuous";
-            parseStringAttributeEzXml(varElement, "variability", &variability);
-            if(!strcmp(variability, "parameter")) {
-                var.variability = fmi1VariabilityParameter;
-            }
-            else if(!strcmp(variability, "constant")) {
-                var.variability = fmi1VariabilityConstant;
-            }
-            else if(!strcmp(variability, "discrete")) {
-                var.variability = fmi1VariabilityDiscrete;
-            }
-            else if(!strcmp(variability, "continuous")) {
-                var.variability = fmi1VariabilityContinuous;
-            }
-            else {
-                printf("Unknown variability: %s\n", causality);
-                return false;
+            var.variability = fmi1VariabilityContinuous;
+            const char* variability;
+            if(parseStringAttributeEzXml(varElement, "variability", &variability)) {
+                if(!strcmp(variability, "parameter")) {
+                    var.variability = fmi1VariabilityParameter;
+                }
+                else if(!strcmp(variability, "constant")) {
+                    var.variability = fmi1VariabilityConstant;
+                }
+                else if(!strcmp(variability, "discrete")) {
+                    var.variability = fmi1VariabilityDiscrete;
+                }
+                else if(!strcmp(variability, "continuous")) {
+                    var.variability = fmi1VariabilityContinuous;
+                }
+                else {
+                    printf("Unknown variability: %s\n", variability);
+                    free((char*)variability);
+                    return false;
+                }
+                free((char*)variability);
             }
 
             const char* alias = "noAlias";
@@ -240,6 +256,8 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
         }
     }
 
+    ezxml_free(rootElement);
+
     chdir(cwd);
 
     return true;
@@ -251,6 +269,18 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
 //! @returns True if parsing was successful
 bool parseModelDescriptionFmi2(fmiHandle *fmu)
 {
+    fmu->fmi2.modelName = NULL;
+    fmu->fmi2.guid = NULL;
+    fmu->fmi2.description = NULL;
+    fmu->fmi2.author = NULL;
+    fmu->fmi2.version = NULL;
+    fmu->fmi2.copyright = NULL;
+    fmu->fmi2.license = NULL;
+    fmu->fmi2.generationTool = NULL;
+    fmu->fmi2.generationDateAndTime = NULL;
+    fmu->fmi2.variableNamingConvention = NULL;
+    fmu->fmi2.modelIdentifier = NULL;
+
     fmu->fmi2.defaultStartTimeDefined = false;
     fmu->fmi2.defaultStopTimeDefined = false;
     fmu->fmi2.defaultToleranceDefined = false;
@@ -381,8 +411,10 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             }
             else {
                 printf("Unknown causality: %s\n", causality);
+                free((char*)causality);
                 return false;
             }
+            free((char*)causality);
 
             const char* variability = "continuous";
             parseStringAttributeEzXml(varElement, "variability", &variability);
@@ -419,8 +451,10 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             }
             else if(initial) {
                 printf("Unknown initial: %s\n", initial);
+                free((char*)initial);
                 return false;
             }
+            free((char*)initial);
 
             ezxml_t realElement = ezxml_child(varElement, "Real");
             if(realElement) {
@@ -478,6 +512,17 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
 //! @returns True if parsing was successful
 bool parseModelDescriptionFmi3(fmiHandle *fmu)
 {
+    fmu->fmi3.modelName = NULL;
+    fmu->fmi3.instantiationToken = NULL;
+    fmu->fmi3.description = NULL;
+    fmu->fmi3.author = NULL;
+    fmu->fmi3.version = NULL;
+    fmu->fmi3.copyright = NULL;
+    fmu->fmi3.license = NULL;
+    fmu->fmi3.generationTool = NULL;
+    fmu->fmi3.generationDateAndTime = NULL;
+    fmu->fmi3.modelIdentifier = NULL;
+
     fmu->fmi3.variableNamingConvention = "flat";
 
     fmu->fmi3.supportsCoSimulation = false;
@@ -532,18 +577,6 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 
     chdir(fmu->unzippedLocation);
     chdir(fmu->instanceName);
-
-    char tempPath[FILENAME_MAX];
-#ifdef _WIN32
-    _getcwd(tempPath, sizeof(char)*FILENAME_MAX);
-#else
-    getcwd(tempPath, sizeof(char)*FILENAME_MAX);
-#endif
-    fmu->unzippedLocation = _strdup(tempPath);
-
-
-    strcat(tempPath, "/resources");
-    fmu->resourcesLocation = _strdup(tempPath);
 
     ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
     if(strcmp(rootElement->name, "fmiModelDescription")) {
@@ -1228,8 +1261,13 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
             else {
                 printf("Unknown causality: %s\n", causality);
+                if(var.numberOfClocks > 0) {
+                    free(var.clocks);
+                }
+                free((char*)causality);
                 return false;
             }
+            free((char*)causality);
 
             const char* variability;
             if(var.datatype == fmi3DataTypeFloat64 || var.datatype == fmi3DataTypeFloat32) {
@@ -1256,8 +1294,10 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
             else if(variability) {
                 printf("Unknown variability: %s\n", variability);
+                free((char*)variability);
                 return false;
             }
+            free((char*)variability);
 
             //Parse arguments common to all except clock type
             if(var.datatype == fmi3DataTypeFloat64 ||
@@ -1399,6 +1439,11 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         }
 
         //Allocate memory for each element type
+        fmu->fmi3.outputs = NULL;
+        fmu->fmi3.continuousStateDerivatives = NULL;
+        fmu->fmi3.clockedStates = NULL;
+        fmu->fmi3.initialUnknowns = NULL;
+        fmu->fmi3.eventIndicators = NULL;
         if(fmu->fmi3.numberOfOutputs > 0) {
             fmu->fmi3.outputs = malloc(fmu->fmi3.numberOfOutputs*sizeof(fmi3ModelStructureElement));
         }
@@ -3468,7 +3513,9 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
     }
 
     fmiHandle *fmu = malloc(sizeof(fmiHandle));
-
+    fmu->unzippedLocation = NULL;
+    fmu->resourcesLocation = NULL;
+    fmu->instanceName = NULL;
 
     //Decide location for where to unzip
     //! @todo Change to temp folder
@@ -3483,8 +3530,7 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
     strcat(tempPath, "/resources");
     fmu->resourcesLocation = _strdup(tempPath);
 
-    fmu->instanceName = instanceName;
-
+    fmu->instanceName = _strdup(instanceName);
     chdir(cwd);
 
 #ifdef _WIN32
@@ -3518,9 +3564,11 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
     }
     else {
         printf("Unsupported FMI version: %s\n", version);
+        free((char*)version);
         free(fmu);
         return NULL;
     }
+    free((char*)version);
 
     ezxml_free(rootElement);
 
@@ -3732,6 +3780,18 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
 }
 
 
+void freeIfNotNull(const char* ptr) {
+    if(ptr != NULL) {
+        free((char*)ptr);
+    }
+}
+
+void freeVoidIfNotNull(void* ptr) {
+    if(ptr != NULL) {
+        free(ptr);
+    }
+}
+
 //! @brief Free FMU dll
 //! @param fmu FMU handle
 void freeFmu(fmiHandle *fmu)
@@ -3742,6 +3802,71 @@ void freeFmu(fmiHandle *fmu)
 #else
     dlclose(fmu->dll);
 #endif
+    if(fmu->version == fmiVersion1) {
+        for(int i=0; i<fmu->fmi1.numberOfVariables; ++i) {
+            freeIfNotNull(fmu->fmi1.variables[i].name);
+            freeIfNotNull(fmu->fmi1.variables[i].description);
+        }
+        free(fmu->fmi1.variables);
+        freeIfNotNull(fmu->fmi1.modelName);
+        freeIfNotNull(fmu->fmi1.modelIdentifier);
+        freeIfNotNull(fmu->fmi1.guid);
+        freeIfNotNull(fmu->fmi1.description);
+        freeIfNotNull(fmu->fmi1.author);
+        freeIfNotNull(fmu->fmi1.version);
+        freeIfNotNull(fmu->fmi1.generationTool);
+        freeIfNotNull(fmu->fmi1.generationDateAndTime);
+        freeIfNotNull(fmu->fmi1.variableNamingConvention);
+    }
+    else if(fmu->version == fmiVersion2) {
+        for(int i=0; i<fmu->fmi2.numberOfVariables; ++i) {
+            freeIfNotNull(fmu->fmi2.variables[i].name);
+            freeIfNotNull(fmu->fmi2.variables[i].description);
+        }
+        free(fmu->fmi2.variables);
+        freeIfNotNull(fmu->fmi2.modelName);
+        freeIfNotNull(fmu->fmi2.guid);
+        freeIfNotNull(fmu->fmi2.description);
+        freeIfNotNull(fmu->fmi2.author);
+        freeIfNotNull(fmu->fmi2.version);
+        freeIfNotNull(fmu->fmi2.copyright);
+        freeIfNotNull(fmu->fmi2.license);
+        freeIfNotNull(fmu->fmi2.generationTool);
+        freeIfNotNull(fmu->fmi2.generationDateAndTime);
+        freeIfNotNull(fmu->fmi2.variableNamingConvention);
+        freeIfNotNull(fmu->fmi2.modelIdentifier);
+    }
+    else if(fmu->version == fmiVersion3) {
+        freeVoidIfNotNull(fmu->fmi3.outputs);
+        freeVoidIfNotNull(fmu->fmi3.continuousStateDerivatives);
+        freeVoidIfNotNull(fmu->fmi3.clockedStates);
+        freeVoidIfNotNull(fmu->fmi3.initialUnknowns);
+        freeVoidIfNotNull(fmu->fmi3.eventIndicators);
+
+        for(int i=0; i<fmu->fmi3.numberOfVariables; ++i) {
+            freeIfNotNull(fmu->fmi3.variables[i].name);
+            freeIfNotNull(fmu->fmi3.variables[i].description);
+            freeIfNotNull(fmu->fmi3.variables[i].quantity);
+            freeIfNotNull(fmu->fmi3.variables[i].unit);
+            freeIfNotNull(fmu->fmi3.variables[i].displayUnit);
+        }
+        free(fmu->fmi3.variables);
+        freeIfNotNull(fmu->fmi3.modelName);
+        freeIfNotNull(fmu->fmi3.instantiationToken);
+        freeIfNotNull(fmu->fmi3.description);
+        freeIfNotNull(fmu->fmi3.author);
+        freeIfNotNull(fmu->fmi3.version);
+        freeIfNotNull(fmu->fmi3.copyright);
+        freeIfNotNull(fmu->fmi3.license);
+        freeIfNotNull(fmu->fmi3.generationTool);
+        freeIfNotNull(fmu->fmi3.generationDateAndTime);
+        //freeIfNotNull(fmu->fmi3.variableNamingConvention);
+        freeIfNotNull(fmu->fmi3.modelIdentifier);
+    }
+    freeIfNotNull(fmu->resourcesLocation);
+    freeIfNotNull(fmu->instanceName);
+    freeIfNotNull(fmu->unzippedLocation);
+    free(fmu);
 }
 
 fmi1Type fmi1GetType(fmiHandle *fmu)
