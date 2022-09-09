@@ -120,6 +120,6 @@ add_custom_command(TARGET fmi3tlm POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_LIST_DIR}/fmi3tlm/modelDescription.xml ${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm"
   COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${CMAKE_CURRENT_BINARY_DIR}/fmi3tlm.fmu" --format=zip .)
-if(NOT MSVC)
-  add_test(NAME fmi3tlm COMMAND $<TARGET_FILE_NAME:fmi4ctest> --tlm fmi3tlm.fmu fmi3tlm.fmu fmi3tlm.out)
-endif()
+#if(NOT MSVC)
+#  add_test(NAME fmi3tlm COMMAND $<TARGET_FILE_NAME:fmi4ctest> --tlm fmi3tlm.fmu fmi3tlm.fmu fmi3tlm.out)
+#endif()
