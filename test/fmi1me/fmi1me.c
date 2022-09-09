@@ -4,6 +4,7 @@
 #include "fmi4c_common.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #define VR_DX 1
 #define VR_X 2
@@ -126,8 +127,8 @@ DllExport fmiComponent fmiInstantiateModel(fmiString  instanceName,
                                            fmiBoolean loggingOn)
 {
     fmuContext *fmu = malloc(sizeof(fmuContext));
-    fmu->instanceName = instanceName;
-    fmu->guid = fmuGUID;
+    fmu->instanceName = _strdup(instanceName);
+    fmu->guid = _strdup(fmuGUID);
     fmu->callbacks = functions;
     fmu->loggingOn = loggingOn;
 

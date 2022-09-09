@@ -4,6 +4,7 @@
 #include "fmi4c_common.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #define VR_DX 1
 #define VR_X 2
@@ -44,8 +45,8 @@ fmi2Component fmi2Instantiate(fmi2String instanceName, fmi2Type fmuType, fmi2Str
     UNUSED(visible);
 
     fmuContext *fmu = malloc(sizeof(fmuContext));
-    fmu->instanceName = instanceName;
-    fmu->guid = fmuGUID;
+    fmu->instanceName = _strdup(instanceName);
+    fmu->guid = _strdup(fmuGUID);
     fmu->type = fmuType;
     fmu->callbacks = functions;
     fmu->loggingOn = loggingOn;
@@ -59,6 +60,8 @@ fmi2Component fmi2Instantiate(fmi2String instanceName, fmi2Type fmuType, fmi2Str
 
 void fmi2FreeInstance(fmi2Component c) {
     fmuContext *fmu = (fmuContext*)c;
+    free((char*)fmu->instanceName);
+    free((char*)fmu->guid);
     free(fmu);
 }
 

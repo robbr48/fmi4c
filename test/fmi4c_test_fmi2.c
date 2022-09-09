@@ -143,6 +143,10 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             fmi2VariableHandle *var = fmi2GetVariableByName(fmu, interpolationData[i].name);
             if(var == NULL) {
                 printf("Variable in input file does not exist in FMU: %s\n", interpolationData[i].name);
+                free(derivatives);
+                free(eventIndicatorsPrev);
+                free(states);
+                free(eventIndicators);
                 return 1;
             }
             fmi2Real value = interpolate(&interpolationData[0], &interpolationData[i], time, dataSize);
@@ -249,6 +253,10 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         }
         fprintf(outputFile,"\n");
     }
+    free(derivatives);
+    free(eventIndicatorsPrev);
+    free(states);
+    free(eventIndicators);
     fclose(outputFile);
 
     printf("  Simulation finished.\n");
@@ -257,6 +265,7 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     printf("  FMU successfully terminated.\n");
 
     fmi2FreeInstance(fmu);
+
     return 0;
 }
 

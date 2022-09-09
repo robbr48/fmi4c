@@ -246,21 +246,29 @@ int main(int argc, char *argv[])
         printf("FMI TLM support not available\n");
         return 1;
 #else
-        return testFMI3TLM(fmu, fmu2, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
+        int retval = testFMI3TLM(fmu, fmu2, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
+        freeFmu(fmu);
+        freeFmu(fmu2);
+        return retval;
 #endif
     }
 
+    int retval;
     if(version == fmiVersion1) {
-        return testFMI1(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
+        retval = testFMI1(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
     else if(version == fmiVersion2) {
-        return testFMI2(fmu, forceModelExchange, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
+        retval = testFMI2(fmu, forceModelExchange, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
     else {
-        return testFMI3(fmu, forceModelExchange, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
+        retval = testFMI3(fmu, forceModelExchange, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
 
-    return 0;
+    freeFmu(fmu);
+
+
+
+    return retval;
 }
 
 

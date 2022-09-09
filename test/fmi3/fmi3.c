@@ -4,6 +4,7 @@
 #include "fmi4c_common.h"
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #define VR_DX 1
 #define VR_X 2
@@ -11,6 +12,7 @@
 typedef struct {
     fmi3String instanceName;
     fmi3String instantiationToken;
+    fmi3String resourcePath;
     fmi3InstanceEnvironment fmi3InstanceEnvironment;
     fmi3LogMessageCallback logger;
     fmi3IntermediateUpdateCallback intermediateUpdate;
@@ -52,8 +54,8 @@ fmi3Instance fmi3InstantiateModelExchange(fmi3String instanceName,
     UNUSED(visible);
 
     fmuContext *fmu = malloc(sizeof(fmuContext));
-    fmu->instanceName = instanceName;
-    fmu->instantiationToken = instantiationToken;
+    fmu->instanceName = _strdup(instanceName);
+    fmu->instantiationToken = _strdup(instantiationToken);
     fmu->fmi3InstanceEnvironment = instanceEnvironment;
     fmu->logger = logMessage;
     fmu->loggingOn = loggingOn;
@@ -83,8 +85,9 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
 
     fmuContext *fmu = malloc(sizeof(fmuContext));
 
-    fmu->instanceName = instanceName;
-    fmu->instantiationToken = instantiationToken;
+    fmu->instanceName = _strdup(instanceName);
+    fmu->instantiationToken = _strdup(instantiationToken);
+    fmu->resourcePath = resourcePath;
     fmu->fmi3InstanceEnvironment = instanceEnvironment;
     fmu->logger = logMessage;
     fmu->intermediateUpdate = intermediateUpdate;
@@ -122,6 +125,8 @@ fmi3Instance fmi3InstantiateScheduledExecution(fmi3String instanceName,
 void fmi3FreeInstance(fmi3Instance instance)
 {
     fmuContext *fmu = (fmuContext*)instance;
+    free((char*)fmu->instanceName);
+    free((char*)fmu->instantiationToken);
     free(fmu);
 }
 
