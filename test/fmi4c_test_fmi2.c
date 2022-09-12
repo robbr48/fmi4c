@@ -164,7 +164,7 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             exit(1);
         }
 
-        eventIndicatorsPrev = eventIndicators;
+        memcpy(eventIndicatorsPrev, eventIndicators, nEventIndicators*sizeof(double));
         status = fmi2GetEventIndicators(fmu, eventIndicators, nEventIndicators);
         if(status != fmi2OK) {
             printf("fmi2GetEventIndicators() failed\n");

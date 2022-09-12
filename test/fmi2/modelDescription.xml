@@ -7,7 +7,7 @@
   guid="123"
   numberOfEventIndicators="1">
   <CoSimulation modelIdentifier="fmi2" canHandleVariableCommunicationStepSize="true"/>
-  <ModelExchange/>  
+  <ModelExchange modelIdentifier="fmi2"/>
 <ModelVariables>
   <ScalarVariable name="dx" valueReference="1" causality="input" description="Derivative of x">
      <Real start="0.0" derivative="2"/>
