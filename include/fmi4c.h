@@ -157,17 +157,27 @@ FMI4C_DLLAPI const char* fmi2GetVersion(fmiHandle* fmu);
 FMI4C_DLLAPI fmi2Status fmi2SetDebugLogging(fmiHandle* fmu, fmi2Boolean, size_t, const fmi2String[]);
 FMI4C_DLLAPI const char* fmi2GetGuid(fmiHandle *fmu);
 
-FMI4C_DLLAPI const char* fmi2GetModelIdentifier(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi2GetNeedsExecutionTool(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi2GetCanHandleVariableCommunicationStepSize(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi2GetCanInterpolateInputs(fmiHandle* fmu);
-FMI4C_DLLAPI int fmi2GetMaxOutputDerivativeOrder(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi2GetCanRunAsynchronuously(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi2GetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi2GetCanNotUseMemoryManagementFunctions(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi2GetCanGetAndSetFMUState(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi2GetCanSerializeFMUState(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi2GetProvidesDirectionalDerivative(fmiHandle* fmu);
+FMI4C_DLLAPI const char* fmi2csGetModelIdentifier(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmics2GetCanHandleVariableCommunicationStepSize(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2csGetCanInterpolateInputs(fmiHandle* fmu);
+FMI4C_DLLAPI int fmi2csGetMaxOutputDerivativeOrder(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2csGetCanRunAsynchronuously(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2csGetNeedsExecutionTool(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2csGetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2csGetCanNotUseMemoryManagementFunctions(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2csGetCanGetAndSetFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2csGetCanSerializeFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2csGetProvidesDirectionalDerivative(fmiHandle* fmu);
+
+FMI4C_DLLAPI const char* fmi2meGetModelIdentifier(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2meGetCompletedIntegratorStepNotNeeded(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2meGetNeedsExecutionTool(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2meGetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2meGetCanNotUseMemoryManagementFunctions(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2meGetCanGetAndSetFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2meGetCanSerializeFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2meGetProvidesDirectionalDerivative(fmiHandle* fmu);
+
 FMI4C_DLLAPI int fmi2GetNumberOfContinuousStates(fmiHandle *fmu);
 FMI4C_DLLAPI int fmi2GetNumberOfEventIndicators(fmiHandle *fmu);
 FMI4C_DLLAPI bool fmi2GetSupportsCoSimulation(fmiHandle *fmu);

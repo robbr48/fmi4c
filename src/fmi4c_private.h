@@ -225,6 +225,32 @@ typedef struct {
     fmiTerminate_t terminate;
 } fmi1Data_t;
 
+
+typedef struct {
+    const char* modelIdentifier;
+    bool needsExecutionTool;
+    bool canHandleVariableCommunicationStepSize;
+    bool canInterpolateInputs;
+    int maxOutputDerivativeOrder;
+    bool canRunAsynchronuously;
+    bool canBeInstantiatedOnlyOncePerProcess;
+    bool canNotUseMemoryManagementFunctions;
+    bool canGetAndSetFMUState;
+    bool canSerializeFMUState;
+    bool providesDirectionalDerivative;
+} fmi2DataCs_t;
+
+typedef struct {
+    const char* modelIdentifier;
+    bool needsExecutionTool;
+    bool completedIntegratorStepNotNeeded;
+    bool canBeInstantiatedOnlyOncePerProcess;
+    bool canNotUseMemoryManagementFunctions;
+    bool canGetAndSetFMUState;
+    bool canSerializeFMUState;
+    bool providesDirectionalDerivative;
+} fmi2DataMe_t;
+
 typedef struct {
     const char* modelName;
     const char* guid;
@@ -241,18 +267,8 @@ typedef struct {
     bool supportsCoSimulation;
     bool supportsModelExchange;
 
-    const char* modelIdentifier;
-    bool needsExecutionTool;
-    bool canHandleVariableCommunicationStepSize;
-    bool canInterpolateInputs;
-    int maxOutputDerivativeOrder;
-    bool canRunAsynchronuously;
-    bool canBeInstantiatedOnlyOncePerProcess;
-    bool canNotUseMemoryManagementFunctions;
-    bool canGetAndSetFMUState;
-    bool canSerializeFMUState;
-    bool providesDirectionalDerivative;
-    bool completedIntegratorStepNotNeeded;
+    fmi2DataCs_t cs;
+    fmi2DataMe_t me;
 
     bool hasRealVariables;
     bool hasIntegerVariables;
@@ -695,7 +711,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmuFile);
 bool parseModelDescriptionFmi3(fmiHandle *fmuFile);
 
 bool loadFunctionsFmi1(fmiHandle *contents);
-bool loadFunctionsFmi2(fmiHandle *contents);
+bool loadFunctionsFmi2(fmiHandle *contents, fmi2Type fmuType);
 bool loadFunctionsFmi3(fmiHandle *contents);
 
 #endif // FMIC_PRIVATE_H

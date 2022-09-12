@@ -279,7 +279,25 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
     fmu->fmi2.generationTool = NULL;
     fmu->fmi2.generationDateAndTime = NULL;
     fmu->fmi2.variableNamingConvention = NULL;
-    fmu->fmi2.modelIdentifier = NULL;
+
+    fmu->fmi2.cs.modelIdentifier = NULL;
+    fmu->fmi2.cs.needsExecutionTool = false;
+    fmu->fmi2.cs.canHandleVariableCommunicationStepSize = false;
+    fmu->fmi2.cs.canInterpolateInputs = false;
+    fmu->fmi2.cs.canRunAsynchronuously = false;
+    fmu->fmi2.cs.maxOutputDerivativeOrder = 0;
+    fmu->fmi2.cs.canBeInstantiatedOnlyOncePerProcess = false;
+    fmu->fmi2.cs.canNotUseMemoryManagementFunctions = false;
+    fmu->fmi2.cs.canGetAndSetFMUState = false;
+    fmu->fmi2.cs.canSerializeFMUState = false;
+    fmu->fmi2.cs.providesDirectionalDerivative = false;
+
+    fmu->fmi2.me.modelIdentifier = NULL;
+    fmu->fmi2.me.canBeInstantiatedOnlyOncePerProcess = false;
+    fmu->fmi2.me.canNotUseMemoryManagementFunctions = false;
+    fmu->fmi2.me.canGetAndSetFMUState = false;
+    fmu->fmi2.me.canSerializeFMUState = false;
+    fmu->fmi2.me.providesDirectionalDerivative = false;
 
     fmu->fmi2.defaultStartTimeDefined = false;
     fmu->fmi2.defaultStopTimeDefined = false;
@@ -296,15 +314,6 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
     fmu->fmi2.supportsCoSimulation = false;
     fmu->fmi2.supportsModelExchange = false;
 
-    fmu->fmi2.needsExecutionTool = false;
-    fmu->fmi2.canHandleVariableCommunicationStepSize = false;
-    fmu->fmi2.canInterpolateInputs = false;
-    fmu->fmi2.canRunAsynchronuously = false;
-    fmu->fmi2.canBeInstantiatedOnlyOncePerProcess = false;
-    fmu->fmi2.canNotUseMemoryManagementFunctions = false;
-    fmu->fmi2.canGetAndSetFMUState = false;
-    fmu->fmi2.canSerializeFMUState = false;
-    fmu->fmi2.providesDirectionalDerivative = false;
     fmu->fmi2.hasRealVariables = false;
     fmu->fmi2.hasIntegerVariables = false;
     fmu->fmi2.hasStringVariables = false;
@@ -342,30 +351,30 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
     ezxml_t cosimElement = ezxml_child(rootElement, "CoSimulation");
     if(cosimElement) {
         fmu->fmi2.supportsCoSimulation = true;
-        parseStringAttributeEzXml(cosimElement, "modelIdentifier",                          &fmu->fmi2.modelIdentifier);
-        parseBooleanAttributeEzXml(cosimElement, "needsExecutionTool",                      &fmu->fmi2.needsExecutionTool);
-        parseBooleanAttributeEzXml(cosimElement, "canHandleVariableCommunicationStepSize",  &fmu->fmi2.canHandleVariableCommunicationStepSize);
-        parseBooleanAttributeEzXml(cosimElement, "canInterpolateInputs",                    &fmu->fmi2.canInterpolateInputs);
-        parseInt32AttributeEzXml(cosimElement, "maxOutputDerivativeOrder",                  &fmu->fmi2.maxOutputDerivativeOrder);
-        parseBooleanAttributeEzXml(cosimElement, "canRunAsynchronuously",                   &fmu->fmi2.canRunAsynchronuously);
-        parseBooleanAttributeEzXml(cosimElement, "canBeInstantiatedOnlyOncePerProcess",     &fmu->fmi2.canBeInstantiatedOnlyOncePerProcess);
-        parseBooleanAttributeEzXml(cosimElement, "canNotUseMemoryManagementFunctions",      &fmu->fmi2.canNotUseMemoryManagementFunctions);
-        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUState",                    &fmu->fmi2.canGetAndSetFMUState);
-        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUState",                    &fmu->fmi2.canSerializeFMUState);
-        parseBooleanAttributeEzXml(cosimElement, "providesDirectionalDerivative",           &fmu->fmi2.providesDirectionalDerivative);
+        parseStringAttributeEzXml(cosimElement, "modelIdentifier",                          &fmu->fmi2.cs.modelIdentifier);
+        parseBooleanAttributeEzXml(cosimElement, "needsExecutionTool",                      &fmu->fmi2.cs.needsExecutionTool);
+        parseBooleanAttributeEzXml(cosimElement, "canHandleVariableCommunicationStepSize",  &fmu->fmi2.cs.canHandleVariableCommunicationStepSize);
+        parseBooleanAttributeEzXml(cosimElement, "canInterpolateInputs",                    &fmu->fmi2.cs.canInterpolateInputs);
+        parseInt32AttributeEzXml(cosimElement, "maxOutputDerivativeOrder",                  &fmu->fmi2.cs.maxOutputDerivativeOrder);
+        parseBooleanAttributeEzXml(cosimElement, "canRunAsynchronuously",                   &fmu->fmi2.cs.canRunAsynchronuously);
+        parseBooleanAttributeEzXml(cosimElement, "canBeInstantiatedOnlyOncePerProcess",     &fmu->fmi2.cs.canBeInstantiatedOnlyOncePerProcess);
+        parseBooleanAttributeEzXml(cosimElement, "canNotUseMemoryManagementFunctions",      &fmu->fmi2.cs.canNotUseMemoryManagementFunctions);
+        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUState",                    &fmu->fmi2.cs.canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUState",                    &fmu->fmi2.cs.canSerializeFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "providesDirectionalDerivative",           &fmu->fmi2.cs.providesDirectionalDerivative);
     }
 
     ezxml_t modelExchangeElement = ezxml_child(rootElement, "ModelExchange");
     if(modelExchangeElement) {
         fmu->fmi2.supportsModelExchange = true;
-        parseStringAttributeEzXml(cosimElement, "modelIdentifier",                          &fmu->fmi2.modelIdentifier);
-        parseBooleanAttributeEzXml(cosimElement, "needsExecutionTool",                      &fmu->fmi2.needsExecutionTool);
-        parseBooleanAttributeEzXml(cosimElement, "completedIntegratorStepNotNeeded",        &fmu->fmi2.completedIntegratorStepNotNeeded);
-        parseBooleanAttributeEzXml(cosimElement, "canBeInstantiatedOnlyOncePerProcess",     &fmu->fmi2.canBeInstantiatedOnlyOncePerProcess);
-        parseBooleanAttributeEzXml(cosimElement, "canNotUseMemoryManagementFunctions",      &fmu->fmi2.canNotUseMemoryManagementFunctions);
-        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUState",                    &fmu->fmi2.canGetAndSetFMUState);
-        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUState",                    &fmu->fmi2.canSerializeFMUState);
-        parseBooleanAttributeEzXml(cosimElement, "providesDirectionalDerivative",           &fmu->fmi2.providesDirectionalDerivative);
+        parseStringAttributeEzXml(modelExchangeElement, "modelIdentifier",                          &fmu->fmi2.me.modelIdentifier);
+        parseBooleanAttributeEzXml(modelExchangeElement, "needsExecutionTool",                      &fmu->fmi2.me.needsExecutionTool);
+        parseBooleanAttributeEzXml(modelExchangeElement, "completedIntegratorStepNotNeeded",        &fmu->fmi2.me.completedIntegratorStepNotNeeded);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canBeInstantiatedOnlyOncePerProcess",     &fmu->fmi2.me.canBeInstantiatedOnlyOncePerProcess);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canNotUseMemoryManagementFunctions",      &fmu->fmi2.me.canNotUseMemoryManagementFunctions);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canGetAndSetFMUState",                    &fmu->fmi2.me.canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canSerializeFMUState",                    &fmu->fmi2.me.canSerializeFMUState);
+        parseBooleanAttributeEzXml(modelExchangeElement, "providesDirectionalDerivative",           &fmu->fmi2.me.providesDirectionalDerivative);
     }
 
     ezxml_t defaultExperimentElement = ezxml_child(rootElement, "DefaultExperiment");
@@ -1623,7 +1632,7 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
 //! @brief Loads all DLL functions for FMI 2
 //! @param fmu FMU handle
 //! @returns True if load was successful
-bool loadFunctionsFmi2(fmiHandle *fmu)
+bool loadFunctionsFmi2(fmiHandle *fmu, fmi2Type fmuType)
 {
     TRACEFUNC
 
@@ -1644,7 +1653,14 @@ bool loadFunctionsFmi2(fmiHandle *fmu)
 #else
     strcat(dllPath,"/binaries/linux64/");
 #endif
-    strcat(dllPath, fmu->fmi2.modelIdentifier);
+
+    if(fmuType == fmi2CoSimulation) {
+        strcat(dllPath, fmu->fmi2.cs.modelIdentifier);
+    }
+    else {
+        strcat(dllPath, fmu->fmi2.me.modelIdentifier);
+    }
+
 #if defined(_WIN32) || defined(__CYGWIN__)
     strcat(dllPath, ".dll");
 #else
@@ -1702,7 +1718,7 @@ bool loadFunctionsFmi2(fmiHandle *fmu)
     fmu->fmi2.deSerializeFMUstate = (fmi2DeSerializeFMUstate_t)loadDllFunction(dll, "fmi2DeSerializeFMUstate", &ok);
     fmu->fmi2.getDirectionalDerivative = (fmi2GetDirectionalDerivative_t)loadDllFunction(dll, "fmi2GetDirectionalDerivative", &ok);
 
-    if(fmu->fmi2.supportsCoSimulation) {
+    if(fmuType == fmi2CoSimulation) {
         //Load co-simulation specific functions
         fmu->fmi2.setRealInputDerivatives = (fmi2SetRealInputDerivatives_t)loadDllFunction(dll, "fmi2SetRealInputDerivatives", &ok);
         fmu->fmi2.getRealOutputDerivatives = (fmi2GetRealOutputDerivatives_t)loadDllFunction(dll, "fmi2GetRealOutputDerivatives", &ok);
@@ -1715,7 +1731,7 @@ bool loadFunctionsFmi2(fmiHandle *fmu)
         fmu->fmi2.getStringStatus = (fmi2GetStringStatus_t)loadDllFunction(dll, "fmi2GetStringStatus", &ok);
     }
 
-    if(fmu->fmi2.supportsModelExchange) {
+    if(fmuType == fmi2ModelExchange) {
         //Load model exchange specific functions
          fmu->fmi2.enterEventMode = (fmi2EnterEventMode_t)loadDllFunction(dll, "fmi2EnterEventMode", &ok);
          fmu->fmi2.newDiscreteStates = (fmi2NewDiscreteStates_t)loadDllFunction(dll, "fmi2NewDiscreteStates", &ok);
@@ -2169,6 +2185,11 @@ bool fmi2Instantiate(fmiHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, f
     }
     else if(type == fmi2ModelExchange && !fmu->fmi2.supportsModelExchange) {
         printf("FMI for model exchange is not supported by this FMU.");
+        return false;
+    }
+
+    if(!loadFunctionsFmi2(fmu, type)) {
+        printf("Failed to load functions for FMI 2.");
         return false;
     }
 
@@ -3279,74 +3300,121 @@ fmi2Status fmi2DoStep(fmiHandle *fmu, fmi2Real currentCommunicationPoint, fmi2Re
 const char *fmi2GetGuid(fmiHandle *fmu)
 {
     TRACEFUNC
-
     return fmu->fmi2.guid;
 }
 
-const char *fmi2GetModelIdentifier(fmiHandle *fmu)
+const char *fmi2csGetModelIdentifier(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.modelIdentifier;
+    return fmu->fmi2.cs.modelIdentifier;
 }
 
-bool fmi2GetNeedsExecutionTool(fmiHandle *fmu)
+const char *fmi2meGetModelIdentifier(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.needsExecutionTool;
+    return fmu->fmi2.me.modelIdentifier;
 }
 
-bool fmi2GetCanHandleVariableCommunicationStepSize(fmiHandle *fmu)
+bool fmi2meGetCompletedIntegratorStepNotNeeded(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.canHandleVariableCommunicationStepSize;
+    return fmu->fmi2.me.completedIntegratorStepNotNeeded;
 }
 
-bool fmi2GetCanInterpolateInputs(fmiHandle *fmu)
+bool fmi2csGetNeedsExecutionTool(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.canInterpolateInputs;
+    return fmu->fmi2.cs.needsExecutionTool;
 }
 
-int fmi2GetMaxOutputDerivativeOrder(fmiHandle *fmu)
+bool fmi2meGetNeedsExecutionTool(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.maxOutputDerivativeOrder;
+        return fmu->fmi2.me.needsExecutionTool;
 }
 
-bool fmi2GetCanRunAsynchronuously(fmiHandle *fmu)
+bool fmics2GetCanHandleVariableCommunicationStepSize(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.canRunAsynchronuously;
+    return fmu->fmi2.cs.canHandleVariableCommunicationStepSize;
 }
 
-bool fmi2GetCanBeInstantiatedOnlyOncePerProcess(fmiHandle *fmu)
+bool fmi2csGetCanInterpolateInputs(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.canBeInstantiatedOnlyOncePerProcess;
+    return fmu->fmi2.cs.canInterpolateInputs;
 }
 
-bool fmi2GetCanNotUseMemoryManagementFunctions(fmiHandle *fmu)
+int fmi2csGetMaxOutputDerivativeOrder(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.canNotUseMemoryManagementFunctions;
+    return fmu->fmi2.cs.maxOutputDerivativeOrder;
 }
 
-bool fmi2GetCanGetAndSetFMUState(fmiHandle *fmu)
+bool fmi2csGetCanRunAsynchronuously(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.canGetAndSetFMUState;
+    return fmu->fmi2.cs.canRunAsynchronuously;
 }
 
-bool fmi2GetCanSerializeFMUState(fmiHandle *fmu)
+bool fmi2csGetCanBeInstantiatedOnlyOncePerProcess(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.canSerializeFMUState;
+    return fmu->fmi2.cs.canBeInstantiatedOnlyOncePerProcess;
 }
 
-bool fmi2GetProvidesDirectionalDerivative(fmiHandle *fmu)
+bool fmi2csGetCanNotUseMemoryManagementFunctions(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi2.providesDirectionalDerivative;
+    return fmu->fmi2.cs.canNotUseMemoryManagementFunctions;
+}
+
+bool fmi2csGetCanGetAndSetFMUState(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.cs.canGetAndSetFMUState;
+}
+
+bool fmi2csGetCanSerializeFMUState(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.cs.canSerializeFMUState;
+}
+
+bool fmi2csGetProvidesDirectionalDerivative(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.cs.providesDirectionalDerivative;
+}
+
+bool fmi2meGetCanBeInstantiatedOnlyOncePerProcess(fmiHandle *fmu)
+{
+    TRACEFUNC
+        return fmu->fmi2.me.canBeInstantiatedOnlyOncePerProcess;
+}
+
+bool fmi2meGetCanNotUseMemoryManagementFunctions(fmiHandle *fmu)
+{
+    TRACEFUNC
+        return fmu->fmi2.me.canNotUseMemoryManagementFunctions;
+}
+
+bool fmi2meGetCanGetAndSetFMUState(fmiHandle *fmu)
+{
+    TRACEFUNC
+        return fmu->fmi2.me.canGetAndSetFMUState;
+}
+
+bool fmi2meGetCanSerializeFMUState(fmiHandle *fmu)
+{
+    TRACEFUNC
+        return fmu->fmi2.me.canSerializeFMUState;
+}
+
+bool fmi2meGetProvidesDirectionalDerivative(fmiHandle *fmu)
+{
+    TRACEFUNC
+        return fmu->fmi2.me.providesDirectionalDerivative;
 }
 
 int fmi2GetNumberOfContinuousStates(fmiHandle *fmu)
@@ -3756,10 +3824,6 @@ fmiHandle *loadFmu(const char *fmufile, const char* instanceName)
             free(fmu);
             return NULL;
         }
-        if(!loadFunctionsFmi2(fmu)) {
-            free(fmu);
-            return NULL;    //Error message should already have been printed
-        }
     }
     else if(fmu->version == fmiVersion3) {
         fmu->fmi3.variables = malloc(100*sizeof(fmi3VariableHandle));
@@ -3834,7 +3898,12 @@ void freeFmu(fmiHandle *fmu)
         freeIfNotNull(fmu->fmi2.generationTool);
         freeIfNotNull(fmu->fmi2.generationDateAndTime);
         freeIfNotNull(fmu->fmi2.variableNamingConvention);
-        freeIfNotNull(fmu->fmi2.modelIdentifier);
+        if(fmu->fmi2.supportsCoSimulation) {
+            freeIfNotNull(fmu->fmi2.cs.modelIdentifier);
+        }
+        if(fmu->fmi2.supportsModelExchange) {
+            freeIfNotNull(fmu->fmi2.me.modelIdentifier);
+        }
     }
     else if(fmu->version == fmiVersion3) {
         freeVoidIfNotNull(fmu->fmi3.outputs);
@@ -4934,3 +5003,4 @@ fmi3ValueReference fmi3GetModelStructureEventIndicatorDependencyKind(fmiHandle *
     }
     // TODO return value if failure ?
 }
+
