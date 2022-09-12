@@ -492,6 +492,50 @@ typedef struct {
 } fmi3ModelStructureElement;
 
 typedef struct {
+    const char* modelIdentifier;
+    bool needsExecutionTool;
+    bool canBeInstantiatedOnlyOncePerProcess;
+    bool canGetAndSetFMUState;
+    bool canSerializeFMUState;
+    bool providesDirectionalDerivative;
+    bool providesAdjointDerivatives;
+    bool providesPerElementDependencies;
+    int maxOutputDerivativeOrder;
+    bool providesIntermediateUpdate;
+    bool mightReturnEarlyFromDoStep;
+    bool providesEvaluateDiscreteStates;
+    int recommendedIntermediateInputSmoothness;
+    bool canHandleVariableCommunicationStepSize;
+    bool canReturnEarlyAfterIntermediateUpdate;
+    double fixedInternalStepSize;
+    bool hasEventMode;
+} fmi3DataCs_t;
+
+typedef struct {
+    const char* modelIdentifier;
+    bool needsExecutionTool;
+    bool canBeInstantiatedOnlyOncePerProcess;
+    bool canGetAndSetFMUState;
+    bool canSerializeFMUState;
+    bool providesDirectionalDerivative;
+    bool providesAdjointDerivatives;
+    bool providesPerElementDependencies;
+    bool needsCompletedIntegratorStep;
+    bool providesEvaluateDiscreteStates;
+} fmi3DataMe_t;
+
+typedef struct {
+    const char* modelIdentifier;
+    bool needsExecutionTool;
+    bool canBeInstantiatedOnlyOncePerProcess;
+    bool canGetAndSetFMUState;
+    bool canSerializeFMUState;
+    bool providesDirectionalDerivative;
+    bool providesAdjointDerivatives;
+    bool providesPerElementDependencies;
+} fmi3DataSe_t;
+
+typedef struct {
     bool supportsModelExchange;
     bool supportsCoSimulation;
     bool supportsScheduledExecution;
@@ -507,30 +551,9 @@ typedef struct {
     const char* generationDateAndTime;
     const char* variableNamingConvention;
 
-    const char* modelIdentifier;
-
-    //Common capabilities
-    bool needsExecutionTool;
-    bool canBeInstantiatedOnlyOncePerProcess;
-    bool canGetAndSetFMUState;
-    bool canSerializeFMUState;
-    bool providesDirectionalDerivative;
-    bool providesAdjointDerivatives;
-    bool providesPerElementDependencies;
-    int maxOutputDerivativeOrder;
-    bool providesIntermediateUpdate;
-    bool mightReturnEarlyFromDoStep;
-    bool providesEvaluateDiscreteStates;
-    int recommendedIntermediateInputSmoothness;
-
-    //Co-simulation only capabilities
-    bool canHandleVariableCommunicationStepSize;
-    bool canReturnEarlyAfterIntermediateUpdate;
-    double fixedInternalStepSize;
-    bool hasEventMode;
-
-    //Model exchange only capabilities
-    bool needsCompletedIntegratorStep;
+    fmi3DataCs_t cs;
+    fmi3DataMe_t me;
+    fmi3DataSe_t se;
 
     bool hasFloat64Variables;
     bool hasFloat32Variables;
@@ -712,6 +735,6 @@ bool parseModelDescriptionFmi3(fmiHandle *fmuFile);
 
 bool loadFunctionsFmi1(fmiHandle *contents);
 bool loadFunctionsFmi2(fmiHandle *contents, fmi2Type fmuType);
-bool loadFunctionsFmi3(fmiHandle *contents);
+bool loadFunctionsFmi3(fmiHandle *contents, fmi3Type fmuType);
 
 #endif // FMIC_PRIVATE_H

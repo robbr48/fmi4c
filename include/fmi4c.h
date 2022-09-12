@@ -506,23 +506,43 @@ FMI4C_DLLAPI fmi3ValueReference fmi3GetModelStructureEventIndicatorDependencyKin
                                                                                   int indicatorId,
                                                                                   int dependencyId);
 
-FMI4C_DLLAPI const char* fmi3GetModelIdentifier(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetNeedsExecutionTool(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetCanGetAndSetFMUState(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetCanSerializeFMUState(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetProvidesDirectionalDerivative(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetProvidesAdjointDerivatives(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetProvidesPerElementDependencies(fmiHandle* fmu);
+FMI4C_DLLAPI const char* fmi3csGetModelIdentifier(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetNeedsExecutionTool(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetCanGetAndSetFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetCanSerializeFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetProvidesDirectionalDerivative(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetProvidesAdjointDerivatives(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetProvidesPerElementDependencies(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetProvidesIntermediateUpdate(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetProvidesEvaluateDiscreteStates(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetHasEventMode(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3csGetRecommendedIntermediateInputSmoothness(fmiHandle* fmu);
+
+FMI4C_DLLAPI const char* fmi3meGetModelIdentifier(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3meGetNeedsExecutionTool(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3meGetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3meGetCanGetAndSetFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3meGetCanSerializeFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3meGetProvidesDirectionalDerivative(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3meGetProvidesAdjointDerivatives(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3meGetProvidesPerElementDependencies(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3meGetProvidesEvaluateDiscreteStates(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3meGetNeedsCompletedIntegratorStep(fmiHandle* fmu);
+
+FMI4C_DLLAPI const char* fmi3seGetModelIdentifier(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3seGetNeedsExecutionTool(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3seGetCanBeInstantiatedOnlyOncePerProcess(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3seGetCanGetAndSetFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3seGetCanSerializeFMUState(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3seGetProvidesDirectionalDerivative(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3seGetProvidesAdjointDerivatives(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi3seGetProvidesPerElementDependencies(fmiHandle* fmu);
+
 FMI4C_DLLAPI int fmi3GetMaxOutputDerivativeOrder(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi3GetCanHandleVariableCommunicationStepSize(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi3GetCanReturnEarlyAfterIntermediateUpdate(fmiHandle* fmu);
 FMI4C_DLLAPI double fmi3GetFixedInternalStepSize(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetHasEventMode(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetProvidesIntermediateUpdate(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetProvidesEvaluateDiscreteStates(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetRecommendedIntermediateInputSmoothness(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmi3GetNeedsCompletedIntegratorStep(fmiHandle* fmu);
 
 FMI4C_DLLAPI bool fmi3InstantiateCoSimulation(fmiHandle *fmu,
                                               fmi3Boolean                    visible,
