@@ -32,6 +32,7 @@ typedef bool fmi3Clock;
 
 // Enums
 typedef enum { fmi3OK, fmi3Warning, fmi3Discard, fmi3Error, fmi3Fatal, } fmi3Status;
+typedef enum { fmi3ModelExchange, fmi3CoSimulation, fmi3ScheduledExecution } fmi3Type;
 typedef enum { fmi3Independent, fmi3Constant, fmi3Fixed, fmi3Tunable, fmi3Discrete, fmi3Dependent } fmi3DependencyKind;
 typedef enum { fmi3IntervalNotYetKnown, fmi3IntervalUnchanged, fmi3IntervalChanged } fmi3IntervalQualifier;
 typedef enum { fmi3CausalityInput, fmi3CausalityOutput, fmi3CausalityParameter, fmi3CausalityCalculatedParameter, fmi3CausalityLocal, fmi3CausalityIndependent, fmi3CausalityStructuralParameter } fmi3Causality;
