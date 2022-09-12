@@ -281,52 +281,6 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             break;
         }
 
-        timeEvent = nextEventTimeDefined && time >= nextEventTime;
-
-        if (fmi3GetHasEventMode(fmu) && (timeEvent || stateEvent || stepEvent)) {
-            fmi3EnterEventMode(fmu);
-
-            nominalsOfContinuousStatesChanged = fmi3False;
-            valuesOfContinuousStatesChanged   = fmi3False;
-
-            //Event iteration
-            bool doTerminate = false;
-            do {
-                // set inputs at super dense time point
-                // S->fmi3SetFloat*/Int*/UInt*/Boolean/String/Binary(m, ...)
-
-                fmi3Boolean nominalsChanged = fmi3False;
-                fmi3Boolean statesChanged   = fmi3False;
-
-                // update discrete states
-                fmi3UpdateDiscreteStates(fmu, &discreteStatesNeedUpdate, &terminateSimulation, &nominalsChanged, &statesChanged, &nextEventTimeDefined, &nextEventTime);
-
-                nominalsOfContinuousStatesChanged |= nominalsChanged;
-                valuesOfContinuousStatesChanged   |= statesChanged;
-
-                if (terminateSimulation) {
-                    doTerminate = true;
-                    break;
-                }
-
-            } while (discreteStatesNeedUpdate);
-
-            if(doTerminate) {
-                break;
-            }
-
-            // enter Continuous-Time Mode
-            fmi3EnterContinuousTimeMode(fmu);
-
-            if (valuesOfContinuousStatesChanged) {
-                fmi3GetContinuousStates(fmu, states, nStates);
-            }
-
-            if (nominalsOfContinuousStatesChanged) {
-                fmi3GetNominalsOfContinuousStates(fmu, nominalStates, nStates);
-            }
-        }
-
         fmi3GetContinuousStateDerivatives(fmu, derivatives, nStates);
 
         fmi3SetTime(fmu, time);
