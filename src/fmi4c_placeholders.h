@@ -368,17 +368,17 @@ fmi1Status placeholder_fmiTerminate(fmi1Component_t c) {
     return fmi1Error;
 }
 
-const char* placeholder_fmi2GetTypesPlatform() {
-    NOT_IMPLEMENTED(fmi2GetTypesPlatform);
+const char* placeholder_fmi2_getTypesPlatform() {
+    NOT_IMPLEMENTED(fmi2_getTypesPlatform);
     return NULL;
 }
 
-const char* placeholder_fmi2GetVersion() {
-    NOT_IMPLEMENTED(fmi2GetVersion);
+const char* placeholder_fmi2_getVersion() {
+    NOT_IMPLEMENTED(fmi2_getVersion);
     return NULL;
 }
 
-fmi2Status placeholder_fmi2SetDebugLogging(fmi2Component c,
+fmi2Status placeholder_fmi2_setDebugLogging(fmi2Component c,
                                fmi2Boolean loggingOn,
                                size_t nCategories,
                                const fmi2String categories[]) {
@@ -386,7 +386,7 @@ fmi2Status placeholder_fmi2SetDebugLogging(fmi2Component c,
     UNUSED(loggingOn);
     UNUSED(nCategories);
     UNUSED(categories);
-    NOT_IMPLEMENTED(fmi2SetDebugLogging);
+    NOT_IMPLEMENTED(fmi2_setDebugLogging);
     return fmi2Error;
 }
 
@@ -416,7 +416,7 @@ void placeholder_fmi2FreeInstance(fmi2Component c) {
 }
 
 /* Enter and exit initialization mode, terminate and reset */
-fmi2Status placeholder_fmi2SetupExperiment(fmi2Component c,
+fmi2Status placeholder_fmi2_setupExperiment(fmi2Component c,
                                            fmi2Boolean toleranceDefined,
                                            fmi2Real tolerance,
                                            fmi2Real startTime,
@@ -428,7 +428,7 @@ fmi2Status placeholder_fmi2SetupExperiment(fmi2Component c,
     UNUSED(startTime);
     UNUSED(stopTimeDefined);
     UNUSED(stopTime);
-    NOT_IMPLEMENTED(fmi2SetupExperiment);
+    NOT_IMPLEMENTED(fmi2_setupExperiment);
     return fmi2Error;
 }
 
@@ -456,7 +456,7 @@ fmi2Status placeholder_fmi2Reset(fmi2Component c) {
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetReal(fmi2Component c,
+fmi2Status placeholder_fmi2_getReal(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    fmi2Real value[]) {
@@ -464,11 +464,11 @@ fmi2Status placeholder_fmi2GetReal(fmi2Component c,
     UNUSED(vr);
     UNUSED(nvr);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetReal);
+    NOT_IMPLEMENTED(fmi2_getReal);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetInteger(fmi2Component c,
+fmi2Status placeholder_fmi2_getInteger(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    fmi2Integer value[]) {
@@ -476,11 +476,11 @@ fmi2Status placeholder_fmi2GetInteger(fmi2Component c,
     UNUSED(vr);
     UNUSED(nvr);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetInteger);
+    NOT_IMPLEMENTED(fmi2_getInteger);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetBoolean(fmi2Component c,
+fmi2Status placeholder_fmi2_getBoolean(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    fmi2Boolean value[]) {
@@ -488,11 +488,11 @@ fmi2Status placeholder_fmi2GetBoolean(fmi2Component c,
     UNUSED(vr);
     UNUSED(nvr);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetBoolean);
+    NOT_IMPLEMENTED(fmi2_getBoolean);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetString(fmi2Component c,
+fmi2Status placeholder_fmi2_getString(fmi2Component c,
                                      const fmi2ValueReference vr[],
                                      size_t nvr,
                                      fmi2String value[]) {
@@ -500,11 +500,11 @@ fmi2Status placeholder_fmi2GetString(fmi2Component c,
     UNUSED(vr);
     UNUSED(nvr);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetString);
+    NOT_IMPLEMENTED(fmi2_getString);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SetReal(fmi2Component c,
+fmi2Status placeholder_fmi2_setReal(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    const fmi2Real value[]) {
@@ -512,11 +512,11 @@ fmi2Status placeholder_fmi2SetReal(fmi2Component c,
     UNUSED(vr);
     UNUSED(nvr);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2SetReal);
+    NOT_IMPLEMENTED(fmi2_setReal);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SetInteger(fmi2Component c,
+fmi2Status placeholder_fmi2_setInteger(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    const fmi2Integer value[]) {
@@ -524,11 +524,11 @@ fmi2Status placeholder_fmi2SetInteger(fmi2Component c,
     UNUSED(vr);
     UNUSED(nvr);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2SetInteger);
+    NOT_IMPLEMENTED(fmi2_setInteger);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SetBoolean(fmi2Component c,
+fmi2Status placeholder_fmi2_setBoolean(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    const fmi2Boolean value[]) {
@@ -536,11 +536,11 @@ fmi2Status placeholder_fmi2SetBoolean(fmi2Component c,
     UNUSED(vr);
     UNUSED(nvr);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2SetBoolean);
+    NOT_IMPLEMENTED(fmi2_setBoolean);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SetString(fmi2Component c,
+fmi2Status placeholder_fmi2_setString(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    const fmi2String value[]) {
@@ -548,7 +548,7 @@ fmi2Status placeholder_fmi2SetString(fmi2Component c,
     UNUSED(vr);
     UNUSED(nvr);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2SetString);
+    NOT_IMPLEMENTED(fmi2_setString);
     return fmi2Error;
 }
 
@@ -586,66 +586,66 @@ fmi2Status placeholder_fmi2CompletedIntegratorStep(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SetTime(fmi2Component c, fmi2Real time)
+fmi2Status placeholder_fmi2_setTime(fmi2Component c, fmi2Real time)
 {
     UNUSED(c);
     UNUSED(time);
-    NOT_IMPLEMENTED(fmi2SetTime);
+    NOT_IMPLEMENTED(fmi2_setTime);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SetContinuousStates(fmi2Component c,
+fmi2Status placeholder_fmi2_setContinuousStates(fmi2Component c,
                                                const fmi2Real states[],
                                                size_t nStates)
 {
     UNUSED(c);
     UNUSED(states);
     UNUSED(nStates);
-    NOT_IMPLEMENTED(fmi2SetContinuousStates);
+    NOT_IMPLEMENTED(fmi2_setContinuousStates);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetDerivatives(fmi2Component c,
+fmi2Status placeholder_fmi2_getDerivatives(fmi2Component c,
                                           fmi2Real derivatives[],
                                           size_t nx)
 {
     UNUSED(c);
     UNUSED(derivatives);
     UNUSED(nx);
-    NOT_IMPLEMENTED(fmi2GetDerivatives);
+    NOT_IMPLEMENTED(fmi2_getDerivatives);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetEventIndicators(fmi2Component c,
+fmi2Status placeholder_fmi2_getEventIndicators(fmi2Component c,
                                               fmi2Real eventIndicators[],
                                               size_t ni)
 {
    UNUSED(c);
    UNUSED(eventIndicators);
    UNUSED(ni);
-   NOT_IMPLEMENTED(fmi2GetEventIndicators);
+   NOT_IMPLEMENTED(fmi2_getEventIndicators);
    return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetContinuousStates(fmi2Component c,
+fmi2Status placeholder_fmi2_getContinuousStates(fmi2Component c,
                                    fmi2Real states[],
                                    size_t nStates)
 {
     UNUSED(c);
     UNUSED(states);
     UNUSED(nStates);
-    NOT_IMPLEMENTED(fmi2GetContinuousStates);
+    NOT_IMPLEMENTED(fmi2_getContinuousStates);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetNominalsOfContinuousStates(fmi2Component c,
+fmi2Status placeholder_fmi2_getNominalsOfContinuousStates(fmi2Component c,
                                                          fmi2Real x_nominal[],
                                                          size_t nx)
 {
     UNUSED(c);
     UNUSED(x_nominal);
     UNUSED(nx);
-    NOT_IMPLEMENTED(fmi2GetNominalsOfContinuousStates);
+    NOT_IMPLEMENTED(fmi2_getNominalsOfContinuousStates);
     return fmi2Error;
 }
 
@@ -661,19 +661,19 @@ fmi2Status placeholder_fmi2DoStep(fmi2Component c,
     return fmi2OK;
 }
 
-fmi2Status placeholder_fmi2GetFMUstate(fmi2Component c,
+fmi2Status placeholder_fmi2_getFMUstate(fmi2Component c,
                                        fmi2FMUstate* FMUstate) {
     UNUSED(c);
     UNUSED(FMUstate);
-    NOT_IMPLEMENTED(fmi2GetFMUstate);
+    NOT_IMPLEMENTED(fmi2_getFMUstate);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SetFMUstate(fmi2Component c,
+fmi2Status placeholder_fmi2_setFMUstate(fmi2Component c,
                                        fmi2FMUstate FMUstate) {
     UNUSED(c);
     UNUSED(FMUstate);
-    NOT_IMPLEMENTED(fmi2SetFMUstate);
+    NOT_IMPLEMENTED(fmi2_setFMUstate);
     return fmi2Error;
 }
 
@@ -719,7 +719,7 @@ fmi2Status placeholder_fmi2DeSerializeFMUstate(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetDirectionalDerivative(fmi2Component c,
+fmi2Status placeholder_fmi2_getDirectionalDerivative(fmi2Component c,
                                                     const fmi2ValueReference vUnknownRef[],
                                                     size_t nUnknown,
                                                     const fmi2ValueReference vKnownRef[],
@@ -733,11 +733,11 @@ fmi2Status placeholder_fmi2GetDirectionalDerivative(fmi2Component c,
     UNUSED(nKnown);
     UNUSED(dvKnown);
     UNUSED(dvUnknown);
-    NOT_IMPLEMENTED(fmi2GetDirectionalDerivative);
+    NOT_IMPLEMENTED(fmi2_getDirectionalDerivative);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SetRealInputDerivatives(fmi2Component c,
+fmi2Status placeholder_fmi2_setRealInputDerivatives(fmi2Component c,
                                                    const fmi2ValueReference vr[],
                                                    size_t nvr,
                                                    const fmi2Integer order[],
@@ -747,11 +747,11 @@ fmi2Status placeholder_fmi2SetRealInputDerivatives(fmi2Component c,
     UNUSED(nvr);
     UNUSED(order);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2SetRealInputDerivatives);
+    NOT_IMPLEMENTED(fmi2_setRealInputDerivatives);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetRealOutputDerivatives(fmi2Component c,
+fmi2Status placeholder_fmi2_getRealOutputDerivatives(fmi2Component c,
                                                     const fmi2ValueReference vr[],
                                                     size_t nvr,
                                                     const fmi2Integer order[],
@@ -761,7 +761,7 @@ fmi2Status placeholder_fmi2GetRealOutputDerivatives(fmi2Component c,
     UNUSED(nvr);
     UNUSED(order);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetRealOutputDerivatives);
+    NOT_IMPLEMENTED(fmi2_getRealOutputDerivatives);
     return fmi2Error;
 }
 
@@ -771,45 +771,45 @@ fmi2Status placeholder_fmi2CancelStep(fmi2Component c) {
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetStatus(fmi2Component c, const fmi2StatusKind s, fmi2Status* value) {
+fmi2Status placeholder_fmi2_getStatus(fmi2Component c, const fmi2StatusKind s, fmi2Status* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetStatus);
+    NOT_IMPLEMENTED(fmi2_getStatus);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetRealStatus(fmi2Component c, const fmi2StatusKind s, fmi2Real* value) {
+fmi2Status placeholder_fmi2_getRealStatus(fmi2Component c, const fmi2StatusKind s, fmi2Real* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetRealStatus);
+    NOT_IMPLEMENTED(fmi2_getRealStatus);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetIntegerStatus(fmi2Component c, const fmi2StatusKind s, fmi2Integer* value) {
+fmi2Status placeholder_fmi2_getIntegerStatus(fmi2Component c, const fmi2StatusKind s, fmi2Integer* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetIntegerStatus);
+    NOT_IMPLEMENTED(fmi2_getIntegerStatus);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetBooleanStatus(fmi2Component c, const fmi2StatusKind s, fmi2Boolean* value) {
+fmi2Status placeholder_fmi2_getBooleanStatus(fmi2Component c, const fmi2StatusKind s, fmi2Boolean* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetBooleanStatus);
+    NOT_IMPLEMENTED(fmi2_getBooleanStatus);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2GetStringStatus(fmi2Component c,
+fmi2Status placeholder_fmi2_getStringStatus(fmi2Component c,
                                            const fmi2StatusKind s,
                                            fmi2String* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
-    NOT_IMPLEMENTED(fmi2GetStringStatus);
+    NOT_IMPLEMENTED(fmi2_getStringStatus);
     return fmi2Error;
 }
 

@@ -188,14 +188,14 @@ int main(int argc, char *argv[])
         printf("  Using time step: %f\n", timeStepOverride);
     }
 
-    fmiHandle *fmu = loadFmu(fmuPath, "testfmu");
+    fmiHandle *fmu = fmi4c_loadFmu(fmuPath, "testfmu");
 
     if(fmu == NULL) {
         printf("Failed to load FMU\n");
         exit(1);
     }
 
-    fmiVersion_t version = getFmiVersion(fmu);
+    fmiVersion_t version = fmi4c_getFmiVersion(fmu);
     printf("--- FMU data ---\n  FMI Version:        ");
     if(version == fmiVersion1) {
         printf("1\n");
@@ -254,14 +254,14 @@ int main(int argc, char *argv[])
         }
 
         //Load second FMU
-        fmiHandle *fmu2 = loadFmu(fmuPath2, "testfmu2");
+        fmiHandle *fmu2 = fmi4c_loadFmu(fmuPath2, "testfmu2");
 
         if(fmu2 == NULL) {
             printf("Failed to load second FMU\n");
             exit(1);
         }
 
-        fmiVersion_t version2 = getFmiVersion(fmu2);
+        fmiVersion_t version2 = fmi4c_getFmiVersion(fmu2);
         if(version2 != fmiVersion3) {
             printf("Can only test TLM with FMI 3. Second FMU is of wrong version.\n");
             return 1;
@@ -272,8 +272,8 @@ int main(int argc, char *argv[])
         return 1;
 #else
         int retval = testFMI3TLM(fmu, fmu2, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
-        freeFmu(fmu);
-        freeFmu(fmu2);
+        fmi4c_freeFmu(fmu);
+        fmi4c_freeFmu(fmu2);
         return retval;
 #endif
     }
@@ -289,7 +289,7 @@ int main(int argc, char *argv[])
         retval = testFMI3(fmu, forceModelExchange, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
 
-    freeFmu(fmu);
+    fmi4c_freeFmu(fmu);
 
 
 

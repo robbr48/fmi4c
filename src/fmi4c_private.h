@@ -223,7 +223,7 @@ typedef struct {
     fmiGetNominalContinuousStates_t getNominalContinuousStates;
     fmiGetStateValueReferences_t getStateValueReferences;
     fmiTerminate_t terminate;
-} fmi1Data_t;
+} fmi1_data_t;
 
 
 typedef struct {
@@ -724,7 +724,7 @@ typedef struct {
     void* dll;
 #endif
 
-    fmi1Data_t fmi1;
+    fmi1_data_t fmi1;
     fmi2Data_t fmi2;
     fmi3Data_t fmi3;
 } fmiHandle;

@@ -125,7 +125,7 @@ void intermediateUpdateTLM(
     fmiHandle *fmu = (fmiHandle*)instanceEnvironment;
     if(intermediateVariableGetAllowed) {
         double v;
-        fmi3GetFloat64(fmu, &vr_v, 1, &v, 1);
+        fmi3_getFloat64(fmu, &vr_v, 1, &v, 1);
         if(intermediateStepFinished) {
             if(fmu == tlm.fmu1) {
                 ++tlm.table2end;
@@ -168,10 +168,10 @@ void intermediateUpdateTLM(
             c = getInterpolatedForce2(intermediateUpdateTime-tlm.dt);
         }
         double v;
-        fmi3GetFloat64(fmu, &vr_v, 1, &v, 1);
+        fmi3_getFloat64(fmu, &vr_v, 1, &v, 1);
 
         double F = v*tlm.Zc + c;
-        fmi3SetFloat64(fmu, &vr_f, 1, &F, 1);
+        fmi3_setFloat64(fmu, &vr_f, 1, &F, 1);
     }
 }
 
@@ -189,7 +189,7 @@ void* doStepInThread(void* argsptr)
     struct doStepArgs *args = (struct doStepArgs*)argsptr;
     bool eventEncountered, terminateSimulation, earlyReturn;
     double lastT;
-    fmi3DoStep(args->fmu, args->tcur, args->tstep, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
+    fmi3_doStep(args->fmu, args->tcur, args->tstep, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
     return NULL;
 }
 
@@ -244,21 +244,21 @@ int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub, bool overrideStopTime, double 
     //Instantiate
     fmi3ValueReference requiredIntermediateVariables[2] = {0, 1};
     fmi3ValueReference nRequiredIntermediateVaraibles = 2;
-    fmi3InstantiateCoSimulation(fmua, fmi3False, fmi3True, fmi3False, fmi3False, requiredIntermediateVariables, nRequiredIntermediateVaraibles, fmua, loggerFmi3, intermediateUpdateTLM);
-    fmi3InstantiateCoSimulation(fmub, fmi3False, fmi3True, fmi3False, fmi3False, requiredIntermediateVariables, nRequiredIntermediateVaraibles, fmub, loggerFmi3, intermediateUpdateTLM);
+    fmi3_instantiateCoSimulation(fmua, fmi3False, fmi3True, fmi3False, fmi3False, requiredIntermediateVariables, nRequiredIntermediateVaraibles, fmua, loggerFmi3, intermediateUpdateTLM);
+    fmi3_instantiateCoSimulation(fmub, fmi3False, fmi3True, fmi3False, fmi3False, requiredIntermediateVariables, nRequiredIntermediateVaraibles, fmub, loggerFmi3, intermediateUpdateTLM);
 
     //Enter initialization
-    fmi3EnterInitializationMode(fmua, fmi3False, 0, tcur, fmi3True, tstop);
-    fmi3EnterInitializationMode(fmub, fmi3False, 0, tcur, fmi3True, tstop);
+    fmi3_enterInitializationMode(fmua, fmi3False, 0, tcur, fmi3True, tstop);
+    fmi3_enterInitializationMode(fmub, fmi3False, 0, tcur, fmi3True, tstop);
 
     //Exit initialization
-    fmi3ExitInitializationMode(fmua);
-    fmi3ExitInitializationMode(fmub);
+    fmi3_exitInitializationMode(fmua);
+    fmi3_exitInitializationMode(fmub);
 
     //Simlation loop
     double f = 0;
-    fmi3SetFloat64(fmua, &vr_f, 1, &f, 1);    //Initialize TLM force to zero
-    fmi3SetFloat64(fmub, &vr_f, 1, &f, 1);
+    fmi3_setFloat64(fmua, &vr_f, 1, &f, 1);    //Initialize TLM force to zero
+    fmi3_setFloat64(fmub, &vr_f, 1, &f, 1);
 
     fmi3Float64 m1 = 5;         //Mass 1
     fmi3Float64 c1 = 50;        //Damping 1
@@ -271,12 +271,12 @@ int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub, bool overrideStopTime, double 
     fmi3ValueReference vr_c = 3;
     fmi3ValueReference vr_k = 4;
 
-    fmi3SetFloat64(fmua, &vr_m, 1, &m1, 1);
-    fmi3SetFloat64(fmua, &vr_c, 1, &c1, 1);
-    fmi3SetFloat64(fmua, &vr_k, 1, &k1, 1);
-    fmi3SetFloat64(fmub, &vr_m, 1, &m2, 1);
-    fmi3SetFloat64(fmub, &vr_c, 1, &c2, 1);
-    fmi3SetFloat64(fmub, &vr_k, 1, &k2, 1);
+    fmi3_setFloat64(fmua, &vr_m, 1, &m1, 1);
+    fmi3_setFloat64(fmua, &vr_c, 1, &c1, 1);
+    fmi3_setFloat64(fmua, &vr_k, 1, &k1, 1);
+    fmi3_setFloat64(fmub, &vr_m, 1, &m2, 1);
+    fmi3_setFloat64(fmub, &vr_c, 1, &c2, 1);
+    fmi3_setFloat64(fmub, &vr_k, 1, &k2, 1);
 
     FILE *pResultFile;
     fclose(fopen(outputCsvPath, "w"));          //Clear old results in file
@@ -297,7 +297,7 @@ int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub, bool overrideStopTime, double 
 
     while(tcur < tstop) {
         if(tcur > 0.1/* && tcur < 0.1+tstep*/) {
-            fmi3SetFloat64(fmub, &vr_fd, 1, &fd, 1); //Apply disturbance force
+            fmi3_setFloat64(fmub, &vr_fd, 1, &fd, 1); //Apply disturbance force
         }
 
         //Create threads
@@ -312,10 +312,10 @@ int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub, bool overrideStopTime, double 
         pthread_join(thread2, NULL);
 
         double v1, v2, f1, f2;
-        fmi3GetFloat64(fmua, &vr_v, 1, &v1, 1);
-        fmi3GetFloat64(fmub, &vr_v, 1, &v2, 1);
-        fmi3GetFloat64(fmua, &vr_f, 1, &f1, 1);
-        fmi3GetFloat64(fmub, &vr_f, 1, &f2, 1);
+        fmi3_getFloat64(fmua, &vr_v, 1, &v1, 1);
+        fmi3_getFloat64(fmub, &vr_v, 1, &v2, 1);
+        fmi3_getFloat64(fmua, &vr_f, 1, &f1, 1);
+        fmi3_getFloat64(fmub, &vr_f, 1, &f2, 1);
         fprintf(pResultFile, "%f,%f,%f,%f,%f\n",tcur,v1,v2,f1,f2);
         tcur += tstep;
 
@@ -325,10 +325,10 @@ int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub, bool overrideStopTime, double 
 
     fclose(pResultFile);
 
-    fmi3Terminate(fmua);
-    fmi3Terminate(fmub);
-    fmi3FreeInstance(fmua);
-    fmi3FreeInstance(fmub);
+    fmi3_terminate(fmua);
+    fmi3_terminate(fmub);
+    fmi3_freeInstance(fmua);
+    fmi3_freeInstance(fmub);
 
     printf("TLM test finished!\n");
 

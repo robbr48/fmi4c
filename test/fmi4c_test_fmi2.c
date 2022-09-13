@@ -28,7 +28,7 @@ void loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
 int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Instantiate FMU
-    if(!fmi2Instantiate(fmu, fmi2ModelExchange, loggerFmi2, calloc, free, NULL, NULL, fmi2False, fmi2True)) {
+    if(!fmi2_instantiate(fmu, fmi2ModelExchange, loggerFmi2, calloc, free, NULL, NULL, fmi2False, fmi2True)) {
         printf("fmi2Instantiate() failed\n");
         exit(1);
     }
@@ -40,40 +40,40 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     double stepSize = 0.001;
     double stopTime = 1;
 
-    if(fmi2DefaultStartTimeDefined(fmu)) {
-        startTime = fmi2GetDefaultStartTime(fmu);
+    if(fmi2_defaultStartTimeDefined(fmu)) {
+        startTime = fmi2_getDefaultStartTime(fmu);
     }
     if(overrideTimeStep) {
         stepSize = timeStepOverride;
     }
-    else if(fmi2DefaultStepSizeDefined(fmu)) {
-        stepSize = fmi2GetDefaultStepSize(fmu);
+    else if(fmi2_defaultStepSizeDefined(fmu)) {
+        stepSize = fmi2_getDefaultStepSize(fmu);
     }
     if(overrideStopTime) {
         stopTime = stopTimeOverride;
     }
-    else if(fmi2DefaultStopTimeDefined(fmu)) {
-        stopTime = fmi2GetDefaultStopTime(fmu);
+    else if(fmi2_defaultStopTimeDefined(fmu)) {
+        stopTime = fmi2_getDefaultStopTime(fmu);
     }
 
     fmi2Status status;
 
     //Setup experiment
-    status = fmi2SetupExperiment(fmu, fmi2False, 0, startTime, fmi2False, 0.0);
+    status = fmi2_setupExperiment(fmu, fmi2False, 0, startTime, fmi2False, 0.0);
     if(status != fmi2OK) {
         printf("fmi2EnterInitializationMode() failed\n");
         exit(1);
     }
 
     //Enter initialization mode
-    status = fmi2EnterInitializationMode(fmu);
+    status = fmi2_enterInitializationMode(fmu);
     if(status != fmi2OK) {
         printf("fmi2EnterInitializationMode() failed\n");
         exit(1);
     }
 
     //Exit initialization mode
-    status = fmi2ExitInitializationMode(fmu);
+    status = fmi2_exitInitializationMode(fmu);
     if(status != fmi2OK) {
         printf("fmi3ExitInitializationMode() failed\n");
         exit(1);
@@ -97,8 +97,8 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     eventInfo.nextEventTimeDefined = fmi2False;
     eventInfo.nextEventTime = 0.0;
 
-    nStates = fmi2GetNumberOfContinuousStates(fmu);
-    nEventIndicators = fmi2GetNumberOfEventIndicators(fmu);
+    nStates = fmi2_getNumberOfContinuousStates(fmu);
+    nEventIndicators = fmi2_getNumberOfEventIndicators(fmu);
 
     states = malloc(nStates*sizeof(double));
     derivatives = malloc(nStates*sizeof(double));
@@ -109,25 +109,25 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     eventInfo.newDiscreteStatesNeeded = fmi2True;
     eventInfo.terminateSimulation     = fmi2False;
     while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation) {
-        fmi2NewDiscreteStates(fmu, &eventInfo);
+        fmi2_newDiscreteStates(fmu, &eventInfo);
     }
-    fmi2EnterContinuousTimeMode(fmu);
+    fmi2_enterContinuousTimeMode(fmu);
 
-    status = fmi2GetContinuousStates(fmu, states, nStates);
+    status = fmi2_getContinuousStates(fmu, states, nStates);
     if(status != fmi2OK) {
-        printf("fmi2GetContinuousStates() failed\n");
+        printf("fmi2_getContinuousStates() failed\n");
         exit(1);
     }
-    status = fmi2GetEventIndicators(fmu, eventIndicators, nEventIndicators);
+    status = fmi2_getEventIndicators(fmu, eventIndicators, nEventIndicators);
     if(status != fmi2OK) {
-        printf("fmi2GetEventIndicators() failed\n");
+        printf("fmi2_getEventIndicators() failed\n");
         exit(1);
     }
 
     outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
-        fprintf(outputFile,",%s",fmi2GetVariableName(fmi2GetVariableByValueReference(fmu, outputRefs[i])));
+        fprintf(outputFile,",%s",fmi2_getVariableName(fmi2_getVariableByValueReference(fmu, outputRefs[i])));
     }
     fprintf(outputFile,"\n");
 
@@ -140,7 +140,7 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
         //Interpolate inputs from CSV file
         for(int i=1; i<nInterpolators; ++i) {
-            fmi2VariableHandle *var = fmi2GetVariableByName(fmu, interpolationData[i].name);
+            fmi2VariableHandle *var = fmi2_getVariableByName(fmu, interpolationData[i].name);
             if(var == NULL) {
                 printf("Variable in input file does not exist in FMU: %s\n", interpolationData[i].name);
                 free(derivatives);
@@ -150,24 +150,24 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
                 return 1;
             }
             fmi2Real value = interpolate(&interpolationData[0], &interpolationData[i], time, dataSize);
-            fmi2ValueReference vr = fmi2GetVariableValueReference(var);
-            fmi2SetReal(fmu, &vr, 1, &value);
+            fmi2ValueReference vr = fmi2_getVariableValueReference(var);
+            fmi2_setReal(fmu, &vr, 1, &value);
         }
 
         size_t k;
         fmi2Real lastTime;
         int zeroCrossingEvent = 0;
 
-        status = fmi2SetTime(fmu, time);
+        status = fmi2_setTime(fmu, time);
         if(status != fmi2OK) {
-            printf("fmi2SetTime() failed\n");
+            printf("fmi2_setTime() failed\n");
             exit(1);
         }
 
         memcpy(eventIndicatorsPrev, eventIndicators, nEventIndicators*sizeof(double));
-        status = fmi2GetEventIndicators(fmu, eventIndicators, nEventIndicators);
+        status = fmi2_getEventIndicators(fmu, eventIndicators, nEventIndicators);
         if(status != fmi2OK) {
-            printf("fmi2GetEventIndicators() failed\n");
+            printf("fmi2_getEventIndicators() failed\n");
             exit(1);
         }
 
@@ -182,7 +182,7 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         //Handle events
         if (callEventUpdate || zeroCrossingEvent ||
                 (eventInfo.nextEventTimeDefined && time == eventInfo.nextEventTime)) {
-            status = fmi2EnterEventMode(fmu);
+            status = fmi2_enterEventMode(fmu);
             if(status != fmi2OK) {
                 printf("fmi2EnterEventMode() failed\n");
                 exit(1);
@@ -192,21 +192,21 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             eventInfo.newDiscreteStatesNeeded = fmi2True;
             eventInfo.terminateSimulation     = fmi2False;
             while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation) {
-                fmi2NewDiscreteStates(fmu, &eventInfo);
+                fmi2_newDiscreteStates(fmu, &eventInfo);
             }
-            status = fmi2EnterContinuousTimeMode(fmu);
+            status = fmi2_enterContinuousTimeMode(fmu);
             if(status != fmi2OK) {
                 printf("fmi2EnterContinuousTimeMode() failed\n");
                 exit(1);
             }
-            status = fmi2GetContinuousStates(fmu, states, nStates);
+            status = fmi2_getContinuousStates(fmu, states, nStates);
             if(status != fmi2OK) {
-                printf("fmi2GetContinuousStates() failed\n");
+                printf("fmi2_getContinuousStates() failed\n");
                 exit(1);
             }
-            status = fmi2GetEventIndicators(fmu, eventIndicators, nEventIndicators);
+            status = fmi2_getEventIndicators(fmu, eventIndicators, nEventIndicators);
             if(status != fmi2OK) {
-                printf("fmi2GetEventIndicators() failed\n");
+                printf("fmi2_getEventIndicators() failed\n");
                 exit(1);
             }
         }
@@ -224,21 +224,21 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         }
 
         //Perform integration
-        status = fmi2GetDerivatives(fmu, derivatives, nStates);
+        status = fmi2_getDerivatives(fmu, derivatives, nStates);
         if(status != fmi2OK) {
-            printf("fmi2GetDerivatives() failed\n");
+            printf("fmi2_getDerivatives() failed\n");
             exit(1);
         }
         for (k = 0; k < nStates; k++) {
             states[k] = states[k] + actualStepSize*derivatives[k];
         }
 
-        status = fmi2SetContinuousStates(fmu, states, nStates);
+        status = fmi2_setContinuousStates(fmu, states, nStates);
         if(status != fmi2OK) {
-            printf("fmi2SetContinuousStates() failed\n");
+            printf("fmi2_setContinuousStates() failed\n");
             exit(1);
         }
-        status = fmi2CompletedIntegratorStep(fmu, fmi2True, &callEventUpdate, &terminateSimulation);
+        status = fmi2_completedIntegratorStep(fmu, fmi2True, &callEventUpdate, &terminateSimulation);
         if(status != fmi2OK) {
             printf("fmi2CompletedIntegratorStep() failed\n");
             exit(1);
@@ -248,7 +248,7 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         double value;
         fprintf(outputFile,"%f",time);
         for(int i=0; i<numOutputs; ++i) {
-            fmi2GetReal(fmu, &outputRefs[i], 1, &value);
+            fmi2_getReal(fmu, &outputRefs[i], 1, &value);
             fprintf(outputFile,",%f",value);
         }
         fprintf(outputFile,"\n");
@@ -261,10 +261,10 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
     printf("  Simulation finished.\n");
 
-    fmi2Terminate(fmu);
+    fmi2_terminate(fmu);
     printf("  FMU successfully terminated.\n");
 
-    fmi2FreeInstance(fmu);
+    fmi2_freeInstance(fmu);
 
     return 0;
 }
@@ -273,7 +273,7 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Instantiate FMU
-    if(!fmi2Instantiate(fmu, fmi2CoSimulation, loggerFmi2, calloc, free, NULL, NULL, fmi2False, fmi2True)) {
+    if(!fmi2_instantiate(fmu, fmi2CoSimulation, loggerFmi2, calloc, free, NULL, NULL, fmi2False, fmi2True)) {
         printf("fmi2Instantiate() failed\n");
         exit(1);
     }
@@ -284,40 +284,40 @@ int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     double stepSize = 0.001;
     double stopTime = 1;
 
-    if(fmi2DefaultStartTimeDefined(fmu)) {
-        startTime = fmi2GetDefaultStartTime(fmu);
+    if(fmi2_defaultStartTimeDefined(fmu)) {
+        startTime = fmi2_getDefaultStartTime(fmu);
     }
     if(overrideTimeStep) {
         stepSize = timeStepOverride;
     }
-    else if(fmi2DefaultStepSizeDefined(fmu)) {
-        stepSize = fmi2GetDefaultStepSize(fmu);
+    else if(fmi2_defaultStepSizeDefined(fmu)) {
+        stepSize = fmi2_getDefaultStepSize(fmu);
     }
     if(overrideStopTime) {
         stopTime = stopTimeOverride;
     }
-    else if(fmi2DefaultStopTimeDefined(fmu)) {
-        stopTime = fmi2GetDefaultStopTime(fmu);
+    else if(fmi2_defaultStopTimeDefined(fmu)) {
+        stopTime = fmi2_getDefaultStopTime(fmu);
     }
 
     fmi2Status status;
 
     //Setup experiment
-    status = fmi2SetupExperiment(fmu, fmi2False, 0, startTime, fmi2False, 0.0);
+    status = fmi2_setupExperiment(fmu, fmi2False, 0, startTime, fmi2False, 0.0);
     if(status != fmi2OK) {
         printf("fmi2EnterInitializationMode() failed\n");
         exit(1);
     }
 
     //Enter initialization mode
-    status = fmi2EnterInitializationMode(fmu);
+    status = fmi2_enterInitializationMode(fmu);
     if(status != fmi2OK) {
         printf("fmi2EnterInitializationMode() failed\n");
         exit(1);
     }
 
     //Exit initialization mode
-    status = fmi2ExitInitializationMode(fmu);
+    status = fmi2_exitInitializationMode(fmu);
     if(status != fmi2OK) {
         printf("fmi3ExitInitializationMode() failed\n");
         exit(1);
@@ -328,7 +328,7 @@ int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     outputFile = fopen(outputCsvPath, "w");
     fprintf(outputFile,"time");
     for(int i=0; i<numOutputs; ++i) {
-        fprintf(outputFile,",%s",fmi2GetVariableName(fmi2GetVariableByValueReference(fmu, outputRefs[i])));
+        fprintf(outputFile,",%s",fmi2_getVariableName(fmi2_getVariableByValueReference(fmu, outputRefs[i])));
     }
     fprintf(outputFile,"\n");
 
@@ -336,18 +336,18 @@ int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
         //Interpolate inputs from CSV file
         for(int i=1; i<nInterpolators; ++i) {
-            fmi2VariableHandle *var = fmi2GetVariableByName(fmu, interpolationData[i].name);
+            fmi2VariableHandle *var = fmi2_getVariableByName(fmu, interpolationData[i].name);
             if(var == NULL) {
                 printf("Variable in input file does not exist in FMU: %s\n", interpolationData[i].name);
                 return 1;
             }
             fmi2Real value = interpolate(&interpolationData[0], &interpolationData[i], time, dataSize);
-            fmi2ValueReference vr = fmi2GetVariableValueReference(var);
-            fmi2SetReal(fmu, &vr, 1, &value);
+            fmi2ValueReference vr = fmi2_getVariableValueReference(var);
+            fmi2_setReal(fmu, &vr, 1, &value);
         }
 
         //Take a step
-        status = fmi2DoStep(fmu, time, stepSize, fmi2True);
+        status = fmi2_doStep(fmu, time, stepSize, fmi2True);
         if(status != fmi2OK) {
             printf("fmi2DoStep failed\n");
             exit(1);
@@ -357,7 +357,7 @@ int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         double value;
         fprintf(outputFile,"%f",time);
         for(int i=0; i<numOutputs; ++i) {
-            fmi2GetReal(fmu, &outputRefs[i], 1, &value);
+            fmi2_getReal(fmu, &outputRefs[i], 1, &value);
             fprintf(outputFile,",%f",value);
         }
         fprintf(outputFile,"\n");
@@ -365,9 +365,9 @@ int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     fclose(outputFile);
     printf("  Simulation finished.\n");
 
-    fmi2Terminate(fmu);
+    fmi2_terminate(fmu);
     printf("  FMU successfully terminated.\n");
-    fmi2FreeInstance(fmu);
+    fmi2_freeInstance(fmu);
     return 0;
 }
 
@@ -375,13 +375,13 @@ int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 int testFMI2(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Loop through variables in FMU
-    for(size_t i=0; i<fmi2GetNumberOfVariables(fmu); ++i)
+    for(size_t i=0; i<fmi2_getNumberOfVariables(fmu); ++i)
     {
-        fmi2VariableHandle* var = fmi2GetVariableByIndex(fmu, i);
-        const char* name = fmi2GetVariableName(var);
-        fmi2DataType type = fmi2GetVariableDataType(var);
-        fmi2Causality causality = fmi2GetVariableCausality(var);
-        unsigned int vr = fmi2GetVariableValueReference(var);
+        fmi2VariableHandle* var = fmi2_getVariableByIndex(fmu, i);
+        const char* name = fmi2_getVariableName(var);
+        fmi2DataType type = fmi2_getVariableDataType(var);
+        fmi2Causality causality = fmi2_getVariableCausality(var);
+        unsigned int vr = fmi2_getVariableValueReference(var);
 
         if(causality == fmi2CausalityOutput)
         {
@@ -395,10 +395,10 @@ int testFMI2(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, dou
         }
     }
 
-    if(fmi2GetSupportsCoSimulation(fmu) && !forceModelExchange) {
+    if(fmi2_getSupportsCoSimulation(fmu) && !forceModelExchange) {
         return testFMI2CS(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
-    else if(fmi2GetSupportsModelExchange(fmu)){
+    else if(fmi2_getSupportsModelExchange(fmu)){
         return testFMI2ME(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
     else {
