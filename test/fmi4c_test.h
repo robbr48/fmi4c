@@ -11,6 +11,8 @@ typedef struct {
     double data[1024];
 } namedData;
 
+extern int logLevel;
+
 extern FILE *outputFile;
 extern int numOutputs;
 extern unsigned int outputRefs[VAR_MAX];

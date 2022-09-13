@@ -16,6 +16,15 @@ void loggerFmi1(fmi1Component_t component,
     UNUSED(status)
     UNUSED(category)
 
+    if(status == fmi1OK && logLevel < 5 ||
+        status == fmi1Pending && logLevel < 5 ||
+        status == fmi1Warning && logLevel < 4 ||
+        status == fmi1Discard && logLevel < 4 ||
+        status == fmi1Error && logLevel < 3 ||
+        status == fmi1Fatal && logLevel < 1) {
+        return;
+    }
+
     va_list args;
     va_start(args, message);
     char msgstr[1024];

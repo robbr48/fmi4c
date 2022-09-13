@@ -17,6 +17,7 @@
 int numOutputs = 0;
 FILE* outputFile = NULL;
 unsigned int outputRefs[VAR_MAX];
+int logLevel = 0;
 
 //Default experiment settings (may be overwritten by default experiment in FMU)
 static double startTime = 0;
@@ -49,13 +50,20 @@ double interpolate(namedData *timeData, namedData *data, double time, size_t nDa
 void printUsage() {
     printf("Usage: fmi4ctest <options> <fmu_file(s)> <csv_output>\n");
     printf("Usage: fmi4ctest <options> <fmu_file(s)> <csv_input> <csv_output>\n\n");
-    printf("Options:\n");
-    printf("--me             Force model-exchange mode (for FMI 2 and 3)\n");
-    printf("--tlm            Run a TLM test (requires two FMUs)\n");
-    printf("-h --timeStep    Specify communication step size\n");
-    printf("-s --stopTime    Specify simulation stop time");
+    printf("Options:                 Meaning:\n");
+    printf("-m, --modelexchange      Force model-exchange mode (for FMI 2 and 3)\n");
+    printf("-c, --cosimulation       Force co-simulation mode (for FMI 2 and 3) (default)\n");
+    printf("-h, --stepsize=TIMESTEP  Specify communication step size\n");
+    printf("-s, --stoptime=STOPTIME  Specify simulation stop time\n");
+    printf("-l, --loglevel=LOGLEVEL  Specify log level: \n"
+           "                         0: no logging\n"
+           "                         1: fatal"
+           "                         2: fatal & errors\n"
+           "                         3: fatal, errors & warnings\n"
+           "                         4: fatal, errors, warning & info\n"
+           "                         5: fatal, errors, warnings, info & debug.\n");
+    printf("-t, --tlm                Run a TLM test (requires two FMUs)\n");
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -75,17 +83,22 @@ int main(int argc, char *argv[])
     int nFlags = 0;
     const char* inputCsvPath = "";
     while(argv[i]) {
-        if(!strcmp(argv[i],"--me")) {
+        if(!strcmp(argv[i],"-m") || !strcmp(argv[i],"--modelexchange")) {
             printf("Forcing model exchange mode.\n");
             forceModelExchange = true;
             ++nFlags;
         }
-        else if(!strcmp(argv[i],"--tlm")) {
+        if(!strcmp(argv[i],"-c") || !strcmp(argv[i],"--cosimulation")) {
+            printf("Forcing co-simualtion mode.\n");
+            forceModelExchange = false;
+            ++nFlags;
+        }
+        else if(!strcmp(argv[i],"-t") || !strcmp(argv[i],"--tlm")) {
             printf("Running TLM test with intermediate update.\n");
             testTLM = true;
             ++nFlags;
         }
-        else if(!strcmp(argv[i],"-s") || !strcmp(argv[i], "--stopTime")) {
+        else if(!strcmp(argv[i],"-s") || !strcmp(argv[i], "--stoptime")) {
             ++i;
             if(argc<=i || argv[i][0] == '-')   {
                 printf("Stop time flag requires a value.");
@@ -98,7 +111,7 @@ int main(int argc, char *argv[])
             overrideStopTime = true;
             nFlags+=2;
         }
-        else if(!strcmp(argv[i],"-h") || !strcmp(argv[i], "--timeStep")) {
+        else if(!strcmp(argv[i],"-h") || !strcmp(argv[i], "--stepsize")) {
             ++i;
             if(argc<=i || argv[i][0] == '-')   {
                 printf("Time step flag requires a value.");
@@ -109,6 +122,18 @@ int main(int argc, char *argv[])
                 exit(1);
             }
             overrideTimeStep = true;
+            nFlags+=2;
+        }
+        else if(!strcmp(argv[i],"-l") || !strcmp(argv[i], "--loglevel")) {
+            ++i;
+            if(argc<=i || argv[i][0] == '-')   {
+                printf("Time step flag requires a value.");
+                exit(1);
+            }
+            if((sscanf(argv[i], "%i", &logLevel) != 1) || (logLevel < 0) || (logLevel > 5)) {
+                printf("Log level must be an integer betweeon 0 and 5.");
+                exit(1);
+            }
             nFlags+=2;
         }
         ++i;
