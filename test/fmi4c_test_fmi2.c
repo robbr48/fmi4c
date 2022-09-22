@@ -14,8 +14,17 @@ void loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
 {
     UNUSED(componentEnvironment)
     UNUSED(instanceName)
-    UNUSED(status)
     UNUSED(category)
+
+
+    if(status == fmi2OK && logLevel < 4 ||
+        status == fmi2Pending && logLevel < 4 ||
+        status == fmi2Warning && logLevel < 3 ||
+        status == fmi2Discard && logLevel < 3 ||
+        status == fmi2Error && logLevel < 2 ||
+        status == fmi2Fatal && logLevel < 1) {
+        return;
+    }
 
     va_list args;
     va_start(args, message);
@@ -376,7 +385,7 @@ int testFMI2CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 }
 
 
-int testFMI2(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
+int testFMI2(fmiHandle *fmu, bool forceModelExchange, bool forceCosimulation, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Loop through variables in FMU
     for(size_t i=0; i<fmi2_getNumberOfVariables(fmu); ++i)
@@ -395,6 +404,15 @@ int testFMI2(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, dou
                 numOutputs++;
             }
         }
+    }
+
+    if(forceModelExchange && !fmi2_getSupportsModelExchange(fmu)) {
+        printf("Model exchange mode not supported by FMU. Aborting.");
+        exit(1);
+    }
+    else if(forceCosimulation && !fmi2_getSupportsCoSimulation(fmu)) {
+        printf("Co-simulation mode not supported by FMU. Aborting.");
+        exit(1);
     }
 
     if(fmi2_getSupportsCoSimulation(fmu) && !forceModelExchange) {

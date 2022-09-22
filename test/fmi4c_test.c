@@ -48,11 +48,14 @@ double interpolate(namedData *timeData, namedData *data, double time, size_t nDa
 
 
 void printUsage() {
-    printf("Usage: fmi4ctest <options> <fmu_file(s)> <csv_output>\n");
-    printf("Usage: fmi4ctest <options> <fmu_file(s)> <csv_input> <csv_output>\n\n");
+    printf("Usage: fmi4ctest <options> <fmu_file(s)>\n");
     printf("Options:                 Meaning:\n");
-    printf("-m, --modelexchange      Force model-exchange mode (for FMI 2 and 3)\n");
-    printf("-c, --cosimulation       Force co-simulation mode (for FMI 2 and 3) (default)\n");
+    printf("-i, --input              Path to input CSV file\n");
+    printf("-o, --output             Path to output CSV file\n");
+    printf("-m, --mode               Simulation mode: \n"
+           "                         auto: use co-simulation if possible, else model excghange (defualt)\n"
+           "                         me: force model excghange mode\n"
+           "                         cs: force co-simulation mode\n");
     printf("-h, --stepsize=TIMESTEP  Specify communication step size\n");
     printf("-s, --stoptime=STOPTIME  Specify simulation stop time\n");
     printf("-l, --loglevel=LOGLEVEL  Specify log level: \n"
@@ -74,6 +77,7 @@ int main(int argc, char *argv[])
 
     //Parse flags
     bool forceModelExchange = false;
+    bool forceCosimulation = false;
     bool testTLM = false;
     bool overrideStopTime = false;
     double stopTimeOverride=0;
@@ -83,62 +87,79 @@ int main(int argc, char *argv[])
     int nFlags = 0;
     const char* inputCsvPath = "";
     while(argv[i]) {
-        if(!strcmp(argv[i],"-m") || !strcmp(argv[i],"--modelexchange")) {
-            printf("Forcing model exchange mode.\n");
-            forceModelExchange = true;
-            ++nFlags;
+        if(!strcmp(argv[i],"-i") || !strcmp(argv[i],"--input")) {
+            inputCsvPath = argv[i+1];
+            nFlags += 2;
         }
-        if(!strcmp(argv[i],"-c") || !strcmp(argv[i],"--cosimulation")) {
-            printf("Forcing co-simualtion mode.\n");
-            forceModelExchange = false;
-            ++nFlags;
+        else if(!strcmp(argv[i],"-o") || !strcmp(argv[i],"--output")) {
+            outputCsvPath = argv[i+1];
+            nFlags += 2;
+        }
+        else if(!strcmp(argv[i],"-m") || !strcmp(argv[i],"--mode")) {
+            if(!strcmp(argv[i+1], "me")) {
+                forceModelExchange = true;
+            }
+            else if(!strcmp(argv[i+1], "cs")) {
+                forceCosimulation = true;
+            }
+            else if(strcmp(argv[i+1], "auto")) {   
+                printf("Error: Unknown mode: %s\n",argv[i+1]);
+                printUsage();
+                exit(1);
+            }
+            nFlags += 2;    
         }
         else if(!strcmp(argv[i],"-t") || !strcmp(argv[i],"--tlm")) {
-            printf("Running TLM test with intermediate update.\n");
             testTLM = true;
             ++nFlags;
         }
         else if(!strcmp(argv[i],"-s") || !strcmp(argv[i], "--stoptime")) {
             ++i;
             if(argc<=i || argv[i][0] == '-')   {
-                printf("Stop time flag requires a value.");
+                printf("Error: Stop time flag requires a value.");
+                printUsage();
                 exit(1);
             }
             if((sscanf(argv[i], "%lf", &stopTimeOverride) != 1) || (stopTimeOverride <= 0)) {
-                printf("Stop time must be a positive number.");
+                printf("Error: Stop time must be a positive number.");
+                printUsage();
                 exit(1);
             }
             overrideStopTime = true;
-            nFlags+=2;
+            nFlags += 2;
         }
         else if(!strcmp(argv[i],"-h") || !strcmp(argv[i], "--stepsize")) {
             ++i;
             if(argc<=i || argv[i][0] == '-')   {
-                printf("Time step flag requires a value.");
+                printf("Error: Time step flag requires a value.");
+                printUsage();
                 exit(1);
             }
             if((sscanf(argv[i], "%lf", &timeStepOverride) != 1) || (timeStepOverride <= 0)) {
-                printf("Time step must be a positive number.");
+                printf("Error: Time step must be a positive number.");
+                printUsage();
                 exit(1);
             }
             overrideTimeStep = true;
-            nFlags+=2;
+            nFlags += 2;
         }
         else if(!strcmp(argv[i],"-l") || !strcmp(argv[i], "--loglevel")) {
             ++i;
             if(argc<=i || argv[i][0] == '-')   {
-                printf("Time step flag requires a value.");
+                printf("Error: Time step flag requires a value.");
+                printUsage();
                 exit(1);
             }
             if((sscanf(argv[i], "%i", &logLevel) != 1) || (logLevel < 0) || (logLevel > 5)) {
-                printf("Log level must be an integer betweeon 0 and 5.");
+                printf("Error: Log level must be an integer betweeon 0 and 5.");
+                printUsage();
                 exit(1);
             }
             nFlags+=2;
         }
         ++i;
     }
-    if(argc < 3+nFlags) {
+    if(argc < 2+nFlags) {
         printUsage();
         exit(1);
     }
@@ -146,46 +167,64 @@ int main(int argc, char *argv[])
     const char* fmuPath;
     const char* fmuPath2;
     if(testTLM) {
-        if(argc != 5) {
+        if(argc != nFlags+3) {
             printf("Wrong number of arguments for testing TLM.\n");
             printf("Usage: %s --tlm <fmu_file_1> <fmu_file_2> <csv_output>\n", argv[0]);
             exit(1);
         }
-        fmuPath = argv[2];
-        fmuPath2 = argv[3];
-        outputCsvPath = argv[4];
+        fmuPath = argv[1+nFlags];
+        fmuPath2 = argv[2+nFlags];
     }
     else {
         fmuPath = argv[1+nFlags];
-        if(argc > 3+nFlags) {
-            inputCsvPath = argv[2+nFlags];
-            outputCsvPath = argv[3+nFlags];
-        }
-        else {
-            outputCsvPath = argv[2+nFlags];
-        }
     }
 
     printf("--- Arguments ---\n");
-    printf("  FMU path:        %s\n", fmuPath);
     if(testTLM) {
-        printf("  FMU path (2): %s\n", fmuPath2);
+        printf("  First FMU to test: %s\n", fmuPath);
+        printf("  Second FMU to test: %s\n", fmuPath2);
+    }
+    else {
+        printf("  FMU to test: %s\n", fmuPath);
     }
     if(inputCsvPath != NULL && strcmp(inputCsvPath, "") != 0) {
-        printf("  Input CSV path:  %s\n", inputCsvPath);
+        printf("  Will read from input file: %s\n", inputCsvPath);
     }
-    printf("  Output CSV path: %s\n", outputCsvPath);
-    if(testTLM) {
-        printf("  Running a TLM test.\n");
+    if(strcmp(outputCsvPath, "") != 0) {
+        printf("  Will write to output file: %s\n", outputCsvPath);
     }
     if(forceModelExchange) {
-        printf("  Forcing model exchange mode.\n");
+        printf("  Will use model exchange mode\n");
+    }
+    if(forceCosimulation) {
+        printf("  Will use co-simulation mode\n");
+    }
+    if(testTLM) {
+        printf("  Will run a TLM test with intermediate update\n");
     }
     if(overrideStopTime) {
-        printf("  Using stop time: %f\n", stopTimeOverride);
+        printf("  Will use stop time: %f\n", stopTimeOverride);
     }
     if(overrideTimeStep) {
-        printf("  Using time step: %f\n", timeStepOverride);
+        printf("  Will use time step: %f\n", timeStepOverride);
+    }
+    if(logLevel == 0) {
+        printf("  Using log level 0 (no logging)\n");
+    }
+    else if(logLevel == 1) {
+        printf("  Using log level 1 (fatal)\n");
+    }
+    else if(logLevel == 2) {
+        printf("  Using log level 2 (fatal & errors)\n");
+    }
+    else if(logLevel == 3) {
+        printf("  Using log level 3 (fatal, errors & warnings)\n");
+    }
+    else if(logLevel == 4) {
+        printf("  Using log level 4 (fatal, errors, warning & info)\n");
+    }
+    else if(logLevel == 5) {
+        printf("  Using log level 5 (fatal, errors, warnings, info & debug)\n");
     }
 
     fmiHandle *fmu = fmi4c_loadFmu(fmuPath, "testfmu");
@@ -208,7 +247,7 @@ int main(int argc, char *argv[])
     }
     else {
         printf("Unknown\n");
-        printf("Aborting due to unknown FMI verison.\n");
+        printf("Error: Unknown FMI version. Aborting.\n");
         exit(1);
     }
 
@@ -273,13 +312,13 @@ int main(int argc, char *argv[])
 
     int retval;
     if(version == fmiVersion1) {
-        retval = testFMI1(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
+        retval = testFMI1(fmu, forceModelExchange, forceCosimulation, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
     else if(version == fmiVersion2) {
-        retval = testFMI2(fmu, forceModelExchange, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
+        retval = testFMI2(fmu, forceModelExchange, forceCosimulation, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
     else {
-        retval = testFMI3(fmu, forceModelExchange, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
+        retval = testFMI3(fmu, forceModelExchange, forceCosimulation, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
 
     fmi4c_freeFmu(fmu);
