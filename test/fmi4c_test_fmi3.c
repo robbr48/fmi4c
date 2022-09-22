@@ -9,8 +9,15 @@ void loggerFmi3(fmi3InstanceEnvironment instanceEnvironment,
                  fmi3String message)
 {
     UNUSED(instanceEnvironment)
-    UNUSED(status)
     UNUSED(category)
+
+    if(status == fmi3OK && logLevel < 4 ||
+        status == fmi3Warning && logLevel < 3 ||
+        status == fmi3Discard && logLevel < 3 ||
+        status == fmi3Error && logLevel < 2 ||
+        status == fmi3Fatal && logLevel < 1) {
+        return;
+    }
 
     printf("%s: %s\n",category, message);
 }
@@ -367,7 +374,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 }
 
 
-int testFMI3(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
+int testFMI3(fmiHandle *fmu, bool forceModelExchange, bool forceCosimulation, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Loop through variables in FMU
     for(size_t i=0; i<fmi3_getNumberOfVariables(fmu); ++i)
@@ -386,6 +393,15 @@ int testFMI3(fmiHandle *fmu, bool forceModelExchange, bool overrideStopTime, dou
                 numOutputs++;
             }
         }
+    }
+
+    if(forceModelExchange && !fmi3_supportsModelExchange(fmu)) {
+        printf("Model exchange mode not supported by FMU. Aborting.");
+        exit(1);
+    }
+    else if(forceCosimulation && !fmi3_supportsCoSimulation(fmu)) {
+        printf("Co-simulation mode not supported by FMU. Aborting.");
+        exit(1);
     }
 
     if(fmi3_supportsCoSimulation(fmu) && !forceModelExchange) {

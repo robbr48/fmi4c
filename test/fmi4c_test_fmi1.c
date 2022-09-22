@@ -16,11 +16,11 @@ void loggerFmi1(fmi1Component_t component,
     UNUSED(status)
     UNUSED(category)
 
-    if(status == fmi1OK && logLevel < 5 ||
-        status == fmi1Pending && logLevel < 5 ||
-        status == fmi1Warning && logLevel < 4 ||
-        status == fmi1Discard && logLevel < 4 ||
-        status == fmi1Error && logLevel < 3 ||
+    if(status == fmi1OK && logLevel < 4 ||
+        status == fmi1Pending && logLevel < 4 ||
+        status == fmi1Warning && logLevel < 3 ||
+        status == fmi1Discard && logLevel < 3 ||
+        status == fmi1Error && logLevel < 2 ||
         status == fmi1Fatal && logLevel < 1) {
         return;
     }
@@ -327,7 +327,7 @@ int testfmi1_cS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, 
 }
 
 
-int testFMI1(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
+int testFMI1(fmiHandle *fmu, bool forceModelExchange, bool forceCosimulation, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Loop through variables in FMU
     for(size_t i=0; i<fmi1_getNumberOfVariables(fmu); ++i)
@@ -349,9 +349,17 @@ int testFMI1(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, boo
     }
 
     if(fmi1_getType(fmu) == fmi1ModelExchange) {
+        if(forceCosimulation) {
+            printf("Co-simulation mode not supported by FMU. Aborting.");
+            exit(1);
+        }
         return testFMI1ME(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
     else {
+        if(forceModelExchange) {
+            printf("Mode3l exchange mode not supported by FMU. Aborting.");
+            exit(1);
+        }
         return testfmi1_cS(fmu, overrideStopTime, stopTimeOverride, overrideTimeStep, timeStepOverride);
     }
 }
