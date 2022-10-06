@@ -2,6 +2,7 @@
 #define FMIC_TEST_FMI2_H
 
 #include "fmi4c_types_fmi2.h"
+#include <stdbool.h>
 
 void loggerFmi2(fmi2ComponentEnvironment componentEnvironment,
                 fmi2String instanceName,

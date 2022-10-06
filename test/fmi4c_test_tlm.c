@@ -10,6 +10,7 @@
 #endif
 
 #include "fmi4c.h"
+#include "fmi4c_common.h"
 #include "fmi4c_test.h"
 #include "fmi4c_test_fmi3.h"
 #include "fmi4c_test_tlm.h"

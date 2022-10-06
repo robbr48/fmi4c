@@ -8,6 +8,7 @@
 #endif
 
 #include "fmi4c.h"
+#include "fmi4c_common.h"
 #include "fmi4c_test.h"
 #include "fmi4c_test_fmi1.h"
 #include "fmi4c_test_fmi2.h"
@@ -25,7 +26,7 @@ static double stepSize = 0.001;
 static double stopTime = 1;
 static double tolerance = 0;
 
-const char* outputCsvPath = "";
+const char* outputCsvPath = NULL;
 size_t nInterpolators = 0;
 namedData interpolationData[20];
 size_t dataSize = 0;
@@ -190,7 +191,7 @@ int main(int argc, char *argv[])
     if(inputCsvPath != NULL && strcmp(inputCsvPath, "") != 0) {
         printf("  Will read from input file: %s\n", inputCsvPath);
     }
-    if(strcmp(outputCsvPath, "") != 0) {
+    if(outputCsvPath != NULL && strcmp(outputCsvPath, "") != 0) {
         printf("  Will write to output file: %s\n", outputCsvPath);
     }
     if(forceModelExchange) {
@@ -322,8 +323,6 @@ int main(int argc, char *argv[])
     }
 
     fmi4c_freeFmu(fmu);
-
-
 
     return retval;
 }

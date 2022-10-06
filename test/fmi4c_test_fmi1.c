@@ -1,6 +1,7 @@
 #include <stdarg.h>
 
 #include "fmi4c.h"
+#include "fmi4c_common.h"
 #include "fmi4c_test.h"
 #include "fmi4c_test_fmi1.h"
 

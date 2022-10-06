@@ -1,8 +1,7 @@
 #ifndef FMIC_TEST_H
 #define FMIC_TEST_H
 
-#include "fmi4c.h"
-#include "fmi4c_common.h"
+#include <stdio.h>
 
 #define VAR_MAX 1024
 
