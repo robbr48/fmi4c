@@ -3,7 +3,6 @@
 #include "fmi4c.h"
 #include "fmi4c_placeholders.h"
 #include "fmi4c_utils.h"
-#include "fmi4c_common.h"
 
 #include "minizip/miniunz.h"
 #include "ezxml/ezxml.h"
@@ -13,9 +12,8 @@
 #include <stdlib.h>
 #include <float.h>
 #include <limits.h>
-#ifdef _WIN32
-#include "Windows.h"
-#else
+#ifndef _WIN32
+#include "fmi4c_common.h"
 #include <dlfcn.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -4718,9 +4716,9 @@ void fmi3_getFloat32Type(fmiHandle *fmu,
                         const char **displayUnit,
                         bool *relativeQuantity,
                         bool *unbounded,
-                        double *min,
-                        double *max,
-                        double *nominal)
+                        float *min,
+                        float *max,
+                        float *nominal)
 {
     for(int i=0; i<fmu->fmi3.numberOfFloat32Types; ++i) {
         if(!strcmp(fmu->fmi3.float32Types[i].name, name)) {
@@ -4741,8 +4739,8 @@ void fmi3_getInt64Type(fmiHandle *fmu,
                       const char *name,
                       const char **description,
                       const char **quantity,
-                      double *min,
-                      double *max)
+                      int64_t *min,
+                      int64_t *max)
 {
     for(int i=0; i<fmu->fmi3.numberOfInt64Types; ++i) {
         if(!strcmp(fmu->fmi3.int64Types[i].name, name)) {
@@ -4758,8 +4756,8 @@ void fmi3_getInt32Type(fmiHandle *fmu,
                       const char *name,
                       const char **description,
                       const char **quantity,
-                      double *min,
-                      double *max)
+                      int32_t *min,
+                      int32_t *max)
 {
     for(int i=0; i<fmu->fmi3.numberOfInt32Types; ++i) {
         if(!strcmp(fmu->fmi3.int32Types[i].name, name)) {
@@ -4775,8 +4773,8 @@ void fmi3_getInt16Type(fmiHandle *fmu,
                       const char *name,
                       const char **description,
                       const char **quantity,
-                      double *min,
-                      double *max)
+                      int16_t *min,
+                      int16_t *max)
 {
     for(int i=0; i<fmu->fmi3.numberOfInt16Types; ++i) {
         if(!strcmp(fmu->fmi3.int16Types[i].name, name)) {
@@ -4792,8 +4790,8 @@ void fmi3_getInt8Type(fmiHandle *fmu,
                       const char *name,
                       const char **description,
                       const char **quantity,
-                      double *min,
-                      double *max)
+                      int8_t *min,
+                      int8_t *max)
 {
     for(int i=0; i<fmu->fmi3.numberOfInt8Types; ++i) {
         if(!strcmp(fmu->fmi3.int8Types[i].name, name)) {
@@ -4809,8 +4807,8 @@ void fmi3_getUInt64Type(fmiHandle *fmu,
                       const char *name,
                       const char **description,
                       const char **quantity,
-                      double *min,
-                      double *max)
+                      uint64_t *min,
+                      uint64_t *max)
 {
     for(int i=0; i<fmu->fmi3.numberOfUInt64Types; ++i) {
         if(!strcmp(fmu->fmi3.uint64Types[i].name, name)) {
@@ -4826,8 +4824,8 @@ void fmi3_getUInt32Type(fmiHandle *fmu,
                       const char *name,
                       const char **description,
                       const char **quantity,
-                      double *min,
-                      double *max)
+                      uint32_t *min,
+                      uint32_t *max)
 {
     for(int i=0; i<fmu->fmi3.numberOfUInt32Types; ++i) {
         if(!strcmp(fmu->fmi3.uint32Types[i].name, name)) {
@@ -4843,8 +4841,8 @@ void fmi3_getUInt16Type(fmiHandle *fmu,
                       const char *name,
                       const char **description,
                       const char **quantity,
-                      double *min,
-                      double *max)
+                      uint16_t *min,
+                      uint16_t *max)
 {
     for(int i=0; i<fmu->fmi3.numberOfUInt16Types; ++i) {
         if(!strcmp(fmu->fmi3.uint16Types[i].name, name)) {
@@ -4860,8 +4858,8 @@ void fmi3_getUInt8Type(fmiHandle *fmu,
                       const char *name,
                       const char **description,
                       const char **quantity,
-                      double *min,
-                      double *max)
+                      uint8_t *min,
+                      uint8_t *max)
 {
     for(int i=0; i<fmu->fmi3.numberOfUInt8Types; ++i) {
         if(!strcmp(fmu->fmi3.uint8Types[i].name, name)) {

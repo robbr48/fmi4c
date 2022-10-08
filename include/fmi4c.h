@@ -352,59 +352,59 @@ FMI4C_DLLAPI void fmi3_getFloat32Type(fmiHandle* fmu,
                                       const char** quantity,
                                       const char** unit,
                                       const char** displayUnit,
-                                      bool* relativeQuantity,
-                                      bool* unbounded,
-                                      double* min,
-                                      double* max,
-                                      double* nominal);
+                                      bool *relativeQuantity,
+                                      bool *unbounded,
+                                      float *min,
+                                      float *max,
+                                      float *nominal);
 FMI4C_DLLAPI void fmi3_getInt64Type(fmiHandle *fmu,
                                     const char *name,
                                     const char** description,
                                     const char** quantity,
-                                    double* min,
-                                    double* max);
+                                    int64_t* min,
+                                    int64_t* max);
 FMI4C_DLLAPI void fmi3_getInt32Type(fmiHandle *fmu,
                                     const char *name,
                                     const char** description,
                                     const char** quantity,
-                                    double* min,
-                                    double* max);
+                                    int32_t* min,
+                                    int32_t* max);
 FMI4C_DLLAPI void fmi3_getInt16Type(fmiHandle *fmu,
                                     const char *name,
                                     const char** description,
                                     const char** quantity,
-                                    double* min,
-                                    double* max);
+                                    int16_t* min,
+                                    int16_t* max);
 FMI4C_DLLAPI void fmi3_getInt8Type(fmiHandle *fmu,
                                    const char *name,
                                    const char** description,
                                    const char** quantity,
-                                   double* min,
-                                   double* max);
+                                   int8_t* min,
+                                   int8_t* max);
 FMI4C_DLLAPI void fmi3_getUInt64Type(fmiHandle *fmu,
                                      const char *name,
                                      const char** description,
                                      const char** quantity,
-                                     double* min,
-                                     double* max);
+                                     uint64_t* min,
+                                     uint64_t* max);
 FMI4C_DLLAPI void fmi3_getUInt32Type(fmiHandle *fmu,
                                      const char *name,
                                      const char** description,
                                      const char** quantity,
-                                     double* min,
-                                     double* max);
+                                     uint32_t* min,
+                                     uint32_t* max);
 FMI4C_DLLAPI void fmi3_getUInt16Type(fmiHandle *fmu,
                                      const char *name,
                                      const char** description,
                                      const char** quantity,
-                                     double* min,
-                                     double* max);
+                                     uint16_t* min,
+                                     uint16_t* max);
 FMI4C_DLLAPI void fmi3_getUInt8Type(fmiHandle *fmu,
                                     const char *name,
                                     const char** description,
                                     const char** quantity,
-                                    double* min,
-                                    double* max);
+                                    uint8_t* min,
+                                    uint8_t* max);
 FMI4C_DLLAPI void fmi3_getBooleanType(fmiHandle *fmu,
                                       const char *name,
                                       const char **description);
