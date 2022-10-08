@@ -13,7 +13,9 @@
 #include <stdlib.h>
 #include <float.h>
 #include <limits.h>
-#ifndef _WIN32
+#ifdef _WIN32
+#include "Windows.h"
+#else
 #include <dlfcn.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -322,7 +324,6 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
     getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #endif
     chdir(fmu->unzippedLocation);
-    chdir(fmu->instanceName);
 
     ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
     if(strcmp(rootElement->name, "fmiModelDescription")) {
@@ -601,9 +602,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 #else
     getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #endif
-
     chdir(fmu->unzippedLocation);
-    chdir(fmu->instanceName);
 
     ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
     if(strcmp(rootElement->name, "fmiModelDescription")) {
@@ -3705,73 +3704,101 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #endif
 
-    int argc = 6;
-    const char *argv[6];
-
+    // Decide location for where to unzip
+    char unzippLocation[FILENAME_MAX];
 #ifdef _WIN32
-    mkdir(instanceName);
+    DWORD len = GetTempPathA(FILENAME_MAX, unzippLocation);
+    if (len == 0) {
+       printf("Cant find temp path, using current directory\n");
+    }
+    // Create a unique tempfile and use its name for the unique directory name
+    char tempFileName[MAX_PATH];
+    GetTempFileNameA(unzippLocation, "", 0, tempFileName);
+
+    strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
+    strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
+    strncat(unzippLocation, "_", FILENAME_MAX-strlen(unzippLocation)-1);
+    char * ds = strrchr(tempFileName, '\\');
+    if (ds) {
+        strncat(unzippLocation, ds+1, FILENAME_MAX-strlen(unzippLocation)-1);
+    }
+    else {
+        strncat(unzippLocation, tempFileName, FILENAME_MAX-strlen(unzippLocation)-1);
+    }
+    _mkdir(unzippLocation);
 #else
-    mkdir(instanceName, S_IRWXU | S_IRWXG | S_IRWXO);
+    const char* env_tmpdir = getenv("TMPDIR");
+    const char* env_tmp = getenv("TMP");
+    const char* env_temp = getenv("TEMP");
+    if (env_tmpdir) {
+        strncat(unzippLocation, env_tmpdir, FILENAME_MAX-strlen(unzippLocation)-1);
+    }
+    else if (env_tmp) {
+        strncat(unzippLocation, env_tmp, FILENAME_MAX-strlen(unzippLocation)-1);
+    }
+    else if (env_temp) {
+        strncat(unzippLocation, env_temp, FILENAME_MAX-strlen(unzippLocation)-1);
+    }
+    else if (access("/tmp/", W_OK) == 0) {
+        strncat(unzippLocation, "/tmp/", FILENAME_MAX-strlen(unzippLocation)-1);
+    }
+    // If no suitable temp directory is found, the current working directory will be used
+
+    // Append / if needed
+    if (strlen(unzippLocation) > 0 && unzippLocation[strlen(unzippLocation)-1] != '/') {
+        strncat(unzippLocation, "/", FILENAME_MAX-strlen(unzippLocation)-1);
+    }
+
+    strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
+    strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
+    strncat(unzippLocation, "_XXXXXX", FILENAME_MAX-strlen(unzippLocation)-1); // XXXXXX is for unique name by mkdtemp
+    mkdtemp(unzippLocation);
 #endif
 
+    int argc = 6;
+    const char *argv[6];
     argv[0] = "miniunz";
     argv[1] = "-x";
     argv[2] = "-o";
     argv[3] = fmufile;
     argv[4] = "-d";
-    argv[5] = instanceName;
+    argv[5] = unzippLocation;
 
     int status = miniunz(argc, (char**)argv);
-
     if (status != 0) {
-        printf("Failed to unzip FMU: status = %i\n",status);
+        printf("Failed to unzip FMU: status = %i, to location %s\n",status, unzippLocation);
         return NULL;
     }
+    // miniunzip will change dir to unzipLocation, lets change back
+    chdir(cwd);
+
+    char resourcesLocation[FILENAME_MAX] = "file:///";
+    strncat(resourcesLocation, unzippLocation, FILENAME_MAX-8);
+    strncat(resourcesLocation, "/resources", FILENAME_MAX-8-strlen(unzippLocation)-1);
 
     fmiHandle *fmu = malloc(sizeof(fmiHandle));
-    fmu->unzippedLocation = NULL;
-    fmu->resourcesLocation = NULL;
-    fmu->instanceName = NULL;
-
-    //Decide location for where to unzip
-    //! @todo Change to temp folder
-    char tempPath[FILENAME_MAX];
-#ifdef _WIN32
-    _getcwd(tempPath, sizeof(char)*FILENAME_MAX);
-#else
-    getcwd(tempPath, sizeof(char)*FILENAME_MAX);
-#endif
-    fmu->unzippedLocation = _strdup(tempPath);
-
-    strncat(tempPath, "/resources", sizeof(tempPath)-strlen(tempPath)-1);
-
-    char uriPath[FILENAME_MAX] = "file:///";
-    strncat(uriPath, tempPath, sizeof(tempPath));
-    fmu->resourcesLocation = _strdup(uriPath);
-
+    fmu->dll = NULL;
+    fmu->version = fmiVersionUnknown;
     fmu->instanceName = _strdup(instanceName);
-    chdir(cwd);
+    fmu->unzippedLocation = _strdup(unzippLocation);
+    fmu->resourcesLocation = _strdup(resourcesLocation);
 
-#ifdef _WIN32
-    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#else
-    getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#endif
     chdir(fmu->unzippedLocation);
-
     ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
-
-    if(strcmp(rootElement->name, "fmiModelDescription")) {
-        printf("Wrong root tag name: %s\n", rootElement->name);
-        free((char*)fmu->unzippedLocation);
-        free(fmu);
+    if (rootElement == NULL) {
+        printf("Failed to read modelDescription.xml in %s\n", fmu->unzippedLocation);
+        fmi4c_freeFmu(fmu);
         return NULL;
     }
-
+    if(strcmp(rootElement->name, "fmiModelDescription")) {
+        printf("Wrong root tag name: %s\n", rootElement->name);
+        fmi4c_freeFmu(fmu);
+        return NULL;
+    }
     chdir(cwd);
 
-    //Figure out FMI version
-    const char* version;
+    // Figure out FMI version
+    const char* version = NULL;
     parseStringAttributeEzXml(rootElement, "fmiVersion", &version);
     if(version[0] == '1') {
         fmu->version = fmiVersion1;
@@ -4009,11 +4036,14 @@ void freeVoidIfNotNull(void* ptr) {
 void fmi4c_freeFmu(fmiHandle *fmu)
 {
     TRACEFUNC
+    if (fmu->dll) {
 #ifdef _WIN32
-    FreeLibrary(fmu->dll);
+        FreeLibrary(fmu->dll);
 #else
-    dlclose(fmu->dll);
+        dlclose(fmu->dll);
 #endif
+    }
+
     if(fmu->version == fmiVersion1) {
         for(int i=0; i<fmu->fmi1.numberOfVariables; ++i) {
             freeIfNotNull(fmu->fmi1.variables[i].name);
