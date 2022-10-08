@@ -657,10 +657,12 @@ ezxml_t ezxml_parse_fd(int fd)
 // a wrapper for ezxml_parse_fd that accepts a file name
 ezxml_t ezxml_parse_file(const char *file)
 {
+    ezxml_t xml = NULL;
     FILE* fp = fopen(file, "r");
-    ezxml_t xml = ezxml_parse_fp(fp);
-    
-    if (fp != 0) fclose(fp);
+    if (fp) {
+        xml = ezxml_parse_fp(fp);
+        fclose(fp);
+    }
     return xml;
 }
 
