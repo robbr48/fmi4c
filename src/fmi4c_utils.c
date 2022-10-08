@@ -7,17 +7,17 @@
 //! @brief Concatenates model name and function name into "modelName_functionName" (for FMI 1)
 //! @param modelName FMU model name
 //! @param functionName Function name
+//! @param concatBuffer A buffer in which to concatenate modelName_functionName, this buffer must be FILENAME_MAX big
 //! @returns Full (concatenated) function name
-const char* getFunctionName(const char* modelName, const char* functionName) {
-    if(modelName == NULL || modelName[0] == '\0') {
-        return functionName;    //!< Do not change function name if model name is empty
+const char* getFunctionName(const char* modelName, const char* functionName, char* concatBuffer) {
+    if(modelName == NULL || strlen(modelName) == 0) {
+        // Do not change function name if model name is empty, in this case there is no need to use the buffer
+        return functionName;
     }
-    char* fullName = (char*)malloc(strlen(modelName)+strlen(functionName)+2);
-    strncpy(fullName, modelName, strlen(modelName)+strlen(functionName)+2);
-    fullName[strlen(modelName)] = '\0';
-    strncat(fullName,  "_", strlen(modelName)+strlen(functionName)+2);
-    strncat(fullName, functionName, strlen(modelName)+strlen(functionName)+2);
-    return fullName;
+    strncpy(concatBuffer, modelName, FILENAME_MAX-1);
+    strncat(concatBuffer,  "_", FILENAME_MAX-strlen(concatBuffer)-1);
+    strncat(concatBuffer, functionName, FILENAME_MAX-strlen(concatBuffer)-1);
+    return concatBuffer;
 }
 
 //! @brief Parses specified XML attribute and assigns it to target

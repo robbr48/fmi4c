@@ -125,7 +125,7 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
     UNUSED(requiredIntermediateVariables);  //!< @todo Use this argument
     UNUSED(nRequiredIntermediateVariables); //!< @todo Use this argument
 
-    fmuContext *fmu = malloc(sizeof(fmuContext));
+    fmuContext *fmu = calloc(1, sizeof(fmuContext));
     fmu->instanceName = instanceName;
     fmu->instantiationToken = instantiationToken;
     fmu->instanceEnvironment = instanceEnvironment;

@@ -165,8 +165,8 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    const char* fmuPath;
-    const char* fmuPath2;
+    const char* fmuPath = NULL;
+    const char* fmuPath2 = NULL;
     if(testTLM) {
         if(argc != nFlags+3) {
             printf("Wrong number of arguments for testing TLM.\n");

@@ -138,7 +138,7 @@ DllExport fmiComponent fmiInstantiateSlave(fmiString  instanceName,
     UNUSED(visible);
     UNUSED(interactive);
 
-    fmuContext *fmu = malloc(sizeof(fmuContext));
+    fmuContext *fmu = calloc(1, sizeof(fmuContext));
     fmu->instanceName = instanceName;
     fmu->guid = fmuGUID;
     fmu->callbacks = functions;

@@ -6,7 +6,7 @@
 #include "ezxml/ezxml.h"
 #include "fmi4c_private.h"
 
-const char* getFunctionName(const char* modelName, const char* functionName);
+const char* getFunctionName(const char* modelName, const char* functionName, char* concatBuffer);
 
 bool parseStringAttributeEzXml(ezxml_t element, const char* attributeName, const char** target);
 bool parseBooleanAttributeEzXml(ezxml_t element, const char* attributeName, bool* target);

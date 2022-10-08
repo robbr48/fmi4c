@@ -53,7 +53,7 @@ fmi3Instance fmi3InstantiateModelExchange(fmi3String instanceName,
     UNUSED(resourcePath);
     UNUSED(visible);
 
-    fmuContext *fmu = malloc(sizeof(fmuContext));
+    fmuContext *fmu = calloc(1, sizeof(fmuContext));
     fmu->instanceName = _strdup(instanceName);
     fmu->instantiationToken = _strdup(instantiationToken);
     fmu->fmi3InstanceEnvironment = instanceEnvironment;
@@ -83,7 +83,7 @@ fmi3Instance fmi3InstantiateCoSimulation(fmi3String instanceName,
     UNUSED(requiredIntermediateVariables);
     UNUSED(nRequiredIntermediateVariables);
 
-    fmuContext *fmu = malloc(sizeof(fmuContext));
+    fmuContext *fmu = calloc(1, sizeof(fmuContext));
 
     fmu->instanceName = _strdup(instanceName);
     fmu->instantiationToken = _strdup(instantiationToken);

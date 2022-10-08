@@ -126,7 +126,7 @@ DllExport fmiComponent fmiInstantiateModel(fmiString  instanceName,
                                            fmiCallbackFunctions functions,
                                            fmiBoolean loggingOn)
 {
-    fmuContext *fmu = malloc(sizeof(fmuContext));
+    fmuContext *fmu = calloc(1, sizeof(fmuContext));
     fmu->instanceName = _strdup(instanceName);
     fmu->guid = _strdup(fmuGUID);
     fmu->callbacks = functions;
@@ -142,6 +142,8 @@ DllExport fmiComponent fmiInstantiateModel(fmiString  instanceName,
 DllExport void fmiFreeModelInstance(fmiComponent c)
 {
     fmuContext *fmu = (fmuContext*)c;
+    free((char*)fmu->instanceName);
+    free((char*)fmu->guid);
     free(fmu);
 }
 

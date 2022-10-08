@@ -44,7 +44,7 @@ fmi2Component fmi2Instantiate(fmi2String instanceName, fmi2Type fmuType, fmi2Str
     UNUSED(fmuResourceLocation);
     UNUSED(visible);
 
-    fmuContext *fmu = malloc(sizeof(fmuContext));
+    fmuContext *fmu = calloc(1, sizeof(fmuContext));
     fmu->instanceName = _strdup(instanceName);
     fmu->guid = _strdup(fmuGUID);
     fmu->type = fmuType;
@@ -272,10 +272,13 @@ fmi2Status fmi2GetDerivatives(fmi2Component c, fmi2Real derivatives[], size_t nx
 
 fmi2Status fmi2GetEventIndicators(fmi2Component c, fmi2Real eventIndicators[], size_t ni)
 {
-   UNUSED(c);
-   UNUSED(eventIndicators);
-   UNUSED(ni);
-   return fmi2OK;   //Nothing to do
+    fmuContext *fmu = (fmuContext *)c;
+    if(ni > 0) {
+        // Not sure what to set here, but setting 0 to prevent use of uninitialized memory warning in valgrind
+        eventIndicators[0] = 0;
+        return fmi2OK;
+    }
+    return fmi2Warning; //Asked for eventIndicators with too short array
 }
 
 fmi2Status fmi2GetContinuousStates(fmi2Component c, fmi2Real states[], size_t nStates)
