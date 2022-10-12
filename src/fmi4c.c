@@ -4013,16 +4013,8 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 }
 
 
-void freeIfNotNull(const char* ptr) {
-    if(ptr != NULL) {
-        free((char*)ptr);
-    }
-}
-
-void freeVoidIfNotNull(void* ptr) {
-    if(ptr != NULL) {
-        free(ptr);
-    }
+void freeDuplicatedConstChar(const char* ptr) {
+  free((void*)ptr);
 }
 
 //! @brief Free FMU dll
@@ -4040,81 +4032,81 @@ void fmi4c_freeFmu(fmiHandle *fmu)
 
     if(fmu->version == fmiVersion1) {
         for(int i=0; i<fmu->fmi1.numberOfVariables; ++i) {
-            freeIfNotNull(fmu->fmi1.variables[i].name);
-            freeIfNotNull(fmu->fmi1.variables[i].description);
+            freeDuplicatedConstChar(fmu->fmi1.variables[i].name);
+            freeDuplicatedConstChar(fmu->fmi1.variables[i].description);
         }
         free(fmu->fmi1.variables);
-        freeIfNotNull(fmu->fmi1.modelName);
-        freeIfNotNull(fmu->fmi1.modelIdentifier);
-        freeIfNotNull(fmu->fmi1.guid);
-        freeIfNotNull(fmu->fmi1.description);
-        freeIfNotNull(fmu->fmi1.author);
-        freeIfNotNull(fmu->fmi1.version);
-        freeIfNotNull(fmu->fmi1.generationTool);
-        freeIfNotNull(fmu->fmi1.generationDateAndTime);
-        freeIfNotNull(fmu->fmi1.variableNamingConvention);
+        freeDuplicatedConstChar(fmu->fmi1.modelName);
+        freeDuplicatedConstChar(fmu->fmi1.modelIdentifier);
+        freeDuplicatedConstChar(fmu->fmi1.guid);
+        freeDuplicatedConstChar(fmu->fmi1.description);
+        freeDuplicatedConstChar(fmu->fmi1.author);
+        freeDuplicatedConstChar(fmu->fmi1.version);
+        freeDuplicatedConstChar(fmu->fmi1.generationTool);
+        freeDuplicatedConstChar(fmu->fmi1.generationDateAndTime);
+        freeDuplicatedConstChar(fmu->fmi1.variableNamingConvention);
     }
     else if(fmu->version == fmiVersion2) {
         for(int i=0; i<fmu->fmi2.numberOfVariables; ++i) {
-            freeIfNotNull(fmu->fmi2.variables[i].name);
-            freeIfNotNull(fmu->fmi2.variables[i].description);
+            freeDuplicatedConstChar(fmu->fmi2.variables[i].name);
+            freeDuplicatedConstChar(fmu->fmi2.variables[i].description);
         }
         free(fmu->fmi2.variables);
-        freeIfNotNull(fmu->fmi2.modelName);
-        freeIfNotNull(fmu->fmi2.guid);
-        freeIfNotNull(fmu->fmi2.description);
-        freeIfNotNull(fmu->fmi2.author);
-        freeIfNotNull(fmu->fmi2.version);
-        freeIfNotNull(fmu->fmi2.copyright);
-        freeIfNotNull(fmu->fmi2.license);
-        freeIfNotNull(fmu->fmi2.generationTool);
-        freeIfNotNull(fmu->fmi2.generationDateAndTime);
-        freeIfNotNull(fmu->fmi2.variableNamingConvention);
+        freeDuplicatedConstChar(fmu->fmi2.modelName);
+        freeDuplicatedConstChar(fmu->fmi2.guid);
+        freeDuplicatedConstChar(fmu->fmi2.description);
+        freeDuplicatedConstChar(fmu->fmi2.author);
+        freeDuplicatedConstChar(fmu->fmi2.version);
+        freeDuplicatedConstChar(fmu->fmi2.copyright);
+        freeDuplicatedConstChar(fmu->fmi2.license);
+        freeDuplicatedConstChar(fmu->fmi2.generationTool);
+        freeDuplicatedConstChar(fmu->fmi2.generationDateAndTime);
+        freeDuplicatedConstChar(fmu->fmi2.variableNamingConvention);
         if(fmu->fmi2.supportsCoSimulation) {
-            freeIfNotNull(fmu->fmi2.cs.modelIdentifier);
+            freeDuplicatedConstChar(fmu->fmi2.cs.modelIdentifier);
         }
         if(fmu->fmi2.supportsModelExchange) {
-            freeIfNotNull(fmu->fmi2.me.modelIdentifier);
+            freeDuplicatedConstChar(fmu->fmi2.me.modelIdentifier);
         }
     }
     else if(fmu->version == fmiVersion3) {
-        freeVoidIfNotNull(fmu->fmi3.outputs);
-        freeVoidIfNotNull(fmu->fmi3.continuousStateDerivatives);
-        freeVoidIfNotNull(fmu->fmi3.clockedStates);
-        freeVoidIfNotNull(fmu->fmi3.initialUnknowns);
-        freeVoidIfNotNull(fmu->fmi3.eventIndicators);
+        free(fmu->fmi3.outputs);
+        free(fmu->fmi3.continuousStateDerivatives);
+        free(fmu->fmi3.clockedStates);
+        free(fmu->fmi3.initialUnknowns);
+        free(fmu->fmi3.eventIndicators);
 
         for(int i=0; i<fmu->fmi3.numberOfVariables; ++i) {
-            freeIfNotNull(fmu->fmi3.variables[i].name);
-            freeIfNotNull(fmu->fmi3.variables[i].description);
-            freeIfNotNull(fmu->fmi3.variables[i].quantity);
-            freeIfNotNull(fmu->fmi3.variables[i].unit);
-            freeIfNotNull(fmu->fmi3.variables[i].displayUnit);
+            freeDuplicatedConstChar(fmu->fmi3.variables[i].name);
+            freeDuplicatedConstChar(fmu->fmi3.variables[i].description);
+            freeDuplicatedConstChar(fmu->fmi3.variables[i].quantity);
+            freeDuplicatedConstChar(fmu->fmi3.variables[i].unit);
+            freeDuplicatedConstChar(fmu->fmi3.variables[i].displayUnit);
         }
         free(fmu->fmi3.variables);
-        freeIfNotNull(fmu->fmi3.modelName);
-        freeIfNotNull(fmu->fmi3.instantiationToken);
-        freeIfNotNull(fmu->fmi3.description);
-        freeIfNotNull(fmu->fmi3.author);
-        freeIfNotNull(fmu->fmi3.version);
-        freeIfNotNull(fmu->fmi3.copyright);
-        freeIfNotNull(fmu->fmi3.license);
-        freeIfNotNull(fmu->fmi3.generationTool);
-        freeIfNotNull(fmu->fmi3.generationDateAndTime);
+        freeDuplicatedConstChar(fmu->fmi3.modelName);
+        freeDuplicatedConstChar(fmu->fmi3.instantiationToken);
+        freeDuplicatedConstChar(fmu->fmi3.description);
+        freeDuplicatedConstChar(fmu->fmi3.author);
+        freeDuplicatedConstChar(fmu->fmi3.version);
+        freeDuplicatedConstChar(fmu->fmi3.copyright);
+        freeDuplicatedConstChar(fmu->fmi3.license);
+        freeDuplicatedConstChar(fmu->fmi3.generationTool);
+        freeDuplicatedConstChar(fmu->fmi3.generationDateAndTime);
         //freeIfNotNull(fmu->fmi3.variableNamingConvention);
         if(fmu->fmi3.supportsCoSimulation) {
-            freeIfNotNull(fmu->fmi3.cs.modelIdentifier);
+            freeDuplicatedConstChar(fmu->fmi3.cs.modelIdentifier);
         }
         if(fmu->fmi3.supportsModelExchange) {
-            freeIfNotNull(fmu->fmi3.me.modelIdentifier);
+            freeDuplicatedConstChar(fmu->fmi3.me.modelIdentifier);
         }
         if(fmu->fmi3.supportsScheduledExecution) {
-            freeIfNotNull(fmu->fmi3.se.modelIdentifier);
+            freeDuplicatedConstChar(fmu->fmi3.se.modelIdentifier);
         }
     }
-    freeIfNotNull(fmu->resourcesLocation);
-    freeIfNotNull(fmu->instanceName);
-    freeIfNotNull(fmu->unzippedLocation);
+    freeDuplicatedConstChar(fmu->resourcesLocation);
+    freeDuplicatedConstChar(fmu->instanceName);
+    freeDuplicatedConstChar(fmu->unzippedLocation);
     free(fmu);
 }
 
