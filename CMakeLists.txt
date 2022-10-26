@@ -56,6 +56,9 @@ set(SRCFILES
 if (WIN32)
     SET(SRCFILES ${SRCFILES} 3rdparty/minizip/iowin32.c)
 endif()
+if (MSVC)
+    SET(SRCFILES ${SRCFILES} 3rdparty/dirent/dirent.h)
+endif()
 
 if (FMI4C_BUILD_SHARED)
     add_library(${target_name} SHARED ${SRCFILES})

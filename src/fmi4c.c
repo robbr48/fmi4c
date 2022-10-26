@@ -3704,11 +3704,15 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 #ifdef _WIN32
     DWORD len = GetTempPathA(FILENAME_MAX, unzippLocation);
     if (len == 0) {
-       printf("Cant find temp path, using current directory\n");
+       printf("Cannot find temp path, using current directory\n");
     }
     // Create a unique tempfile and use its name for the unique directory name
     char tempFileName[MAX_PATH];
-    GetTempFileNameA(unzippLocation, "", 0, tempFileName);
+    UINT rc = GetTempFileNameA(unzippLocation, "", 0, tempFileName);
+    if (rc == 0) {
+        printf("Cannot generate temp name for unzip location\n");
+        return NULL;
+    }
 
     strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
     strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
@@ -4104,6 +4108,11 @@ void fmi4c_freeFmu(fmiHandle *fmu)
             freeDuplicatedConstChar(fmu->fmi3.se.modelIdentifier);
         }
     }
+
+    if (fmu->unzippedLocation) {
+        removeDirectoryRecursively(fmu->unzippedLocation, "fmi4c_");
+    }
+
     freeDuplicatedConstChar(fmu->resourcesLocation);
     freeDuplicatedConstChar(fmu->instanceName);
     freeDuplicatedConstChar(fmu->unzippedLocation);
