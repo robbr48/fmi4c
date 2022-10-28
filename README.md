@@ -18,6 +18,7 @@ Dependencies have been chosen to minimize implementation effort and to make the 
 - [ezxml](https://github.com/lxfontes/ezxml)
 - [zlib](https://github.com/madler/zlib)
 - [minizip](http://www.winimage.com/zLibDll/minizip.html)
+- [dirent](https://github.com/tronkko/dirent)
 
 ## API Example
 
