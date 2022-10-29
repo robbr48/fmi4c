@@ -3,6 +3,32 @@ name: ghactions-ci-build
 on: [push]
 
 jobs:
+  cmake-mingw:
+    timeout-minutes: 5
+    runs-on: windows-2019
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create build dir
+        shell: cmd
+        run: mkdir fmi4c-build
+
+      - name: Configure
+        working-directory: fmi4c-build
+        shell: cmd
+        run: cmake -DFMI4C_BUILD_TEST=ON -DCMAKE_BUILD_TYPE=Release -G"MinGW Makefiles" ..
+
+      - name: Build
+        working-directory: fmi4c-build
+        shell: cmd
+        run: cmake --build . --config Release --parallel 4
+
+      - name: Test
+        working-directory: fmi4c-build
+        shell: cmd
+        run: ctest -C Release --output-on-failure --parallel 4
+
   cmake-msvc2019:
     timeout-minutes: 5
     runs-on: windows-2019
