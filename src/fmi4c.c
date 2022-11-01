@@ -422,7 +422,6 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 free((char*)causality);
                 return false;
             }
-            free((char*)causality);
 
             const char* variability = "continuous";
             parseStringAttributeEzXml(varElement, "variability", &variability);
@@ -1589,7 +1588,7 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
     strcat(cmd, "chmod +x ");
     strcat(cmd, dllPath);
     system(cmd);
-    
+
     void* dll = dlopen(dllPath, RTLD_NOW|RTLD_LOCAL);
     if(NULL == dll) {
         printf("Loading shared object failed: %s (%s)\n",dllPath, dlerror());
@@ -3745,7 +3744,10 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     fmu->unzippedLocation = _strdup(tempPath);
 
     strncat(tempPath, "/resources", sizeof(tempPath)-strlen(tempPath)-1);
-    fmu->resourcesLocation = _strdup(tempPath);
+
+    char uriPath[FILENAME_MAX] = "file:///";
+    strncat(uriPath, tempPath, sizeof(tempPath));
+    fmu->resourcesLocation = _strdup(uriPath);
 
     fmu->instanceName = _strdup(instanceName);
     chdir(cwd);
