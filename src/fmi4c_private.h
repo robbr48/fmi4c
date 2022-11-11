@@ -252,6 +252,7 @@ typedef struct {
 } fmi2DataMe_t;
 
 typedef struct {
+    const char* fmiVersion_;
     const char* modelName;
     const char* guid;
     const char* description;

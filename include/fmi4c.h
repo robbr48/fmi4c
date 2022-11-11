@@ -138,6 +138,17 @@ FMI4C_DLLAPI fmi2VariableHandle* fmi2_getVariableByValueReference(fmiHandle *fmu
 FMI4C_DLLAPI fmi2VariableHandle* fmi2_getVariableByName(fmiHandle *fmu, fmi2String name);
 FMI4C_DLLAPI const char* fmi2_getVariableName(fmi2VariableHandle* var);
 FMI4C_DLLAPI const char* fmi2_getVariableDescription(fmi2VariableHandle* var);
+FMI4C_DLLAPI const char* fmi2_getFmiVersion(fmiHandle* fmu);
+FMI4C_DLLAPI const char* fmi2_getAuthor(fmiHandle *fmu);
+FMI4C_DLLAPI const char* fmi2_getModelName(fmiHandle *fmu);
+FMI4C_DLLAPI const char* fmi2_getModelDescription(fmiHandle *fmu);
+FMI4C_DLLAPI const char* fmi2_getModelIdentifier(fmiHandle *fmu);
+FMI4C_DLLAPI const char* fmi2_getCopyright(fmiHandle *fmu);
+FMI4C_DLLAPI const char* fmi2_getLicense(fmiHandle *fmu);
+FMI4C_DLLAPI const char* fmi2_getGenerationTool(fmiHandle *fmu);
+FMI4C_DLLAPI const char* fmi2_getGenerationDateAndTime(fmiHandle *fmu);
+FMI4C_DLLAPI const char* fmi2_getVariableNamingConvention(fmiHandle *fmu);
+FMI4C_DLLAPI int fmi2_getVariableDerivativeIndex(fmi2VariableHandle* var);
 FMI4C_DLLAPI const char* fmi2_getVariableQuantity(fmi2VariableHandle* var);
 FMI4C_DLLAPI const char* fmi2_getVariableUnit(fmi2VariableHandle* var);
 FMI4C_DLLAPI const char* fmi2_getVariableDisplayUnit(fmi2VariableHandle* var);
