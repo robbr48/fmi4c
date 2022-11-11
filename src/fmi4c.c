@@ -269,6 +269,7 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
 //! @returns True if parsing was successful
 bool parseModelDescriptionFmi2(fmiHandle *fmu)
 {
+    fmu->fmi2.fmiVersion_ = NULL;
     fmu->fmi2.modelName = NULL;
     fmu->fmi2.guid = NULL;
     fmu->fmi2.description = NULL;
@@ -330,6 +331,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
     }
 
     //Parse attributes in <fmiModelDescription>
+    parseStringAttributeEzXml(rootElement, "fmiVersion",                &fmu->fmi2.fmiVersion_);
     parseStringAttributeEzXml(rootElement, "modelName",                 &fmu->fmi2.modelName);
     parseStringAttributeEzXml(rootElement, "guid",                      &fmu->fmi2.guid);
     parseStringAttributeEzXml(rootElement, "description",               &fmu->fmi2.description);
@@ -1714,7 +1716,6 @@ bool loadFunctionsFmi2(fmiHandle *fmu, fmi2Type fmuType)
 
     //Load all common functions
     fmu->fmi2.getVersion = (fmi2GetVersion_t)loadDllFunction(dll, "fmi2GetVersion", &ok);
-    fmu->fmi2.getVersion = (fmi2GetVersion_t)loadDllFunction(dll, "fmi2GetVersion", &ok);
     fmu->fmi2.getTypesPlatform = (fmi2GetTypesPlatform_t)loadDllFunction(dll, "fmi2GetTypesPlatform", &ok);
     fmu->fmi2.setDebugLogging = (fmi2SetDebugLogging_t)loadDllFunction(dll, "fmi2SetDebugLogging", &ok);
     fmu->fmi2.instantiate = (fmi2Instantiate_t)loadDllFunction(dll, "fmi2Instantiate", &ok);
@@ -2202,11 +2203,18 @@ const char *fmi2_getTypesPlatform(fmiHandle *fmu)
     return fmu->fmi2.getTypesPlatform();
 }
 
+// this function returns the fmiVersion (e.g) fmiVersion = 2.0
+const char *fmi2_getFmiVersion(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.fmiVersion_;
+}
+
+// this function returns the optional model version from the <fmiModeldescription>
 const char *fmi2_getVersion(fmiHandle *fmu)
 {
     TRACEFUNC
-
-    return fmu->fmi2.getVersion();
+    return fmu->fmi2.version;
 }
 
 fmi2Status fmi2_setDebugLogging(fmiHandle *fmu, fmi2Boolean loggingOn, size_t nCategories, const fmi2String categories[])
@@ -2239,6 +2247,7 @@ bool fmi2_instantiate(fmiHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, 
     fmu->fmi2.callbacks.stepFinished = stepFinished;
     fmu->fmi2.callbacks.componentEnvironment = componentEnvironment;
 
+    printf("  FMIVersion:         %s\n", fmu->fmi2.fmiVersion_);
     printf("  instanceName:       %s\n", fmu->instanceName);
     printf("  GUID:               %s\n", fmu->fmi2.guid);
     printf("  unzipped location:  %s\n", fmu->unzippedLocation);
@@ -3003,6 +3012,69 @@ const char *fmi2_getVariableDescription(fmi2VariableHandle *var)
 {
     TRACEFUNC
     return var->description;
+}
+
+int fmi2_getVariableDerivativeIndex(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+    return var->derivative;
+}
+
+const char* fmi2_getAuthor(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.author;
+}
+
+const char* fmi2_getModelName(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.modelName;
+}
+
+const char* fmi2_getModelDescription(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.description;
+}
+
+const char* fmi2_getModelIdentifier(fmiHandle *fmu)
+{
+    TRACEFUNC
+    if (fmu->fmi2.supportsCoSimulation)
+        return fmu->fmi2.cs.modelIdentifier;
+    else
+        return fmu->fmi2.me.modelIdentifier;
+}
+
+const char* fmi2_getCopyright(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.copyright;
+}
+
+const char* fmi2_getLicense(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.license;
+}
+
+const char* fmi2_getGenerationTool(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.generationTool;
+}
+
+const char* fmi2_getGenerationDateAndTime(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.generationDateAndTime;
+}
+
+const char* fmi2_getVariableNamingConvention(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.variableNamingConvention;
 }
 
 const char *fmi2_getVariableQuantity(fmi2VariableHandle *var)
