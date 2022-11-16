@@ -1,6 +1,6 @@
 ---
 name: ghactions-ci-build
-on: [push]
+on: [push, pull_request]
 
 jobs:
   cmake-mingw:
