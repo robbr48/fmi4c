@@ -3808,53 +3808,50 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     strncat(resourcesLocation, unzippLocation, FILENAME_MAX-8);
     strncat(resourcesLocation, "/resources", FILENAME_MAX-8-strlen(unzippLocation)-1);
 
-    fmiHandle *fmu = calloc(1, sizeof(fmiHandle)); // Using calloc to ensure all member pointers (and data) are initialized to NULL (0)
-    fmu->version = fmiVersionUnknown;
-    fmu->instanceName = _strdup(instanceName);
-    fmu->unzippedLocation = _strdup(unzippLocation);
-    fmu->resourcesLocation = _strdup(resourcesLocation);
-
-    chdir(fmu->unzippedLocation);
+    chdir(unzippLocation);
     ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
     if (rootElement == NULL) {
-        printf("Failed to read modelDescription.xml in %s\n", fmu->unzippedLocation);
-        fmi4c_freeFmu(fmu);
+        printf("Failed to read modelDescription.xml in %s\n", unzippLocation);
         return NULL;
     }
     if(strcmp(rootElement->name, "fmiModelDescription")) {
         printf("Wrong root tag name: %s\n", rootElement->name);
-        fmi4c_freeFmu(fmu);
         return NULL;
     }
     chdir(cwd);
 
     // Figure out FMI version
+    fmiVersion_t fmi_version = fmiVersionUnknown;
     const char* version = NULL;
     if (parseStringAttributeEzXml(rootElement, "fmiVersion", &version)) {
         if(version[0] == '1') {
-            fmu->version = fmiVersion1;
+            fmi_version = fmiVersion1;
         }
         else if(version[0] == '2') {
-            fmu->version = fmiVersion2;
+            fmi_version = fmiVersion2;
         }
         else if(version[0] == '3') {
-            fmu->version = fmiVersion3;
+            fmi_version = fmiVersion3;
         }
         else {
             printf("Unsupported FMI version: %s\n", version);
             freeDuplicatedConstChar(version);
-            fmi4c_freeFmu(fmu);
             return NULL;
         }
         freeDuplicatedConstChar(version);
     }
     else {
         printf("Could not parse FMI version\n");
-        fmi4c_freeFmu(fmu);
         return NULL;
     }
 
     ezxml_free(rootElement);
+
+    fmiHandle *fmu = calloc(1, sizeof(fmiHandle)); // Using calloc to ensure all member pointers (and data) are initialized to NULL (0)
+    fmu->version = fmi_version;
+    fmu->instanceName = _strdup(instanceName);
+    fmu->unzippedLocation = _strdup(unzippLocation);
+    fmu->resourcesLocation = _strdup(resourcesLocation);
 
     fmu->fmi1.getVersion = placeholder_fmiGetVersion;
     fmu->fmi1.getTypesPlatform = placeholder_fmiGetTypesPlatform;
