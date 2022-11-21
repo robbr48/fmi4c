@@ -1172,38 +1172,41 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             parseBooleanAttributeEzXml(varElement, "intermediateUpdate", &var.intermediateUpdate);
             parseUInt32AttributeEzXml(varElement, "previous", &var.previous);
             parseStringAttributeEzXml(varElement, "declaredType", &var.declaredType);
-            const char* clocks = "";
-            parseStringAttributeEzXml(varElement, "clocks", &clocks);
-            char* nonConstClocks = _strdup(clocks);
 
-            //Count number of clocks
             var.numberOfClocks = 0;
-            if(nonConstClocks[0]) {
-                var.numberOfClocks = 1;
-            }
-            for(int i=0; nonConstClocks[i]; ++i) {
-                if(nonConstClocks[i] == ' ') {
-                    ++var.numberOfClocks;
+            const char* clocks = NULL;
+            if (parseStringAttributeEzXml(varElement, "clocks", &clocks)) {
+                // Count number of clocks
+                if(clocks[0]) {
+                    var.numberOfClocks = 1;
                 }
-            }
-
-            //Allocate memory for clocks
-            if(var.numberOfClocks > 0) {
-                var.clocks = malloc(var.numberOfClocks*sizeof(int));
-            }
-
-            //Read clocks
-            const char* delim = " ";
-            for(int i=0; i<var.numberOfClocks; ++i) {
-                if(i == 0) {
-                    var.clocks[i] = atoi(strtok(nonConstClocks, delim));
+                for(int i=0; clocks[i]; ++i) {
+                    if(clocks[i] == ' ') {
+                        ++var.numberOfClocks;
+                    }
                 }
-                else {
-                    var.clocks[i] = atoi(strtok(NULL, delim));
-                }
-            }
 
-            free(nonConstClocks);
+
+                //Allocate memory for clocks
+                if(var.numberOfClocks > 0) {
+                    var.clocks = malloc(var.numberOfClocks*sizeof(int));
+                }
+
+                //Read clocks
+                char* mutable_clocks = _strdup(clocks);
+                const char* delim = " ";
+                for(int i=0; i<var.numberOfClocks; ++i) {
+                    if(i == 0) {
+                        var.clocks[i] = atoi(strtok(mutable_clocks, delim));
+                    }
+                    else {
+                        var.clocks[i] = atoi(strtok(NULL, delim));
+                    }
+                }
+
+                freeDuplicatedConstChar(mutable_clocks);
+                freeDuplicatedConstChar(clocks);
+            }
 
             //Figure out data type
             if(!strcmp(varElement->name, "Float64")) {
