@@ -355,8 +355,8 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
         parseBooleanAttributeEzXml(cosimElement, "canRunAsynchronuously",                   &fmu->fmi2.cs.canRunAsynchronuously);
         parseBooleanAttributeEzXml(cosimElement, "canBeInstantiatedOnlyOncePerProcess",     &fmu->fmi2.cs.canBeInstantiatedOnlyOncePerProcess);
         parseBooleanAttributeEzXml(cosimElement, "canNotUseMemoryManagementFunctions",      &fmu->fmi2.cs.canNotUseMemoryManagementFunctions);
-        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUState",                    &fmu->fmi2.cs.canGetAndSetFMUState);
-        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUState",                    &fmu->fmi2.cs.canSerializeFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "canGetAndSetFMUstate",                    &fmu->fmi2.cs.canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(cosimElement, "canSerializeFMUstate",                    &fmu->fmi2.cs.canSerializeFMUState);
         parseBooleanAttributeEzXml(cosimElement, "providesDirectionalDerivative",           &fmu->fmi2.cs.providesDirectionalDerivative);
     }
 
@@ -368,8 +368,8 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
         parseBooleanAttributeEzXml(modelExchangeElement, "completedIntegratorStepNotNeeded",        &fmu->fmi2.me.completedIntegratorStepNotNeeded);
         parseBooleanAttributeEzXml(modelExchangeElement, "canBeInstantiatedOnlyOncePerProcess",     &fmu->fmi2.me.canBeInstantiatedOnlyOncePerProcess);
         parseBooleanAttributeEzXml(modelExchangeElement, "canNotUseMemoryManagementFunctions",      &fmu->fmi2.me.canNotUseMemoryManagementFunctions);
-        parseBooleanAttributeEzXml(modelExchangeElement, "canGetAndSetFMUState",                    &fmu->fmi2.me.canGetAndSetFMUState);
-        parseBooleanAttributeEzXml(modelExchangeElement, "canSerializeFMUState",                    &fmu->fmi2.me.canSerializeFMUState);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canGetAndSetFMUstate",                    &fmu->fmi2.me.canGetAndSetFMUState);
+        parseBooleanAttributeEzXml(modelExchangeElement, "canSerializeFMUstate",                    &fmu->fmi2.me.canSerializeFMUState);
         parseBooleanAttributeEzXml(modelExchangeElement, "providesDirectionalDerivative",           &fmu->fmi2.me.providesDirectionalDerivative);
     }
 
@@ -3442,7 +3442,7 @@ bool fmi2cs_getNeedsExecutionTool(fmiHandle *fmu)
 bool fmi2me_getNeedsExecutionTool(fmiHandle *fmu)
 {
     TRACEFUNC
-        return fmu->fmi2.me.needsExecutionTool;
+    return fmu->fmi2.me.needsExecutionTool;
 }
 
 bool fmics2GetCanHandleVariableCommunicationStepSize(fmiHandle *fmu)
