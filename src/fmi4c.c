@@ -264,6 +264,21 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
 }
 
 
+// table according to fmi-specification 2.2 page 51
+fmi2Initial initialDefaultTable[5][6] = {
+    /*              parameter                  calculated parameter,        input                     output                 local                  independent */
+    /* constant */  {fmi2InitialUnknown,       fmi2InitialUnknown,          fmi2InitialUnknown,       fmi2InitialExact,      fmi2InitialExact,      fmi2InitialUnknown},
+    /* fixed   */   {fmi2InitialExact,         fmi2InitialCalculated,       fmi2InitialUnknown,       fmi2InitialUnknown,    fmi2InitialCalculated, fmi2InitialUnknown},
+    /* tunable */   {fmi2InitialExact,         fmi2InitialCalculated,       fmi2InitialUnknown,       fmi2InitialUnknown,    fmi2InitialCalculated, fmi2InitialUnknown},
+    /* discrete */  {fmi2InitialUnknown,       fmi2InitialUnknown,          fmi2InitialUnknown,       fmi2InitialCalculated, fmi2InitialCalculated, fmi2InitialUnknown},
+    /* continuous */{fmi2InitialUnknown,       fmi2InitialUnknown,          fmi2InitialUnknown,       fmi2InitialCalculated, fmi2InitialCalculated, fmi2InitialUnknown}
+};
+
+// mapping index for variabilty and causality for the above table
+fmi2Variability mapVariabilityIndex[5] = {fmi2VariabilityConstant,fmi2VariabilityFixed,fmi2VariabilityTunable,fmi2VariabilityDiscrete,fmi2VariabilityContinuous};
+fmi2Causality mapCausalityIndex[6] = {fmi2CausalityParameter, fmi2CausalityCalculatedParameter, fmi2CausalityInput, fmi2CausalityOutput, fmi2CausalityLocal, fmi2CausalityIndependent};
+
+
 //! @brief Parses modelDescription.xml for FMI 2
 //! @param fmu FMU handle
 //! @returns True if parsing was successful
@@ -446,7 +461,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 return false;
             }
 
-            const char* initial = NULL;
+            const char* initial = "unknown";
             parseStringAttributeEzXml(varElement, "initial", &initial);
             if(initial && !strcmp(initial, "approx")) {
                 var.initial = fmi2InitialApprox;
@@ -457,12 +472,10 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             else if(initial && !strcmp(initial, "exact")) {
                 var.initial = fmi2InitialExact;
             }
-            else if(initial) {
-                printf("Unknown initial: %s\n", initial);
-                free((char*)initial);
-                return false;
+            else {
+                // calculate the initial value according to fmi specification 2.2 table page 51
+                var.initial = initialDefaultTable[mapVariabilityIndex[var.variability]][mapCausalityIndex[var.causality]];
             }
-            free((char*)initial);
 
             ezxml_t realElement = ezxml_child(varElement, "Real");
             if(realElement) {
@@ -2247,11 +2260,11 @@ bool fmi2_instantiate(fmiHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, 
     fmu->fmi2.callbacks.stepFinished = stepFinished;
     fmu->fmi2.callbacks.componentEnvironment = componentEnvironment;
 
-    printf("  FMIVersion:         %s\n", fmu->fmi2.fmiVersion_);
-    printf("  instanceName:       %s\n", fmu->instanceName);
-    printf("  GUID:               %s\n", fmu->fmi2.guid);
-    printf("  unzipped location:  %s\n", fmu->unzippedLocation);
-    printf("  resources location: %s\n", fmu->resourcesLocation);
+    // printf("  FMIVersion:         %s\n", fmu->fmi2.fmiVersion_);
+    // printf("  instanceName:       %s\n", fmu->instanceName);
+    // printf("  GUID:               %s\n", fmu->fmi2.guid);
+    // printf("  unzipped location:  %s\n", fmu->unzippedLocation);
+    // printf("  resources location: %s\n", fmu->resourcesLocation);
 
     fmu->fmi2.component = fmu->fmi2.instantiate(fmu->instanceName, type, fmu->fmi2.guid, fmu->resourcesLocation, &fmu->fmi2.callbacks, visible, loggingOn);
     return (fmu->fmi2.component != NULL);

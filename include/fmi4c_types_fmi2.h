@@ -23,7 +23,7 @@ typedef enum { fmi2ModelExchange, fmi2CoSimulation } fmi2Type;
 typedef enum { fmi2DoStepStatus, fmi2PendingStatus, fmi2LastSuccessfulTime, fmi2Terminated } fmi2StatusKind;
 typedef enum { fmi2CausalityInput, fmi2CausalityOutput, fmi2CausalityParameter, fmi2CausalityCalculatedParameter, fmi2CausalityLocal, fmi2CausalityIndependent } fmi2Causality;
 typedef enum { fmi2VariabilityFixed, fmi2VariabilityTunable, fmi2VariabilityConstant, fmi2VariabilityDiscrete, fmi2VariabilityContinuous } fmi2Variability;
-typedef enum { fmi2InitialExact, fmi2InitialApprox, fmi2InitialCalculated } fmi2Initial;
+typedef enum { fmi2InitialExact, fmi2InitialApprox, fmi2InitialCalculated, fmi2InitialUnknown } fmi2Initial;
 typedef enum { fmi2DataTypeReal, fmi2DataTypeInteger, fmi2DataTypeBoolean, fmi2DataTypeString, fmi2DataTypeEnumeration } fmi2DataType;
 
 #endif // FMIC_FMI2_TYPES_H
