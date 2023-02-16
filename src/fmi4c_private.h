@@ -50,6 +50,7 @@ typedef struct {
     fmi2Integer startInteger;
     fmi2Boolean startBoolean;
     fmi2String startString;
+    fmi2Integer startEnumeration;
     int64_t valueReference;
     fmi2Causality causality;
     fmi2Variability variability;
@@ -275,6 +276,7 @@ typedef struct {
     bool hasIntegerVariables;
     bool hasBooleanVariables;
     bool hasStringVariables;
+    bool hasEnumerationVariables;
 
     bool defaultStartTimeDefined;
     bool defaultStopTimeDefined;

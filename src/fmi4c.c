@@ -510,6 +510,13 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 parseStringAttributeEzXml(stringElement, "start", &var.startString);
             }
 
+            ezxml_t enumerationElement = ezxml_child(varElement, "Enumeration");
+            if(enumerationElement) {
+                fmu->fmi2.hasEnumerationVariables = true;
+                var.datatype = fmi2DataTypeEnumeration;
+                parseInt32AttributeEzXml(enumerationElement, "start", &var.startEnumeration);
+            }
+
             if(fmu->fmi2.numberOfVariables >= fmu->fmi2.variablesSize) {
                 fmu->fmi2.variablesSize *= 2;
                 fmu->fmi2.variables = realloc(fmu->fmi2.variables, fmu->fmi2.variablesSize*sizeof(fmi2VariableHandle));
