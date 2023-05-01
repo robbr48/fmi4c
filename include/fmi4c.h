@@ -90,7 +90,7 @@ FMI4C_DLLAPI fmi1Status fmi1_setInteger(fmiHandle* fmu, const fmi1ValueReference
 FMI4C_DLLAPI fmi1Status fmi1_setBoolean(fmiHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Boolean values[]);
 FMI4C_DLLAPI fmi1Status fmi1_setString(fmiHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1String values[]);
 
-FMI4C_DLLAPI bool fmi1_instantiateSlave(fmiHandle *fmu, fmi1String mimeType, fmi1Real timeOut, fmi1Boolean visible, fmi1Boolean interactive, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi3Boolean loggingOn);
+FMI4C_DLLAPI bool fmi1_instantiateSlave(fmiHandle *fmu, fmi1String mimeType, fmi1Real timeOut, fmi1Boolean visible, fmi1Boolean interactive, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi1Boolean loggingOn);
 FMI4C_DLLAPI fmi1Status fmi1_initializeSlave(fmiHandle* fmu, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime);
 FMI4C_DLLAPI fmi1Status fmi1_terminateSlave(fmiHandle* fmu);
 FMI4C_DLLAPI fmi1Status fmi1_resetSlave(fmiHandle* fmu);

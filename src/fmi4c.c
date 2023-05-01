@@ -4437,7 +4437,7 @@ fmi1Status fmi1_setString(fmiHandle *fmu, const fmi1ValueReference valueReferenc
     return fmu->fmi1.setString(fmu->fmi1.component, valueReferences, nValueReferences, values);
 }
 
-bool fmi1_instantiateSlave(fmiHandle *fmu, fmi1String mimeType, fmi1Real timeOut, fmi1Boolean visible, fmi1Boolean interactive, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi3Boolean loggingOn)
+bool fmi1_instantiateSlave(fmiHandle *fmu, fmi1String mimeType, fmi1Real timeOut, fmi1Boolean visible, fmi1Boolean interactive, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi1Boolean loggingOn)
 {
     TRACEFUNC
     fmu->fmi1.callbacksCoSimulation.logger = logger;
