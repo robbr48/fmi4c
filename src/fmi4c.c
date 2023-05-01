@@ -19,6 +19,32 @@
 #include <sys/stat.h>
 #endif
 
+#if defined(__x86_64__) || defined(_M_X64)
+    #define arch_str "x86_64"
+    #define bits_str "64"
+#else
+    #define arch_str "x86"
+    #define bits_str "32"
+#endif
+
+#if defined(__CYGWIN__)
+    #define dirsep_str "/"
+#elif defined(_WIN32)
+    #define dirsep_str "\\"
+#else
+    #define dirsep_str "/"
+#endif
+
+#if defined(__CYGWIN__) || defined(_WIN32)
+    #define dllext_str ".dll"
+    #define fmi12_system_str "win"
+    #define fmi3_system_str "windows"
+#else
+    #define dllext_str ".so"
+    #define fmi12_system_str "linux"
+    #define fmi3_system_str "linux"
+#endif
+
 #ifdef _WIN32
 FARPROC loadDllFunction(HINSTANCE dll, const char *name, bool *ok) {
     FARPROC fnc = GetProcAddress(dll, name);
@@ -1580,20 +1606,18 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
 #endif
 
     char dllPath[FILENAME_MAX] = {0};
-    strncat(dllPath, fmu->unzippedLocation, sizeof(dllPath)-strlen(dllPath)-1);
-#if defined(_WIN32 )
-    strncat(dllPath, "\\binaries\\win64\\", sizeof(dllPath)-strlen(dllPath)-1);
-#elif defined(__CYGWIN__)
-    strncat(dllPath, "/binaries/win64/", sizeof(dllPath)-strlen(dllPath)-1);
-#else
-    strncat(dllPath, "/binaries/linux64/", sizeof(dllPath)-strlen(dllPath)-1);
-#endif
-    strncat(dllPath, fmu->fmi1.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
-#if defined(_WIN32) || defined(__CYGWIN__)
-    strncat(dllPath, ".dll", sizeof(dllPath)-strlen(dllPath)-1);
-#else
-    strncat(dllPath, ".so", sizeof(dllPath)-strlen(dllPath)-1);
-#endif
+    size_t max_num_chars_to_append = sizeof(dllPath)-1;
+    strncat(dllPath, fmu->unzippedLocation, max_num_chars_to_append);
+
+    // Append on the form: /binaries/win64/
+    max_num_chars_to_append = sizeof(dllPath)-strlen(dllPath)-1;
+    strncat(dllPath, dirsep_str "binaries" dirsep_str fmi12_system_str bits_str dirsep_str, max_num_chars_to_append);
+
+    max_num_chars_to_append = sizeof(dllPath)-strlen(dllPath)-1;
+    strncat(dllPath, fmu->fmi1.modelIdentifier, max_num_chars_to_append);
+    max_num_chars_to_append = sizeof(dllPath)-strlen(dllPath)-1;
+    strncat(dllPath, dllext_str, max_num_chars_to_append);
+
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
     if(NULL == dll) {
@@ -1690,27 +1714,24 @@ bool loadFunctionsFmi2(fmiHandle *fmu, fmi2Type fmuType)
 #endif
 
     char dllPath[FILENAME_MAX] = {0};
-    strncat(dllPath, fmu->unzippedLocation, sizeof(dllPath)-strlen(dllPath)-1);
-#if defined(_WIN32)
-    strncat(dllPath, "\\binaries\\win64\\", sizeof(dllPath)-strlen(dllPath)-1);
-#elif defined(__CYGWIN__)
-    strncat(dllPath, "/binaries/win64/", sizeof(dllPath)-strlen(dllPath)-1);
-#else
-    strncat(dllPath, "/binaries/linux64/", sizeof(dllPath)-strlen(dllPath)-1);
-#endif
+    size_t max_num_chars_to_append = sizeof(dllPath)-1;
+    strncat(dllPath, fmu->unzippedLocation, max_num_chars_to_append);
 
+    // Append on the form: /binaries/win64/
+    max_num_chars_to_append = sizeof(dllPath)-strlen(dllPath)-1;
+    strncat(dllPath, dirsep_str "binaries" dirsep_str fmi12_system_str bits_str dirsep_str, max_num_chars_to_append);
+
+    max_num_chars_to_append = sizeof(dllPath)-strlen(dllPath)-1;
     if(fmuType == fmi2CoSimulation) {
-        strncat(dllPath, fmu->fmi2.cs.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
+        strncat(dllPath, fmu->fmi2.cs.modelIdentifier, max_num_chars_to_append);
     }
     else {
-        strncat(dllPath, fmu->fmi2.me.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
+        strncat(dllPath, fmu->fmi2.me.modelIdentifier, max_num_chars_to_append);
     }
 
-#if defined(_WIN32) || defined(__CYGWIN__)
-    strncat(dllPath, ".dll", sizeof(dllPath)-strlen(dllPath)-1);
-#else
-    strncat(dllPath, ".so", sizeof(dllPath)-strlen(dllPath)-1);
-#endif
+    max_num_chars_to_append = sizeof(dllPath)-strlen(dllPath)-1;
+    strncat(dllPath, dllext_str, max_num_chars_to_append);
+
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
     if(NULL == dll) {
@@ -1807,31 +1828,28 @@ bool loadFunctionsFmi3(fmiHandle *fmu, fmi3Type fmuType)
 #else
     getcwd(cwd, sizeof(char)*FILENAME_MAX);
 #endif
-    char dllPath[FILENAME_MAX] = {0};
-    strncat(dllPath, fmu->unzippedLocation, sizeof(dllPath)-strlen(dllPath)-1);
-#if defined(_WIN32)
-    strncat(dllPath, "\\binaries\\x86_64-windows\\", sizeof(dllPath)-strlen(dllPath)-1);
-#elif defined(__CYGWIN__)
-    strncat(dllPath, "/binaries/x86_64-windows/", sizeof(dllPath)-strlen(dllPath)-1);
-#else
-    strncat(dllPath, "/binaries/x86_64-linux/", sizeof(dllPath)-strlen(dllPath)-1);
-#endif
 
+    char dllPath[FILENAME_MAX] = {0};
+    size_t max_num_chars_to_append = sizeof(dllPath)-1;
+    strncat(dllPath, fmu->unzippedLocation, max_num_chars_to_append);
+
+    // Append on the form: /binaries/x86_64-windows/
+    max_num_chars_to_append = sizeof(dllPath)-strlen(dllPath)-1;
+    strncat(dllPath, dirsep_str "binaries" dirsep_str arch_str "-" fmi3_system_str dirsep_str, max_num_chars_to_append);
+
+    max_num_chars_to_append = sizeof(dllPath)-strlen(dllPath)-1;
     if(fmuType == fmi3CoSimulation) {
-        strncat(dllPath, fmu->fmi3.cs.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
+        strncat(dllPath, fmu->fmi3.cs.modelIdentifier, max_num_chars_to_append);
     }
     else if(fmuType == fmi3ModelExchange) {
-        strncat(dllPath, fmu->fmi3.me.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
+        strncat(dllPath, fmu->fmi3.me.modelIdentifier, max_num_chars_to_append);
     }
     else {
-        strncat(dllPath, fmu->fmi3.se.modelIdentifier, sizeof(dllPath)-strlen(dllPath)-1);
+        strncat(dllPath, fmu->fmi3.se.modelIdentifier, max_num_chars_to_append);
     }
 
-#if defined(_WIN32) || defined(__CYGWIN__)
-    strncat(dllPath, ".dll", sizeof(dllPath)-strlen(dllPath)-1);
-#else
-    strncat(dllPath, ".so", sizeof(dllPath)-strlen(dllPath)-1);
-#endif
+    max_num_chars_to_append = sizeof(dllPath)-strlen(dllPath)-1;
+    strncat(dllPath, dllext_str, max_num_chars_to_append);
 
 #ifdef _WIN32
     HINSTANCE dll = LoadLibraryA(dllPath);
