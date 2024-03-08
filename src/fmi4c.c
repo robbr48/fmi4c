@@ -1890,7 +1890,7 @@ bool loadFunctionsFmi3(fmiHandle *fmu, fmi3Type fmuType)
     max_num_chars_to_append = sizeof(dllDirectory)-1;
     strncat(dllDirectory, fmu->unzippedLocation, max_num_chars_to_append);
     max_num_chars_to_append = sizeof(dllDirectory)-strlen(dllDirectory)-1;
-    strncat(dllPath, dirsep_str "binaries" dirsep_str arch_str "-" fmi3_system_str dirsep_str, max_num_chars_to_append);
+    strncat(dllDirectory, dirsep_str "binaries" dirsep_str arch_str "-" fmi3_system_str dirsep_str, max_num_chars_to_append);
     BOOL success = SetDllDirectoryA(dllDirectory);
     if (!success) {
         fprintf(stderr, "Loading DLL %s failed:\nFailed to set DLL directory %s", dllPath, dllDirectory);
