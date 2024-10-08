@@ -1663,52 +1663,52 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
     char tmpbuff[FILENAME_MAX];
 
     //Load all common functions
-    fmu->fmi1.getVersion = (fmiGetVersion_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetVersion", tmpbuff), &ok);
-    fmu->fmi1.setDebugLogging = (fmiSetDebugLogging_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetDebugLogging", tmpbuff), &ok);
-    fmu->fmi1.getReal = (fmiGetReal_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetReal", tmpbuff), &ok);
-    fmu->fmi1.setReal = (fmiSetReal_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetReal", tmpbuff), &ok);
-    fmu->fmi1.getInteger = (fmiGetInteger_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetInteger", tmpbuff), &ok);
-    fmu->fmi1.setInteger = (fmiSetInteger_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetInteger", tmpbuff), &ok);
-    fmu->fmi1.getBoolean = (fmiGetBoolean_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetBoolean", tmpbuff), &ok);
-    fmu->fmi1.setBoolean = (fmiSetBoolean_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetBoolean", tmpbuff), &ok);
-    fmu->fmi1.getString = (fmiGetString_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetString", tmpbuff), &ok);
-    fmu->fmi1.setString = (fmiSetString_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetString", tmpbuff), &ok);
+    fmu->fmi1.getVersion = (fmiGetVersion_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetVersion", tmpbuff), &ok);
+    fmu->fmi1.setDebugLogging = (fmiSetDebugLogging_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiSetDebugLogging", tmpbuff), &ok);
+    fmu->fmi1.getReal = (fmiGetReal_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetReal", tmpbuff), &ok);
+    fmu->fmi1.setReal = (fmiSetReal_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiSetReal", tmpbuff), &ok);
+    fmu->fmi1.getInteger = (fmiGetInteger_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetInteger", tmpbuff), &ok);
+    fmu->fmi1.setInteger = (fmiSetInteger_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiSetInteger", tmpbuff), &ok);
+    fmu->fmi1.getBoolean = (fmiGetBoolean_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetBoolean", tmpbuff), &ok);
+    fmu->fmi1.setBoolean = (fmiSetBoolean_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiSetBoolean", tmpbuff), &ok);
+    fmu->fmi1.getString = (fmiGetString_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetString", tmpbuff), &ok);
+    fmu->fmi1.setString = (fmiSetString_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiSetString", tmpbuff), &ok);
 
     if(fmu->fmi1.type == fmi1ModelExchange) {
         //Load model exchange functions
-        fmu->fmi1.instantiateModel = (fmiInstantiateModel_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiInstantiateModel", tmpbuff), &ok);
-        fmu->fmi1.freeModelInstance = (fmiFreeModelInstance_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiFreeModelInstance", tmpbuff), &ok);
-        fmu->fmi1.initialize = (fmiInitialize_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiInitialize", tmpbuff), &ok);
-        fmu->fmi1.getDerivatives = (fmiGetDerivatives_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetDerivatives", tmpbuff), &ok);
-        fmu->fmi1.terminate = (fmiTerminate_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiTerminate", tmpbuff), &ok);
-        fmu->fmi1.setTime = (fmiSetTime_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiSetTime", tmpbuff), &ok);
-        fmu->fmi1.getModelTypesPlatform = (fmiGetModelTypesPlatform_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetModelTypesPlatform", tmpbuff), &ok);
-        fmu->fmi1.setContinuousStates = (fmiSetContinuousStates_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiSetContinuousStates", tmpbuff), &ok);
-        fmu->fmi1.completedIntegratorStep = (fmiCompletedIntegratorStep_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiCompletedIntegratorStep", tmpbuff), &ok);
-        fmu->fmi1.getEventIndicators = (fmiGetEventIndicators_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetEventIndicators", tmpbuff), &ok);
-        fmu->fmi1.eventUpdate = (fmiEventUpdate_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiEventUpdate", tmpbuff), &ok);
-        fmu->fmi1.getContinuousStates = (fmiGetContinuousStates_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetContinuousStates", tmpbuff), &ok);
-        fmu->fmi1.getNominalContinuousStates = (fmiGetNominalContinuousStates_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetNominalContinuousStates", tmpbuff), &ok);
-        fmu->fmi1.getStateValueReferences = (fmiGetStateValueReferences_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelName, "fmiGetStateValueReferences", tmpbuff), &ok);
+        fmu->fmi1.instantiateModel = (fmiInstantiateModel_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiInstantiateModel", tmpbuff), &ok);
+        fmu->fmi1.freeModelInstance = (fmiFreeModelInstance_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiFreeModelInstance", tmpbuff), &ok);
+        fmu->fmi1.initialize = (fmiInitialize_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiInitialize", tmpbuff), &ok);
+        fmu->fmi1.getDerivatives = (fmiGetDerivatives_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetDerivatives", tmpbuff), &ok);
+        fmu->fmi1.terminate = (fmiTerminate_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiTerminate", tmpbuff), &ok);
+        fmu->fmi1.setTime = (fmiSetTime_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiSetTime", tmpbuff), &ok);
+        fmu->fmi1.getModelTypesPlatform = (fmiGetModelTypesPlatform_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetModelTypesPlatform", tmpbuff), &ok);
+        fmu->fmi1.setContinuousStates = (fmiSetContinuousStates_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiSetContinuousStates", tmpbuff), &ok);
+        fmu->fmi1.completedIntegratorStep = (fmiCompletedIntegratorStep_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiCompletedIntegratorStep", tmpbuff), &ok);
+        fmu->fmi1.getEventIndicators = (fmiGetEventIndicators_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetEventIndicators", tmpbuff), &ok);
+        fmu->fmi1.eventUpdate = (fmiEventUpdate_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiEventUpdate", tmpbuff), &ok);
+        fmu->fmi1.getContinuousStates = (fmiGetContinuousStates_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetContinuousStates", tmpbuff), &ok);
+        fmu->fmi1.getNominalContinuousStates = (fmiGetNominalContinuousStates_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetNominalContinuousStates", tmpbuff), &ok);
+        fmu->fmi1.getStateValueReferences = (fmiGetStateValueReferences_t)loadDllFunction(dll,  getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetStateValueReferences", tmpbuff), &ok);
     }
 
     if(fmu->fmi1.type == fmi1CoSimulationStandAlone || fmu->fmi1.type == fmi1CoSimulationTool) {
         //Load all co-simulation functions
-        fmu->fmi1.getTypesPlatform = (fmiGetTypesPlatform_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetTypesPlatform", tmpbuff), &ok);
-        fmu->fmi1.instantiateSlave = (fmiInstantiateSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiInstantiateSlave", tmpbuff), &ok);
-        fmu->fmi1.initializeSlave = (fmiInitializeSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiInitializeSlave", tmpbuff), &ok);
-        fmu->fmi1.terminateSlave = (fmiTerminateSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiTerminateSlave", tmpbuff), &ok);
-        fmu->fmi1.resetSlave =  (fmiResetSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiResetSlave", tmpbuff), &ok);
-        fmu->fmi1.freeSlaveInstance = (fmiFreeSlaveInstance_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiFreeSlaveInstance", tmpbuff), &ok);
-        fmu->fmi1.setRealInputDerivatives = (fmiSetRealInputDerivatives_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiSetRealInputDerivatives", tmpbuff), &ok);
-        fmu->fmi1.getRealOutputDerivatives = (fmiGetRealOutputDerivatives_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetRealOutputDerivatives", tmpbuff), &ok);
-        fmu->fmi1.doStep = (fmiDoStep_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiDoStep", tmpbuff), &ok);
-        fmu->fmi1.cancelStep = (fmiCancelStep_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiCancelStep", tmpbuff), &ok);
-        fmu->fmi1.getStatus = (fmiGetStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetStatus", tmpbuff), &ok);
-        fmu->fmi1.getRealStatus = (fmiGetRealStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetRealStatus", tmpbuff), &ok);
-        fmu->fmi1.getIntegerStatus = (fmiGetIntegerStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetIntegerStatus", tmpbuff), &ok);
-        fmu->fmi1.getBooleanStatus = (fmiGetBooleanStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetBooleanStatus", tmpbuff), &ok);
-        fmu->fmi1.getStringStatus = (fmiGetStringStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelName, "fmiGetStringStatus", tmpbuff), &ok);
+        fmu->fmi1.getTypesPlatform = (fmiGetTypesPlatform_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetTypesPlatform", tmpbuff), &ok);
+        fmu->fmi1.instantiateSlave = (fmiInstantiateSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiInstantiateSlave", tmpbuff), &ok);
+        fmu->fmi1.initializeSlave = (fmiInitializeSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiInitializeSlave", tmpbuff), &ok);
+        fmu->fmi1.terminateSlave = (fmiTerminateSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiTerminateSlave", tmpbuff), &ok);
+        fmu->fmi1.resetSlave =  (fmiResetSlave_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiResetSlave", tmpbuff), &ok);
+        fmu->fmi1.freeSlaveInstance = (fmiFreeSlaveInstance_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiFreeSlaveInstance", tmpbuff), &ok);
+        fmu->fmi1.setRealInputDerivatives = (fmiSetRealInputDerivatives_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiSetRealInputDerivatives", tmpbuff), &ok);
+        fmu->fmi1.getRealOutputDerivatives = (fmiGetRealOutputDerivatives_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetRealOutputDerivatives", tmpbuff), &ok);
+        fmu->fmi1.doStep = (fmiDoStep_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiDoStep", tmpbuff), &ok);
+        fmu->fmi1.cancelStep = (fmiCancelStep_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiCancelStep", tmpbuff), &ok);
+        fmu->fmi1.getStatus = (fmiGetStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetStatus", tmpbuff), &ok);
+        fmu->fmi1.getRealStatus = (fmiGetRealStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetRealStatus", tmpbuff), &ok);
+        fmu->fmi1.getIntegerStatus = (fmiGetIntegerStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetIntegerStatus", tmpbuff), &ok);
+        fmu->fmi1.getBooleanStatus = (fmiGetBooleanStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetBooleanStatus", tmpbuff), &ok);
+        fmu->fmi1.getStringStatus = (fmiGetStringStatus_t)loadDllFunction(dll, getFunctionName(fmu->fmi1.modelIdentifier, "fmiGetStringStatus", tmpbuff), &ok);
     }
 
     chdir(cwd);
