@@ -3933,15 +3933,11 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     // miniunzip will change dir to unzipLocation, lets change back
     chdir(cwd);
 
-    char resourcesLocation[FILENAME_MAX] = "file:///";
-    strncat(resourcesLocation, unzippLocation, FILENAME_MAX-8);
-    strncat(resourcesLocation, "/resources", FILENAME_MAX-8-strlen(unzippLocation)-1);
 
     fmiHandle *fmu = calloc(1, sizeof(fmiHandle)); // Using calloc to ensure all member pointers (and data) are initialized to NULL (0)
     fmu->version = fmiVersionUnknown;
     fmu->instanceName = _strdup(instanceName);
     fmu->unzippedLocation = _strdup(unzippLocation);
-    fmu->resourcesLocation = _strdup(resourcesLocation);
 
     chdir(fmu->unzippedLocation);
     ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
@@ -3959,23 +3955,48 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
     // Figure out FMI version
     const char* version = NULL;
-    parseStringAttributeEzXml(rootElement, "fmiVersion", &version);
-    if(version[0] == '1') {
-        fmu->version = fmiVersion1;
-    }
-    else if(version[0] == '2') {
-        fmu->version = fmiVersion2;
-    }
-    else if(version[0] == '3') {
-        fmu->version = fmiVersion3;
+    if(parseStringAttributeEzXml(rootElement, "fmiVersion", &version)) {
+        if(version[0] == '1') {
+            fmu->version = fmiVersion1;
+        }
+        else if(version[0] == '2') {
+            fmu->version = fmiVersion2;
+        }
+        else if(version[0] == '3') {
+            fmu->version = fmiVersion3;
+        }
+        else {
+            printf("Unsupported FMI version: %s\n", version);
+            free(fmu);
+            return NULL;
+        }
     }
     else {
-        printf("Unsupported FMI version: %s\n", version);
-        free((char*)version);
+        printf("FMI version not specified.");
         free(fmu);
         return NULL;
     }
-    free((char*)version);
+
+    if(fmu->version == fmiVersion1) {
+        char resourcesLocation[FILENAME_MAX] = "file:///";
+        strncat(resourcesLocation, unzippLocation, FILENAME_MAX-8);
+        fmu->resourcesLocation = _strdup(resourcesLocation);
+        printf("Resource location: %s\n", fmu->resourcesLocation);
+    }
+    else if(fmu->version == fmiVersion2) {
+        char resourcesLocation[FILENAME_MAX] = "file:///";
+        strncat(resourcesLocation, unzippLocation, FILENAME_MAX-8);
+        strncat(resourcesLocation, "/resources", FILENAME_MAX-8-strlen(unzippLocation)-1);
+        fmu->resourcesLocation = _strdup(resourcesLocation);
+        printf("Resource location: %s\n", fmu->resourcesLocation);
+    }
+    else {
+        char resourcesLocation[FILENAME_MAX] = "";
+        strncat(resourcesLocation, unzippLocation, FILENAME_MAX);
+        strncat(resourcesLocation, "/resources/", FILENAME_MAX-strlen(unzippLocation)-1);
+        fmu->resourcesLocation = _strdup(resourcesLocation);
+        printf("Resource location: %s\n", fmu->resourcesLocation);
+    }
 
     ezxml_free(rootElement);
 
@@ -4515,7 +4536,7 @@ bool fmi1_instantiateSlave(fmiHandle *fmu, fmi1String mimeType, fmi1Real timeOut
     fmu->fmi1.callbacksCoSimulation.freeMemory = freeMemory;
     fmu->fmi1.callbacksCoSimulation.stepFinished = stepFinished;
 
-    fmu->fmi1.component = fmu->fmi1.instantiateSlave(fmu->instanceName, fmu->fmi1.guid, fmu->unzippedLocation, mimeType, timeOut, visible, interactive, fmu->fmi1.callbacksCoSimulation, loggingOn);
+    fmu->fmi1.component = fmu->fmi1.instantiateSlave(fmu->instanceName, fmu->fmi1.guid, fmu->resourcesLocation, mimeType, timeOut, visible, interactive, fmu->fmi1.callbacksCoSimulation, loggingOn);
 
     return (fmu->fmi1.component != NULL);
 }
