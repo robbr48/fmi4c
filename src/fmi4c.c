@@ -1293,6 +1293,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             else if(!strcmp(varElement->name, "String")) {
                 var.datatype = fmi3DataTypeString;
                 fmu->fmi3.hasStringVariables = true;
+                var.startString = "";
                 parseStringAttributeEzXml(varElement, "start", &var.startString);
             }
             else if(!strcmp(varElement->name, "Binary")) {
