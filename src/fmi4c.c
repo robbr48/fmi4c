@@ -1184,7 +1184,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 
     ezxml_t modelVariablesElement = ezxml_child(rootElement, "ModelVariables");
     if(modelVariablesElement) {
-        for(ezxml_t varElement = modelVariablesElement->child; varElement; varElement = varElement->next) {
+        for(ezxml_t varElement = modelVariablesElement->child; varElement; varElement = varElement->ordered) {
             fmi3VariableHandle var;
             var.name = NULL;
             var.description = NULL;
