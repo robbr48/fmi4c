@@ -102,11 +102,13 @@ int testFMI1ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     }
 
     outputFile = fopen(outputCsvPath, "w");
-    fprintf(outputFile,"time");
-    for(int i=0; i<numOutputs; ++i) {
-        fprintf(outputFile,",%s",fmi1_getVariableName(fmi1_getVariableByValueReference(fmu, outputRefs[i])));
+    if(outputFile != NULL) {
+        fprintf(outputFile,"time");
+        for(int i=0; i<numOutputs; ++i) {
+            fprintf(outputFile,",%s",fmi1_getVariableName(fmi1_getVariableByValueReference(fmu, outputRefs[i])));
+        }
+        fprintf(outputFile,"\n");
     }
-    fprintf(outputFile,"\n");
 
     printf("  Simulating from %f to %f...\n",startTime, stopTime);
 
@@ -214,14 +216,18 @@ int testFMI1ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
         //Print all output variables to CSV file
         double value;
-        fprintf(outputFile,"%f",time);
-        for(int i=0; i<numOutputs; ++i) {
-            fmi1_getReal(fmu, &outputRefs[i], 1, &value);
-            fprintf(outputFile,",%f",value);
+        if(outputFile != NULL) {
+            fprintf(outputFile,"%f",time);
+            for(int i=0; i<numOutputs; ++i) {
+                fmi1_getReal(fmu, &outputRefs[i], 1, &value);
+                fprintf(outputFile,",%f",value);
+            }
+            fprintf(outputFile,"\n");
         }
-        fprintf(outputFile,"\n");
     }
-    fclose(outputFile);
+    if(outputFile != NULL) {
+        fclose(outputFile);
+    }
     free(derivatives);
     free(eventIndicatorsPrev);
     free(states);
@@ -275,11 +281,13 @@ int testfmi1_cS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, 
 
     printf("  Simulating from %f to %f...\n",startTime, stopTime);
     outputFile = fopen(outputCsvPath, "w");
-    fprintf(outputFile,"time");
-    for(int i=0; i<numOutputs; ++i) {
-        fprintf(outputFile,",%s",fmi1_getVariableName(fmi1_getVariableByValueReference(fmu, outputRefs[i])));
+    if(outputFile != NULL) {
+        fprintf(outputFile,"time");
+        for(int i=0; i<numOutputs; ++i) {
+            fprintf(outputFile,",%s",fmi1_getVariableName(fmi1_getVariableByValueReference(fmu, outputRefs[i])));
+        }
+        fprintf(outputFile,"\n");
     }
-    fprintf(outputFile,"\n");
 
     double time = startTime;
     while(time <= stopTime) {
@@ -305,16 +313,20 @@ int testfmi1_cS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, 
 
         //Print all output variables to CSV file
         double value;
-        fprintf(outputFile,"%f",time);
-        for(int i=0; i<numOutputs; ++i) {
-            fmi1_getReal(fmu, &outputRefs[i], 1, &value);
-            fprintf(outputFile,",%f",value);
+        if(outputFile != NULL) {
+            fprintf(outputFile,"%f",time);
+            for(int i=0; i<numOutputs; ++i) {
+                fmi1_getReal(fmu, &outputRefs[i], 1, &value);
+                fprintf(outputFile,",%f",value);
+            }
+            fprintf(outputFile,"\n");
         }
-        fprintf(outputFile,"\n");
 
         time+=stepSize;
     }
-    fclose(outputFile);
+    if(outputFile != NULL) {
+        fclose(outputFile);
+    }
 
     printf("  Simulation finished.\n");
 
