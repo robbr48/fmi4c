@@ -280,7 +280,9 @@ int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub, bool overrideStopTime, double 
     FILE *pResultFile;
     fclose(fopen(outputCsvPath, "w"));          //Clear old results in file
     pResultFile = fopen(outputCsvPath, "a");    //Open result file for appending
-    fprintf(pResultFile, "t,v1,v2,f1,f2\n");          //Print header row
+    if(pResultFile != NULL) {
+        fprintf(pResultFile, "t,v1,v2,f1,f2\n");          //Print header row
+    }
 
     struct doStepArgs stepArgs1;
     stepArgs1.tstep = tstep;
@@ -315,14 +317,18 @@ int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub, bool overrideStopTime, double 
         fmi3_getFloat64(fmub, &vr_v, 1, &v2, 1);
         fmi3_getFloat64(fmua, &vr_f, 1, &f1, 1);
         fmi3_getFloat64(fmub, &vr_f, 1, &f2, 1);
-        fprintf(pResultFile, "%f,%f,%f,%f,%f\n",tcur,v1,v2,f1,f2);
+        if(pResultFile != NULL) {
+            fprintf(pResultFile, "%f,%f,%f,%f,%f\n",tcur,v1,v2,f1,f2);
+        }
         tcur += tstep;
 
         printf("\rSimulating, %.0f%% done...",tcur/tstop*100);
         fflush(stdout);
     }
 
-    fclose(pResultFile);
+    if(pResultFile != NULL) {
+        fclose(pResultFile);
+    }
 
     fmi3_terminate(fmua);
     fmi3_terminate(fmub);
