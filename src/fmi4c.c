@@ -81,12 +81,12 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
     fmu->fmi1.modelName = NULL;
     fmu->fmi1.modelIdentifier = NULL;
     fmu->fmi1.guid = NULL;
-    fmu->fmi1.description = NULL;
-    fmu->fmi1.author = NULL;
-    fmu->fmi1.version = NULL;
-    fmu->fmi1.generationTool = NULL;
-    fmu->fmi1.generationDateAndTime = NULL;
-    fmu->fmi1.variableNamingConvention = NULL;
+    fmu->fmi1.description = "";
+    fmu->fmi1.author = "";
+    fmu->fmi1.version = "";
+    fmu->fmi1.generationTool = "";
+    fmu->fmi1.generationDateAndTime = "";
+    fmu->fmi1.variableNamingConvention = "";
 
     fmu->fmi1.defaultStartTimeDefined = false;
     fmu->fmi1.defaultStopTimeDefined = false;
@@ -172,7 +172,14 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
 
             fmi1VariableHandle var;
             var.name = NULL;
-            var.description = NULL;
+            var.description = "";
+            var.quantity = "";
+            var.unit = "";
+            var.displayUnit = "";
+            var.relativeQuantity = false;
+            var.min = -DBL_MAX;
+            var.max = DBL_MAX;
+            var.nominal = 1;
             var.startReal = 0;
             var.startInteger = 0;
             var.startBoolean = 0;
@@ -238,19 +245,31 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
                 }
             }
 
+            var.hasStartValue = false;
             ezxml_t realElement = ezxml_child(varElement, "Real");
             if(realElement) {
                 fmu->fmi1.hasRealVariables = true;
                 var.datatype = fmi1DataTypeReal;
-                parseFloat64AttributeEzXml(realElement, "start", &var.startReal);
+                if(parseFloat64AttributeEzXml(realElement, "start", &var.startReal)) {
+                    var.hasStartValue = true;
+                }
                 parseBooleanAttributeEzXml(realElement, "fixed", &var.fixed);
+                parseStringAttributeEzXml(realElement, "quantity", &var.quantity);
+                parseStringAttributeEzXml(realElement, "unit", &var.unit);
+                parseStringAttributeEzXml(realElement, "displayUnit", &var.displayUnit);
+                parseBooleanAttributeEzXml(realElement, "relativeQuantity", &var.relativeQuantity);
+                parseFloat64AttributeEzXml(realElement, "min", &var.min);
+                parseFloat64AttributeEzXml(realElement, "max", &var.max);
+                parseFloat64AttributeEzXml(realElement, "nominal", &var.nominal);
             }
 
             ezxml_t integerElement = ezxml_child(varElement, "Integer");
             if(integerElement) {
                 fmu->fmi1.hasIntegerVariables = true;
                 var.datatype = fmi1DataTypeInteger;
-                parseInt32AttributeEzXml(integerElement, "start", &var.startInteger);
+                if(parseInt32AttributeEzXml(integerElement, "start", &var.startInteger)) {
+                    var.hasStartValue = true;
+                }
                 parseBooleanAttributeEzXml(integerElement, "fixed", &var.fixed);
             }
 
@@ -259,8 +278,10 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
                 fmu->fmi1.hasBooleanVariables = true;
                 var.datatype = fmi1DataTypeBoolean;
                 bool startBoolean;
-                parseBooleanAttributeEzXml(booleanElement, "start", &startBoolean);
-                var.startBoolean = startBoolean;
+                if(parseBooleanAttributeEzXml(booleanElement, "start", &startBoolean)) {
+                    var.startBoolean = startBoolean;
+                    var.hasStartValue = true;
+                }
                 parseBooleanAttributeEzXml(booleanElement, "fixed", &var.fixed);
             }
 
@@ -268,7 +289,9 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
             if(stringElement) {
                 fmu->fmi1.hasStringVariables = true;
                 var.datatype = fmi1DataTypeString;
-                parseStringAttributeEzXml(stringElement, "start", &var.startString);
+                if(parseStringAttributeEzXml(stringElement, "start", &var.startString)) {
+                    var.hasStartValue = true;
+                }
                 parseBooleanAttributeEzXml(stringElement, "fixed", &var.fixed);
             }
 
@@ -508,11 +531,15 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 }
             }
 
+            var.hasStartValue = false;
+
             ezxml_t realElement = ezxml_child(varElement, "Real");
             if(realElement) {
                 fmu->fmi2.hasRealVariables = true;
                 var.datatype = fmi2DataTypeReal;
-                parseFloat64AttributeEzXml(realElement, "start", &var.startReal);
+                if(parseFloat64AttributeEzXml(realElement, "start", &var.startReal)) {
+                    var.hasStartValue = true;
+                }
                 if(parseUInt32AttributeEzXml(realElement, "derivative", &var.derivative)) {
                     fmu->fmi2.numberOfContinuousStates++;
                 }
@@ -522,7 +549,9 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             if(integerElement) {
                 fmu->fmi2.hasIntegerVariables = true;
                 var.datatype = fmi2DataTypeInteger;
-                parseInt32AttributeEzXml(integerElement, "start", &var.startInteger);
+                if(parseInt32AttributeEzXml(integerElement, "start", &var.startInteger)) {
+                    var.hasStartValue = true;
+                }
             }
 
             ezxml_t booleanElement = ezxml_child(varElement, "Boolean");
@@ -530,7 +559,9 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 fmu->fmi2.hasBooleanVariables = true;
                 var.datatype = fmi2DataTypeBoolean;
                 bool startBoolean;
-                parseBooleanAttributeEzXml(booleanElement, "start", &startBoolean);
+                if(parseBooleanAttributeEzXml(booleanElement, "start", &startBoolean)) {
+                    var.hasStartValue = true;
+                }
                 var.startBoolean = startBoolean;
             }
 
@@ -538,14 +569,18 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             if(stringElement) {
                 fmu->fmi2.hasStringVariables = true;
                 var.datatype = fmi2DataTypeString;
-                parseStringAttributeEzXml(stringElement, "start", &var.startString);
+                if(parseStringAttributeEzXml(stringElement, "start", &var.startString)) {
+                    var.hasStartValue = true;
+                }
             }
 
             ezxml_t enumerationElement = ezxml_child(varElement, "Enumeration");
             if(enumerationElement) {
                 fmu->fmi2.hasEnumerationVariables = true;
                 var.datatype = fmi2DataTypeEnumeration;
-                parseInt32AttributeEzXml(enumerationElement, "start", &var.startEnumeration);
+                if(parseInt32AttributeEzXml(enumerationElement, "start", &var.startEnumeration)) {
+                    var.hasStartValue = true;
+                }
             }
 
             if(fmu->fmi2.numberOfVariables >= fmu->fmi2.variablesSize) {
@@ -1239,82 +1274,114 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 
             free(nonConstClocks);
 
+            var.hasStartValue = false;
+
             //Figure out data type
             if(!strcmp(varElement->name, "Float64")) {
                 var.datatype = fmi3DataTypeFloat64;
                 fmu->fmi3.hasFloat64Variables = true;
-                parseFloat64AttributeEzXml(varElement, "start", &var.startFloat64);
+                if(parseFloat64AttributeEzXml(varElement, "start", &var.startFloat64)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "Float32")) {
                 var.datatype = fmi3DataTypeFloat32;
                 fmu->fmi3.hasFloat32Variables = true;
-                parseFloat32AttributeEzXml(varElement, "start", &var.startFloat32);
+                if(parseFloat32AttributeEzXml(varElement, "start", &var.startFloat32)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "Int64")) {
                 var.datatype = fmi3DataTypeInt64;
                 fmu->fmi3.hasInt64Variables = true;
-                parseInt64AttributeEzXml(varElement, "start", &var.startInt64);
+                if(parseInt64AttributeEzXml(varElement, "start", &var.startInt64)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "Int32")) {
                 var.datatype = fmi3DataTypeInt32;
                 fmu->fmi3.hasInt32Variables = true;
-                parseInt32AttributeEzXml(varElement, "start", &var.startInt32);
+                if(parseInt32AttributeEzXml(varElement, "start", &var.startInt32)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "Int16")) {
                 var.datatype = fmi3DataTypeInt16;
                 fmu->fmi3.hasInt16Variables = true;
-                parseInt16AttributeEzXml(varElement, "start", &var.startInt16);
+                if(parseInt16AttributeEzXml(varElement, "start", &var.startInt16)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "Int8")) {
                 var.datatype = fmi3DataTypeInt8;
                 fmu->fmi3.hasInt8Variables = true;
-                parseInt8AttributeEzXml(varElement, "start", &var.startInt8);
+                if(parseInt8AttributeEzXml(varElement, "start", &var.startInt8)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "UInt64")) {
                 var.datatype = fmi3DataTypeUInt64;
                 fmu->fmi3.hasUInt64Variables = true;
-                parseUInt64AttributeEzXml(varElement, "start", &var.startUInt64);
+                if(parseUInt64AttributeEzXml(varElement, "start", &var.startUInt64)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "UInt32")) {
                 var.datatype = fmi3DataTypeUInt32;
                 fmu->fmi3.hasUInt32Variables = true;
-                parseUInt32AttributeEzXml(varElement, "start", &var.startUInt32);
+                if(parseUInt32AttributeEzXml(varElement, "start", &var.startUInt32)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "UInt16")) {
                 var.datatype = fmi3DataTypeUInt16;
                 fmu->fmi3.hasUInt16Variables = true;
-                parseUInt16AttributeEzXml(varElement, "start", &var.startUInt16);
+                if(parseUInt16AttributeEzXml(varElement, "start", &var.startUInt16)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "UInt8")) {
                 var.datatype = fmi3DataTypeUInt8;
                 fmu->fmi3.hasUInt8Variables = true;
-                parseUInt8AttributeEzXml(varElement, "start", &var.startUInt8);
+                if(parseUInt8AttributeEzXml(varElement, "start", &var.startUInt8)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "Boolean")) {
                 var.datatype = fmi3DataTypeBoolean;
                 fmu->fmi3.hasBooleanVariables = true;
-                parseBooleanAttributeEzXml(varElement, "start", &var.startBoolean);
+                if(parseBooleanAttributeEzXml(varElement, "start", &var.startBoolean)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "String")) {
                 var.datatype = fmi3DataTypeString;
                 fmu->fmi3.hasStringVariables = true;
                 var.startString = "";
-                parseStringAttributeEzXml(varElement, "start", &var.startString);
+                if(parseStringAttributeEzXml(varElement, "start", &var.startString)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "Binary")) {
                 var.datatype = fmi3DataTypeBinary;
                 fmu->fmi3.hasBinaryVariables = true;
-                parseUInt8AttributeEzXml(varElement, "start", var.startBinary);
+                if(parseUInt8AttributeEzXml(varElement, "start", var.startBinary)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "Enumeration")) {
                 var.datatype = fmi3DataTypeEnumeration;
                 fmu->fmi3.hasEnumerationVariables = true;
-                parseInt64AttributeEzXml(varElement, "start", &var.startEnumeration);
+                if(parseInt64AttributeEzXml(varElement, "start", &var.startEnumeration)) {
+                    var.hasStartValue = true;
+                }
             }
             else if(!strcmp(varElement->name, "Clock")) {
                 var.datatype = fmi3DataTypeClock;
                 fmu->fmi3.hasClockVariables = true;
-                parseBooleanAttributeEzXml(varElement, "start", &var.startClock);
+                if(parseBooleanAttributeEzXml(varElement, "start", &var.startClock)) {
+                    var.hasStartValue = true;
+                }
             }
 
             var.causality = fmi3CausalityLocal;
@@ -2462,6 +2529,12 @@ const char *fmi3_getVariableDisplayUnit(fmi3VariableHandle *var)
     return var->displayUnit;
 }
 
+bool fmi3_getVariableHasStartValue(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->hasStartValue;
+}
+
 fmi3Float64 fmi3_getVariableStartFloat64(fmi3VariableHandle *var)
 {
     TRACEFUNC
@@ -3188,6 +3261,12 @@ const char *fmi2_getVariableDisplayUnit(fmi2VariableHandle *var)
 {
     TRACEFUNC
     return var->displayUnit;
+}
+
+bool fmi2_getVariableHasStartValue(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+    return var->hasStartValue;
 }
 
 fmi2Real fmi2_getVariableStartReal(fmi2VariableHandle *var)
@@ -4310,8 +4389,49 @@ void fmi4c_freeFmu(fmiHandle *fmu)
 fmi1Type fmi1_getType(fmiHandle *fmu)
 {
     TRACEFUNC
-
     return fmu->fmi1.type;
+}
+
+const char* fmi1_getModelName(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1.modelName;
+}
+
+const char* fmi1_getModelIdentifier(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1.modelIdentifier;
+}
+
+const char* fmi1_getGuid(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1.guid;
+}
+
+const char* fmi1_getDescription(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1.description;
+}
+
+const char* fmi1_getAuthor(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1.author;
+}
+
+const char* fmi1_getGenerationTool(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1.generationTool;
+}
+
+const char* fmi1_getGenerationDateAndTime(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1.generationDateAndTime;
 }
 
 int fmi1_getNumberOfContinuousStates(fmiHandle *fmu)
@@ -4411,6 +4531,54 @@ const char *fmi1_getVariableDescription(fmi1VariableHandle *var)
 {
     TRACEFUNC
     return var->description;
+}
+
+const char *fmi1_getVariableQuantity(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->quantity;
+}
+
+const char *fmi1_getVariableUnit(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->unit;
+}
+
+const char *fmi1_getVariableDisplayUnit(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->displayUnit;
+}
+
+bool fmi1_getVariableRelativeQuantity(fmi1VariableHandle* var)
+{
+    TRACEFUNC
+    return var->relativeQuantity;
+}
+
+fmi1Real fmi1_getVariableMin(fmi1VariableHandle* var)
+{
+    TRACEFUNC
+    return var->min;
+}
+
+fmi1Real fmi1_getVariableMax(fmi1VariableHandle* var)
+{
+    TRACEFUNC
+    return var->max;
+}
+
+fmi1Real fmi1_getVariableNominal(fmi1VariableHandle* var)
+{
+    TRACEFUNC
+    return var->nominal;
+}
+
+bool fmi1_getVariableHasStartValue(fmi1VariableHandle *var)
+{
+    TRACEFUNC
+    return var->hasStartValue;
 }
 
 fmi1Real fmi1_getVariableStartReal(fmi1VariableHandle *var)
