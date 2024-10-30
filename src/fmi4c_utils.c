@@ -203,16 +203,22 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
     output->numberOfDependencies = 0;
     const char* dependencies = NULL;
     if(parseStringAttributeEzXml(*element, "dependencies", &dependencies)) {
+
+        if(dependencies == NULL || dependencies[0] == '\0') {
+            //If dependencies is empty, no need to parse further
+            return true;
+        }
+
+        //Duplicate the dependencies string to make it mutable
         char* nonConstDependencies = _strdup(dependencies);
         free((char*)dependencies);
 
-        //Count number of dependencies
-        if(nonConstDependencies != NULL) {
-            output->numberOfDependencies = 1;
+        if (nonConstDependencies == NULL) {
+            return false; //strdup failed, handle as an error
         }
-        else {
-            return true;
-        }
+
+        //Count the number of dependencies based on space-delimited tokens
+        output->numberOfDependencies = 1;
         for(int i=0; nonConstDependencies[i]; ++i) {
             if(nonConstDependencies[i] == ' ') {
                 ++output->numberOfDependencies;
