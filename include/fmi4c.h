@@ -222,6 +222,14 @@ FMI4C_DLLAPI fmi2Status fmi2_exitInitializationMode(fmiHandle* fmu);
 FMI4C_DLLAPI fmi2Status fmi2_terminate(fmiHandle* fmu);
 FMI4C_DLLAPI fmi2Status fmi2_reset(fmiHandle* fmu);
 
+FMI4C_DLLAPI int fmi2_getNumberOfUnits(fmiHandle *fmu);
+FMI4C_DLLAPI fmi2UnitHandle *fmi2_getUnitByIndex(fmiHandle *fmu, int i);
+FMI4C_DLLAPI const char* fmi2_getUnitName(fmi2UnitHandle *unit);
+FMI4C_DLLAPI bool fmi2_hasBaseUnit(fmi2UnitHandle *unit);
+FMI4C_DLLAPI void fmi2_getBaseUnit(fmi2UnitHandle *unit, double *factor, double *offset, int *kg, int *m, int *s, int *A, int *K, int *mol, int *cd, int *rad);
+FMI4C_DLLAPI int fmi2_getNumberOfDisplayUnits(fmi2UnitHandle *unit);
+FMI4C_DLLAPI void fmi2_getDisplayUnitByIndex(fmi2UnitHandle *unit, int id, const char **name, double *factor, double *offset);
+
 FMI4C_DLLAPI fmi2Status fmi2_getReal(fmiHandle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, fmi2Real values[]);
 FMI4C_DLLAPI fmi2Status fmi2_getInteger(fmiHandle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, fmi2Integer values[]);
 FMI4C_DLLAPI fmi2Status fmi2_getBoolean(fmiHandle* fmu, const fmi2ValueReference valueReferences[], size_t nValueReferences, fmi2Boolean values[]);

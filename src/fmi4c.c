@@ -483,6 +483,75 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
         parseBooleanAttributeEzXml(modelExchangeElement, "providesDirectionalDerivative",           &fmu->fmi2.me.providesDirectionalDerivative);
     }
 
+    ezxml_t unitDefinitionsElement = ezxml_child(rootElement, "UnitDefinitions");
+    if(unitDefinitionsElement) {
+        //First count number of units
+        fmu->fmi2.numberOfUnits = 0;
+        for(ezxml_t unitElement = unitDefinitionsElement->child; unitElement; unitElement = unitElement->next) {
+            if(!strcmp(unitElement->name, "Unit")) {
+                ++fmu->fmi2.numberOfUnits;
+            }
+        }
+        if(fmu->fmi2.numberOfUnits > 0) {
+            fmu->fmi2.units = malloc(fmu->fmi2.numberOfUnits*sizeof(fmi2UnitHandle));
+        }
+        int i=0;
+        for(ezxml_t unitElement = unitDefinitionsElement->child; unitElement; unitElement = unitElement->next) {
+            if(strcmp(unitElement->name, "Unit")) {
+                continue;   //Wrong element name
+            }
+            fmi2UnitHandle unit;
+            unit.baseUnit = NULL;
+            unit.displayUnits = NULL;
+            parseStringAttributeEzXml(unitElement, "name", &unit.name);
+            unit.numberOfDisplayUnits = 0;
+            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
+                if(!strcmp(unitSubElement->name, "BaseUnit")) {
+                    unit.baseUnit = malloc(sizeof(fmi2BaseUnitHandle));
+                    unit.baseUnit->kg = 0;
+                    unit.baseUnit->m = 0;
+                    unit.baseUnit->s = 0;
+                    unit.baseUnit->A = 0;
+                    unit.baseUnit->K = 0;
+                    unit.baseUnit->mol = 0;
+                    unit.baseUnit->cd = 0;
+                    unit.baseUnit->rad = 0;
+                    unit.baseUnit->factor = 1;
+                    unit.baseUnit->offset = 0;
+                    parseInt32AttributeEzXml(unitSubElement,    "kg",       &unit.baseUnit->kg);
+                    parseInt32AttributeEzXml(unitSubElement,    "m",        &unit.baseUnit->m);
+                    parseInt32AttributeEzXml(unitSubElement,    "s",        &unit.baseUnit->s);
+                    parseInt32AttributeEzXml(unitSubElement,    "A",        &unit.baseUnit->A);
+                    parseInt32AttributeEzXml(unitSubElement,    "K",        &unit.baseUnit->K);
+                    parseInt32AttributeEzXml(unitSubElement,    "mol",      &unit.baseUnit->mol);
+                    parseInt32AttributeEzXml(unitSubElement,    "cd",       &unit.baseUnit->cd);
+                    parseInt32AttributeEzXml(unitSubElement,    "rad",      &unit.baseUnit->rad);
+                    parseFloat64AttributeEzXml(unitSubElement,  "factor",   &unit.baseUnit->factor);
+                    parseFloat64AttributeEzXml(unitSubElement,  "offset",   &unit.baseUnit->offset);
+                }
+                else if(!strcmp(unitSubElement->name, "DisplayUnit")) {
+                    ++unit.numberOfDisplayUnits;  //Just count them for now, so we can allocate memory before loading them
+                }
+            }
+            if(unit.numberOfDisplayUnits > 0) {
+                unit.displayUnits = malloc(unit.numberOfDisplayUnits*sizeof(fmi2DisplayUnitHandle));
+            }
+            int j=0;
+            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
+                if(!strcmp(unitSubElement->name, "DisplayUnit")) {
+                    unit.displayUnits[j].factor = 1;
+                    unit.displayUnits[j].offset = 0;
+                    parseStringAttributeEzXml(unitSubElement,  "name",      &unit.displayUnits[j].name);
+                    parseFloat64AttributeEzXml(unitSubElement, "factor",    &unit.displayUnits[j].factor);
+                    parseFloat64AttributeEzXml(unitSubElement, "offset",    &unit.displayUnits[j].offset);
+                }
+                ++j;
+            }
+            fmu->fmi2.units[i] = unit;
+            ++i;
+        }
+    }
+
     ezxml_t defaultExperimentElement = ezxml_child(rootElement, "DefaultExperiment");
     if(defaultExperimentElement) {
         fmu->fmi2.defaultStartTimeDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "startTime", &fmu->fmi2.defaultStartTime);
@@ -2505,6 +2574,70 @@ fmi2Status fmi2_reset(fmiHandle *fmu)
     TRACEFUNC
 
     return fmu->fmi2.reset(fmu->fmi2.component);
+}
+
+int fmi2_getNumberOfUnits(fmiHandle *fmu)
+{
+    return fmu->fmi2.numberOfUnits;
+}
+
+fmi2UnitHandle *fmi2_getUnitByIndex(fmiHandle *fmu, int i)
+{
+    return &fmu->fmi2.units[i];
+}
+
+const char* fmi2_getUnitName(fmi2UnitHandle *unit)
+{
+    return unit->name;
+}
+
+bool fmi2_hasBaseUnit(fmi2UnitHandle *unit)
+{
+    return (unit->baseUnit != NULL);
+}
+
+void fmi2_getBaseUnit(fmi2UnitHandle *unit, double *factor, double *offset, int *kg, int *m, int *s, int *A, int *K, int *mol, int *cd, int *rad)
+{
+    if(unit->baseUnit != NULL) {
+        *factor = unit->baseUnit->factor;
+        *offset = unit->baseUnit->offset;
+        *kg = unit->baseUnit->kg;
+        *m= unit->baseUnit->m;
+        *s= unit->baseUnit->s;
+        *A= unit->baseUnit->A;
+        *K= unit->baseUnit->K;
+        *mol= unit->baseUnit->mol;
+        *cd= unit->baseUnit->cd;
+        *rad= unit->baseUnit->rad;
+    }
+}
+
+double fmi2GetBaseUnitFactor(fmi2UnitHandle *unit)
+{
+if(unit->baseUnit != NULL) {
+    return unit->baseUnit->factor;
+}
+return 0;
+}
+
+double fmi2GetBaseUnitOffset(fmi2UnitHandle *unit)
+{
+if(unit->baseUnit != NULL) {
+    return unit->baseUnit->offset;
+}
+return 0;
+}
+
+int fmi2_getNumberOfDisplayUnits(fmi2UnitHandle *unit)
+{
+return unit->numberOfDisplayUnits;
+}
+
+void fmi2_getDisplayUnitByIndex(fmi2UnitHandle *unit, int id, const char **name, double *factor, double *offset)
+{
+    *name = unit->displayUnits[id].name;
+    *factor = unit->displayUnits[id].factor;
+    *offset = unit->displayUnits[id].offset;
 }
 
 int fmi3_getNumberOfVariables(fmiHandle *fmu)
