@@ -127,7 +127,7 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
     parseStringAttributeEzXml(rootElement, "description",               &fmu->fmi1.description);
     parseStringAttributeEzXml(rootElement, "author",                    &fmu->fmi1.author);
     parseStringAttributeEzXml(rootElement, "version",                   &fmu->fmi1.version);
-    parseStringAttributeEzXml(rootElement, "generationtool",            &fmu->fmi1.generationTool);
+    parseStringAttributeEzXml(rootElement, "generationTool",            &fmu->fmi1.generationTool);
     parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->fmi1.generationDateAndTime);
     parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->fmi1.variableNamingConvention);
     parseInt32AttributeEzXml(rootElement, "numberOfContinuousStates",   &fmu->fmi1.numberOfContinuousStates);
@@ -380,7 +380,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
     parseStringAttributeEzXml(rootElement, "version",                   &fmu->fmi2.version);
     parseStringAttributeEzXml(rootElement, "copyright",                 &fmu->fmi2.copyright);
     parseStringAttributeEzXml(rootElement, "license",                   &fmu->fmi2.license);
-    parseStringAttributeEzXml(rootElement, "generationtool",            &fmu->fmi2.generationTool);
+    parseStringAttributeEzXml(rootElement, "generationTool",            &fmu->fmi2.generationTool);
     parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->fmi2.generationDateAndTime);
     parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->fmi2.variableNamingConvention);
     parseInt32AttributeEzXml(rootElement, "numberOfEventIndicators",    &fmu->fmi2.numberOfEventIndicators);
@@ -668,7 +668,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
     parseStringAttributeEzXml(rootElement, "version",                   &fmu->fmi3.version);
     parseStringAttributeEzXml(rootElement, "copyright",                 &fmu->fmi3.copyright);
     parseStringAttributeEzXml(rootElement, "license",                   &fmu->fmi3.license);
-    parseStringAttributeEzXml(rootElement, "generationtool",            &fmu->fmi3.generationTool);
+    parseStringAttributeEzXml(rootElement, "generationTool",            &fmu->fmi3.generationTool);
     parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->fmi3.generationDateAndTime);
     parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->fmi3.variableNamingConvention);
 
