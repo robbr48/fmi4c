@@ -82,11 +82,11 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
     fmu->fmi1.modelIdentifier = NULL;
     fmu->fmi1.guid = NULL;
     fmu->fmi1.description = "";
-    fmu->fmi1.author = "";
-    fmu->fmi1.version = "";
-    fmu->fmi1.generationTool = "";
-    fmu->fmi1.generationDateAndTime = "";
-    fmu->fmi1.variableNamingConvention = "";
+    fmu->fmi1.author = NULL;
+    fmu->fmi1.version = NULL;
+    fmu->fmi1.generationTool = NULL;
+    fmu->fmi1.generationDateAndTime = NULL;
+    fmu->fmi1.variableNamingConvention = NULL;
 
     fmu->fmi1.defaultStartTimeDefined = false;
     fmu->fmi1.defaultStopTimeDefined = false;
@@ -218,10 +218,10 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
 
             fmi1VariableHandle var;
             var.name = NULL;
-            var.description = "";
-            var.quantity = "";
-            var.unit = "";
-            var.displayUnit = "";
+            var.description = NULL;
+            var.quantity = NULL;
+            var.unit = NULL;
+            var.displayUnit = NULL;
             var.relativeQuantity = false;
             var.min = -DBL_MAX;
             var.max = DBL_MAX;
