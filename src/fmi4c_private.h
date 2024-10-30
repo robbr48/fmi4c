@@ -81,6 +81,32 @@ typedef struct {
 } fmi2VariableHandle;
 
 typedef struct {
+    int kg;
+    int m;
+    int s;
+    int A;
+    int K;
+    int mol;
+    int cd;
+    int rad;
+    double factor;
+    double offset;
+} fmi2BaseUnitHandle;
+
+typedef struct {
+    const char* name;
+    double factor;
+    double offset;
+} fmi2DisplayUnitHandle;
+
+typedef struct {
+    const char* name;
+    fmi2BaseUnitHandle *baseUnit;
+    fmi2DisplayUnitHandle *displayUnits;
+    size_t numberOfDisplayUnits;
+} fmi2UnitHandle;
+
+typedef struct {
     fmi3DataType datatype;
     const char *name;
     const char *description;
@@ -312,6 +338,9 @@ typedef struct {
     double defaultStopTime;
     double defaultTolerance;
     double defaultStepSize;
+
+    int numberOfUnits;
+    fmi2UnitHandle *units;
 
     int numberOfContinuousStates;
 
