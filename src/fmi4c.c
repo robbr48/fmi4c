@@ -4567,7 +4567,7 @@ fmi1Status fmi1_resetSlave(fmiHandle *fmu)
 void fmi1_freeSlaveInstance(fmiHandle *fmu)
 {
     TRACEFUNC
-    return fmu->fmi1.freeSlaveInstance(fmu->fmi1.component);
+    fmu->fmi1.freeSlaveInstance(fmu->fmi1.component);
 }
 
 fmi1Status fmi1_setRealInputDerivatives(fmiHandle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], const fmi1Real values[])
