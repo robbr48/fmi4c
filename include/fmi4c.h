@@ -92,6 +92,12 @@ FMI4C_DLLAPI const char* fmi1_getTypesPlatform(fmiHandle* fmu);
 FMI4C_DLLAPI const char* fmi1_getVersion(fmiHandle* fmu);
 FMI4C_DLLAPI fmi1Status fmi1_setDebugLogging(fmiHandle* fmu, fmi1Boolean);
 
+FMI4C_DLLAPI int fmi1_getNumberOfBaseUnits(fmiHandle *fmu);
+FMI4C_DLLAPI fmi1BaseUnitHandle *fmi1_getBaseUnitByIndex(fmiHandle *fmu, int i);
+FMI4C_DLLAPI const char* fmi1_getBaseUnitUnit(fmi1BaseUnitHandle *baseUnit);
+FMI4C_DLLAPI int fmi1_getNumberOfDisplayUnits(fmi1BaseUnitHandle *baseUnit);
+FMI4C_DLLAPI void fmi1_getDisplayUnitByIndex(fmi1BaseUnitHandle *baseUnit, int id, const char **displayUnit, double *gain, double *offset);
+
 FMI4C_DLLAPI fmi1Status fmi1_getReal(fmiHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Real values[]);
 FMI4C_DLLAPI fmi1Status fmi1_getInteger(fmiHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Integer values[]);
 FMI4C_DLLAPI fmi1Status fmi1_getBoolean(fmiHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Boolean values[]);

@@ -48,6 +48,18 @@ typedef struct {
 } fmi1VariableHandle;
 
 typedef struct {
+    const char* displayUnit;
+    double gain;
+    double offset;
+} fmi1DisplayUnitHandle;
+
+typedef struct {
+    const char* unit;
+    fmi1DisplayUnitHandle *displayUnits;
+    size_t numberOfDisplayUnits;
+} fmi1BaseUnitHandle;
+
+typedef struct {
     fmi2DataType datatype;
     const char *name;
     const char *description;
@@ -183,6 +195,9 @@ typedef struct {
     double defaultStartTime;
     double defaultStopTime;
     double defaultTolerance;
+
+    int numberOfBaseUnits;
+    fmi1BaseUnitHandle *baseUnits;
 
     int numberOfVariables;
     fmi1VariableHandle *variables;
