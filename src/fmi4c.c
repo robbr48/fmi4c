@@ -159,6 +159,52 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
         }
     }
 
+    ezxml_t unitDefinitionsElement = ezxml_child(rootElement, "UnitDefinitions");
+    if(unitDefinitionsElement) {
+        //First count number of units
+        fmu->fmi1.numberOfBaseUnits = 0;
+        for(ezxml_t baseUnitElement = unitDefinitionsElement->child; baseUnitElement; baseUnitElement = baseUnitElement->ordered) {
+            if(!strcmp(baseUnitElement->name, "BaseUnit")) {
+                ++fmu->fmi1.numberOfBaseUnits;
+            }
+        }
+        if(fmu->fmi1.numberOfBaseUnits > 0) {
+            fmu->fmi1.baseUnits = malloc(fmu->fmi1.numberOfBaseUnits*sizeof(fmi1BaseUnitHandle));
+        }
+        int i=0;
+        for(ezxml_t baseUnitElement = unitDefinitionsElement->child; baseUnitElement; baseUnitElement = baseUnitElement->ordered) {
+            if(strcmp(baseUnitElement->name, "BaseUnit")) {
+                continue;   //Wrong element name
+            }
+            fmi1BaseUnitHandle baseUnit;
+            baseUnit.unit = NULL;
+            baseUnit.displayUnits = NULL;
+            parseStringAttributeEzXml(baseUnitElement, "unit", &baseUnit.unit);
+            baseUnit.numberOfDisplayUnits = 0;
+            for(ezxml_t unitSubElement = baseUnitElement->child; unitSubElement; unitSubElement = unitSubElement->ordered) {
+                if(!strcmp(unitSubElement->name, "DisplayUnitDefinition")) {
+                    ++baseUnit.numberOfDisplayUnits;  //Just count them for now, so we can allocate memory before loading them
+                }
+            }
+            if(baseUnit.numberOfDisplayUnits > 0) {
+                baseUnit.displayUnits = malloc(baseUnit.numberOfDisplayUnits*sizeof(fmi1DisplayUnitHandle));
+            }
+            int j=0;
+            for(ezxml_t unitSubElement = baseUnitElement->child; unitSubElement; unitSubElement = unitSubElement->ordered) {
+                if(!strcmp(unitSubElement->name, "DisplayUnitDefinition")) {
+                    baseUnit.displayUnits[j].gain = 1;
+                    baseUnit.displayUnits[j].offset = 0;
+                    parseStringAttributeEzXml(unitSubElement,  "name",      &baseUnit.displayUnits[j].displayUnit);
+                    parseFloat64AttributeEzXml(unitSubElement, "factor",    &baseUnit.displayUnits[j].gain);
+                    parseFloat64AttributeEzXml(unitSubElement, "offset",    &baseUnit.displayUnits[j].offset);
+                }
+                ++j;
+            }
+            fmu->fmi1.baseUnits[i] = baseUnit;
+            ++i;
+        }
+    }
+
     ezxml_t defaultExperimentElement = ezxml_child(rootElement, "DefaultExperiment");
     if(defaultExperimentElement) {
         fmu->fmi1.defaultStartTimeDefined = parseFloat64AttributeEzXml(defaultExperimentElement, "startTime", &fmu->fmi1.defaultStartTime);
@@ -4651,6 +4697,37 @@ fmi1Status fmi1_setDebugLogging(fmiHandle *fmu, fmi1Boolean loggingOn)
 {
     TRACEFUNC
     return fmu->fmi1.setDebugLogging(fmu->fmi1.component, loggingOn);
+}
+
+int fmi1_getNumberOfBaseUnits(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi1.numberOfBaseUnits;
+}
+
+fmi1BaseUnitHandle *fmi1_getBaseUnitByIndex(fmiHandle *fmu, int i)
+{
+    TRACEFUNC
+    return &fmu->fmi1.baseUnits[i];
+}
+
+const char* fmi1_getBaseUnitUnit(fmi1BaseUnitHandle *baseUnit)
+{
+    TRACEFUNC
+    return baseUnit->unit;
+}
+
+int fmi1_getNumberOfDisplayUnits(fmi1BaseUnitHandle *baseUnit)
+{
+    TRACEFUNC
+    return baseUnit->numberOfDisplayUnits;
+}
+
+void fmi1_getDisplayUnitByIndex(fmi1BaseUnitHandle *baseUnit, int id, const char **displayUnit, double *gain, double *offset)
+{
+    *displayUnit = baseUnit->displayUnits[id].displayUnit;
+    *gain = baseUnit->displayUnits[id].gain;
+    *offset = baseUnit->displayUnits[id].offset;
 }
 
 fmi1Status fmi1_getReal(fmiHandle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Real values[])
