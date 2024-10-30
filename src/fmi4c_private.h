@@ -28,7 +28,15 @@ typedef struct {
     fmi1DataType datatype;
     const char *name;
     const char *description;
+    const char *quantity;
+    const char *unit;
+    const char *displayUnit;
+    bool relativeQuantity;
+    double min;
+    double max;
+    double nominal;
     int64_t valueReference;
+    bool hasStartValue;
     fmi1Real startReal;
     fmi1Integer startInteger;
     fmi1Boolean startBoolean;
@@ -46,6 +54,7 @@ typedef struct {
     const char *quantity;
     const char *unit;
     const char *displayUnit;
+    bool hasStartValue;
     fmi2Real startReal;
     fmi2Integer startInteger;
     fmi2Boolean startBoolean;
@@ -71,6 +80,7 @@ typedef struct {
     double min;
     double max;
     double nominal;
+    bool hasStartValue;
     fmi3Float64 startFloat64;
     fmi3Float32 startFloat32;
     fmi3Int64 startInt64;
