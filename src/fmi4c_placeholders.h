@@ -368,12 +368,12 @@ fmi1Status placeholder_fmiTerminate(fmi1Component_t c) {
     return fmi1Error;
 }
 
-const char* placeholder_fmi2_getTypesPlatform() {
+const char* placeholder_fmi2_getTypesPlatform(void) {
     NOT_IMPLEMENTED(fmi2_getTypesPlatform);
     return NULL;
 }
 
-const char* placeholder_fmi2_getVersion() {
+const char* placeholder_fmi2_getVersion(void) {
     NOT_IMPLEMENTED(fmi2_getVersion);
     return NULL;
 }
