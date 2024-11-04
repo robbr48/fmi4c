@@ -125,3 +125,6 @@ add_custom_command(TARGET fmi3tlm POST_BUILD
 #if(NOT MSVC)
 #  add_test(NAME fmi3tlm COMMAND $<TARGET_FILE_NAME:fmi4ctest> --tlm fmi3tlm.fmu fmi3tlm.fmu fmi3tlm.out)
 #endif()
+
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/pytest.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/../fmi4c.py DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

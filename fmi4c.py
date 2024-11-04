@@ -134,6 +134,7 @@ class fmi4c:
     
     def fmi4c_loadFmu(self, path, instanceName):
         self.fmu = self.hdll.fmi4c_loadFmu(path.encode(), instanceName.encode())
+        return self.fmu != 0
 
     def fmi1_getType(self):
         return self.translateFmi1Type(self.hdll.fmi1_getType(self.fmu))
