@@ -2361,7 +2361,7 @@ fmi3Status fmi3_getFloat64(fmiHandle *fmu,
 fmi3Status fmi3_setFloat64(fmiHandle *fmu,
                            const fmi3ValueReference valueReferences[],
                            size_t nValueReferences,
-                           fmi3Float64 values[],
+                           const fmi3Float64 values[],
                            size_t nValues) {
 
     return fmu->fmi3.setFloat64(fmu->fmi3.fmi3Instance,
