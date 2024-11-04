@@ -626,7 +626,7 @@ FMI4C_DLLAPI fmi3Status fmi3_getFloat64(fmiHandle *fmu,
 FMI4C_DLLAPI fmi3Status fmi3_setFloat64(fmiHandle *fmu,
                                        const fmi3ValueReference valueReferences[],
                                        size_t nValueReferences,
-                                       fmi3Float64 values[],
+                                       const fmi3Float64 values[],
                                        size_t nValues);
 
 FMI4C_DLLAPI fmi3Status fmi3_enterInitializationMode(fmiHandle *fmu,
