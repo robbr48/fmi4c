@@ -200,7 +200,7 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
                 if(!strcmp(unitSubElement->name, "DisplayUnitDefinition")) {
                     baseUnit.displayUnits[j].gain = 1;
                     baseUnit.displayUnits[j].offset = 0;
-                    parseStringAttributeEzXml(unitSubElement,  "name",      &baseUnit.displayUnits[j].displayUnit);
+                    parseStringAttributeEzXml(unitSubElement,  "displayUnit",      &baseUnit.displayUnits[j].displayUnit);
                     parseFloat64AttributeEzXml(unitSubElement, "factor",    &baseUnit.displayUnits[j].gain);
                     parseFloat64AttributeEzXml(unitSubElement, "offset",    &baseUnit.displayUnits[j].offset);
                 }
