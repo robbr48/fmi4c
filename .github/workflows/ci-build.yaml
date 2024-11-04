@@ -7,6 +7,10 @@ jobs:
     timeout-minutes: 5
     runs-on: windows-2019
     steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -28,7 +32,11 @@ jobs:
         working-directory: fmi4c-build
         shell: cmd
         run: ctest -C Release --output-on-failure --parallel 4
-
+        
+      - name: PythonTest
+        working-directory: fmi4c-build/test
+        run: python pytest.py
+        
   cmake-msvc2019:
     timeout-minutes: 5
     runs-on: windows-2019
@@ -54,11 +62,15 @@ jobs:
         working-directory: fmi4c-build
         shell: cmd
         run: ctest -C Release --output-on-failure --parallel 4
-
+        
   cmake-ubuntu:
     timeout-minutes: 5
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -80,3 +92,7 @@ jobs:
         working-directory: fmi4c-build
         shell: bash
         run: ctest --output-on-failure --parallel 4
+                  
+      - name: PythonTest
+        working-directory: fmi4c-build/test
+        run: python pytest.py
