@@ -4,12 +4,11 @@ include(${CMAKE_CURRENT_LIST_DIR}/fmi4c-targets.cmake)
 
 if (NOT @FMI4C_USE_SYSTEM_ZIP@)
 
-    if (NOT TARGET ZLIB::ZLIB)
-        find_dependency(ZLIB REQUIRED)
-    endif()
-
-    if (TARGET zlibstatic)
-        add_library(ZLIB::ZLIB ALIAS zlibstatic)
+    if (TARGET fmi4c::zlibstatic)
+        # May not be needed, since fmi4c depends on fmi4c::zlibstatic rather then alias ZLIB::ZLIB (maybe CMaKe version dependent)
+        add_library(ZLIB::ZLIB ALIAS fmi4c::zlibstatic)
+    elseif (NOT TARGET ZLIB::ZLIB)
+        find_package(ZLIB REQUIRED)
     endif()
 
 endif()
