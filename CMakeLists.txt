@@ -116,7 +116,7 @@ if (FMI4C_BUILD_TEST)
     if (WIN32 AND FMI4C_BUILD_SHARED)
         # On Windows there is no RPATH, so fmi4c.dll must be copied to the test directory if test should be runnable from any directory
         add_custom_command(TARGET fmi4c POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi4c> ${CMAKE_CURRENT_BINARY_DIR}/test)
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:fmi4c> "${CMAKE_CURRENT_BINARY_DIR}/test")
     endif()
 endif()
 
@@ -126,12 +126,8 @@ configure_package_config_file(cmake/config.cmake.in
         INSTALL_DESTINATION "${CMAKE_INSTALL_DATADIR}/fmi4c"
         NO_SET_AND_CHECK_MACRO)
 
-install(
-        FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/fmi4c-config.cmake"
-        DESTINATION
-        "${CMAKE_INSTALL_DATADIR}/fmi4c")
-
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/fmi4c-config.cmake"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/fmi4c")
 
 install(TARGETS fmi4c EXPORT "fmi4c-targets")
 install(DIRECTORY "include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
