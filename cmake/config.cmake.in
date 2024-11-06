@@ -2,13 +2,28 @@
 
 include(${CMAKE_CURRENT_LIST_DIR}/fmi4c-targets.cmake)
 
+set(FMI4C_BUILT_SHARED @FMI4C_BUILD_SHARED@)
+set(FMI4C_INCLUDES_ZLIB @FMI4C_USE_INCLUDED_ZLIB@)
+
 if (NOT @FMI4C_USE_SYSTEM_ZIP@)
 
-    if (TARGET fmi4c::zlibstatic)
-        # May not be needed, since fmi4c depends on fmi4c::zlibstatic rather then alias ZLIB::ZLIB (maybe CMaKe version dependent)
-        add_library(ZLIB::ZLIB ALIAS fmi4c::zlibstatic)
-    elseif (NOT TARGET ZLIB::ZLIB)
-        find_package(ZLIB REQUIRED)
+    # fmi4c needs to find system zlib in the following cases
+    #   Built shared but does not include zlib (Target fmi4c::zlibstatic missing)
+    #   Built static but does not include zlib (Target fmi4c::zlibstatic missing)
+
+    # fmi4c should not look for system zlib in the following cases
+    #   Built shared and includes zlib         (Target fmi4c::zlibstatic missing)
+    #   Built static and includes zlib         (Target fmi4c::zlibstatic exists)
+
+    if (NOT TARGET fmi4c::zlibstatic)
+        if(NOT (${FMI4C_BUILT_SHARED} AND ${FMI4C_INCLUDES_ZLIB}))
+            message(STATUS "Looking for ZLIB for fmi4c")
+            find_package(ZLIB MODULE)
+            message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
+            message(STATUS "ZLIB_INCLUDE_DIRS: ${ZLIB_INCLUDE_DIRS}")
+            message(STATUS "ZLIB_VERSION: ${ZLIB_VERSION} ${ZLIB_VERSION_STRING}")
+            message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
+        endif()
     endif()
 
 endif()
