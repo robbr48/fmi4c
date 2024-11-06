@@ -58,7 +58,7 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     fmi3Status status;
 
     int nRequiredIntermediateVariables = 0;
-    if(!fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, NULL, loggerFmi3, intermediateUpdate)) {
+    if(!fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, fmu, loggerFmi3, intermediateUpdate)) {
         printf("fmi3InstantiateCoSimulation() failed\n");
         exit(1);
     }
