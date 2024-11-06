@@ -13,6 +13,11 @@ option(FMI4C_USE_SYSTEM_ZIP "Use system utilities for unzipping" ON)
 #this option is only enabled when FMI4C_USE_SYSTEM_ZIP=OFF
 cmake_dependent_option(FMI4C_USE_INCLUDED_ZLIB "Use the included zlib (statically linked) even if a system version is available" OFF "NOT FMI4C_USE_SYSTEM_ZIP" OFF)
 
+# Set default debug postfix
+if (NOT CMAKE_DEBUG_POSTFIX)
+    set(CMAKE_DEBUG_POSTFIX d)
+endif()
+
 if (FMI4C_BUILD_DOCUMENTATION)
     add_subdirectory(doc)
 endif()
