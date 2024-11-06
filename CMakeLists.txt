@@ -96,7 +96,7 @@ target_compile_definitions(fmi4c PUBLIC HAVE_MEMMOVE=1 EZXML_NOMMAP USE_FILE32AP
 if (FMI4C_BUILD_SHARED)
     # Only set DLLEXPORT when producing the library, when consumed dllimport will be assumed
     target_compile_definitions(fmi4c PRIVATE FMI4C_DLLEXPORT)
-elseif (NOT FMI4C_USE_SYSTEM_ZIP)
+else()
     # When using as a static library (on windows) FMI4C_STATIC must be defined, otherwise dllimport will be assumed
     target_compile_definitions(fmi4c PUBLIC FMI4C_STATIC)
     # Must use position independent code if intend to include static fmi4c lib into shared (dll) consumer
@@ -112,12 +112,13 @@ target_include_directories(fmi4c
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
+# Internal dependency (PRIVATE) on libdl on Linux
 target_link_libraries(fmi4c PRIVATE ${CMAKE_DL_LIBS})
 if (NOT FMI4C_USE_SYSTEM_ZIP)
-    # Internal dependency (PRIVATE) on zlib and ${CMAKE_DL_LIBS}) for libdl on Linux
-    target_link_libraries(fmi4c PRIVATE ZLIB::ZLIB ${CMAKE_DL_LIBS})
-    target_compile_definitions(fmi4c PUBLIC FMI4C_WITH_MINIZIP)
-endif ()
+    # Internal dependency (PRIVATE) on zlib
+    target_link_libraries(fmi4c PRIVATE ZLIB::ZLIB)
+    target_compile_definitions(fmi4c PRIVATE FMI4C_WITH_MINIZIP)
+endif()
 
 if (FMI4C_BUILD_TEST)
     enable_testing()

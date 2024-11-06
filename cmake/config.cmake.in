@@ -4,8 +4,9 @@ include(${CMAKE_CURRENT_LIST_DIR}/fmi4c-targets.cmake)
 
 set(FMI4C_BUILT_SHARED @FMI4C_BUILD_SHARED@)
 set(FMI4C_INCLUDES_ZLIB @FMI4C_USE_INCLUDED_ZLIB@)
+set(FMI4C_USES_SYSTEM_ZIP @FMI4C_USE_SYSTEM_ZIP@)
 
-if (NOT @FMI4C_USE_SYSTEM_ZIP@)
+if (NOT ${FMI4C_USES_SYSTEM_ZIP})
 
     # fmi4c needs to find system zlib in the following cases
     #   Built shared but does not include zlib (Target fmi4c::zlibstatic missing)
