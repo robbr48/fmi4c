@@ -106,6 +106,7 @@ target_include_directories(${target_name}
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
+target_link_libraries(${target_name} PRIVATE ${CMAKE_DL_LIBS})
 if (NOT FMI4C_USE_SYSTEM_ZIP)
     # Internal dependency (PRIVATE) on zlib and ${CMAKE_DL_LIBS}) for libdl on Linux
     target_link_libraries(${target_name} PRIVATE ZLIB::ZLIB ${CMAKE_DL_LIBS})
