@@ -89,7 +89,7 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
     fmu->fmi1.modelName = NULL;
     fmu->fmi1.modelIdentifier = NULL;
     fmu->fmi1.guid = NULL;
-    fmu->fmi1.description = "";
+    fmu->fmi1.description = NULL;
     fmu->fmi1.author = NULL;
     fmu->fmi1.version = NULL;
     fmu->fmi1.generationTool = NULL;
