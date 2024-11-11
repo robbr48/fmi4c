@@ -4174,9 +4174,10 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     char tempFileName[MAX_PATH];
     UINT rc = GetTempFileNameA(unzippLocation, "", 0, tempFileName);
     if (rc == 0) {
-        printf("Cannot generate temp name for unzip location\n");
+        printf("Cannot generate temp name for unzip location. Error: %lu\n", GetLastError());
         return NULL;
     }
+    DeleteFileA(tempFileName); // can delete temp file, we are only using the generated (unique) name below
 
     strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
     strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
