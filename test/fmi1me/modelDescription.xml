@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <fmiModelDescription
-  fmiVersion="1.0"
-  modelName="fmi1me"
-  modelIdentifier="fmi1me"
-  generationTool="None"
-  description="Integrator (dx = der(x))"
-  guid="123"
-  numberOfContinuousStates="1"
-  numberOfEventIndicators="0">
+    fmiVersion="1.0"
+    modelName="fmi1me"
+    modelIdentifier="fmi1me"
+    author="Robert Braun"
+    generationTool="None"
+    generationDateAndTime="2009-12-08T14:33:22Z"
+    description="Integrator (dx = der(x))"
+    guid="123"
+    numberOfContinuousStates="1"
+    numberOfEventIndicators="0">
+<UnitDefinitions>
+    <BaseUnit unit="rad/s">
+        <DisplayUnitDefinition displayUnit="deg/s" gain="57.2957795130823"/>
+        <DisplayUnitDefinition displayUnit="r/min" gain="9.54929658551372"/>
+    </BaseUnit>
+    <BaseUnit unit="m/s">
+        <DisplayUnitDefinition displayUnit="km/h" gain="3.6"/>
+    </BaseUnit>
+</UnitDefinitions>
 <ModelVariables>
-  <ScalarVariable name="dx" valueReference="1" causality="input" variability="continuous" description="Derivative of x">
-     <Real start="0.0" fixed="false"/>
-  </ScalarVariable>
-  <ScalarVariable name="x" valueReference="2" causality="output" description="x">
-     <Real start="0.0" fixed="false"/>
-  </ScalarVariable> 
-</ModelVariables>
+    <ScalarVariable name="dx" valueReference="1" causality="input" variability="continuous" description="Derivative of x">
+        <Real start="0.0" fixed="false" unit="m/s"/>
+    </ScalarVariable>
+    <ScalarVariable name="x" valueReference="2" causality="output" description="x">
+        <Real start="1.0" fixed="false" unit="m"/>
+    </ScalarVariable> 
+</ModelVariables>'
 </fmiModelDescription>
 
