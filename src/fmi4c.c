@@ -4179,8 +4179,6 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     }
 
     strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
-    strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
-    strncat(unzippLocation, "_", FILENAME_MAX-strlen(unzippLocation)-1);
     char * ds = strrchr(tempFileName, '\\');
     if (ds) {
         strncat(unzippLocation, ds+1, FILENAME_MAX-strlen(unzippLocation)-1);
@@ -4226,8 +4224,7 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     }
 
     strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
-    strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
-    strncat(unzippLocation, "_XXXXXX", FILENAME_MAX-strlen(unzippLocation)-1); // XXXXXX is for unique name by mkdtemp
+    strncat(unzippLocation, "XXXXXX", FILENAME_MAX-strlen(unzippLocation)-1); // XXXXXX is for unique name by mkdtemp
     mkdtemp(unzippLocation);
 
 #ifndef FMI4C_WITH_MINIZIP
