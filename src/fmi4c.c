@@ -4189,8 +4189,20 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
     // Create the directory
     if (_mkdir(unzippLocation) != 0) {
-        fprintf(stderr, "Failed to create unzip directory: %s\n", unzippLocation);
-        return NULL;
+        // Capture the error code
+        int err = errno;
+
+        // Print a detailed error message
+        fprintf(stderr, "Failed to create unzip directory: %s (Error code: %d)\n", unzippLocation, err);
+
+        // Handle specific cases if needed
+        if (err == EEXIST) {
+            fprintf(stderr, "Directory already exists: %s\n", unzippLocation);
+        } else if (err == EACCES) {
+            fprintf(stderr, "Permission denied when creating directory: %s\n", unzippLocation);
+        } else {
+            fprintf(stderr, "An unknown error occurred: %s\n", unzippLocation);
+        }
     }
 
 #ifndef FMI4C_WITH_MINIZIP
