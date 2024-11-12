@@ -4170,24 +4170,27 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     if (len == 0) {
        printf("Cannot find temp path, using current directory\n");
     }
-    // Create a unique tempfile and use its name for the unique directory name
+
+    // Get Process ID, Thread ID, and timestamp for uniqueness
+    DWORD processId = GetCurrentProcessId();
+    DWORD threadId = GetCurrentThreadId();
+
+    // Construct the unique temp file name directly in tempFileName
     char tempFileName[MAX_PATH];
-    UINT rc = GetTempFileNameA(unzippLocation, "", 0, tempFileName);
-    if (rc == 0) {
-        printf("Cannot generate temp name for unzip location. Error: %lu\n", GetLastError());
+    snprintf(tempFileName, sizeof(tempFileName),
+             "fmi4c_%s_%lu_%lu", instanceName, processId, threadId);
+
+    // Construct the full path for the unique unzip location
+    snprintf(unzippLocation + strlen(unzippLocation), FILENAME_MAX - strlen(unzippLocation),
+             "%s", tempFileName);
+
+    printf("%s\n",unzippLocation);
+
+    // Create the directory
+    if (_mkdir(unzippLocation) != 0) {
+        fprintf(stderr, "Failed to create unzip directory: %s\n", unzippLocation);
         return NULL;
     }
-    DeleteFileA(tempFileName); // can delete temp file, we are only using the generated (unique) name below
-
-    strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
-    char * ds = strrchr(tempFileName, '\\');
-    if (ds) {
-        strncat(unzippLocation, ds+1, FILENAME_MAX-strlen(unzippLocation)-1);
-    }
-    else {
-        strncat(unzippLocation, tempFileName, FILENAME_MAX-strlen(unzippLocation)-1);
-    }
-    _mkdir(unzippLocation);
 
 #ifndef FMI4C_WITH_MINIZIP
     const int commandLength = strlen("tar -xf \"") + strlen(fmufile) + strlen("\" -C \"") + strlen(unzippLocation) + 2;
