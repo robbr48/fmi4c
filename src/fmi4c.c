@@ -2043,7 +2043,7 @@ bool loadFunctionsFmi2(fmiHandle *fmu, fmi2Type fmuType)
     fmu->fmi2.deSerializeFMUstate = (fmi2DeSerializeFMUstate_t)loadDllFunction(dll, "fmi2DeSerializeFMUstate", &ok);
     fmu->fmi2.getDirectionalDerivative = (fmi2GetDirectionalDerivative_t)loadDllFunction(dll, "fmi2GetDirectionalDerivative", &ok);
 
-    if(fmuType == fmi2CoSimulation) {
+    if(fmuType & fmi2CoSimulation) {
         //Load co-simulation specific functions
         fmu->fmi2.setRealInputDerivatives = (fmi2SetRealInputDerivatives_t)loadDllFunction(dll, "fmi2SetRealInputDerivatives", &ok);
         fmu->fmi2.getRealOutputDerivatives = (fmi2GetRealOutputDerivatives_t)loadDllFunction(dll, "fmi2GetRealOutputDerivatives", &ok);
@@ -2056,7 +2056,7 @@ bool loadFunctionsFmi2(fmiHandle *fmu, fmi2Type fmuType)
         fmu->fmi2.getStringStatus = (fmi2GetStringStatus_t)loadDllFunction(dll, "fmi2GetStringStatus", &ok);
     }
 
-    if(fmuType == fmi2ModelExchange) {
+    if(fmuType & fmi2ModelExchange) {
         //Load model exchange specific functions
          fmu->fmi2.enterEventMode = (fmi2EnterEventMode_t)loadDllFunction(dll, "fmi2EnterEventMode", &ok);
          fmu->fmi2.newDiscreteStates = (fmi2NewDiscreteStates_t)loadDllFunction(dll, "fmi2NewDiscreteStates", &ok);
@@ -2549,11 +2549,6 @@ bool fmi2_instantiate(fmiHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, 
     }
     else if(type == fmi2ModelExchange && !fmu->fmi2.supportsModelExchange) {
         printf("FMI for model exchange is not supported by this FMU.");
-        return false;
-    }
-
-    if(!loadFunctionsFmi2(fmu, type)) {
-        printf("Failed to load functions for FMI 2.");
         return false;
     }
 
@@ -4522,6 +4517,17 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
             printf("Failed to parse modelDescription.xml\n");
             free(fmu);
             return NULL;
+        }
+        fmi2Type fmuType = 0;
+        if(fmi2_getSupportsCoSimulation(fmu)) {
+            fmuType = fmuType | fmi2CoSimulation;
+        }
+        if(fmi2_getSupportsModelExchange(fmu)) {
+            fmuType = fmuType | fmi2ModelExchange;
+        }
+        if(!loadFunctionsFmi2(fmu, fmuType)) {
+            free(fmu);
+            return NULL;    //Error message should already have been printed
         }
     }
     else if(fmu->version == fmiVersion3) {
