@@ -19,7 +19,7 @@ typedef char fmi2Byte;
 
 // Enums
 typedef enum { fmi2OK, fmi2Warning, fmi2Discard, fmi2Error, fmi2Fatal, fmi2Pending } fmi2Status;
-typedef enum { fmi2ModelExchange, fmi2CoSimulation } fmi2Type;
+typedef enum { fmi2ModelExchange=1, fmi2CoSimulation=2 } fmi2Type;
 typedef enum { fmi2DoStepStatus, fmi2PendingStatus, fmi2LastSuccessfulTime, fmi2Terminated } fmi2StatusKind;
 typedef enum { fmi2CausalityInput, fmi2CausalityOutput, fmi2CausalityParameter, fmi2CausalityCalculatedParameter, fmi2CausalityLocal, fmi2CausalityIndependent } fmi2Causality;
 typedef enum { fmi2VariabilityFixed, fmi2VariabilityTunable, fmi2VariabilityConstant, fmi2VariabilityDiscrete, fmi2VariabilityContinuous } fmi2Variability;
