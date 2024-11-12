@@ -19,8 +19,6 @@
 #include <dlfcn.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#else
-#include <time.h>
 #endif
 
 #if defined(__x86_64__) || defined(_M_X64)
@@ -4171,17 +4169,24 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     DWORD len = GetTempPathA(FILENAME_MAX, unzippLocation);
     if (len == 0) {
        printf("Cannot find temp path, using current directory\n");
+        strncpy(unzippLocation, ".\\", FILENAME_MAX);
     }
 
-    // Get Process ID, Thread ID, and timestamp for uniqueness
-    DWORD processId = GetCurrentProcessId();
-    DWORD threadId = GetCurrentThreadId();
-    time_t currentTime = time(NULL);
+    // Create a UUID
+    GUID guid;
+    CoCreateGuid(&guid);
+
+    // Convert the GUID to a string format
+    char guidString[37];  // 36 chars + null terminator
+    snprintf(guidString, sizeof(guidString), "%08lX-%04X-%04X-%04X-%012llX",
+             guid.Data1, guid.Data2, guid.Data3,
+             (guid.Data4[0] << 8) | guid.Data4[1],
+             *(unsigned long long*)(&guid.Data4[2]));
 
     // Construct the unique temp file name directly in tempFileName
     char tempFileName[MAX_PATH];
     snprintf(tempFileName, sizeof(tempFileName),
-             "fmi4c_%s_%lu_%lu_%ld", instanceName, processId, threadId, (long)currentTime);
+             "fmi4c_%s_%lu", instanceName, guidString);
 
     // Construct the full path for the unique unzip location
     snprintf(unzippLocation + strlen(unzippLocation), FILENAME_MAX - strlen(unzippLocation),
@@ -4189,20 +4194,10 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
     // Create the directory
     if (_mkdir(unzippLocation) != 0) {
-        // Capture the error code
-        int err = errno;
 
-        // Print a detailed error message
-        fprintf(stderr, "Failed to create unzip directory: %s (Error code: %d)\n", unzippLocation, err);
+        fprintf(stderr, "Failed to create unzip directory: %s (Error code: %d)\n", unzippLocation, errno);
 
-        // Handle specific cases if needed
-        if (err == 17) {
-            fprintf(stderr, "Directory already exists: %s\n", unzippLocation);
-        } else if (err == 13) {
-            fprintf(stderr, "Permission denied when creating directory: %s\n", unzippLocation);
-        } else {
-            fprintf(stderr, "An unknown error occurred: %s\n", unzippLocation);
-        }
+        return NULL;
     }
 
 #ifndef FMI4C_WITH_MINIZIP
