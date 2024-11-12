@@ -3,14 +3,21 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 #ifdef _MSC_VER
-#include "dirent/dirent.h"
+#include <windows.h>
+#include <direct.h>
 #else
+// For MinGW or GCC
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
-#ifndef _WIN32
+
+#ifdef WIN32
+#define FILE_PATH_SEPARATOR '\\'
+#else
 #include <unistd.h>
+#define FILE_PATH_SEPARATOR '/'
 #endif
 
 //! @brief Concatenates model name and function name into "modelName_functionName" (for FMI 1)
@@ -304,102 +311,125 @@ int removeDirectoryRecursively(const char* rootDirPath, const char *expectedDirN
     // If expectedDirNamePrefix is set, ensure that the name of the directory being removed starts with this prefix
     // This is just an optional sanity check to prevent unexpected removal of the wrong directory
     if (expectedDirNamePrefix != NULL) {
-        int dsp; // Dir separator position
-        for (dsp=(int)strlen(rootDirPath); dsp>-1; dsp--) {
-            if ( rootDirPath[dsp] == '/' || rootDirPath[dsp] == '\\' ) {
-                break;
-            }
-        }
-        dsp++; // Advance to first char after separator (or first char if no separator found)
-
-        if (strncmp(expectedDirNamePrefix, rootDirPath+dsp, strlen(expectedDirNamePrefix)) != 0) {
+        const char *lastDirName = strrchr(rootDirPath, FILE_PATH_SEPARATOR);
+        // Advance to first character after separator (or point to first character if no separator was found)
+        lastDirName = (lastDirName) ? lastDirName + 1 : rootDirPath;
+        if (strncmp(expectedDirNamePrefix, lastDirName, strlen(expectedDirNamePrefix)) != 0) {
             printf("Directory name prefix '%s' mismatch, refusing to remove directory '%s'\n", expectedDirNamePrefix, rootDirPath);
             return 1;
         }
     }
 
-    DIR* dir = opendir(rootDirPath);
-    int rc = -1;
-    if (dir) {
-        struct dirent *entry = readdir(dir);
-        while(entry) {
-            // Avoid recursing upwards
-            if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) {
-                entry = readdir(dir);
-                continue;
-            }
+    int status = 0;
 
-            // Determine full path to file or directory for current entry
-            size_t fullPathLength = strlen(rootDirPath)+ strlen(entry->d_name) + 2;
-            char* fullPath = malloc(fullPathLength);
-            snprintf(fullPath, fullPathLength, "%s/%s", rootDirPath, entry->d_name);
+#ifdef _MSC_VER
+    WIN32_FIND_DATA findFileData;
+    char searchPath[MAX_PATH];
+    snprintf(searchPath, sizeof(searchPath), "%s\\*", rootDirPath);
 
-            // Figure out if entry represents a directory or not
-            bool entryIsDir;
-            struct stat statbuf;
-#ifdef _DIRENT_HAVE_D_TYPE
-            entryIsDir = (entry->d_type == DT_DIR);
-            // On some filesystems d_type is not set, then use stat to check the type
-            if (entry->d_type == DT_UNKNOWN) {
-                if (!stat(fullPath, &statbuf)) {
-                    entryIsDir = S_ISDIR(statbuf.st_mode);
-                }
-            }
-#else
-            // On some systems d_type is note present, in which case stats is used
-            if (!stat(fullPath, &statbuf)) {
-                entryIsDir = S_ISDIR(statbuf.st_mode);
-            }
-#endif
-            // Recurse on directory, else unlink file
-            if (entryIsDir) {
-                rc = removeDirectoryRecursively(fullPath, NULL);
-            }
-            else {
-                // --- For debug ---
-                //printf("Debug: Would unlink: %s\n", fullPath);
-                //rc = 0;
-                // -----------------
-#ifdef _WIN32
-                rc = _unlink(fullPath);
-#else
-                rc = unlink(fullPath);
-#endif
-                if (rc != 0) {
-                    perror("Error");
-                    printf("Could not remove '%s'\n", fullPath);
-                }
-            }
-            free(fullPath);
-            if (rc != 0) {
+    HANDLE hFind = FindFirstFile(searchPath, &findFileData);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        fprintf(stderr, "Could not open directory: %s\n", rootDirPath);
+        return -1;
+    }
+
+    do {
+        const char *name = findFileData.cFileName;
+        // Avoid recursing upwards in the directory structure
+        if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) {
+            continue;
+        }
+
+        char fullPath[MAX_PATH];
+        snprintf(fullPath, sizeof(fullPath), "%s\\%s", rootDirPath, name);
+
+        if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            // Recursively delete subdirectory
+            if (removeDirectoryRecursively(fullPath, NULL) != 0) {
+                status = -1;
                 break;
             }
-            entry = readdir(dir);
-        }
-        closedir(dir);
-        if (rc == 0) {
-            // --- For debug ---
-            //printf("Debug: Would rmdir: %s\n", rootDirPath);
-            //rc = 0;
-            // -----------------
-#ifdef _WIN32
-            rc = RemoveDirectoryA(rootDirPath);
-            // RemoveDirectoryA returns non-zero on success so we swap it so that rest of the code works as expected (return code 0 = OK)
-            rc = (rc == 0) ? 1 : 0;
-#else
-            rc = rmdir(rootDirPath);
-#endif
-            if (rc != 0) {
-                perror("Error");
+        } else {
+            // Delete file
+            if (DeleteFile(fullPath) == 0) {
+                fprintf(stderr, "Could not delete file: %s\n", fullPath);
+                status = -1;
+                break;
             }
         }
-        if (rc != 0) {
-            printf("Could not remove '%s'\n", rootDirPath);
+    } while (FindNextFile(hFind, &findFileData) != 0);
+
+    FindClose(hFind);
+
+    // Remove the directory itself
+    if (status == 0 && _rmdir(rootDirPath) != 0) {
+        fprintf(stderr, "Could not remove directory: %s\n", rootDirPath);
+        status = -1;
+    }
+
+#else  // POSIX
+    DIR *dir = opendir(rootDirPath);
+    if (!dir) {
+        perror("Could not open directory");
+        fprintf(stderr, "Could not access '%s' for removal\n", rootDirPath);
+        return -1;
+    }
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+        // Avoid recursing upwards in the directory structure
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+            continue;
+        }
+
+        // Determine full path to file or directory for current entry
+        char fullPath[4096];
+        snprintf(fullPath, sizeof(fullPath), "%s/%s", rootDirPath, entry->d_name);
+
+        // Figure out if entry represents a directory or not
+        bool entryIsDir = false;
+        struct stat statbuf;
+#ifdef _DIRENT_HAVE_D_TYPE
+        entryIsDir = (entry->d_type == DT_DIR);
+        // On some filesystems d_type is not set, then use stat to check the type
+        if (entry->d_type == DT_UNKNOWN) {
+            if (stat(fullPath, &statbuf) == 0) {
+                entryIsDir = S_ISDIR(statbuf.st_mode);
+            }
+        }
+#else
+        // On some systems d_type is note present, in which case stats is used
+        if (stat(fullPath, &statbuf) == 0) {
+            entryIsDir = S_ISDIR(statbuf.st_mode);
+        }
+#endif
+
+        if (entryIsDir) {
+            // Recursive delete for subdirectory
+            if (removeDirectoryRecursively(fullPath, NULL) != 0) {
+                status = -1;
+                break;
+            }
+        } else {
+            // Delete file
+            if (unlink(fullPath) != 0) {
+                perror("Could not delete file");
+                fprintf(stderr, "Could not delete '%s'\n", fullPath);
+                status = -1;
+                break;
+            }
         }
     }
-    else {
-        perror("Error");
-        printf("Could not access '%s' for removal\n", rootDirPath);
+
+    closedir(dir);
+
+    // Remove the directory itself
+    if (status == 0 && rmdir(rootDirPath) != 0) {
+        perror("Could not remove directory");
+        fprintf(stderr, "Could not remove '%s'\n", rootDirPath);
+        status = -1;
     }
-    return rc;
+#endif
+
+    return status;
 }

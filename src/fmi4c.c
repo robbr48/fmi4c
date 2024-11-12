@@ -89,7 +89,7 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
     fmu->fmi1.modelName = NULL;
     fmu->fmi1.modelIdentifier = NULL;
     fmu->fmi1.guid = NULL;
-    fmu->fmi1.description = "";
+    fmu->fmi1.description = NULL;
     fmu->fmi1.author = NULL;
     fmu->fmi1.version = NULL;
     fmu->fmi1.generationTool = NULL;
@@ -4180,8 +4180,6 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     DeleteFileA(tempFileName); // can delete temp file, we are only using the generated (unique) name below
 
     strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
-    strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
-    strncat(unzippLocation, "_", FILENAME_MAX-strlen(unzippLocation)-1);
     char * ds = strrchr(tempFileName, '\\');
     if (ds) {
         strncat(unzippLocation, ds+1, FILENAME_MAX-strlen(unzippLocation)-1);
@@ -4227,8 +4225,7 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     }
 
     strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
-    strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
-    strncat(unzippLocation, "_XXXXXX", FILENAME_MAX-strlen(unzippLocation)-1); // XXXXXX is for unique name by mkdtemp
+    strncat(unzippLocation, "XXXXXX", FILENAME_MAX-strlen(unzippLocation)-1); // XXXXXX is for unique name by mkdtemp
     mkdtemp(unzippLocation);
 
 #ifndef FMI4C_WITH_MINIZIP

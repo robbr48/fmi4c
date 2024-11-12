@@ -82,10 +82,6 @@ if (NOT FMI4C_USE_SYSTEM_ZIP)
 
 endif ()
 
-if (MSVC)
-    list(APPEND SRCFILES 3rdparty/dirent/dirent.h)
-endif()
-
 if (FMI4C_BUILD_SHARED)
     add_library(fmi4c SHARED ${SRCFILES})
 else()
