@@ -19,6 +19,8 @@
 #include <dlfcn.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#else
+#include <time.h>
 #endif
 
 #if defined(__x86_64__) || defined(_M_X64)
@@ -4174,17 +4176,16 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     // Get Process ID, Thread ID, and timestamp for uniqueness
     DWORD processId = GetCurrentProcessId();
     DWORD threadId = GetCurrentThreadId();
+    time_t currentTime = time(NULL);
 
     // Construct the unique temp file name directly in tempFileName
     char tempFileName[MAX_PATH];
     snprintf(tempFileName, sizeof(tempFileName),
-             "fmi4c_%s_%lu_%lu", instanceName, processId, threadId);
+             "fmi4c_%s_%lu_%lu_%ld", instanceName, processId, threadId, (long)currentTime);
 
     // Construct the full path for the unique unzip location
     snprintf(unzippLocation + strlen(unzippLocation), FILENAME_MAX - strlen(unzippLocation),
              "%s", tempFileName);
-
-    printf("%s\n",unzippLocation);
 
     // Create the directory
     if (_mkdir(unzippLocation) != 0) {
