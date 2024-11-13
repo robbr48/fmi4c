@@ -4165,6 +4165,13 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
     // Decide location for where to unzip
     char unzippLocation[FILENAME_MAX] = {0};
+
+    bool instanceNameIsAlphaNumeric = true;
+    for(int i=0; i<strlen(instanceName); ++i) {
+        if(!isalnum(instanceName[i])) {
+            instanceNameIsAlphaNumeric = false;
+        }
+    }
 #ifdef _WIN32
     DWORD len = GetTempPathA(FILENAME_MAX, unzippLocation);
     if (len == 0) {
@@ -4179,6 +4186,10 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     }
 
     strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
+    if(instanceNameIsAlphaNumeric) {
+        strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
+        strncat(unzippLocation, "_", FILENAME_MAX-strlen(unzippLocation)-1);
+    }
     char * ds = strrchr(tempFileName, '\\');
     if (ds) {
         strncat(unzippLocation, ds+1, FILENAME_MAX-strlen(unzippLocation)-1);
@@ -4224,6 +4235,10 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     }
 
     strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
+    if(instanceNameIsAlphaNumeric) {
+        strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
+        strncat(unzippLocation, "_", FILENAME_MAX-strlen(unzippLocation)-1);
+    }
     strncat(unzippLocation, "XXXXXX", FILENAME_MAX-strlen(unzippLocation)-1); // XXXXXX is for unique name by mkdtemp
     mkdtemp(unzippLocation);
 
