@@ -4605,6 +4605,11 @@ void fmi4c_freeFmu(fmiHandle *fmu)
         freeDuplicatedConstChar(fmu->fmi2.generationTool);
         freeDuplicatedConstChar(fmu->fmi2.generationDateAndTime);
         freeDuplicatedConstChar(fmu->fmi2.variableNamingConvention);
+        for(int i=0; i<fmu->fmi2.numberOfUnits; ++i)
+            if (fmu->fmi2.units[i].baseUnit)
+                free(fmu->fmi2.units[i].baseUnit);
+        if (fmu->fmi2.numberOfUnits > 0)
+            free(fmu->fmi2.units);
         if(fmu->fmi2.supportsCoSimulation) {
             freeDuplicatedConstChar(fmu->fmi2.cs.modelIdentifier);
         }
