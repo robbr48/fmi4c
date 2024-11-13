@@ -282,13 +282,15 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         exit(1);
     }
 
-    outputFile = fopen(outputCsvPath, "w");
-    if(outputFile != NULL) {
-        fprintf(outputFile,"time");
-        for(int i=0; i<numOutputs; ++i) {
-            fprintf(outputFile,",%s",fmi3_getVariableName(fmi3_getVariableByValueReference(fmu, outputRefs[i])));
+    if(outputCsvPath != NULL) {
+        outputFile = fopen(outputCsvPath, "w");
+        if(outputFile != NULL) {
+            fprintf(outputFile,"time");
+            for(int i=0; i<numOutputs; ++i) {
+                fprintf(outputFile,",%s",fmi3_getVariableName(fmi3_getVariableByValueReference(fmu, outputRefs[i])));
+            }
+            fprintf(outputFile,"\n");
         }
-        fprintf(outputFile,"\n");
     }
 
     printf("  Simulating from %f to %f with a step size of %f...\n",startTime, stopTime, stepSize);
