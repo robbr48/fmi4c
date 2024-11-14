@@ -80,6 +80,16 @@ void freeDuplicatedConstChar(const char* ptr) {
   }
 }
 
+char* duplicateAndRememberString(fmiHandle *fmu, const char* str) {
+    char* ret = _strdup(str);
+
+    fmu->numAllocatedConstChars++;
+    fmu->allocatedConstChars = realloc(fmu->allocatedConstChars, fmu->numAllocatedConstChars * sizeof(char*));
+    fmu->allocatedConstChars[fmu->numAllocatedConstChars-1] = ret;
+
+    return ret;
+}
+
 
 //! @brief Parses modelDescription.xml for FMI 1
 //! @param fmu FMU handle
@@ -4286,8 +4296,9 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
 
     fmiHandle *fmu = calloc(1, sizeof(fmiHandle)); // Using calloc to ensure all member pointers (and data) are initialized to NULL (0)
+    fmu->numAllocatedConstChars = 0;
     fmu->version = fmiVersionUnknown;
-    fmu->instanceName = _strdup(instanceName);
+    fmu->instanceName = duplicateAndRememberString(fmu, instanceName);
     fmu->unzippedLocation = _strdup(unzippLocation);
 
     chdir(fmu->unzippedLocation);
@@ -4555,6 +4566,11 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 void fmi4c_freeFmu(fmiHandle *fmu)
 {
     TRACEFUNC
+
+    for(int i=0; i<fmu->numAllocatedConstChars; ++i) {
+        free((void*)fmu->allocatedConstChars[i]);
+    }
+
     if (fmu->dll) {
 #ifdef _WIN32
         FreeLibrary(fmu->dll);
@@ -4658,7 +4674,6 @@ void fmi4c_freeFmu(fmiHandle *fmu)
     }
 
     freeDuplicatedConstChar(fmu->resourcesLocation);
-    freeDuplicatedConstChar(fmu->instanceName);
     freeDuplicatedConstChar(fmu->unzippedLocation);
     free(fmu);
 }
