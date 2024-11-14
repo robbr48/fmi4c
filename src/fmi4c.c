@@ -80,17 +80,6 @@ void freeDuplicatedConstChar(const char* ptr) {
   }
 }
 
-char* duplicateAndRememberString(fmiHandle *fmu, const char* str) {
-    char* ret = _strdup(str);
-
-    fmu->numAllocatedConstChars++;
-    fmu->allocatedConstChars = realloc(fmu->allocatedConstChars, fmu->numAllocatedConstChars * sizeof(char*));
-    fmu->allocatedConstChars[fmu->numAllocatedConstChars-1] = ret;
-
-    return ret;
-}
-
-
 //! @brief Parses modelDescription.xml for FMI 1
 //! @param fmu FMU handle
 //! @returns True if parsing was successful
@@ -139,15 +128,15 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
     }
 
     //Parse attributes in <fmiModelDescription>
-    parseStringAttributeEzXml(rootElement, "modelName",                 &fmu->fmi1.modelName);
-    parseStringAttributeEzXml(rootElement, "modelIdentifier",           &fmu->fmi1.modelIdentifier);
-    parseStringAttributeEzXml(rootElement, "guid",                      &fmu->fmi1.guid);
-    parseStringAttributeEzXml(rootElement, "description",               &fmu->fmi1.description);
-    parseStringAttributeEzXml(rootElement, "author",                    &fmu->fmi1.author);
-    parseStringAttributeEzXml(rootElement, "version",                   &fmu->fmi1.version);
-    parseStringAttributeEzXml(rootElement, "generationTool",            &fmu->fmi1.generationTool);
-    parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->fmi1.generationDateAndTime);
-    parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->fmi1.variableNamingConvention);
+    parseStringAttributeEzXml2(rootElement, "modelName",                 &fmu->fmi1.modelName,                  fmu);
+    parseStringAttributeEzXml2(rootElement, "modelIdentifier",           &fmu->fmi1.modelIdentifier,            fmu);
+    parseStringAttributeEzXml2(rootElement, "guid",                      &fmu->fmi1.guid,                       fmu);
+    parseStringAttributeEzXml2(rootElement, "description",               &fmu->fmi1.description,                fmu);
+    parseStringAttributeEzXml2(rootElement, "author",                    &fmu->fmi1.author,                     fmu);
+    parseStringAttributeEzXml2(rootElement, "version",                   &fmu->fmi1.version,                    fmu);
+    parseStringAttributeEzXml2(rootElement, "generationTool",            &fmu->fmi1.generationTool,             fmu);
+    parseStringAttributeEzXml2(rootElement, "generationDateAndTime",     &fmu->fmi1.generationDateAndTime,      fmu);
+    parseStringAttributeEzXml2(rootElement, "variableNamingConvention",  &fmu->fmi1.variableNamingConvention,   fmu);
     parseInt32AttributeEzXml(rootElement, "numberOfContinuousStates",   &fmu->fmi1.numberOfContinuousStates);
     parseInt32AttributeEzXml(rootElement, "numberOfEventIndicators",    &fmu->fmi1.numberOfEventIndicators);
 
@@ -469,17 +458,17 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
     }
 
     //Parse attributes in <fmiModelDescription>
-    parseStringAttributeEzXml(rootElement, "fmiVersion",                &fmu->fmi2.fmiVersion_);
-    parseStringAttributeEzXml(rootElement, "modelName",                 &fmu->fmi2.modelName);
-    parseStringAttributeEzXml(rootElement, "guid",                      &fmu->fmi2.guid);
-    parseStringAttributeEzXml(rootElement, "description",               &fmu->fmi2.description);
-    parseStringAttributeEzXml(rootElement, "author",                    &fmu->fmi2.author);
-    parseStringAttributeEzXml(rootElement, "version",                   &fmu->fmi2.version);
-    parseStringAttributeEzXml(rootElement, "copyright",                 &fmu->fmi2.copyright);
-    parseStringAttributeEzXml(rootElement, "license",                   &fmu->fmi2.license);
-    parseStringAttributeEzXml(rootElement, "generationTool",            &fmu->fmi2.generationTool);
-    parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->fmi2.generationDateAndTime);
-    parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->fmi2.variableNamingConvention);
+    parseStringAttributeEzXml2(rootElement, "fmiVersion",                &fmu->fmi2.fmiVersion_,                fmu);
+    parseStringAttributeEzXml2(rootElement, "modelName",                 &fmu->fmi2.modelName,                  fmu);
+    parseStringAttributeEzXml2(rootElement, "guid",                      &fmu->fmi2.guid,                       fmu);
+    parseStringAttributeEzXml2(rootElement, "description",               &fmu->fmi2.description,                fmu);
+    parseStringAttributeEzXml2(rootElement, "author",                    &fmu->fmi2.author,                     fmu);
+    parseStringAttributeEzXml2(rootElement, "version",                   &fmu->fmi2.version,                    fmu);
+    parseStringAttributeEzXml2(rootElement, "copyright",                 &fmu->fmi2.copyright,                  fmu);
+    parseStringAttributeEzXml2(rootElement, "license",                   &fmu->fmi2.license,                    fmu);
+    parseStringAttributeEzXml2(rootElement, "generationTool",            &fmu->fmi2.generationTool,             fmu);
+    parseStringAttributeEzXml2(rootElement, "generationDateAndTime",     &fmu->fmi2.generationDateAndTime,      fmu);
+    parseStringAttributeEzXml2(rootElement, "variableNamingConvention",  &fmu->fmi2.variableNamingConvention,   fmu);
     parseInt32AttributeEzXml(rootElement, "numberOfEventIndicators",    &fmu->fmi2.numberOfEventIndicators);
 
     ezxml_t cosimElement = ezxml_child(rootElement, "CoSimulation");
@@ -849,16 +838,16 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         return false;
     }
 
-    parseStringAttributeEzXml(rootElement, "modelName",                 &fmu->fmi3.modelName);
-    parseStringAttributeEzXml(rootElement, "instantiationToken",        &fmu->fmi3.instantiationToken);
-    parseStringAttributeEzXml(rootElement, "description",               &fmu->fmi3.description);
-    parseStringAttributeEzXml(rootElement, "author",                    &fmu->fmi3.author);
-    parseStringAttributeEzXml(rootElement, "version",                   &fmu->fmi3.version);
-    parseStringAttributeEzXml(rootElement, "copyright",                 &fmu->fmi3.copyright);
-    parseStringAttributeEzXml(rootElement, "license",                   &fmu->fmi3.license);
-    parseStringAttributeEzXml(rootElement, "generationTool",            &fmu->fmi3.generationTool);
-    parseStringAttributeEzXml(rootElement, "generationDateAndTime",     &fmu->fmi3.generationDateAndTime);
-    parseStringAttributeEzXml(rootElement, "variableNamingConvention",  &fmu->fmi3.variableNamingConvention);
+    parseStringAttributeEzXml2(rootElement, "modelName",                 &fmu->fmi3.modelName,                  fmu);
+    parseStringAttributeEzXml2(rootElement, "instantiationToken",        &fmu->fmi3.instantiationToken,         fmu);
+    parseStringAttributeEzXml2(rootElement, "description",               &fmu->fmi3.description,                fmu);
+    parseStringAttributeEzXml2(rootElement, "author",                    &fmu->fmi3.author,                     fmu);
+    parseStringAttributeEzXml2(rootElement, "version",                   &fmu->fmi3.version,                    fmu);
+    parseStringAttributeEzXml2(rootElement, "copyright",                 &fmu->fmi3.copyright,                  fmu);
+    parseStringAttributeEzXml2(rootElement, "license",                   &fmu->fmi3.license,                    fmu);
+    parseStringAttributeEzXml2(rootElement, "generationTool",            &fmu->fmi3.generationTool,             fmu);
+    parseStringAttributeEzXml2(rootElement, "generationDateAndTime",     &fmu->fmi3.generationDateAndTime,      fmu);
+    parseStringAttributeEzXml2(rootElement, "variableNamingConvention",  &fmu->fmi3.variableNamingConvention,   fmu);
 
     ezxml_t cosimElement = ezxml_child(rootElement, "CoSimulation");
     if(cosimElement) {
@@ -4296,10 +4285,10 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
 
     fmiHandle *fmu = calloc(1, sizeof(fmiHandle)); // Using calloc to ensure all member pointers (and data) are initialized to NULL (0)
-    fmu->numAllocatedConstChars = 0;
+    fmu->numAllocatedPointers = 0;
     fmu->version = fmiVersionUnknown;
     fmu->instanceName = duplicateAndRememberString(fmu, instanceName);
-    fmu->unzippedLocation = _strdup(unzippLocation);
+    fmu->unzippedLocation = duplicateAndRememberString(fmu, unzippLocation);
 
     chdir(fmu->unzippedLocation);
     ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
@@ -4344,19 +4333,19 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     if(fmu->version == fmiVersion1) {
         char resourcesLocation[FILENAME_MAX] = "file:///";
         strncat(resourcesLocation, unzippLocation, FILENAME_MAX-8);
-        fmu->resourcesLocation = _strdup(resourcesLocation);
+        fmu->resourcesLocation = duplicateAndRememberString(fmu, resourcesLocation);
     }
     else if(fmu->version == fmiVersion2) {
         char resourcesLocation[FILENAME_MAX] = "file:///";
         strncat(resourcesLocation, unzippLocation, FILENAME_MAX-8);
         strncat(resourcesLocation, "/resources", FILENAME_MAX-8-strlen(unzippLocation)-1);
-        fmu->resourcesLocation = _strdup(resourcesLocation);
+        fmu->resourcesLocation = duplicateAndRememberString(fmu, resourcesLocation);
     }
     else {
         char resourcesLocation[FILENAME_MAX] = "";
         strncat(resourcesLocation, unzippLocation, FILENAME_MAX);
         strncat(resourcesLocation, "/resources/", FILENAME_MAX-strlen(unzippLocation)-1);
-        fmu->resourcesLocation = _strdup(resourcesLocation);
+        fmu->resourcesLocation = duplicateAndRememberString(fmu, resourcesLocation);
     }
 
     ezxml_free(rootElement);
@@ -4567,10 +4556,6 @@ void fmi4c_freeFmu(fmiHandle *fmu)
 {
     TRACEFUNC
 
-    for(int i=0; i<fmu->numAllocatedConstChars; ++i) {
-        free((void*)fmu->allocatedConstChars[i]);
-    }
-
     if (fmu->dll) {
 #ifdef _WIN32
         FreeLibrary(fmu->dll);
@@ -4594,15 +4579,6 @@ void fmi4c_freeFmu(fmiHandle *fmu)
             free(fmu->fmi1.baseUnits[i].displayUnits);
         }
         free(fmu->fmi1.baseUnits);
-        freeDuplicatedConstChar(fmu->fmi1.modelName);
-        freeDuplicatedConstChar(fmu->fmi1.modelIdentifier);
-        freeDuplicatedConstChar(fmu->fmi1.guid);
-        freeDuplicatedConstChar(fmu->fmi1.description);
-        freeDuplicatedConstChar(fmu->fmi1.author);
-        freeDuplicatedConstChar(fmu->fmi1.version);
-        freeDuplicatedConstChar(fmu->fmi1.generationTool);
-        freeDuplicatedConstChar(fmu->fmi1.generationDateAndTime);
-        freeDuplicatedConstChar(fmu->fmi1.variableNamingConvention);
     }
     else if(fmu->version == fmiVersion2) {
         for(int i=0; i<fmu->fmi2.numberOfVariables; ++i) {
@@ -4610,17 +4586,6 @@ void fmi4c_freeFmu(fmiHandle *fmu)
             freeDuplicatedConstChar(fmu->fmi2.variables[i].description);
         }
         free(fmu->fmi2.variables);
-        freeDuplicatedConstChar(fmu->fmi2.fmiVersion_);
-        freeDuplicatedConstChar(fmu->fmi2.modelName);
-        freeDuplicatedConstChar(fmu->fmi2.guid);
-        freeDuplicatedConstChar(fmu->fmi2.description);
-        freeDuplicatedConstChar(fmu->fmi2.author);
-        freeDuplicatedConstChar(fmu->fmi2.version);
-        freeDuplicatedConstChar(fmu->fmi2.copyright);
-        freeDuplicatedConstChar(fmu->fmi2.license);
-        freeDuplicatedConstChar(fmu->fmi2.generationTool);
-        freeDuplicatedConstChar(fmu->fmi2.generationDateAndTime);
-        freeDuplicatedConstChar(fmu->fmi2.variableNamingConvention);
         for(int i=0; i<fmu->fmi2.numberOfUnits; ++i)
             if (fmu->fmi2.units[i].baseUnit)
                 free(fmu->fmi2.units[i].baseUnit);
@@ -4648,16 +4613,6 @@ void fmi4c_freeFmu(fmiHandle *fmu)
             freeDuplicatedConstChar(fmu->fmi3.variables[i].displayUnit);
         }
         free(fmu->fmi3.variables);
-        freeDuplicatedConstChar(fmu->fmi3.modelName);
-        freeDuplicatedConstChar(fmu->fmi3.instantiationToken);
-        freeDuplicatedConstChar(fmu->fmi3.description);
-        freeDuplicatedConstChar(fmu->fmi3.author);
-        freeDuplicatedConstChar(fmu->fmi3.version);
-        freeDuplicatedConstChar(fmu->fmi3.copyright);
-        freeDuplicatedConstChar(fmu->fmi3.license);
-        freeDuplicatedConstChar(fmu->fmi3.generationTool);
-        freeDuplicatedConstChar(fmu->fmi3.generationDateAndTime);
-        //freeIfNotNull(fmu->fmi3.variableNamingConvention);
         if(fmu->fmi3.supportsCoSimulation) {
             freeDuplicatedConstChar(fmu->fmi3.cs.modelIdentifier);
         }
@@ -4673,9 +4628,10 @@ void fmi4c_freeFmu(fmiHandle *fmu)
         removeDirectoryRecursively(fmu->unzippedLocation, "fmi4c_");
     }
 
-    freeDuplicatedConstChar(fmu->resourcesLocation);
-    freeDuplicatedConstChar(fmu->unzippedLocation);
-    free(fmu->allocatedConstChars);
+    for(int i=0; i<fmu->numAllocatedPointers; ++i) {
+        free(fmu->allocatedPointers[i]);
+    }
+    free(fmu->allocatedPointers);
     free(fmu);
 }
 

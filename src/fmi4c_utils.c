@@ -20,6 +20,17 @@
 #define FILE_PATH_SEPARATOR '/'
 #endif
 
+
+char* duplicateAndRememberString(fmiHandle *fmu, const char* str) {
+    char* ret = _strdup(str);
+
+    fmu->numAllocatedPointers++;
+    fmu->allocatedPointers = realloc(fmu->allocatedPointers, fmu->numAllocatedPointers * sizeof(void*));
+    fmu->allocatedPointers[fmu->numAllocatedPointers-1] = (void*)ret;
+
+    return ret;
+}
+
 //! @brief Concatenates model name and function name into "modelName_functionName" (for FMI 1)
 //! @param modelName FMU model name
 //! @param functionName Function name
@@ -41,6 +52,15 @@ const char* getFunctionName(const char* modelName, const char* functionName, cha
 //! @param attributeName Attribute name
 //! @param target Pointer to target variable
 //! @returns True if attribute was found, else false
+bool parseStringAttributeEzXml2(ezxml_t element, const char *attributeName, const char **target, fmiHandle *fmu)
+{
+    if(ezxml_attr(element, attributeName)) {
+        (*target) = duplicateAndRememberString(fmu, ezxml_attr(element, attributeName));
+        return true;
+    }
+    return false;
+}
+
 bool parseStringAttributeEzXml(ezxml_t element, const char *attributeName, const char **target)
 {
     if(ezxml_attr(element, attributeName)) {

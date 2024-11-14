@@ -6,10 +6,13 @@
 #include "ezxml/ezxml.h"
 #include "fmi4c_private.h"
 
+char* duplicateAndRememberString(fmiHandle *fmu, const char* str);
+
 const char* getFunctionName(const char* modelName, const char* functionName, char* concatBuffer);
 
 int removeDirectoryRecursively(const char* rootDirPath, const char* expectedDirNamePrefix);
 
+bool parseStringAttributeEzXml2(ezxml_t element, const char* attributeName, const char** target, fmiHandle *fmu);
 bool parseStringAttributeEzXml(ezxml_t element, const char* attributeName, const char** target);
 bool parseBooleanAttributeEzXml(ezxml_t element, const char* attributeName, bool* target);
 bool parseFloat64AttributeEzXml(ezxml_t element, const char* attributeName, double* target);
