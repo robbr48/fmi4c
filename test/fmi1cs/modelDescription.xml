@@ -21,7 +21,7 @@
 </UnitDefinitions>
 <ModelVariables>
     <ScalarVariable name="dx" valueReference="1" causality="input" variability="continuous" description="Derivative of x">
-        <Real start="0.0" fixed="false" unit="m/s", displayUnit="km/h"/>
+        <Real start="0.0" fixed="false" unit="m/s"/>
     </ScalarVariable>
     <ScalarVariable name="x" valueReference="2" causality="output" description="x">
         <Real start="1.0" fixed="false" unit="m"/>
