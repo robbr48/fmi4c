@@ -21,15 +21,32 @@
 #endif
 
 
-char* duplicateAndRememberString(fmiHandle *fmu, const char* str) {
-    char* ret = _strdup(str);
+void rememberPointer(fmiHandle *fmu, int* ptr) {
 
     fmu->numAllocatedPointers++;
     fmu->allocatedPointers = realloc(fmu->allocatedPointers, fmu->numAllocatedPointers * sizeof(void*));
-    fmu->allocatedPointers[fmu->numAllocatedPointers-1] = (void*)ret;
+    fmu->allocatedPointers[fmu->numAllocatedPointers-1] = ptr;
+}
 
+void* mallocAndRememberPointer(fmiHandle *fmu, size_t size) {
+    void* ptr = malloc(size);
+    rememberPointer(fmu, ptr);
+    return ptr;
+}
+
+void *reallocAndRememberPointer(fmiHandle *fmu, void *org, size_t size)
+{
+    void* ptr = realloc(org, size);
+    rememberPointer(fmu, ptr);
+    return ptr;
+}
+
+char* duplicateAndRememberString(fmiHandle *fmu, const char* str) {
+    char* ret = _strdup(str);
+    rememberPointer(fmu, (void*)ret);
     return ret;
 }
+
 
 //! @brief Concatenates model name and function name into "modelName_functionName" (for FMI 1)
 //! @param modelName FMU model name
@@ -52,7 +69,7 @@ const char* getFunctionName(const char* modelName, const char* functionName, cha
 //! @param attributeName Attribute name
 //! @param target Pointer to target variable
 //! @returns True if attribute was found, else false
-bool parseStringAttributeEzXml2(ezxml_t element, const char *attributeName, const char **target, fmiHandle *fmu)
+bool parseStringAttributeEzXmlAndRememberPointer(ezxml_t element, const char *attributeName, const char **target, fmiHandle *fmu)
 {
     if(ezxml_attr(element, attributeName)) {
         (*target) = duplicateAndRememberString(fmu, ezxml_attr(element, attributeName));
