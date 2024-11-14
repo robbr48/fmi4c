@@ -784,6 +784,9 @@ typedef struct {
     fmi1_data_t fmi1;
     fmi2Data_t fmi2;
     fmi3Data_t fmi3;
+
+    const char** allocatedConstChars;
+    int numAllocatedConstChars;
 } fmiHandle;
 
 bool parseModelDescriptionFmi1(fmiHandle *fmuFile);
