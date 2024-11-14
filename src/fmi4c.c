@@ -551,7 +551,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 }
             }
             if(unit.numberOfDisplayUnits > 0) {
-                unit.displayUnits = malloc(unit.numberOfDisplayUnits*sizeof(fmi2DisplayUnitHandle));
+                unit.displayUnits = mallocAndRememberPointer(fmu, unit.numberOfDisplayUnits*sizeof(fmi2DisplayUnitHandle));
             }
             int j=0;
             for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
@@ -909,7 +909,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
         }
         if(fmu->fmi3.numberOfUnits > 0) {
-            fmu->fmi3.units = malloc(fmu->fmi3.numberOfUnits*sizeof(fmi3UnitHandle));
+            fmu->fmi3.units = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfUnits*sizeof(fmi3UnitHandle));
         }
         int i=0;
         for(ezxml_t unitElement = unitDefinitionsElement->child; unitElement; unitElement = unitElement->next) {
@@ -923,7 +923,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             unit.numberOfDisplayUnits = 0;
             for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
                 if(!strcmp(unitSubElement->name, "BaseUnit")) {
-                    unit.baseUnit = malloc(sizeof(fmi3BaseUnit));
+                    unit.baseUnit = mallocAndRememberPointer(fmu, sizeof(fmi3BaseUnit));
                     unit.baseUnit->kg = 0;
                     unit.baseUnit->m = 0;
                     unit.baseUnit->s = 0;
@@ -950,7 +950,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 }
             }
             if(unit.numberOfDisplayUnits > 0) {
-                unit.displayUnits = malloc(unit.numberOfDisplayUnits*sizeof(fmi3DisplayUnitHandle));
+                unit.displayUnits = mallocAndRememberPointer(fmu, unit.numberOfDisplayUnits*sizeof(fmi3DisplayUnitHandle));
             }
             int j=0;
             for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
@@ -1038,49 +1038,49 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 
         //Allocate memory
         if(fmu->fmi3.numberOfFloat64Types > 0) {
-            fmu->fmi3.float64Types = malloc(fmu->fmi3.numberOfFloat64Types*sizeof(fmi3Float64Type));
+            fmu->fmi3.float64Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfFloat64Types*sizeof(fmi3Float64Type));
         }
         if(fmu->fmi3.numberOfFloat32Types > 0) {
-            fmu->fmi3.float32Types = malloc(fmu->fmi3.numberOfFloat32Types*sizeof(fmi3Float32Type));
+            fmu->fmi3.float32Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfFloat32Types*sizeof(fmi3Float32Type));
         }
         if(fmu->fmi3.numberOfInt64Types > 0) {
-            fmu->fmi3.int64Types = malloc(fmu->fmi3.numberOfInt64Types*sizeof(fmi3Int64Type));
+            fmu->fmi3.int64Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfInt64Types*sizeof(fmi3Int64Type));
         }
         if(fmu->fmi3.numberOfInt32Types > 0) {
-            fmu->fmi3.int32Types = malloc(fmu->fmi3.numberOfInt32Types*sizeof(fmi3Int32Type));
+            fmu->fmi3.int32Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfInt32Types*sizeof(fmi3Int32Type));
         }
         if(fmu->fmi3.numberOfInt16Types > 0) {
-            fmu->fmi3.int16Types = malloc(fmu->fmi3.numberOfInt16Types*sizeof(fmi3Int16Type));
+            fmu->fmi3.int16Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfInt16Types*sizeof(fmi3Int16Type));
         }
         if(fmu->fmi3.numberOfInt8Types > 0) {
-            fmu->fmi3.int8Types = malloc(fmu->fmi3.numberOfInt8Types*sizeof(fmi3Int8Type));
+            fmu->fmi3.int8Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfInt8Types*sizeof(fmi3Int8Type));
         }
         if(fmu->fmi3.numberOfUInt64Types > 0) {
-            fmu->fmi3.uint64Types = malloc(fmu->fmi3.numberOfUInt64Types*sizeof(fmi3UInt64Type));
+            fmu->fmi3.uint64Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfUInt64Types*sizeof(fmi3UInt64Type));
         }
         if(fmu->fmi3.numberOfUInt32Types > 0) {
-            fmu->fmi3.uint32Types = malloc(fmu->fmi3.numberOfUInt32Types*sizeof(fmi3UInt32Type));
+            fmu->fmi3.uint32Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfUInt32Types*sizeof(fmi3UInt32Type));
         }
         if(fmu->fmi3.numberOfUInt16Types > 0) {
-            fmu->fmi3.uint16Types = malloc(fmu->fmi3.numberOfUInt16Types*sizeof(fmi3UInt16Type));
+            fmu->fmi3.uint16Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfUInt16Types*sizeof(fmi3UInt16Type));
         }
         if(fmu->fmi3.numberOfUInt8Types > 0) {
-            fmu->fmi3.uint8Types = malloc(fmu->fmi3.numberOfUInt8Types*sizeof(fmi3UInt8Type));
+            fmu->fmi3.uint8Types = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfUInt8Types*sizeof(fmi3UInt8Type));
         }
         if(fmu->fmi3.numberOfBooleanTypes > 0) {
-            fmu->fmi3.booleanTypes = malloc(fmu->fmi3.numberOfBooleanTypes*sizeof(fmi3BooleanType));
+            fmu->fmi3.booleanTypes = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfBooleanTypes*sizeof(fmi3BooleanType));
         }
         if(fmu->fmi3.numberOfStringTypes > 0) {
-            fmu->fmi3.stringTypes = malloc(fmu->fmi3.numberOfStringTypes*sizeof(fmi3StringType));
+            fmu->fmi3.stringTypes = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfStringTypes*sizeof(fmi3StringType));
         }
         if(fmu->fmi3.numberOfBinaryTypes > 0) {
-            fmu->fmi3.binaryTypes = malloc(fmu->fmi3.numberOfBinaryTypes*sizeof(fmi3BinaryType));
+            fmu->fmi3.binaryTypes = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfBinaryTypes*sizeof(fmi3BinaryType));
         }
         if(fmu->fmi3.numberOfEnumerationTypes > 0) {
-            fmu->fmi3.enumTypes = malloc(fmu->fmi3.numberOfEnumerationTypes*sizeof(fmi3EnumerationType));
+            fmu->fmi3.enumTypes = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfEnumerationTypes*sizeof(fmi3EnumerationType));
         }
         if(fmu->fmi3.numberOfClockTypes > 0) {
-            fmu->fmi3.clockTypes = malloc(fmu->fmi3.numberOfClockTypes*sizeof(fmi3ClockType));
+            fmu->fmi3.clockTypes = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfClockTypes*sizeof(fmi3ClockType));
         }
 
         //Read all elements
@@ -1265,7 +1265,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 
                 //Allocate memory for enumeration items
                 if(fmu->fmi3.enumTypes[iEnum].numberOfItems > 0) {
-                    fmu->fmi3.enumTypes[iEnum].items = malloc(fmu->fmi3.enumTypes[iEnum].numberOfItems*sizeof(fmi3EnumerationItem));
+                    fmu->fmi3.enumTypes[iEnum].items = mallocAndRememberPointer(fmu, fmu->fmi3.enumTypes[iEnum].numberOfItems*sizeof(fmi3EnumerationItem));
                 }
 
                 //Read data for enumeration items
@@ -1346,7 +1346,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 
         //Allocate memory for log categories
         if(fmu->fmi3.numberOfLogCategories > 0) {
-            fmu->fmi3.logCategories = malloc(fmu->fmi3.numberOfLogCategories*sizeof(fmi3LogCategory));
+            fmu->fmi3.logCategories = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfLogCategories*sizeof(fmi3LogCategory));
         }
 
         //Read log categories
@@ -1402,7 +1402,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 
                 //Allocate memory for clocks
                 if(var.numberOfClocks > 0) {
-                    var.clocks = malloc(var.numberOfClocks*sizeof(int));
+                    var.clocks = mallocAndRememberPointer(fmu, var.numberOfClocks*sizeof(int));
                 }
 
                 //Read clocks
@@ -4512,7 +4512,7 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     fmu->fmi3.activateModelPartition = placeholder_fmi3ActivateModelPartition;
 
     if(fmu->version == fmiVersion1) {
-        fmu->fmi1.variables = malloc(100*sizeof(fmi1VariableHandle));
+        fmu->fmi1.variables = mallocAndRememberPointer(fmu, 100*sizeof(fmi1VariableHandle));
         fmu->fmi1.variablesSize = 100;
         fmu->fmi1.numberOfVariables = 0;
         if(!parseModelDescriptionFmi1(fmu)) {
@@ -4526,7 +4526,7 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
         }
     }
     else if(fmu->version == fmiVersion2) {
-        fmu->fmi2.variables = malloc(100*sizeof(fmi2VariableHandle));
+        fmu->fmi2.variables = mallocAndRememberPointer(fmu, 100*sizeof(fmi2VariableHandle));
         fmu->fmi2.variablesSize = 100;
         fmu->fmi2.numberOfVariables = 0;
         if(!parseModelDescriptionFmi2(fmu)) {
@@ -4536,7 +4536,7 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
         }
     }
     else if(fmu->version == fmiVersion3) {
-        fmu->fmi3.variables = malloc(100*sizeof(fmi3VariableHandle));
+        fmu->fmi3.variables = mallocAndRememberPointer(fmu, 100*sizeof(fmi3VariableHandle));
         fmu->fmi3.variablesSize = 100;
         fmu->fmi3.numberOfVariables = 0;
         if(!parseModelDescriptionFmi3(fmu)) {
