@@ -4675,6 +4675,7 @@ void fmi4c_freeFmu(fmiHandle *fmu)
 
     freeDuplicatedConstChar(fmu->resourcesLocation);
     freeDuplicatedConstChar(fmu->unzippedLocation);
+    free(fmu->allocatedConstChars);
     free(fmu);
 }
 
