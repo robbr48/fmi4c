@@ -1708,7 +1708,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 
             if(fmu->fmi3.numberOfVariables >= fmu->fmi3.variablesSize) {
                 fmu->fmi3.variablesSize *= 2;
-                fmu->fmi3.variables = realloc(fmu->fmi3.variables, fmu->fmi3.variablesSize*sizeof(fmi3VariableHandle));
+                fmu->fmi3.variables = reallocAndRememberPointer(fmu, fmu->fmi3.variables, fmu->fmi3.variablesSize*sizeof(fmi3VariableHandle));
             }
 
 
