@@ -93,7 +93,7 @@ jobs:
         shell: bash
         run: ctest --output-on-failure --parallel 4
         
-cmake-ubuntu-python:
+  cmake-ubuntu-python:
     timeout-minutes: 5
     runs-on: ubuntu-20.04
     steps:
