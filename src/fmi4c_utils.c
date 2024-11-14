@@ -21,14 +21,15 @@
 #endif
 
 
-void rememberPointer(fmiHandle *fmu, int* ptr) {
-
+void rememberPointer(fmiHandle *fmu, void* ptr)
+{
     fmu->numAllocatedPointers++;
     fmu->allocatedPointers = realloc(fmu->allocatedPointers, fmu->numAllocatedPointers * sizeof(void*));
     fmu->allocatedPointers[fmu->numAllocatedPointers-1] = ptr;
 }
 
-void* mallocAndRememberPointer(fmiHandle *fmu, size_t size) {
+void* mallocAndRememberPointer(fmiHandle *fmu, size_t size)
+{
     void* ptr = malloc(size);
     rememberPointer(fmu, ptr);
     return ptr;
@@ -36,12 +37,19 @@ void* mallocAndRememberPointer(fmiHandle *fmu, size_t size) {
 
 void *reallocAndRememberPointer(fmiHandle *fmu, void *org, size_t size)
 {
+    int i=0;
+    while (org != fmu->allocatedPointers[i] && i < fmu->numAllocatedPointers)
+        ++i;
     void* ptr = realloc(org, size);
-    rememberPointer(fmu, ptr);
+    if (i < fmu->numAllocatedPointers)
+        fmu->allocatedPointers[i] = ptr;
+    else
+       rememberPointer(fmu, ptr);
     return ptr;
 }
 
-char* duplicateAndRememberString(fmiHandle *fmu, const char* str) {
+char* duplicateAndRememberString(fmiHandle *fmu, const char* str)
+{
     char* ret = _strdup(str);
     rememberPointer(fmu, (void*)ret);
     return ret;

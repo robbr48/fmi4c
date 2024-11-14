@@ -6,7 +6,7 @@
 #include "ezxml/ezxml.h"
 #include "fmi4c_private.h"
 
-void rememberPointer(fmiHandle *fmu, int* ptr);
+void rememberPointer(fmiHandle *fmu, void* ptr);
 void* mallocAndRememberPointer(fmiHandle *fmu, size_t size);
 void* reallocAndRememberPointer(fmiHandle *fmu, void* org, size_t size);
 char* duplicateAndRememberString(fmiHandle *fmu, const char* str);

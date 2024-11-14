@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <float.h>
 #include <limits.h>
+#include <ctype.h>
 #ifndef _WIN32
 #include "fmi4c_common.h"
 #include <dlfcn.h>
@@ -4286,6 +4287,7 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
     fmiHandle *fmu = calloc(1, sizeof(fmiHandle)); // Using calloc to ensure all member pointers (and data) are initialized to NULL (0)
     fmu->numAllocatedPointers = 0;
+    fmu->allocatedPointers = calloc(0, sizeof(void*));
     fmu->version = fmiVersionUnknown;
     fmu->instanceName = duplicateAndRememberString(fmu, instanceName);
     fmu->unzippedLocation = duplicateAndRememberString(fmu, unzippLocation);
