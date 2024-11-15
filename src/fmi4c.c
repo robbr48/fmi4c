@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <float.h>
+#include <unistd.h>
 #include <limits.h>
 #include <ctype.h>
 #ifndef _WIN32
@@ -4179,12 +4180,12 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     if (len == 0) {
        printf("Cannot find temp path, using current directory\n");
     }
-    // Create a unique tempfile and use its name for the unique directory name
-    char tempFileName[MAX_PATH];
-    UINT rc = GetTempFileNameA(unzippLocation, "", 0, tempFileName);
-    if (rc == 0) {
-        printf("Cannot generate temp name for unzip location\n");
-        return NULL;
+
+    // Create a unique name for the temp folder
+    char tempFileName[11] = "\0\0\0\0\0\0\0\0\0\0\0";
+    srand(getpid());
+    for(int i=0; i<10; ++i) {
+        tempFileName[i] = rand() % 26 + 65;
     }
 
     strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
