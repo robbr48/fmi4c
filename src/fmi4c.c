@@ -13,9 +13,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <float.h>
-#include <unistd.h>
-#include <limits.h>
 #include <ctype.h>
+#ifdef _WIN32
+#include <process.h>
+#endif
 #ifndef _WIN32
 #include "fmi4c_common.h"
 #include <dlfcn.h>
