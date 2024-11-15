@@ -38,7 +38,7 @@ void* mallocAndRememberPointer(fmiHandle *fmu, size_t size)
 void *reallocAndRememberPointer(fmiHandle *fmu, void *org, size_t size)
 {
     int i=0;
-    while (org != fmu->allocatedPointers[i] && i < fmu->numAllocatedPointers)
+    while (i < fmu->numAllocatedPointers && org != fmu->allocatedPointers[i])
         ++i;
     void* ptr = realloc(org, size);
     if (i < fmu->numAllocatedPointers)
