@@ -3799,10 +3799,47 @@ fmi2Status fmi2_getRealOutputDerivatives (fmiHandle* fmu,
 
 fmi2Status fmi2_doStep(fmiHandle *fmu, fmi2Real currentCommunicationPoint, fmi2Real communicationStepSize, fmi2Boolean noSetFMUStatePriorToCurrentPoint)
 {
+    TRACEFUNC
     return fmu->fmi2.doStep(fmu->fmi2.component,
                               currentCommunicationPoint,
                               communicationStepSize,
                               noSetFMUStatePriorToCurrentPoint);
+}
+
+fmi2Status fmi2_cancelStep(fmiHandle* fmu)
+{
+    TRACEFUNC
+    return fmu->fmi2.cancelStep(fmu);
+}
+
+fmi2Status fmi2_getStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2Status* value)
+{
+    TRACEFUNC
+    return fmu->fmi2.getStatus(fmu, s, value);
+}
+
+fmi2Status fmi2_getRealStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2Real* value)
+{
+    TRACEFUNC
+    return fmu->fmi2.getRealStatus(fmu, s, value);
+}
+
+fmi2Status fmi2_getIntegerStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2Integer* value)
+{
+    TRACEFUNC
+    return fmu->fmi2.getIntegerStatus(fmu, s, value);
+}
+
+fmi2Status fmi2_getBooleanStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2Boolean* value)
+{
+    TRACEFUNC
+    return fmu->fmi2.getBooleanStatus(fmu, s, value);
+}
+
+fmi2Status fmi2_getStringStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2String* value)
+{
+    TRACEFUNC
+    return fmu->fmi2.getStringStatus(fmu, s, value);
 }
 
 const char *fmi2_getGuid(fmiHandle *fmu)
