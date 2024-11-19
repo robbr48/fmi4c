@@ -188,7 +188,7 @@ FMI4C_DLLAPI fmi2Status fmi2_setDebugLogging(fmiHandle* fmu, fmi2Boolean, size_t
 FMI4C_DLLAPI const char* fmi2_getGuid(fmiHandle *fmu);
 
 FMI4C_DLLAPI const char* fmi2cs_getModelIdentifier(fmiHandle* fmu);
-FMI4C_DLLAPI bool fmics2GetCanHandleVariableCommunicationStepSize(fmiHandle* fmu);
+FMI4C_DLLAPI bool fmi2cs_getCanHandleVariableCommunicationStepSize(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi2cs_getCanInterpolateInputs(fmiHandle* fmu);
 FMI4C_DLLAPI int fmi2cs_getMaxOutputDerivativeOrder(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi2cs_getCanRunAsynchronuously(fmiHandle* fmu);
