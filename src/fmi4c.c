@@ -3921,7 +3921,7 @@ bool fmi2me_getNeedsExecutionTool(fmiHandle *fmu)
     return fmu->fmi2.me.needsExecutionTool;
 }
 
-bool fmics2GetCanHandleVariableCommunicationStepSize(fmiHandle *fmu)
+bool fmi2cs_getCanHandleVariableCommunicationStepSize(fmiHandle *fmu)
 {
     TRACEFUNC
     return fmu->fmi2.cs.canHandleVariableCommunicationStepSize;
