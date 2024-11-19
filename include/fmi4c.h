@@ -307,11 +307,11 @@ FMI4C_DLLAPI fmi2Status fmi2_getRealOutputDerivatives (fmiHandle* fmu,
 FMI4C_DLLAPI fmi2Status fmi2_doStep(fmiHandle *fmu, fmi2Real, fmi2Real, fmi2Boolean);
 FMI4C_DLLAPI fmi2Status fmi2_cancelStep(fmiHandle* fmu);
 
-FMI4C_DLLAPI fmi2Status fmi2_getStatus(fmiHandle* fmu, const fmi2StatusKind, fmi2Status* );
-FMI4C_DLLAPI fmi2Status fmi2_getRealStatus(fmiHandle* fmu, const fmi2StatusKind, fmi2Real*   );
-FMI4C_DLLAPI fmi2Status fmi2_getIntegerStatus(fmiHandle* fmu, const fmi2StatusKind, fmi2Integer*);
-FMI4C_DLLAPI fmi2Status fmi2_getBooleanStatus(fmiHandle* fmu, const fmi2StatusKind, fmi2Boolean*);
-FMI4C_DLLAPI fmi2Status fmi2_getStringStatus(fmiHandle* fmu, const fmi2StatusKind, fmi2String* );
+FMI4C_DLLAPI fmi2Status fmi2_getStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2Status* value);
+FMI4C_DLLAPI fmi2Status fmi2_getRealStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2Real* value);
+FMI4C_DLLAPI fmi2Status fmi2_getIntegerStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2Integer* value);
+FMI4C_DLLAPI fmi2Status fmi2_getBooleanStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2Boolean* value);
+FMI4C_DLLAPI fmi2Status fmi2_getStringStatus(fmiHandle* fmu, const fmi2StatusKind s, fmi2String* value);
 
 
 FMI4C_DLLAPI int fmi3_getNumberOfVariables(fmiHandle *fmu);
