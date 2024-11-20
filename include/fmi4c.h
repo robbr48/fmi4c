@@ -152,7 +152,7 @@ FMI4C_DLLAPI double fmi2_getDefaultStepSize(fmiHandle *fmu);
 
 FMI4C_DLLAPI int fmi2_getNumberOfVariables(fmiHandle *fmu);
 FMI4C_DLLAPI fmi2VariableHandle* fmi2_getVariableByIndex(fmiHandle *fmu, int i);
-FMI4C_DLLAPI fmi2VariableHandle* fmi2_getVariableByValueReference(fmiHandle *fmu, fmi3ValueReference vr);
+FMI4C_DLLAPI fmi2VariableHandle* fmi2_getVariableByValueReference(fmiHandle *fmu, fmi2ValueReference vr);
 FMI4C_DLLAPI fmi2VariableHandle* fmi2_getVariableByName(fmiHandle *fmu, fmi2String name);
 FMI4C_DLLAPI const char* fmi2_getVariableName(fmi2VariableHandle* var);
 FMI4C_DLLAPI const char* fmi2_getVariableDescription(fmi2VariableHandle* var);
