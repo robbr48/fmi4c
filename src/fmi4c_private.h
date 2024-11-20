@@ -66,6 +66,11 @@ typedef struct {
     const char *quantity;
     const char *unit;
     const char *displayUnit;
+    bool relativeQuantity;
+    fmi2Real min;
+    fmi2Real max;
+    fmi2Real nominal;
+    bool unbounded;
     bool hasStartValue;
     fmi2Real startReal;
     fmi2Integer startInteger;

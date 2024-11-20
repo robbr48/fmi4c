@@ -677,6 +677,11 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             }
 
             var.hasStartValue = false;
+            var.relativeQuantity = false;
+            var.min = -DBL_MAX;
+            var.max = DBL_MAX;
+            var.nominal = 1;
+            var.unbounded = false;
 
             ezxml_t realElement = ezxml_child(varElement, "Real");
             if(realElement) {
@@ -688,6 +693,14 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 if(parseUInt32AttributeEzXml(realElement, "derivative", &var.derivative)) {
                     fmu->fmi2.numberOfContinuousStates++;
                 }
+                parseStringAttributeEzXmlAndRememberPointer(realElement, "quantity", &var.quantity, fmu);
+                parseStringAttributeEzXmlAndRememberPointer(realElement, "unit", &var.unit, fmu);
+                parseStringAttributeEzXmlAndRememberPointer(realElement, "displayUnit", &var.displayUnit, fmu);
+                parseBooleanAttributeEzXml(realElement, "relativeQuantity", &var.relativeQuantity);
+                parseFloat64AttributeEzXml(realElement, "min", &var.min);
+                parseFloat64AttributeEzXml(realElement, "max", &var.max);
+                parseFloat64AttributeEzXml(realElement, "nominal", &var.nominal);
+                parseBooleanAttributeEzXml(realElement, "unbounded", &var.unbounded);
             }
 
             ezxml_t integerElement = ezxml_child(varElement, "Integer");
@@ -3483,6 +3496,36 @@ const char *fmi2_getVariableDisplayUnit(fmi2VariableHandle *var)
 {
     TRACEFUNC
     return var->displayUnit;
+}
+
+bool fmi2_getVariableRelativeQuantity(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+    return var->relativeQuantity;
+}
+
+fmi2Real fmi2_getVariableMin(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+    return var->min;
+}
+
+fmi2Real fmi2_getVariableMax(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+    return var->max;
+}
+
+fmi2Real fmi2_getVariableNominal(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+    return var->nominal;
+}
+
+bool fmi2_getVariableUnbounded(fmi2VariableHandle *var)
+{
+    TRACEFUNC
+        return var->unbounded;
 }
 
 bool fmi2_getVariableHasStartValue(fmi2VariableHandle *var)
