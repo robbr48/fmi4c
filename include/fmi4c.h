@@ -160,7 +160,6 @@ FMI4C_DLLAPI const char* fmi2_getFmiVersion(fmiHandle* fmu);
 FMI4C_DLLAPI const char* fmi2_getAuthor(fmiHandle *fmu);
 FMI4C_DLLAPI const char* fmi2_getModelName(fmiHandle *fmu);
 FMI4C_DLLAPI const char* fmi2_getModelDescription(fmiHandle *fmu);
-FMI4C_DLLAPI const char* fmi2_getModelIdentifier(fmiHandle *fmu);
 FMI4C_DLLAPI const char* fmi2_getCopyright(fmiHandle *fmu);
 FMI4C_DLLAPI const char* fmi2_getLicense(fmiHandle *fmu);
 FMI4C_DLLAPI const char* fmi2_getGenerationTool(fmiHandle *fmu);

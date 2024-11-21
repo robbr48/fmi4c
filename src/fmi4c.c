@@ -3450,15 +3450,6 @@ const char* fmi2_getModelDescription(fmiHandle *fmu)
     return fmu->fmi2.description;
 }
 
-const char* fmi2_getModelIdentifier(fmiHandle *fmu)
-{
-    TRACEFUNC
-    if (fmu->fmi2.supportsCoSimulation)
-        return fmu->fmi2.cs.modelIdentifier;
-    else
-        return fmu->fmi2.me.modelIdentifier;
-}
-
 const char* fmi2_getCopyright(fmiHandle *fmu)
 {
     TRACEFUNC
