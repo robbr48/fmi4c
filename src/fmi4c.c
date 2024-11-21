@@ -590,6 +590,11 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             var.quantity = NULL;
             var.unit = NULL;
             var.displayUnit = NULL;
+            var.relativeQuantity = false;
+            var.min = -DBL_MAX;
+            var.max = DBL_MAX;
+            var.nominal = 1;
+            var.unbounded = false;
             var.derivative = 0;
 
             parseStringAttributeEzXmlAndRememberPointer(varElement, "name", &var.name, fmu);
@@ -710,6 +715,9 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 if(parseInt32AttributeEzXml(integerElement, "start", &var.startInteger)) {
                     var.hasStartValue = true;
                 }
+                parseStringAttributeEzXmlAndRememberPointer(integerElement, "quantity", &var.quantity, fmu);
+                parseFloat64AttributeEzXml(integerElement, "min", &var.min);
+                parseFloat64AttributeEzXml(integerElement, "max", &var.max);
             }
 
             ezxml_t booleanElement = ezxml_child(varElement, "Boolean");
@@ -739,6 +747,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 if(parseInt32AttributeEzXml(enumerationElement, "start", &var.startEnumeration)) {
                     var.hasStartValue = true;
                 }
+                parseStringAttributeEzXmlAndRememberPointer(enumerationElement, "quantity", &var.quantity, fmu);
             }
 
             if(fmu->fmi2.numberOfVariables >= fmu->fmi2.variablesSize) {
@@ -3525,7 +3534,7 @@ fmi2Real fmi2_getVariableNominal(fmi2VariableHandle *var)
 bool fmi2_getVariableUnbounded(fmi2VariableHandle *var)
 {
     TRACEFUNC
-        return var->unbounded;
+    return var->unbounded;
 }
 
 bool fmi2_getVariableHasStartValue(fmi2VariableHandle *var)
