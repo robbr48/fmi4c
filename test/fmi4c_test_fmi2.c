@@ -129,10 +129,13 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         printf("fmi2_getContinuousStates() failed\n");
         exit(1);
     }
-    status = fmi2_getEventIndicators(fmu, eventIndicators, nEventIndicators);
-    if(status != fmi2OK) {
-        printf("fmi2_getEventIndicators() failed\n");
-        exit(1);
+
+    if(nEventIndicators > 0) {
+        status = fmi2_getEventIndicators(fmu, eventIndicators, nEventIndicators);
+        if(status != fmi2OK) {
+            printf("fmi2_getEventIndicators() failed\n");
+            exit(1);
+        }
     }
 
     outputFile = fopen(outputCsvPath, "w");
@@ -177,19 +180,22 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             exit(1);
         }
 
-        memcpy(eventIndicatorsPrev, eventIndicators, nEventIndicators*sizeof(double));
-        status = fmi2_getEventIndicators(fmu, eventIndicators, nEventIndicators);
-        if(status != fmi2OK) {
-            printf("fmi2_getEventIndicators() failed\n");
-            exit(1);
-        }
-
-        /* Check if an event indicator has triggered */
-        for (k = 0; k < nEventIndicators; k++) {
-            if ((eventIndicators[k] > 0) != (eventIndicatorsPrev[k] > 0)) {
-                zeroCrossingEvent = 1;
-                break;
+        if(nEventIndicators > 0) {
+            memcpy(eventIndicatorsPrev, eventIndicators, nEventIndicators*sizeof(double));
+            status = fmi2_getEventIndicators(fmu, eventIndicators, nEventIndicators);
+            if(status != fmi2OK) {
+                printf("fmi2_getEventIndicators() failed\n");
+                exit(1);
             }
+
+            /* Check if an event indicator has triggered */
+            for (k = 0; k < nEventIndicators; k++) {
+                if ((eventIndicators[k] > 0) != (eventIndicatorsPrev[k] > 0)) {
+                    zeroCrossingEvent = 1;
+                    break;
+                }
+            }
+
         }
 
         //Handle events
@@ -217,10 +223,12 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
                 printf("fmi2_getContinuousStates() failed\n");
                 exit(1);
             }
-            status = fmi2_getEventIndicators(fmu, eventIndicators, nEventIndicators);
-            if(status != fmi2OK) {
-                printf("fmi2_getEventIndicators() failed\n");
-                exit(1);
+            if(nEventIndicators > 0) {
+                status = fmi2_getEventIndicators(fmu, eventIndicators, nEventIndicators);
+                if(status != fmi2OK) {
+                    printf("fmi2_getEventIndicators() failed\n");
+                    exit(1);
+                }
             }
         }
 
