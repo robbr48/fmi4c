@@ -454,6 +454,49 @@ class fmi4c:
         self.hdll.fmi2_getStringStatus.restype = ct.c_int
         self.hdll.fmi2_getStringStatus.argtypes = ct.c_void_p, ct.c_int,ct.POINTER(ct.c_char_p)
 
+        self.hdll.fmi3_modelName.restype = ct.c_char_p 
+        self.hdll.fmi3_modelName.argtypes = ct.c_void_p,
+        self.hdll.fmi3_instantiationToken.restype = ct.c_char_p 
+        self.hdll.fmi3_instantiationToken.argtypes = ct.c_void_p,
+        self.hdll.fmi3_description.restype = ct.c_char_p 
+        self.hdll.fmi3_description.argtypes = ct.c_void_p,
+        self.hdll.fmi3_author.restype = ct.c_char_p 
+        self.hdll.fmi3_author.argtypes = ct.c_void_p,
+        self.hdll.fmi3_version.restype = ct.c_char_p 
+        self.hdll.fmi3_version.argtypes = ct.c_void_p,
+        self.hdll.fmi3_copyright.restype = ct.c_char_p 
+        self.hdll.fmi3_copyright.argtypes = ct.c_void_p,
+        self.hdll.fmi3_license.restype = ct.c_char_p 
+        self.hdll.fmi3_license.argtypes = ct.c_void_p,
+        self.hdll.fmi3_generationTool.restype = ct.c_char_p 
+        self.hdll.fmi3_generationTool.argtypes = ct.c_void_p,
+        self.hdll.fmi3_generationDateAndTime.restype = ct.c_char_p 
+        self.hdll.fmi3_generationDateAndTime.argtypes = ct.c_void_p,
+        self.hdll.fmi3_variableNamingConvention.restype = ct.c_char_p 
+        self.hdll.fmi3_variableNamingConvention.argtypes = ct.c_void_p,
+        self.hdll.fmi3_supportsModelExchange.restype = ct.c_bool 
+        self.hdll.fmi3_supportsModelExchange.argtypes = ct.c_void_p,
+        self.hdll.fmi3_supportsScheduledExecution.restype = ct.c_bool  
+        self.hdll.fmi3_supportsScheduledExecution.argtypes = ct.c_void_p,
+        self.hdll.fmi3_supportsCoSimulation.restype = ct.c_bool  
+        self.hdll.fmi3_supportsCoSimulation.argtypes = ct.c_void_p,
+        self.hdll.fmi3_defaultStartTimeDefined.restype = ct.c_bool  
+        self.hdll.fmi3_defaultStartTimeDefined.argtypes = ct.c_void_p,
+        self.hdll.fmi3_defaultStopTimeDefined.restype = ct.c_bool  
+        self.hdll.fmi3_defaultStopTimeDefined.argtypes = ct.c_void_p,
+        self.hdll.fmi3_defaultToleranceDefined.restype = ct.c_bool  
+        self.hdll.fmi3_defaultToleranceDefined.argtypes = ct.c_void_p,
+        self.hdll.fmi3_defaultStepSizeDefined.restype = ct.c_bool  
+        self.hdll.fmi3_defaultStepSizeDefined.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getDefaultStartTime.restype = ct.c_double 
+        self.hdll.fmi3_getDefaultStartTime.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getDefaultStopTime.restype = ct.c_double 
+        self.hdll.fmi3_getDefaultStopTime.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getDefaultTolerance.restype = ct.c_double 
+        self.hdll.fmi3_getDefaultTolerance.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getDefaultStepSize.restype = ct.c_double 
+        self.hdll.fmi3_getDefaultStepSize.argtypes = ct.c_void_p,
+
     def translateFmiVersion(self, version):
         match version:
             case 0:
@@ -1269,28 +1312,41 @@ class fmi4c:
     def fmi2_enterContinuousTimeMode(self):
         return self.hdll.fmi2_enterContinuousTimeMode(self.fmu)
 
-    def fmi2_completedIntegratorStep(self,  noSetFMUStatePriorToCurrentPoint,  enterEventMode,  terminateSimulation):
-        return self.hdll.fmi2_completedIntegratorStep(self.fmu,  noSetFMUStatePriorToCurrentPoint,  enterEventMode,  terminateSimulation)
+    def fmi2_completedIntegratorStep(self,  noSetFMUStatePriorToCurrentPoint):
+        enterEventMode = ct.c_bool()
+        terminateSimulation = ct.c_bool()
+        success = self.hdll.fmi2_completedIntegratorStep(self.fmu,  noSetFMUStatePriorToCurrentPoint,  ct.byref(enterEventMode),  ct.byref(terminateSimulation))
+        return (success, enterEventMode.value, terminateSimulation.value)
 
     def fmi2_setTime(self, time):
         return self.hdll.fmi2_setTime(self.fmu, time)
 
-    def fmi2_setContinuousStates(self, x,  nx):
-        return self.hdll.fmi2_setContinuousStates(self.fmu, x,  nx)
+    def fmi2_setContinuousStates(self, continuousStates, nContinuousStates):
+        double_array_type = ct.c_double * nContinuousStates
+        continuousStatesArray = double_array_type(*continuousStates)
+        return self.hdll.fmi2_setContinuousStates(self.fmu, continuousStatesArray, nContinuousStates)
 
-    def fmi2_getDerivatives(self, derivatives,  nx):
-        return self.hdll.fmi2_getDerivatives(self.fmu, derivatives,  nx)
+    def fmi2_getDerivatives(self, derivatives, nx):
+        double_array_type = ct.c_double * nx
+        derivativesArray = double_array_type(*derivatives)
+        success = self.hdll.fmi2_getDerivatives(self.fmu, derivativesArray, nx)
+        return [success, list(derivativesArray)]
 
     def fmi2_getEventIndicators(self, eventIndicators,  ni):
         return self.hdll.fmi2_getEventIndicators(self.fmu, eventIndicators,  ni)
 
-    def fmi2_getContinuousStates(self, x,  nx):
-        return self.hdll.fmi2_getContinuousStates(self.fmu, x,  nx)
+    def fmi2_getContinuousStates(self, states, nStates):
+        double_array_type = ct.c_double * nStates
+        statesArray = double_array_type(*states)
+        success = self.hdll.fmi2_getContinuousStates(self.fmu, statesArray, nStates)
+        return [success, list(statesArray)]
 
-    def fmi2_getNominalsOfContinuousStates(self, x_nominal,  nx):
-        return self.hdll.fmi2_getNominalsOfContinuousStates(self.fmu, x_nominal,  nx)
-
-
+    def fmi2_getNominalsOfContinuousStates(self, nominals, nNominals):
+        double_array_type = ct.c_double * nNominals
+        nominalsArray = double_array_type(*nominals)
+        success = self.hdll.fmi2_getNominalsOfContinuousStates(self.fmu, nominalsArray, nNominals)
+        return [success, list(nominalsArray)]
+        
     def fmi2_setRealInputDerivatives(self, vr,  nvr,  order, value):
         return self.hdll.fmi2_setRealInputDerivatives(self.fmu, vr,  nvr,  order, value)
 
@@ -1317,3 +1373,76 @@ class fmi4c:
 
     def fmi2_getStringStatus(self, s, value):
         return self.hdll.fmi2_getStringStatus(self.fmu, s, value)
+
+    #FMI3 functions
+
+    def fmi3_modelName(self):
+        return self.hdll.fmi3_modelName(self.fmu).decode()
+
+    def fmi3_instantiationToken(self):
+        return self.hdll.fmi3_instantiationToken(self.fmu).decode()
+
+    def fmi3_description(self):
+        return self.hdll.fmi3_description(self.fmu).decode()
+
+    def fmi3_author(self):
+        return self.hdll.fmi3_author(self.fmu).decode()
+
+    def fmi3_version(self):
+        return self.hdll.fmi3_version(self.fmu)
+
+    def fmi3_copyright(self):
+        ret = self.hdll.fmi3_copyright(self.fmu)
+        if ret is None:
+            return ""
+        else:
+            return ret.decode()
+
+    def fmi3_license(self):
+        ret = self.hdll.fmi3_license(self.fmu)
+        if ret is None:
+            return ""
+        else:
+            return ret.decode()
+
+    def fmi3_generationTool(self):
+        return self.hdll.fmi3_generationTool(self.fmu).decode()
+
+    def fmi3_generationDateAndTime(self):
+        return self.hdll.fmi3_generationDateAndTime(self.fmu).decode()
+
+    def fmi3_variableNamingConvention(self):
+        return self.hdll.fmi3_variableNamingConvention(self.fmu).decode()
+
+    def fmi3_supportsModelExchange(self):
+        return self.hdll.fmi3_supportsModelExchange(self.fmu)
+
+    def fmi3_supportsScheduledExecution(self):
+        return self.hdll.fmi3_supportsScheduledExecution(self.fmu)
+
+    def fmi3_supportsCoSimulation(self):
+        return self.hdll.fmi3_supportsCoSimulation(self.fmu)
+
+    def fmi3_defaultStartTimeDefined(self):
+        return self.hdll.fmi3_defaultStartTimeDefined(self.fmu)
+
+    def fmi3_defaultStopTimeDefined(self):
+        return self.hdll.fmi3_defaultStopTimeDefined(self.fmu)
+
+    def fmi3_defaultToleranceDefined(self):
+        return self.hdll.fmi3_defaultToleranceDefined(self.fmu)
+
+    def fmi3_defaultStepSizeDefined(self):
+        return self.hdll.fmi3_defaultStepSizeDefined(self.fmu)
+
+    def fmi3_getDefaultStartTime(self):
+        return self.hdll.fmi3_getDefaultStartTime(self.fmu)
+
+    def fmi3_getDefaultStopTime(self):
+        return self.hdll.fmi3_getDefaultStopTime(self.fmu)
+
+    def fmi3_getDefaultTolerance(self):
+        return self.hdll.fmi3_getDefaultTolerance(self.fmu)
+
+    def fmi3_getDefaultStepSize(self):
+        return self.hdll.fmi3_getDefaultStepSize(self.fmu)
