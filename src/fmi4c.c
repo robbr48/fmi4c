@@ -1851,6 +1851,14 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
 {
     TRACEFUNC
 
+    if (fmu->dll != NULL) {
+#ifdef _WIN32
+        FreeLibrary(fmu->dll);
+#else
+        dlclose(fmu->dll);
+#endif
+    }
+
     char cwd[FILENAME_MAX];
 #ifdef _WIN32
     _getcwd(cwd, sizeof(char)*FILENAME_MAX);
@@ -1975,6 +1983,14 @@ bool loadFunctionsFmi1(fmiHandle *fmu)
 bool loadFunctionsFmi2(fmiHandle *fmu, fmi2Type fmuType)
 {
     TRACEFUNC
+
+    if (fmu->dll != NULL) {
+#ifdef _WIN32
+        FreeLibrary(fmu->dll);
+#else
+        dlclose(fmu->dll);
+#endif
+    }
 
     char cwd[FILENAME_MAX];
 #ifdef _WIN32
@@ -2108,6 +2124,14 @@ bool loadFunctionsFmi2(fmiHandle *fmu, fmi2Type fmuType)
 bool loadFunctionsFmi3(fmiHandle *fmu, fmi3Type fmuType)
 {
     TRACEFUNC
+
+    if (fmu->dll != NULL) {
+#ifdef _WIN32
+        FreeLibrary(fmu->dll);
+#else
+        dlclose(fmu->dll);
+#endif
+    }
 
     char cwd[FILENAME_MAX];
 #ifdef _WIN32
@@ -4368,6 +4392,7 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
 
     fmiHandle *fmu = calloc(1, sizeof(fmiHandle)); // Using calloc to ensure all member pointers (and data) are initialized to NULL (0)
+    fmu->dll = NULL;
     fmu->numAllocatedPointers = 0;
     fmu->allocatedPointers = calloc(0, sizeof(void*));
     fmu->version = fmiVersionUnknown;
