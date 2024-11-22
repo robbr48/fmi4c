@@ -2481,7 +2481,6 @@ fmi3Status fmi3_doStep(fmiHandle *fmu,
 
 const char *fmi3_modelName(fmiHandle *fmu)
 {
-    printf("fmu pointer: %p\n", fmu);
     return fmu->fmi3.modelName;
 }
 
