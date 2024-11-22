@@ -231,8 +231,6 @@ class fmi4c:
         self.hdll.fmi2_getModelName.argtypes =ct.c_void_p,
         self.hdll.fmi2_getModelDescription.restype = ct.c_char_p
         self.hdll.fmi2_getModelDescription.argtypes =ct.c_void_p,
-        self.hdll.fmi2_getModelIdentifier.restype = ct.c_char_p
-        self.hdll.fmi2_getModelIdentifier.argtypes =ct.c_void_p,
         self.hdll.fmi2_getCopyright.restype = ct.c_char_p
         self.hdll.fmi2_getCopyright.argtypes =ct.c_void_p,
         self.hdll.fmi2_getLicense.restype = ct.c_char_p
@@ -295,8 +293,8 @@ class fmi4c:
 
         self.hdll.fmi2cs_getModelIdentifier.restype = ct.c_char_p
         self.hdll.fmi2cs_getModelIdentifier.argtypes = ct.c_void_p,
-        self.hdll.fmics2GetCanHandleVariableCommunicationStepSize.restype = ct.c_bool
-        self.hdll.fmics2GetCanHandleVariableCommunicationStepSize.argtypes = ct.c_void_p,
+        self.hdll.fmi2cs_getCanHandleVariableCommunicationStepSize.restype = ct.c_bool
+        self.hdll.fmi2cs_getCanHandleVariableCommunicationStepSize.argtypes = ct.c_void_p,
         self.hdll.fmi2cs_getCanInterpolateInputs.restype = ct.c_bool
         self.hdll.fmi2cs_getCanInterpolateInputs.argtypes = ct.c_void_p,
         self.hdll.fmi2cs_getMaxOutputDerivativeOrder.restype = ct.c_int
@@ -941,31 +939,28 @@ class fmi4c:
         return self.hdll.fmi2_getFmiVersion(self.fmu).decode()
 
     def fmi2_getAuthor(self):
-        return self.hdll.fmi2_getAuthor(self.fmu)
+        return self.hdll.fmi2_getAuthor(self.fmu).decode()
 
     def fmi2_getModelName(self):
-        return self.hdll.fmi2_getModelName(self.fmu)
+        return self.hdll.fmi2_getModelName(self.fmu).decode()
 
     def fmi2_getModelDescription(self):
-        return self.hdll.fmi2_getModelDescription(self.fmu)
-
-    def fmi2_getModelIdentifier(self):
-        return self.hdll.fmi2_getModelIdentifier(self.fmu)
+        return self.hdll.fmi2_getModelDescription(self.fmu).decode()
 
     def fmi2_getCopyright(self):
-        return self.hdll.fmi2_getCopyright(self.fmu)
+        return self.hdll.fmi2_getCopyright(self.fmu).decode()
 
     def fmi2_getLicense(self):
-        return self.hdll.fmi2_getLicense(self.fmu)
+        return self.hdll.fmi2_getLicense(self.fmu).decode()
 
     def fmi2_getGenerationTool(self):
-        return self.hdll.fmi2_getGenerationTool(self.fmu)
+        return self.hdll.fmi2_getGenerationTool(self.fmu).decode()
 
     def fmi2_getGenerationDateAndTime(self):
-        return self.hdll.fmi2_getGenerationDateAndTime(self.fmu)
+        return self.hdll.fmi2_getGenerationDateAndTime(self.fmu).decode()
 
     def fmi2_getVariableNamingConvention(self):
-        return self.hdll.fmi2_getVariableNamingConvention(self.fmu)
+        return self.hdll.fmi2_getVariableNamingConvention(self.fmu).decode()
 
     def fmi2_getVariableDerivativeIndex(self, var):
         return self.hdll.fmi2_getVariableDerivativeIndex(var)
@@ -1050,7 +1045,7 @@ class fmi4c:
         return self.hdll.fmi2_getTypesPlatform(self.fmu).decode()
 
     def fmi2_getVersion(self):
-        return self.hdll.fmi2_getVersion(self.fmu)
+        return self.hdll.fmi2_getVersion(self.fmu).decode()
 
     def fmi2_setDebugLogging(self, loggingOn, nCategories, categories):
         return self.hdll.fmi2_setDebugLogging(self.fmu, loggingOn, nCategories, categories)
@@ -1059,8 +1054,8 @@ class fmi4c:
         return self.hdll.fmi2_getGuid(self.fmu).decode()
 
     def fmi2cs_getModelIdentifier(self):
-        return self.hdll.fmi2cs_getModelIdentifier(self.fmu)
-
+        return self.hdll.fmi2cs_getModelIdentifier(self.fmu).decode()
+        
     def fmi2cs_getCanHandleVariableCommunicationStepSize(self):
         return self.hdll.fmi2cs_getCanHandleVariableCommunicationStepSize(self.fmu)
 
@@ -1092,7 +1087,7 @@ class fmi4c:
         return self.hdll.fmi2cs_getProvidesDirectionalDerivative(self.fmu)
 
     def fmi2me_getModelIdentifier(self):
-        return self.hdll.fmi2me_getModelIdentifier(self.fmu)
+        return self.hdll.fmi2me_getModelIdentifier(self.fmu).decode()
 
     def fmi2me_getCompletedIntegratorStepNotNeeded(self):
         return self.hdll.fmi2me_getCompletedIntegratorStepNotNeeded(self.fmu)
@@ -1155,43 +1150,94 @@ class fmi4c:
         return self.hdll.fmi2_getUnitByIndex(self.fmu, i)
 
     def fmi2_getUnitName(self, unit):
-        return self.hdll.fmi2_getUnitName(self.fmu, unit)
+        return self.hdll.fmi2_getUnitName(unit)
 
     def fmi2_hasBaseUnit(self, unit):
-        return self.hdll.fmi2_hasBaseUnit(self.fmu, unit)
+        return self.hdll.fmi2_hasBaseUnit(unit)
 
-    def fmi2_getBaseUnit(self, unit, factor, offset, kg, m, s, A, K, mol, cd, rad):
-        return self.hdll.fmi2_getBaseUnit(self.fmu, unit, factor, offset, kg, m, s, A, K, mol, cd, rad)
+    def fmi2_getBaseUnit(self, unit):
+        factor = ct.c_double()
+        offset = ct.c_double()
+        kg = ct.c_int()
+        m = ct.c_int()
+        s = ct.c_int()
+        A = ct.c_int()
+        K = ct.c_int()
+        mol = ct.c_int()
+        cd = ct.c_int()
+        rad = ct.c_int()
+        self.hdll.fmi2_getBaseUnit(unit, ct.byref(factor), ct.byref(offset), ct.byref(kg), ct.byref(m), ct.byref(s), ct.byref(A), ct.byref(K), ct.byref(mol), ct.byref(cd), ct.byref(rad))
+        return (factor.value, offset.value, kg.value, m.value, s.value, A.value, K.value, mol.value, cd.value, rad.value)
 
     def fmi2_getNumberOfDisplayUnits(self, unit):
-        return self.hdll.fmi2_getNumberOfDisplayUnits(self.fmu, unit)
+        return self.hdll.fmi2_getNumberOfDisplayUnits(unit)
 
-    def fmi2_getDisplayUnitByIndex(self, unit, id, name, factor, offset):
-        return self.hdll.fmi2_getDisplayUnitByIndex(self.fmu, unit, id, name, factor, offset)
+    def fmi2_getDisplayUnitByIndex(self, unit, id):
+        name = ct.c_char_p()
+        factor = ct.c_double()
+        offset = ct.c_double()
+        self.hdll.fmi2_getDisplayUnitByIndex(unit, id, ct.byref(name), ct.byref(factor), ct.byref(offset))
+        return (name.value.decode(), factor.value, offset.value)
 
-    def fmi2_getReal(self, valueReferences,  nValueReferences, values):
-        return self.hdll.fmi2_getReal(self.fmu, valueReferences,  nValueReferences, values)
+    def fmi2_getReal(self, valueReferences, nValueReferences):
+        uint_array_type = ct.c_uint * nValueReferences
+        double_array_type = ct.c_double * nValueReferences
+        valueReferencesArray = uint_array_type(1,2)
+        valuesArray = double_array_type()
+        success = self.hdll.fmi2_getReal(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        return [success, list(valuesArray)]
 
-    def fmi2_getInteger(self, valueReferences,  nValueReferences, values):
-        return self.hdll.fmi2_getInteger(self.fmu, valueReferences,  nValueReferences, values)
+    def fmi2_getInteger(self, valueReferences, nValueReferences):
+        uint_array_type = ct.c_uint * nValueReferences
+        double_array_type = ct.c_int * nValueReferences
+        valueReferencesArray = uint_array_type(*valueReferences)
+        valuesArray = double_array_type(*[1]*nValueReferences)
+        success = self.hdll.fmi2_getInteger(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        return [success, list(valuesArray)]
 
-    def fmi2_getBoolean(self, valueReferences,  nValueReferences,  values):
-        return self.hdll.fmi2_getBoolean(self.fmu, valueReferences,  nValueReferences,  values)
+    def fmi2_getBoolean(self, valueReferences, nValueReferences):
+        uint_array_type = ct.c_uint * nValueReferences
+        double_array_type = ct.c_bool * nValueReferences
+        valueReferencesArray = uint_array_type(*valueReferences)
+        valuesArray = double_array_type(*[1]*nValueReferences)
+        success = self.hdll.fmi2_getBoolean(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        return [success, list(valuesArray)]
 
-    def fmi2_getString(self, valueReferences,  nValueReferences, values):
-        return self.hdll.fmi2_getString(self.fmu, valueReferences,  nValueReferences, values)
+    def fmi2_getString(self, valueReferences, nValueReferences):
+        uint_array_type = ct.c_uint * nValueReferences
+        double_array_type = ct.c_char_p * nValueReferences
+        valueReferencesArray = uint_array_type(*valueReferences)
+        valuesArray = double_array_type(*[1]*nValueReferences)
+        success = self.hdll.fmi2_getString(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        return [success, list(valuesArray)]
 
     def fmi2_setReal(self, valueReferences,  nValueReferences, values):
-        return self.hdll.fmi2_setReal(self.fmu, valueReferences,  nValueReferences, values)
+        uint_array_type = ct.c_uint * nValueReferences
+        double_array_type = ct.c_double * nValueReferences
+        valueReferencesArray = uint_array_type(*valueReferences)
+        valuesArray = double_array_type(*values)
+        return self.hdll.fmi2_setReal(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
 
-    def fmi2_setInteger(self, valueReferences,  nValueReferences,  values):
-        return self.hdll.fmi2_setInteger(self.fmu, valueReferences,  nValueReferences,  values)
+    def fmi2_setInteger(self, valueReferences, nValueReferences, values):
+        uint_array_type = ct.c_uint * nValueReferences
+        double_array_type = ct.c_int * nValueReferences
+        valueReferencesArray = uint_array_type(*valueReferences)
+        valuesArray = double_array_type(*values)
+        return self.hdll.fmi2_setInteger(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
 
-    def fmi2_setBoolean(self, valueReferences,  nValueReferences, values):
-        return self.hdll.fmi2_setBoolean(self.fmu, valueReferences,  nValueReferences, values)
+    def fmi2_setBoolean(self, valueReferences, nValueReferences, values):
+        uint_array_type = ct.c_uint * nValueReferences
+        double_array_type = ct.c_bool * nValueReferences
+        valueReferencesArray = uint_array_type(*valueReferences)
+        valuesArray = double_array_type(*values)
+        return self.hdll.fmi2_setBoolean(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
 
-    def fmi2_setString(self, valueReferences,  nValueReferences, values):
-        return self.hdll.fmi2_setString(self.fmu, valueReferences,  nValueReferences, values)
+    def fmi2_setString(self, valueReferences, nValueReferences, values):
+        uint_array_type = ct.c_uint * nValueReferences
+        double_array_type = ct.c_char_p * nValueReferences
+        valueReferencesArray = uint_array_type(*valueReferences)
+        valuesArray = double_array_type(*values)
+        return self.hdll.fmi2_setString(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
 
     def fmi2_getFMUstate(self, FMUstate):
         return self.hdll.fmi2_getFMUstate(self.fmu, FMUstate)

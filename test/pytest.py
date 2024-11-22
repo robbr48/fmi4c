@@ -496,7 +496,8 @@ verificationDict =	{
     "fmiVersion2": "2.0",
     "fmiType": "fmi1ModelExchange",
     "modelName": "fmi2",
-    "modelIdentifier": "fmi2",
+    "modelIdentifierCs": "fmi2",
+    "modelIdentifierMe": "fmi2",
     "numberOfContinuousStates": 1,
     "guid": "123",
     "description": "Integrator (dx = der(x))",
@@ -537,17 +538,20 @@ verificationDict =	{
     "numberOfBaseUnits": 2,
     "units": ['rad/s', 'm/s'],
     "numberOfDisplayUnits": [2, 1],
-    "displayUnitUnits": [['deg/s', 'r/min'], ['km/h']],
-    "numberOfBaseUnits": 2,
-    "units": ['rad/s', 'm/s'],
+    "displayUnits": [[('mm', 0.001, 0.0), ('km', 1000.0, 0.0)], [('km/h', 3.6, 0.0)]],
+    "numberOfUnits": 2,
+    "unitNames": ['rad/s', 'm/s'],
+    "baseUnits": [(1.0, 0.0, 0, 1, 0, 0, 0, 0, 0, 0), (1.0, 0.0, 0, 1, -1, 0, 0, 0, 0, 0)],
     "numberOfDisplayUnits": [2, 1],
     "displayUnitUnits": [['deg/s', 'r/min'], ['km/h']],
     "variableStartValues": [0.0, 1.0],
     "typesPlatform": "default",
-    "version": "1.0",
+    "version": "0.1",
     "instantiateSuccess": True,
+    "setupExperimentSuccess": 0,
     "setDebugLoggingSuccess": 0,
-    "initializeSuccess": 0,
+    "enterInitializationModeSuccess": 0,
+    "exitInitializationModeSuccess": 0,
     "setRealSuccess": 0,
     "doStepSuccess": 0,
     "getRealResults": [0, [5.0, 0.25]],
@@ -559,7 +563,20 @@ verificationDict =	{
     "completedIntegratorStepSuccess": 0,
     "terminateSuccess": 0,
     "resetSuccess": 0,
-    "setTimeSuccess": 0
+    "setTimeSuccess": 0,
+    "canHandleVariableCommunicationStepSize": True,
+    "canInterpolateInputs": False,
+    "maxOutputDerivativeOrder": 0,
+    "canRunAsynchronously": False,
+    "needsExecutionTool": False,
+    "canBeInstantiatedOnlyOncePerProcess": False,
+    "canNotUseMemoryManagementFunctions": False,
+    "canGetAndSetFMUState": False,
+    "canSerializeFMUState": False,
+    "providesDirectionalDerivative": False,
+    "completedIntegratorStepNotNeeded": False,
+    "supportsCoSimulation": True,
+    "supportsModelExchange": True,
 }
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi2.fmu", "testfmu")
 if not success:
@@ -578,31 +595,28 @@ verify("fmiVersion2", fmiVersion2)
 guid = f.fmi2_getGuid()
 verify("guid", guid)
 
-author = f.fmi2_getAuthor().decode()
+author = f.fmi2_getAuthor()
 verify("author", author)
 
-generationTool = f.fmi2_getGenerationTool().decode()
+generationTool = f.fmi2_getGenerationTool()
 verify("generationTool", generationTool)
 
-generationDateAndTime = f.fmi2_getGenerationDateAndTime().decode()
+generationDateAndTime = f.fmi2_getGenerationDateAndTime()
 verify("generationDateAndTime", generationDateAndTime)
 #
-modelName = f.fmi2_getModelName().decode()
+modelName = f.fmi2_getModelName()
 verify("modelName", modelName)
 
-description = f.fmi2_getModelDescription().decode()
+description = f.fmi2_getModelDescription()
 verify("description", description)
 
-modelIdentifier = f.fmi2_getModelIdentifier().decode()
-verify("modelIdentifier", modelIdentifier)
-
-copyright = f.fmi2_getCopyright().decode()
+copyright = f.fmi2_getCopyright()
 verify("copyright", copyright)
 
-license = f.fmi2_getLicense().decode()
+license = f.fmi2_getLicense()
 verify("license", license)
 
-variableNamingConvention = f.fmi2_getVariableNamingConvention().decode()
+variableNamingConvention = f.fmi2_getVariableNamingConvention()
 verify("variableNamingConvention", variableNamingConvention)
 
 defaultStartTimeDefined = f.fmi2_defaultStartTimeDefined()
@@ -690,16 +704,141 @@ verify("variablesHaveStartValues", variablesHaveStartValues)
 verify("variableDataTypes", variableDataTypes)
 verify("variablesCanHandleMultipleSetPerTimeInstant", variablesCanHandleMultipleSetPerTimeInstant)
 
-instantiateSuccess = f.fmi2_instantiate(0, False, False)    # 0 = model exchange
+variableStartValues = []
+for i in range(numberOfVariables):
+    var = f.fmi2_getVariableByIndex(i)
+    if f.fmi2_getVariableHasStartValue(var):
+        if f.fmi2_getVariableDataType(var) == "fmi2DataTypeReal":
+            variableStartValues.append(f.fmi2_getVariableStartReal(var))
+        if f.fmi2_getVariableDataType(var) == "fmi2DataTypeInteger":
+            variableStartValues.append(f.fmi2_getVariableStartInteger(var))
+        if f.fmi2_getVariableDataType(var) == "fmi2DataTypeBoolean":
+            variableStartValues.append(f.fmi2_getVariableStartBoolean(var))
+        if f.fmi2_getVariableDataType(var) == "fmi2DataTypeString":
+            variableStartValues.append(f.fmi2_getVariableStartString(var))
+verify("variableStartValues", variableStartValues)
+
+numberOfUnits = f.fmi2_getNumberOfUnits()   
+verify("numberOfUnits", numberOfUnits)
+ 
+unitNames = []
+baseUnits = []
+numberOfDisplayUnits = []
+displayUnits = []
+for i in range(numberOfUnits):
+    unit = f.fmi2_getUnitByIndex(i)
+    unitNames.append(f.fmi2_getUnitName(unit))
+    if(f.fmi2_hasBaseUnit(unit)):
+        baseUnits.append(f.fmi2_getBaseUnit(unit))
+    numberOfDisplayUnits.append(f.fmi2_getNumberOfDisplayUnits(unit))  
+    tempUnits = []
+    for j in range(numberOfDisplayUnits[-1]):    
+        tempUnits.append(f.fmi2_getDisplayUnitByIndex(unit, j))
+    displayUnits.append(tempUnits)
+verify("unitNames", units)
+verify("baseUnits", baseUnits)
+verify("numberOfDisplayUnits", numberOfDisplayUnits)
+verify("displayUnits", displayUnits)
+
+verify("modelIdentifierCs", f.fmi2cs_getModelIdentifier())
+
+verify("canHandleVariableCommunicationStepSize", f.fmi2cs_getCanHandleVariableCommunicationStepSize())
+verify("canInterpolateInputs", f.fmi2cs_getCanInterpolateInputs())
+verify("maxOutputDerivativeOrder", f.fmi2cs_getMaxOutputDerivativeOrder())
+verify("canRunAsynchronously", f.fmi2cs_getCanRunAsynchronuously())
+verify("needsExecutionTool", f.fmi2cs_getNeedsExecutionTool())
+verify("canBeInstantiatedOnlyOncePerProcess", f.fmi2cs_getCanBeInstantiatedOnlyOncePerProcess())
+verify("canNotUseMemoryManagementFunctions", f.fmi2cs_getCanNotUseMemoryManagementFunctions())
+verify("canGetAndSetFMUState", f.fmi2cs_getCanGetAndSetFMUState())
+verify("canSerializeFMUState", f.fmi2cs_getCanSerializeFMUState())
+verify("providesDirectionalDerivative", f.fmi2cs_getProvidesDirectionalDerivative())
+
+
+
+verify("modelIdentifierMe", f.fmi2me_getModelIdentifier())
+
+verify("completedIntegratorStepNotNeeded", f.fmi2me_getCompletedIntegratorStepNotNeeded())
+verify("needsExecutionTool", f.fmi2me_getNeedsExecutionTool())
+verify("canBeInstantiatedOnlyOncePerProcess", f.fmi2me_getCanBeInstantiatedOnlyOncePerProcess())
+verify("canNotUseMemoryManagementFunctions", f.fmi2me_getCanNotUseMemoryManagementFunctions()) 
+verify("canGetAndSetFMUState", f.fmi2me_getCanGetAndSetFMUState())
+verify("canSerializeFMUState", f.fmi2me_getCanSerializeFMUState())
+verify("providesDirectionalDerivative", f.fmi2me_getProvidesDirectionalDerivative())
+
+verify("numberOfContinuousStates", f.fmi2_getNumberOfContinuousStates())
+verify("numberOfEventIndicators", f.fmi2_getNumberOfEventIndicators())
+verify("supportsCoSimulation", f.fmi2_getSupportsCoSimulation())
+verify("supportsModelExchange", f.fmi2_getSupportsModelExchange())
+
+instantiateSuccess = f.fmi2_instantiate(1, False, False)    # 1 = co-simulation
 verify("instantiateSuccess", instantiateSuccess)
 
 typesPlatform = f.fmi2_getTypesPlatform()
 verify("typesPlatform", typesPlatform)
 
+version = f.fmi2_getVersion()
+verify("version", version)
+
+f.fmi2_freeInstance()
+
+verify("setupExperimentSuccess", f.fmi2_setupExperiment(True, 1e-5, 0, True, 2))
+
+verify("enterInitializationModeSuccess", f.fmi2_enterInitializationMode())
+verify("exitInitializationModeSuccess", f.fmi2_exitInitializationMode())
+
+verify("setRealSuccess", f.fmi2_setReal([1], 1, [5]))
+
+verify("doStepSuccess", f.fmi2_doStep(0,0.1,True))
+
+verify("getRealResults", f.fmi2_getReal([1, 2],2))
+
+verify("terminateSuccess", f.fmi2_terminate())
+verify("resetSuccess", f.fmi2_reset())
 
 f.fmi4c_freeFmu()
-     
+
+#Untested FMI2 functions:
+#fmi2_getVariableByValueReference
+#fmi2_getVariableByName
+#fmi2_getVariableStartReal
+#fmi2_getVariableStartInteger
+#fmi2_getVariableStartBoolean
+#fmi2_getVariableStartString
+#fmi2_setDebugLogging
+#fmi2_getInteger
+#fmi2_getBoolean
+#fmi2_getString
+#fmi2_setInteger
+#fmi2_setBoolean
+#fmi2_setString
+#fmi2_getFMUstate
+#fmi2_setFMUstate
+#fmi2_freeFMUstate
+#fmi2_serializedFMUstateSize
+#fmi2_serializeFMUstate
+#fmi2_deSerializeFMUstate
+#fmi2_getDirectionalDerivative
+#fmi2_enterEventMode
+#fmi2_newDiscreteStates
+#fmi2_enterContinuousTimeMode
+#fmi2_completedIntegratorStep
+#fmi2_setTime
+#fmi2_setContinuousStates
+#fmi2_getDerivatives
+#fmi2_getEventIndicators
+#fmi2_getContinuousStates
+#fmi2_getNominalsOfContinuousStates
+#fmi2_setRealInputDerivatives
+#fmi2_getRealOutputDerivatives
+#fmi2_cancelStep
+#fmi2_getStatus
+#fmi2_getRealStatus
+#fmi2_getIntegerStatus
+#fmi2_getBooleanStatus
+#fmi2_getStringStatus
+
+    
 print("")      
 print("All tests were successful!")
              
-exit(0)      
+exit(0)

@@ -11,7 +11,7 @@
   generationTool="None"
   generationDateAndTime="2009-12-08T14:33:22Z"
   variableNamingConvention="flat"  
-  numberOfEventIndicators="1">
+  numberOfEventIndicators="0">
 <CoSimulation modelIdentifier="fmi2" canHandleVariableCommunicationStepSize="true"/>
 <ModelExchange modelIdentifier="fmi2"/>
 <UnitDefinitions>
@@ -22,7 +22,7 @@
     </Unit>
     <Unit name="m/s">
         <BaseUnit m="1" s="-1"/>
-        <DisplayUnit name="km/h" factir="3.6"/>
+        <DisplayUnit name="km/h" factor="3.6"/>
     </Unit>
 </UnitDefinitions>
 <DefaultExperiment startTime="0.0" stopTime="3.0" tolerance="0.0001", stepSize="0.002"/>
@@ -31,7 +31,7 @@
      <Real start="0.0" derivative="2" unit="m/s"/>
   </ScalarVariable>
   <ScalarVariable name="x" valueReference="2" causality="output" initial="exact" description="x">
-     <Real start="0.0" unit="m"/>
+     <Real start="1.0" unit="m"/>
   </ScalarVariable> 
 </ModelVariables>
 <ModelStructure/>
