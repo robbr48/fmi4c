@@ -58,7 +58,18 @@ endif()
 set(SRCFILES
     src/fmi4c.c
     src/fmi4c_utils.c
-    3rdparty/ezxml/ezxml.c)
+    3rdparty/ezxml/ezxml.c
+    include/fmi4c.h
+    include/fmi4c_public.h
+    include/fmi4c_common.h
+    include/fmi4c_types.h
+    include/fmi4c_types_fmi1.h
+    include/fmi4c_types_fmi2.h
+    include/fmi4c_types_fmi3.h
+    include/fmi4c_functions_fmi1.h
+    include/fmi4c_functions_fmi2.h
+    include/fmi4c_functions_fmi3.h
+    src/fmi4c_private.h)
 
 if(NOT FMI4C_USE_EXTERNAL_MINIZIP)
     if (NOT FMI4C_USE_SYSTEM_ZIP)
