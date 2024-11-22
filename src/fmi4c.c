@@ -525,7 +525,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             unit.displayUnits = NULL;
             parseStringAttributeEzXmlAndRememberPointer(unitElement, "name", &unit.name, fmu);
             unit.numberOfDisplayUnits = 0;
-            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
+            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->ordered) {
                 if(!strcmp(unitSubElement->name, "BaseUnit")) {
                     unit.baseUnit = mallocAndRememberPointer(fmu, sizeof(fmi2BaseUnitHandle));
                     unit.baseUnit->kg = 0;
@@ -557,15 +557,15 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
                 unit.displayUnits = mallocAndRememberPointer(fmu, unit.numberOfDisplayUnits*sizeof(fmi2DisplayUnitHandle));
             }
             int j=0;
-            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
+            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->ordered) {
                 if(!strcmp(unitSubElement->name, "DisplayUnit")) {
                     unit.displayUnits[j].factor = 1;
                     unit.displayUnits[j].offset = 0;
                     parseStringAttributeEzXmlAndRememberPointer(unitSubElement,  "name",      &unit.displayUnits[j].name, fmu);
                     parseFloat64AttributeEzXml(unitSubElement, "factor",    &unit.displayUnits[j].factor);
                     parseFloat64AttributeEzXml(unitSubElement, "offset",    &unit.displayUnits[j].offset);
+                    ++j;
                 }
-                ++j;
             }
             fmu->fmi2.units[i] = unit;
             ++i;
@@ -2695,7 +2695,7 @@ return 0;
 
 int fmi2_getNumberOfDisplayUnits(fmi2UnitHandle *unit)
 {
-return unit->numberOfDisplayUnits;
+    return unit->numberOfDisplayUnits;
 }
 
 void fmi2_getDisplayUnitByIndex(fmi2UnitHandle *unit, int id, const char **name, double *factor, double *offset)
