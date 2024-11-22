@@ -494,7 +494,6 @@ eventInfo = f.fmi1EventInfo(False, False, False, True, 0.0)
 verificationDict =	{
     "fmiVersion": "fmiVersion2",
     "fmiVersion2": "2.0",
-    "fmiType": "fmi1ModelExchange",
     "modelName": "fmi2",
     "modelIdentifierCs": "fmi2",
     "modelIdentifierMe": "fmi2",
@@ -535,21 +534,18 @@ verificationDict =	{
     "variablesHaveStartValues": [True, True],
     "variableDataTypes": ["fmi2DataTypeReal", "fmi2DataTypeReal"],
     "variablesCanHandleMultipleSetPerTimeInstant": [False, False],
-    "numberOfBaseUnits": 2,
-    "units": ['rad/s', 'm/s'],
     "numberOfDisplayUnits": [2, 1],
     "displayUnits": [[('mm', 0.001, 0.0), ('km', 1000.0, 0.0)], [('km/h', 3.6, 0.0)]],
     "numberOfUnits": 2,
     "unitNames": ['rad/s', 'm/s'],
     "baseUnits": [(1.0, 0.0, 0, 1, 0, 0, 0, 0, 0, 0), (1.0, 0.0, 0, 1, -1, 0, 0, 0, 0, 0)],
-    "numberOfDisplayUnits": [2, 1],
     "displayUnitUnits": [['deg/s', 'r/min'], ['km/h']],
     "variableStartValues": [0.0, 1.0],
     "typesPlatform": "default",
     "version": "0.1",
     "instantiateSuccess": True,
-    "setupExperimentSuccess": 0,
     "setDebugLoggingSuccess": 0,
+    "setupExperimentSuccess": 0,
     "enterInitializationModeSuccess": 0,
     "exitInitializationModeSuccess": 0,
     "setRealSuccess": 0,
@@ -557,10 +553,10 @@ verificationDict =	{
     "getRealResults": [0, [5.0, 0.25]],
     "getDerivativesSuccess": [0, [0.0]],
     "getStateValueReferencesSuccess": [0, [2]],
-    "getNominalContinuousStatesSuccess": [0, [1.0]],
+    "getNominalsOfContinuousStatesSuccess": [0, [1.0]],
     "setContinuousStatesSuccess": 0,
     "getContinuousStatesSuccess": [0, [42.0]],
-    "completedIntegratorStepSuccess": 0,
+    "completedIntegratorStepSuccess": (0, False, False),
     "terminateSuccess": 0,
     "resetSuccess": 0,
     "setTimeSuccess": 0,
@@ -603,7 +599,7 @@ verify("generationTool", generationTool)
 
 generationDateAndTime = f.fmi2_getGenerationDateAndTime()
 verify("generationDateAndTime", generationDateAndTime)
-#
+
 modelName = f.fmi2_getModelName()
 verify("modelName", modelName)
 
@@ -779,7 +775,8 @@ verify("typesPlatform", typesPlatform)
 version = f.fmi2_getVersion()
 verify("version", version)
 
-f.fmi2_freeInstance()
+setDebugLoggingSuccess = f.fmi2_setDebugLogging(False, 0, None)
+verify("setDebugLoggingSuccess", setDebugLoggingSuccess) 
 
 verify("setupExperimentSuccess", f.fmi2_setupExperiment(True, 1e-5, 0, True, 2))
 
@@ -792,8 +789,42 @@ verify("doStepSuccess", f.fmi2_doStep(0,0.1,True))
 
 verify("getRealResults", f.fmi2_getReal([1, 2],2))
 
-verify("terminateSuccess", f.fmi2_terminate())
+#verify("terminateSuccess", f.fmi2_terminate())
 verify("resetSuccess", f.fmi2_reset())
+
+#f.fmi2_freeInstance()
+
+instantiateSuccess = f.fmi2_instantiate(0, False, False)    #1 = model exchange
+verify("instantiateSuccess", instantiateSuccess)
+
+verify("enterInitializationModeSuccess", f.fmi2_enterInitializationMode())
+verify("exitInitializationModeSuccess", f.fmi2_exitInitializationMode())
+
+setTimeSuccess = f.fmi2_setTime(0.5)
+verify("setTimeSuccess", setTimeSuccess)
+
+getDerivativesSuccess = f.fmi2_getDerivatives([1],1)
+verify("getDerivativesSuccess", getDerivativesSuccess)
+
+#getStateValueReferencesSuccess = f.fmi2_getStateValueReferences(1)
+#verify("getStateValueReferencesSuccess", getStateValueReferencesSuccess)
+
+getNominalsOfContinuousStatesSuccess = f.fmi2_getNominalsOfContinuousStates([1],1)
+verify("getNominalsOfContinuousStatesSuccess", getNominalsOfContinuousStatesSuccess)
+
+setContinuousStatesSuccess = f.fmi2_setContinuousStates([42], 1)
+verify("setContinuousStatesSuccess", setContinuousStatesSuccess)
+
+getContinuousStatesSuccess = f.fmi2_getContinuousStates([1],1)
+verify("getContinuousStatesSuccess", getContinuousStatesSuccess)
+
+completedIntegratorStepSuccess = f.fmi2_completedIntegratorStep(False)
+verify("completedIntegratorStepSuccess", completedIntegratorStepSuccess)
+
+terminateSuccess = f.fmi2_terminate()
+verify("terminateSuccess", terminateSuccess)
+
+f.fmi2_freeInstance()
 
 f.fmi4c_freeFmu()
 
@@ -804,7 +835,6 @@ f.fmi4c_freeFmu()
 #fmi2_getVariableStartInteger
 #fmi2_getVariableStartBoolean
 #fmi2_getVariableStartString
-#fmi2_setDebugLogging
 #fmi2_getInteger
 #fmi2_getBoolean
 #fmi2_getString
@@ -821,13 +851,7 @@ f.fmi4c_freeFmu()
 #fmi2_enterEventMode
 #fmi2_newDiscreteStates
 #fmi2_enterContinuousTimeMode
-#fmi2_completedIntegratorStep
-#fmi2_setTime
-#fmi2_setContinuousStates
-#fmi2_getDerivatives
 #fmi2_getEventIndicators
-#fmi2_getContinuousStates
-#fmi2_getNominalsOfContinuousStates
 #fmi2_setRealInputDerivatives
 #fmi2_getRealOutputDerivatives
 #fmi2_cancelStep
@@ -837,6 +861,95 @@ f.fmi4c_freeFmu()
 #fmi2_getBooleanStatus
 #fmi2_getStringStatus
 
+
+#Test FMI2
+     
+print("")     
+print("###################")
+print("## Testing FMI 3 ##")           
+print("###################")
+print("")
+        
+#eventInfo = f.fmi3EventInfo(False, False, False, True, 0.0)
+
+verificationDict =	{
+    "fmiVersion": "fmiVersion3",
+    "modelName": "fmi3",
+    "instantiationToken": "123",
+    "description": "Integrator (dx = der(x))",
+    "author": "Robert Braun",
+    "copyright": "N/A",
+    "license": "N/A",
+    "variableNamingConvention": "flat",
+    "generationTool": "None",
+    "generationDateAndTime": "2009-12-08T14:33:22Z",
+    "defaultStartTimeDefined": True,
+    "defaultStopTimeDefined": True,
+    "defaultToleranceDefined": True,
+    "defaultStepSizeDefined": True,
+    "defaultStartTime": 0.0,
+    "defaultStopTime": 3.0,
+    "defaultTolerance": 0.0001,
+    "defaultStepSize": 0.002,
+    "version": "0.1",
+    "supportsCoSimulation": True,
+    "supportsModelExchange": True,
+    "supportsScheduledExecution": False
+}
+success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi3.fmu", "testfmu")
+if not success:
+    print("Failed to load fmi3.fmu")
+    print(f.fmi4c_getErrorMessages())
+    exit(1)
+else:
+    print("Successfully loaded fmi3.fmu")
+
+verify("fmiVersion", f.fmi4c_getFmiVersion())
+
+verify("modelName", f.fmi3_modelName())
+
+verify("instantiationToken", f.fmi3_instantiationToken())
+
+verify("description", f.fmi3_description())
+
+verify("author", f.fmi3_author())
+
+#Must instantiate first
+#verify("version", f.fmi3_version())
+
+verify("copyright", f.fmi3_copyright())
+
+verify("license", f.fmi3_license())
+
+verify("generationTool", f.fmi3_generationTool())
+
+verify("generationDateAndTime", f.fmi3_generationDateAndTime())
+
+verify("variableNamingConvention", f.fmi3_variableNamingConvention())
+
+verify("supportsModelExchange", f.fmi3_supportsModelExchange())
+
+verify("supportsScheduledExecution", f.fmi3_supportsScheduledExecution())
+
+verify("supportsCoSimulation", f.fmi3_supportsCoSimulation())
+
+verify("defaultStartTimeDefined", f.fmi3_defaultStartTimeDefined())
+
+verify("defaultStopTimeDefined", f.fmi3_defaultStopTimeDefined())
+
+verify("defaultToleranceDefined", f.fmi3_defaultToleranceDefined())
+
+verify("defaultStepSizeDefined", f.fmi3_defaultStepSizeDefined())
+
+verify("defaultStartTime", f.fmi3_getDefaultStartTime())
+
+verify("defaultStopTime", f.fmi3_getDefaultStopTime())
+
+verify("defaultTolerance", f.fmi3_getDefaultTolerance())
+
+verify("defaultStepSize", f.fmi3_getDefaultStepSize())
+
+f.fmi4c_freeFmu()
     
 print("")      
 print("All tests were successful!")

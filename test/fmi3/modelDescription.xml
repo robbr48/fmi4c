@@ -4,9 +4,16 @@
   modelName="fmi3" 
   description="Integrator (dx = der(x))" 
   author="Robert Braun" 
-  instantiationToken="123">
+  instantiationToken="123"
+  copyright="N/A"
+  license="N/A"
+  generationTool="None"
+  generationDateAndTime="2009-12-08T14:33:22Z"
+  variableNamingConvention="flat"  
+  numberOfEventIndicators="0">
 	<CoSimulation modelIdentifier="fmi3" providesIntermediateUpdate="false" canHandleVariableCommunicationStepSize="true" hasEventMode="false"/>
 	<ModelExchange modelIdentifier="fmi3"/>
+    <DefaultExperiment startTime="0.0" stopTime="3.0" tolerance="0.0001", stepSize="0.002"/>
 	<ModelVariables>
 		<Float64 name="dx" valueReference="1" description="Derivative of x" variability="continuous" causality="input" start="0.0"/>
 		<Float64 name="x" valueReference="2" description="x" variability="continuous" causality="output" start="0.0"/>
