@@ -1638,6 +1638,22 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                var.datatype == fmi3DataTypeBinary ||
                var.datatype == fmi3DataTypeEnumeration) {
                 const char* initial = NULL;
+                var.initial = fmi3InitialUndefined;
+                if(var.variability == fmi3VariabilityConstant && (var.causality == fmi3CausalityOutput || var.causality == fmi3CausalityLocal)) {
+                    var.initial = fmi3InitialExact;
+                }
+                else if(var.causality == fmi3CausalityOutput || var.causality == fmi3CausalityLocal) {
+                    var.initial = fmi3InitialCalculated;
+                }
+                else if (var.causality == fmi3CausalityStructuralParameter || var.causality == fmi3CausalityParameter) {
+                    var.initial = fmi3InitialExact;
+                }
+                else if(var.causality == fmi3CausalityCalculatedParameter) {
+                    var.initial = fmi3InitialCalculated;
+                }
+                else if(var.causality == fmi3CausalityInput) {
+                    var.initial = fmi3InitialExact;
+                }
                 parseStringAttributeEzXml(varElement, "initial", &initial);
                 if(initial && !strcmp(initial, "approx")) {
                     var.initial = fmi3InitialApprox;
