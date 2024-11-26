@@ -927,6 +927,22 @@ verificationDict =	{
     "modelStructureInitialUnknownDependency": (1, True),
     "numberOfModelStructureClockedStates": 0,
     "numberOfModelStructureEventIndicators": 0,
+    "modelIdentifier": "fmi3",
+    "needsExecutionTool": False,
+    "canBeInstantiatedOnlyOncePerProcess": False,
+    "canGetAndSetFMUState": False,
+    "canSerializeFMUState": False,
+    "providesDirectionalDerivative": False,
+    "providesAdjointDerivatives": False,
+    "providesPerElementDependencies": False,
+    "providesIntermediateUpdate": False,
+    "providesEvaluateDiscreteStates": False,
+    "hasEventMode": False,
+    "recommendedIntermediateInputSmoothness": 0,
+    "maxOutputDerivativeOrder": 0,
+    "canHandleVariableCommunicationStepSize": True,
+    "canReturnEarlyAfterIntermediateUpdate": False,
+    "fixedInternalStepSize": 0,
 }   
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi3.fmu", "testfmu")
 if not success:
@@ -1073,6 +1089,23 @@ verify("modelStructureInitialUnknown", f.fmi3_getModelStructureInitialUnknown(0)
 verify("modelStructureInitialUnknownDependency", f.fmi3_getModelStructureInitialUnknownDependency(0, 0))
 verify("numberOfModelStructureClockedStates", f.fmi3_getNumberOfModelStructureClockedStates());
 verify("numberOfModelStructureEventIndicators", f.fmi3_getNumberOfModelStructureEventIndicators());
+
+verify("modelIdentifier", f.fmi3cs_getModelIdentifier())
+verify("needsExecutionTool", f.fmi3cs_getNeedsExecutionTool())
+verify("canBeInstantiatedOnlyOncePerProcess", f.fmi3cs_getCanBeInstantiatedOnlyOncePerProcess())
+verify("canGetAndSetFMUState", f.fmi3cs_getCanGetAndSetFMUState())
+verify("canSerializeFMUState", f.fmi3cs_getCanSerializeFMUState())
+verify("providesDirectionalDerivative", f.fmi3cs_getProvidesDirectionalDerivative())
+verify("providesAdjointDerivatives", f.fmi3cs_getProvidesAdjointDerivatives())
+verify("providesPerElementDependencies", f.fmi3cs_getProvidesPerElementDependencies())
+verify("providesIntermediateUpdate", f.fmi3cs_getProvidesIntermediateUpdate())
+verify("providesEvaluateDiscreteStates", f.fmi3cs_getProvidesEvaluateDiscreteStates())
+verify("hasEventMode", f.fmi3cs_getHasEventMode())
+verify("recommendedIntermediateInputSmoothness", f.fmi3cs_getRecommendedIntermediateInputSmoothness())
+verify("maxOutputDerivativeOrder", f.fmi3cs_getMaxOutputDerivativeOrder())
+verify("canHandleVariableCommunicationStepSize", f.fmi3cs_getCanHandleVariableCommunicationStepSize())
+verify("canReturnEarlyAfterIntermediateUpdate", f.fmi3cs_getCanReturnEarlyAfterIntermediateUpdate())
+verify("fixedInternalStepSize", f.fmi3cs_getFixedInternalStepSize()),
 
 #Not tested
 
