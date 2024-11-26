@@ -13,10 +13,24 @@
   numberOfEventIndicators="0">
 	<CoSimulation modelIdentifier="fmi3" providesIntermediateUpdate="false" canHandleVariableCommunicationStepSize="true" hasEventMode="false"/>
 	<ModelExchange modelIdentifier="fmi3"/>
+    <UnitDefinitions>
+        <Unit name="m">
+            <BaseUnit m="1"/>
+            <DisplayUnit name="mm" factor="0.001"/>
+            <DisplayUnit name="km" factor="1000"/>
+        </Unit>
+        <Unit name="m/s">
+            <BaseUnit m="1" s="-1"/>
+            <DisplayUnit name="km/h" factor="3.6"/>
+        </Unit>
+    </UnitDefinitions>
+    <TypeDefinitions>
+        <Float64Type name="PositiveSpeed" description="Speed that can only be positive" quantity="Velocity" unit="m/s" min="0.0"/>
+    </TypeDefinitions>
     <DefaultExperiment startTime="0.0" stopTime="3.0" tolerance="0.0001", stepSize="0.002"/>
 	<ModelVariables>
-		<Float64 name="dx" valueReference="1" description="Derivative of x" variability="continuous" causality="input" start="0.0"/>
-		<Float64 name="x" valueReference="2" description="x" variability="continuous" causality="output" start="0.0"/>
+		<Float64 name="dx" valueReference="1" description="Derivative of x" variability="continuous" causality="input" start="0.0" quantity="Velocity" unit="m/s" displayUnit="km/h"/>
+		<Float64 name="x" valueReference="2" description="x" variability="continuous" causality="output" start="1.0" quantity="Position" unit="m" displayUnit="km"/>
 	</ModelVariables>
 	<ModelStructure/>
 </fmiModelDescription>
