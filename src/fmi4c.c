@@ -1013,7 +1013,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         fmu->fmi3.numberOfBinaryTypes = 0;
         fmu->fmi3.numberOfEnumerationTypes = 0;
         fmu->fmi3.numberOfClockTypes = 0;
-        for(ezxml_t typeElement = typeDefinitionsElement->child; typeElement; typeElement = typeElement->next) {
+        for(ezxml_t typeElement = typeDefinitionsElement->child; typeElement; typeElement = typeElement->ordered) {
             if(!strcmp(typeElement->name, "Float64Type")) {
                 ++fmu->fmi3.numberOfFloat64Types;
             }
@@ -1124,7 +1124,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         int iBinary = 0;
         int iEnum = 0;
         int iClock = 0;
-        for(ezxml_t typeElement = typeDefinitionsElement->child; typeElement; typeElement = typeElement->next) {
+        for(ezxml_t typeElement = typeDefinitionsElement->child; typeElement; typeElement = typeElement->ordered) {
             if(!strcmp(typeElement->name, "Float64Type")) {
                 fmu->fmi3.float64Types[iFloat64].name = "";
                 fmu->fmi3.float64Types[iFloat64].description = "";
