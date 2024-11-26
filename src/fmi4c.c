@@ -1834,7 +1834,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
 
         //Read initial unknowns
         i=0;
-        initialUnknownElement = ezxml_child(modelStructureElement, "IninitalUnknown");
+        initialUnknownElement = ezxml_child(modelStructureElement, "InitialUnknown");
         for(;initialUnknownElement;initialUnknownElement = initialUnknownElement->next) {
             if(!parseModelStructureElement(&fmu->fmi3.initialUnknowns[i], &initialUnknownElement)) {
                 return false;
