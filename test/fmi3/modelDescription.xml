@@ -27,10 +27,18 @@
     <TypeDefinitions>
         <Float64Type name="PositiveSpeed" description="Speed that can only be positive" quantity="Velocity" unit="m/s" min="0.0"/>
     </TypeDefinitions>
+    <LogCategories>
+		<Category name="logStatusError" description="Log error messages"/>
+        <Category name="logStatusWarning" description="Log warning messages"/>
+	</LogCategories>
     <DefaultExperiment startTime="0.0" stopTime="3.0" tolerance="0.0001", stepSize="0.002"/>
 	<ModelVariables>
 		<Float64 name="dx" valueReference="1" description="Derivative of x" variability="continuous" causality="input" start="0.0" quantity="Velocity" unit="m/s" displayUnit="km/h"/>
 		<Float64 name="x" valueReference="2" description="x" variability="continuous" causality="output" start="1.0" quantity="Position" unit="m" displayUnit="km"/>
 	</ModelVariables>
-	<ModelStructure/>
+	<ModelStructure>
+        <Output valueReference="2"/>
+        <ContinuousStateDerivative valueReference="1"/>
+        <InitialUnknown valueReference="2" dependencies="1"/>
+  </ModelStructure>
 </fmiModelDescription>
