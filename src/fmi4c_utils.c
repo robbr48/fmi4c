@@ -251,98 +251,102 @@ bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, uint8_
 
 bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *element)
 {
+    parseUInt32AttributeEzXml(*element, "valueReference", &output->valueReference);
+
+    output->dependencyKindsDefined = false; //Default value
+
     //Count number of dependencies
     output->numberOfDependencies = 0;
     const char* dependencies = NULL;
     if(parseStringAttributeEzXml(*element, "dependencies", &dependencies)) {
 
-        if(dependencies == NULL || dependencies[0] == '\0') {
-            //If dependencies is empty, no need to parse further
-            return true;
-        }
+        if(dependencies != NULL && dependencies[0] != '\0') {
 
-        //Duplicate the dependencies string to make it mutable
-        char* nonConstDependencies = _strdup(dependencies);
-        free((char*)dependencies);
 
-        if (nonConstDependencies == NULL) {
-            return false; //strdup failed, handle as an error
-        }
+            //Duplicate the dependencies string to make it mutable
+            char* nonConstDependencies = _strdup(dependencies);
+            free((char*)dependencies);
 
-        //Count the number of dependencies based on space-delimited tokens
-        output->numberOfDependencies = 1;
-        for(int i=0; nonConstDependencies[i]; ++i) {
-            if(nonConstDependencies[i] == ' ') {
-                ++output->numberOfDependencies;
+            if (nonConstDependencies == NULL) {
+                return false; //strdup failed, handle as an error
             }
-        }
 
-
-        //Allocate memory for dependencies
-        output->dependencies = malloc(output->numberOfDependencies*sizeof(fmi3ValueReference));
-
-        //Read dependencies
-        const char* delim = " ";
-        for(int j=0; j<output->numberOfDependencies; ++j) {
-            if(j == 0) {
-                output->dependencies[j] = atoi(strtok(nonConstDependencies, delim));
+            //Count the number of dependencies based on space-delimited tokens
+            output->numberOfDependencies = 1;
+            for(int i=0; nonConstDependencies[i]; ++i) {
+                if(nonConstDependencies[i] == ' ') {
+                    ++output->numberOfDependencies;
+                }
             }
-            else {
-                output->dependencies[j] =  atoi(strtok(NULL, delim));
-            }
-        }
 
-        //Parse depenendency kinds element if present
-        const char* dependencyKinds = NULL;
-        parseStringAttributeEzXml(*element, "dependencyKinds", &dependencyKinds);
-        if(dependencyKinds) {
-            char* nonConstDependencyKinds = _strdup(dependencyKinds);
-            free((char*)dependencyKinds);
 
-            //Allocate memory for dependencies (assume same number as dependencies, according to FMI3 specification)
+            //Allocate memory for dependencies
             output->dependencies = malloc(output->numberOfDependencies*sizeof(fmi3ValueReference));
 
-            //Read dependency kinds
+            //Read dependencies
+            const char* delim = " ";
             for(int j=0; j<output->numberOfDependencies; ++j) {
-                const char* kind;
                 if(j == 0) {
-                    kind = strtok(nonConstDependencyKinds, delim);
+                    output->dependencies[j] = atoi(strtok(nonConstDependencies, delim));
                 }
                 else {
-                    kind = strtok(NULL, delim);
-                }
-
-                if(!strcmp(kind, "independent")) {
-                    fmi4cErrorMessage = _strdup("Dependency kind = \"independent\" is not allowed for output dependencies.");
-                    free(nonConstDependencyKinds);
-                    free(nonConstDependencies);
-                    return false;
-                }
-                else if(!strcmp(kind, "constant")) {
-                    output->dependencyKinds[j] = fmi3Constant;
-                }
-                else if(!strcmp(kind, "fixed")) {
-                    output->dependencyKinds[j] = fmi3Fixed;
-                }
-                else if(!strcmp(kind, "tunable")) {
-                    output->dependencyKinds[j] = fmi3Tunable;
-                }
-                else if(!strcmp(kind, "discrete")) {
-                    output->dependencyKinds[j] = fmi3Discrete;
-                }
-                else if(!strcmp(kind, "dependent")) {
-                    output->dependencyKinds[j] = fmi3Dependent;
-                }
-                else {
-                    fmi4cErrorMessage = _strdup("Unknown dependency kind for output dependency.");
-                    free(nonConstDependencyKinds);
-                    free(nonConstDependencies);
-                    return false;
+                    output->dependencies[j] =  atoi(strtok(NULL, delim));
                 }
             }
-            free(nonConstDependencyKinds);
+
+            //Parse depenendency kinds element if present
+            const char* dependencyKinds = NULL;
+            parseStringAttributeEzXml(*element, "dependencyKinds", &dependencyKinds);
+            if(dependencyKinds) {
+                output->dependencyKindsDefined = true;
+                char* nonConstDependencyKinds = _strdup(dependencyKinds);
+                free((char*)dependencyKinds);
+
+                //Allocate memory for dependencies (assume same number as dependencies, according to FMI3 specification)
+                output->dependencies = malloc(output->numberOfDependencies*sizeof(fmi3ValueReference));
+
+                //Read dependency kinds
+                for(int j=0; j<output->numberOfDependencies; ++j) {
+                    const char* kind;
+                    if(j == 0) {
+                        kind = strtok(nonConstDependencyKinds, delim);
+                    }
+                    else {
+                        kind = strtok(NULL, delim);
+                    }
+
+                    if(!strcmp(kind, "independent")) {
+                        fmi4cErrorMessage = _strdup("Dependency kind = \"independent\" is not allowed for output dependencies.");
+                        free(nonConstDependencyKinds);
+                        free(nonConstDependencies);
+                        return false;
+                    }
+                    else if(!strcmp(kind, "constant")) {
+                        output->dependencyKinds[j] = fmi3Constant;
+                    }
+                    else if(!strcmp(kind, "fixed")) {
+                        output->dependencyKinds[j] = fmi3Fixed;
+                    }
+                    else if(!strcmp(kind, "tunable")) {
+                        output->dependencyKinds[j] = fmi3Tunable;
+                    }
+                    else if(!strcmp(kind, "discrete")) {
+                        output->dependencyKinds[j] = fmi3Discrete;
+                    }
+                    else if(!strcmp(kind, "dependent")) {
+                        output->dependencyKinds[j] = fmi3Dependent;
+                    }
+                    else {
+                        fmi4cErrorMessage = _strdup("Unknown dependency kind for output dependency.");
+                        free(nonConstDependencyKinds);
+                        free(nonConstDependencies);
+                        return false;
+                    }
+                }
+                free(nonConstDependencyKinds);
+            }
+            free(nonConstDependencies);
         }
-        free(nonConstDependencies);
     }
 
     return true;
