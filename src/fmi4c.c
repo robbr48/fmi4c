@@ -1402,6 +1402,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             var.displayUnit = NULL;
             var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
             var.startBinary = NULL;
+            var.intermediateUpdate = false;
 
             parseStringAttributeEzXmlAndRememberPointer(varElement, "name", &var.name, fmu);
             parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
