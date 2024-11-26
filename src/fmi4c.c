@@ -978,7 +978,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                 unit.displayUnits = mallocAndRememberPointer(fmu, unit.numberOfDisplayUnits*sizeof(fmi3DisplayUnitHandle));
             }
             int j=0;
-            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
+            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->ordered) {
                 if(!strcmp(unitSubElement->name, "DisplayUnit")) {
                     unit.displayUnits[j].factor = 1;
                     unit.displayUnits[j].offset = 0;
@@ -987,8 +987,8 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
                     parseFloat64AttributeEzXml(unitSubElement, "factor",    &unit.displayUnits[j].factor);
                     parseFloat64AttributeEzXml(unitSubElement, "offset",    &unit.displayUnits[j].offset);
                     parseBooleanAttributeEzXml(unitSubElement, "inverse",   &unit.displayUnits[j].inverse);
+                    ++j;
                 }
-                ++j;
             }
             fmu->fmi3.units[i] = unit;
             ++i;
