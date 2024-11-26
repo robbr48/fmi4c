@@ -249,7 +249,7 @@ bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, uint8_
     return false;
 }
 
-bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *element)
+bool parseModelStructureElement(fmiHandle *fmu, fmi3ModelStructureElement *output, ezxml_t *element)
 {
     parseUInt32AttributeEzXml(*element, "valueReference", &output->valueReference);
 
@@ -281,7 +281,7 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
 
 
             //Allocate memory for dependencies
-            output->dependencies = malloc(output->numberOfDependencies*sizeof(fmi3ValueReference));
+            output->dependencies = mallocAndRememberPointer(fmu, output->numberOfDependencies*sizeof(fmi3ValueReference));
 
             //Read dependencies
             const char* delim = " ";
