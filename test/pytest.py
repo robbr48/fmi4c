@@ -894,7 +894,28 @@ verificationDict =	{
     "version": "0.1",
     "supportsCoSimulation": True,
     "supportsModelExchange": True,
-    "supportsScheduledExecution": False
+    "supportsScheduledExecution": False,
+    "numberOfVariables": 2,
+    "variableNames": ['dx', 'x'],
+    "variableValueReferences": [1, 2],
+    "variableDescriptions": ['Derivative of x', 'x'],
+    "variableCausalities": ['fmi3CausalityInput', 'fmi3CausalityOutput'],
+    "variableVariabilities": ['fmi3VariabilityContinuous', 'fmi3VariabilityContinuous'],
+    "variableInitials": ['fmi3InitialExact', 'fmi3InitialCalculated'],
+    "variablesSupportsIntermediateUpdate": [False, False],
+    "variableDataTypes": ["fmi3DataTypeFloat64", "fmi3DataTypeFloat64"],
+    "variableQuantities": ['Velocity', 'Position'],
+    "variableUnits": ['m/s', 'm'],
+    "variableDisplayUnits": ['km/h', 'km'],
+    "variablesHaveStartValues": [True, True],
+    "variableStartValues": [0.0, 1.0],
+    "numberOfUnits": 2,
+    "unitNames": ['rad/s', 'm/s'],
+    "baseUnits": [(1.0, 0.0, 0, 1, 0, 0, 0, 0, 0, 0), (1.0, 0.0, 0, 1, -1, 0, 0, 0, 0, 0)],
+    "numberOfDisplayUnits": [2, 1],
+    "displayUnits": [[('mm', 0.001, 0.0, False), ('km', 1000.0, 0.0, False)], [('km/h', 3.6, 0.0, False)]],
+    "displayUnitUnits": [['deg/s', 'r/min'], ['km/h']],
+    "float64type": ('Speed that can only be positive', 'Velocity', 'm/s', '', False, False, 0.0, 1.7976931348623157e+308, 1.0)
 }
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi3.fmu", "testfmu")
 if not success:
@@ -948,6 +969,124 @@ verify("defaultStopTime", f.fmi3_getDefaultStopTime())
 verify("defaultTolerance", f.fmi3_getDefaultTolerance())
 
 verify("defaultStepSize", f.fmi3_getDefaultStepSize())
+
+verify("numberOfVariables", f.fmi3_getNumberOfVariables())
+
+variableNames = []
+variableDescriptions = []
+variableValueReferences = []
+variableCausalities = []
+variableVariabilities = []
+variableInitials = []
+variablesSupportsIntermediateUpdate = []
+variableDataTypes = []
+variableQuantities = []
+variableUnits = []
+variableDisplayUnits = []
+variablesHaveStartValues = []
+variableStartValues = []
+
+for i in range(numberOfVariables):
+    var = f.fmi3_getVariableByIndex(i)
+    variableNames.append(f.fmi3_getVariableName(var))
+    variableValueReferences.append(f.fmi3_getVariableValueReference(var))
+    variableDescriptions.append(f.fmi3_getVariableDescription(var))
+    variableCausalities.append(f.fmi3_getVariableCausality(var))
+    variableVariabilities.append(f.fmi3_getVariableVariability(var))
+    variableInitials.append(f.fmi3_getVariableInitial(var))
+    variablesSupportsIntermediateUpdate.append(f.fmi3_getVariableSupportsIntermediateUpdate(var))
+    variableDataTypes.append(f.fmi3_getVariableDataType(var))
+    variableQuantities.append(f.fmi3_getVariableQuantity(var))
+    variableUnits.append(f.fmi3_getVariableUnit(var))
+    variableDisplayUnits.append(f.fmi3_getVariableDisplayUnit(var))
+    variablesHaveStartValues.append(f.fmi3_getVariableHasStartValue(var))
+    if f.fmi3_getVariableHasStartValue(var):
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeFloat64":
+            variableStartValues.append(f.fmi3_getVariableStartFloat64(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeFloat32":
+            variableStartValues.append(f.fmi3_getVariableStartFloat32(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeInt64":
+            variableStartValues.append(f.fmi3_getVariableStartInt64(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeInt32":
+            variableStartValues.append(f.fmi3_getVariableStartInt32(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeInt16":
+            variableStartValues.append(f.fmi3_getVariableStartInt16(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeInt8":
+            variableStartValues.append(f.fmi3_getVariableStartInt8(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeUInt64":
+            variableStartValues.append(f.fmi3_getVariableStartUInt64(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeUInt32":
+            variableStartValues.append(f.fmi3_getVariableStartUInt32(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeUInt16":
+            variableStartValues.append(f.fmi3_getVariableStartUInt16(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeUInt8":
+            variableStartValues.append(f.fmi3_getVariableStartUInt8(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeBoolean":
+            variableStartValues.append(f.fmi3_getVariableStartBoolean(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeString":
+            variableStartValues.append(f.fmi3_getVariableStartString(var))
+        if f.fmi3_getVariableDataType(var) == "fmi3DataTypeBinary":
+            variableStartValues.append(f.fmi3_getVariableStartBinary(var))
+
+verify("variableNames", variableNames)
+verify("variableValueReferences", variableValueReferences)
+verify("variableDescriptions", variableDescriptions)
+verify("variableCausalities", variableCausalities)
+verify("variableVariabilities", variableVariabilities)
+verify("variableInitials", variableInitials)
+verify("variablesSupportsIntermediateUpdate", variablesSupportsIntermediateUpdate)
+verify("variableDataTypes", variableDataTypes)
+verify("variableQuantities", variableQuantities)
+verify("variableUnits", variableUnits)
+verify("variableDisplayUnits", variableDisplayUnits)
+verify("variableStartValues", variableStartValues)
+
+numberOfUnits = f.fmi3_getNumberOfUnits()   
+verify("numberOfUnits", numberOfUnits)
+ 
+unitNames = []
+baseUnits = []
+numberOfDisplayUnits = []
+displayUnits = []
+for i in range(numberOfUnits):
+    unit = f.fmi3_getUnitByIndex(i)
+    unitNames.append(f.fmi3_getUnitName(unit))
+    if(f.fmi3_hasBaseUnit(unit)):
+        baseUnits.append(f.fmi3_getBaseUnit(unit))
+    numberOfDisplayUnits.append(f.fmi3_getNumberOfDisplayUnits(unit))  
+    tempUnits = []
+    for j in range(numberOfDisplayUnits[-1]):    
+        tempUnits.append(f.fmi3_getDisplayUnitByIndex(unit, j))
+    displayUnits.append(tempUnits)
+verify("unitNames", units)
+verify("baseUnits", baseUnits)
+verify("numberOfDisplayUnits", numberOfDisplayUnits)
+verify("displayUnits", displayUnits)
+
+verify("float64type", f.fmi3_getFloat64Type("PositiveSpeed"))
+
+#Not tested
+
+#FMI4C_DLLAPI fmi3VariableHandle* fmi3_getVariableByName(fmiHandle *fmu, fmi3String name);
+#FMI4C_DLLAPI fmi3VariableHandle* fmi3_getVariableByValueReference(fmiHandle *fmu, fmi3ValueReference vr);
+
+#FMI4C_DLLAPI void fmi3_getFloat32Type(fmiHandle* fmu, const char* name, const char** description, const char** quantity, const char** unit, const char** displayUnit, bool *relativeQuantity, bool *unbounded, float *min, float *max, float *nominal);
+#FMI4C_DLLAPI void fmi3_getInt64Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, int64_t* min, int64_t* max);
+#FMI4C_DLLAPI void fmi3_getInt32Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, int32_t* min, int32_t* max);
+#FMI4C_DLLAPI void fmi3_getInt16Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, int16_t* min, int16_t* max);
+#FMI4C_DLLAPI void fmi3_getInt8Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, int8_t* min, int8_t* max);
+#FMI4C_DLLAPI void fmi3_getUInt64Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, uint64_t* min, uint64_t* max);
+#FMI4C_DLLAPI void fmi3_getUInt32Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, uint32_t* min, uint32_t* max);
+#FMI4C_DLLAPI void fmi3_getUInt16Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, uint16_t* min, uint16_t* max);
+#FMI4C_DLLAPI void fmi3_getUInt8Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, uint8_t* min, uint8_t* max);
+#FMI4C_DLLAPI void fmi3_getBooleanType(fmiHandle *fmu, const char *name, const char **description);
+#FMI4C_DLLAPI void fmi3_getStringType(fmiHandle *fmu, const char *name, const char **description);
+#FMI4C_DLLAPI void fmi3_getBinaryType(fmiHandle *fmu, const char *name, const char **description, const char **mimeType, uint32_t *maxSize);
+#FMI4C_DLLAPI void fmi3_getEnumerationType(fmiHandle *fmu, const char *name, const char **description, const char **quantity, int64_t *min, int64_t *max, int *numberOfItems);
+#FMI4C_DLLAPI void fmi3_getEnumerationItem(fmiHandle *fmu, const char *typeName, int itemId, const char **itemName, int64_t *value, const char **description);
+#FMI4C_DLLAPI void fmi3_getClockType(fmiHandle *fmu, const char *name, const char **description, bool *canBeDeactivated, uint32_t *priority, fmi3IntervalVariability *intervalVariability, float *intervalDecimal, float *shiftDecimal, bool *supportsFraction, uint64_t *resolution, uint64_t *intervalCounter, uint64_t *shiftCounter);
+
+
 
 f.fmi4c_freeFmu()
     

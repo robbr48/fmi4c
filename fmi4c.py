@@ -497,6 +497,112 @@ class fmi4c:
         self.hdll.fmi3_getDefaultStepSize.restype = ct.c_double 
         self.hdll.fmi3_getDefaultStepSize.argtypes = ct.c_void_p,
 
+        self.hdll.fmi3_getNumberOfVariables.restype = ct.c_int 
+        self.hdll.fmi3_getNumberOfVariables.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableByName.restype = ct.c_void_p
+        self.hdll.fmi3_getVariableByName.argtypes = ct.c_void_p,ct.c_char_p,
+        self.hdll.fmi3_getVariableByIndex.restype = ct.c_void_p 
+        self.hdll.fmi3_getVariableByIndex.argtypes = ct.c_void_p,ct.c_int,
+        self.hdll.fmi3_getVariableByValueReference.restype = ct.c_void_p
+        self.hdll.fmi3_getVariableByValueReference.argtypes = ct.c_void_p, ct.c_uint,
+        self.hdll.fmi3_getVariableName.restype = ct.c_char_p 
+        self.hdll.fmi3_getVariableName.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableCausality.restype = ct.c_int 
+        self.hdll.fmi3_getVariableCausality.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableVariability.restype = ct.c_int
+        self.hdll.fmi3_getVariableVariability.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableInitial.restype = ct.c_int
+        self.hdll.fmi3_getVariableInitial.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableSupportsIntermediateUpdate.restype = ct.c_bool
+        self.hdll.fmi3_getVariableSupportsIntermediateUpdate.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableDataType.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableDescription.restype = ct.c_char_p
+        self.hdll.fmi3_getVariableDescription.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableQuantity.restype = ct.c_char_p
+        self.hdll.fmi3_getVariableQuantity.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableUnit.restype = ct.c_char_p
+        self.hdll.fmi3_getVariableUnit.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableDisplayUnit.restype = ct.c_char_p
+        self.hdll.fmi3_getVariableDisplayUnit.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableHasStartValue.restype = ct.c_bool 
+        self.hdll.fmi3_getVariableHasStartValue.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartFloat64.restype = ct.c_double 
+        self.hdll.fmi3_getVariableStartFloat64.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartFloat32.restype = ct.c_float 
+        self.hdll.fmi3_getVariableStartFloat32.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartInt64.restype = ct.c_int64
+        self.hdll.fmi3_getVariableStartInt64.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartInt32.restype = ct.c_int32 
+        self.hdll.fmi3_getVariableStartInt32.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartInt16.restype = ct.c_int16
+        self.hdll.fmi3_getVariableStartInt16.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartInt8.restype = ct.c_int8 
+        self.hdll.fmi3_getVariableStartInt8.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartUInt64.restype = ct.c_uint64
+        self.hdll.fmi3_getVariableStartUInt64.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartUInt32.restype = ct.c_uint32 
+        self.hdll.fmi3_getVariableStartUInt32.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartUInt16.restype = ct.c_uint16
+        self.hdll.fmi3_getVariableStartUInt16.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartUInt8.restype = ct.c_uint8 
+        self.hdll.fmi3_getVariableStartUInt8.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartBoolean.restype = ct.c_bool 
+        self.hdll.fmi3_getVariableStartBoolean.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartString.restype = ct.c_char_p 
+        self.hdll.fmi3_getVariableStartString.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableStartBinary.restype = ct.POINTER(ct.c_uint8)
+        self.hdll.fmi3_getVariableStartBinary.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getVariableValueReference.restype = ct.c_uint 
+        self.hdll.fmi3_getVariableValueReference.argtypes = ct.c_void_p,
+
+        self.hdll.fmi3_getNumberOfUnits.restype = ct.c_int 
+        self.hdll.fmi3_getNumberOfUnits.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getUnitByIndex.restype = ct.c_void_p
+        self.hdll.fmi3_getUnitByIndex.argtypes = ct.c_void_p, ct.c_int,
+        self.hdll.fmi3_getUnitName.restype = ct.c_char_p
+        self.hdll.fmi3_getUnitName.argtypes = ct.c_void_p,
+        self.hdll.fmi3_hasBaseUnit.restype = ct.c_bool
+        self.hdll.fmi3_hasBaseUnit.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getBaseUnit.restype = None 
+        self.hdll.fmi3_getBaseUnit.argtypes = ct.c_void_p,ct.POINTER(ct.c_double),ct.POINTER(ct.c_double),ct.POINTER(ct.c_int),ct.POINTER(ct.c_int),ct.POINTER(ct.c_int),ct.POINTER(ct.c_int),ct.POINTER(ct.c_int),ct.POINTER(ct.c_int),ct.POINTER(ct.c_int),ct.POINTER(ct.c_int),
+        self.hdll.fmi3_getNumberOfDisplayUnits.restype = ct.c_int 
+        self.hdll.fmi3_getNumberOfDisplayUnits.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getDisplayUnitByIndex.restype = None 
+        self.hdll.fmi3_getDisplayUnitByIndex.argtypes = ct.c_void_p, ct.c_int, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_double), ct.POINTER(ct.c_double), ct.POINTER(ct.c_bool),
+
+        self.hdll.fmi3_getFloat64Type.restype = None 
+        self.hdll.fmi3_getFloat64Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_bool), ct.POINTER(ct.c_bool), ct.POINTER(ct.c_double), ct.POINTER(ct.c_double), ct.POINTER(ct.c_double),
+        self.hdll.fmi3_getFloat32Type.restype = None 
+        self.hdll.fmi3_getFloat32Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_bool), ct.POINTER(ct.c_bool), ct.POINTER(ct.c_float), ct.POINTER(ct.c_float), ct.POINTER(ct.c_float),
+        self.hdll.fmi3_getInt64Type.restype = None 
+        self.hdll.fmi3_getInt64Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_int64), ct.POINTER(ct.c_int64),
+        self.hdll.fmi3_getInt32Type.restype = None 
+        self.hdll.fmi3_getInt32Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_int32), ct.POINTER(ct.c_int32),
+        self.hdll.fmi3_getInt16Type.restype = None 
+        self.hdll.fmi3_getInt16Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_int16), ct.POINTER(ct.c_int16),
+        self.hdll.fmi3_getInt8Type.restype = None 
+        self.hdll.fmi3_getInt8Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_int8), ct.POINTER(ct.c_int8),
+        self.hdll.fmi3_getUInt64Type.restype = None 
+        self.hdll.fmi3_getUInt64Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_uint64), ct.POINTER(ct.c_uint64),
+        self.hdll.fmi3_getUInt32Type.restype = None 
+        self.hdll.fmi3_getUInt32Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_uint32), ct.POINTER(ct.c_uint32),
+        self.hdll.fmi3_getUInt16Type.restype = None 
+        self.hdll.fmi3_getUInt16Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_uint16), ct.POINTER(ct.c_uint16),
+        self.hdll.fmi3_getUInt8Type.restype = None 
+        self.hdll.fmi3_getUInt8Type.argtypes = ct.c_void_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_uint8), ct.POINTER(ct.c_uint8),
+        self.hdll.fmi3_getBooleanType.restype = None 
+        self.hdll.fmi3_getBooleanType.argtypes = ct.c_void_p, ct.c_char_p, ct.c_char_p,
+        self.hdll.fmi3_getStringType.restype = None 
+        self.hdll.fmi3_getStringType.argtypes = ct.c_void_p, ct.c_char_p, ct.c_char_p,
+        self.hdll.fmi3_getBinaryType.restype = None 
+        self.hdll.fmi3_getBinaryType.argtypes = ct.c_void_p, ct.c_char_p, ct.c_char_p, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_uint32),
+        self.hdll.fmi3_getEnumerationType.restype = None 
+        self.hdll.fmi3_getEnumerationType.argtypes = ct.c_void_p, ct.c_char_p, ct.c_char_p, ct.c_char_p, ct.POINTER(ct.c_int64), ct.POINTER(ct.c_int64), ct.POINTER(ct.c_int),
+        self.hdll.fmi3_getEnumerationItem.restype = None 
+        self.hdll.fmi3_getEnumerationItem.argtypes = ct.c_void_p, ct.c_char_p, ct.c_int, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_int64), ct.POINTER(ct.c_char_p),
+        self.hdll.fmi3_getClockType.restype = None 
+        self.hdll.fmi3_getClockType.argtypes = ct.c_void_p, ct.c_char_p, ct.c_char_p, ct.POINTER(ct.c_bool), ct.POINTER(ct.c_uint32), ct.c_void_p, ct.POINTER(ct.c_float), ct.POINTER(ct.c_float), ct.POINTER(ct.c_bool), ct.POINTER(ct.c_uint64), ct.POINTER(ct.c_uint64), ct.POINTER(ct.c_uint64),
+
     def translateFmiVersion(self, version):
         match version:
             case 0:
@@ -553,6 +659,11 @@ class fmi4c:
     fmi2VariabilityStrings = ["fmi2VariabilityFixed", "fmi2VariabilityTunable", "fmi2VariabilityConstant", "fmi2VariabilityDiscrete", "fmi2VariabilityContinuous"]
     fmi2InitialStrings = ["fmi2InitialExact", "fmi2InitialApprox", "fmi2InitialCalculated", "fmi2InitialUnknown"]
     
+    fmi3CausalityStrings = ["fmi3CausalityInput", "fmi3CausalityOutput", "fmi3CausalityParameter", "fmi3CausalityCalculatedParameter", "fmi3CausalityLocal", "fmi3CausalityIndependent", "fmi3CausalityStructuralParameter"]
+    fmi3VariabilityStrings = ["fmi3VariabilityFixed", "fmi3VariabilityTunable", "fmi3VariabilityConstant", "fmi3VariabilityDiscrete", "fmi3VariabilityContinuous"]
+    fmi3InitialStrings = ["fmi3InitialExact", "fmi3InitialApprox", "fmi3InitialCalculated"]
+    fmi3DataTypeStrings = ["fmi3DataTypeFloat64", "fmi3DataTypeFloat32", "fmi3DataTypeInt64", "fmi3DataTypeInt32", "fmi3DataTypeInt16", "fmi3DataTypeInt8", "fmi3DataTypeUInt64", "fmi3DataTypeUInt32", "fmi3DataTypeUInt16", "fmi3DataTypeUInt8", "fmi3DataTypeBoolean", "fmi3DataTypeString", "fmi3DataTypeBinary", "fmi3DataTypeEnumeration", "fmi3DataTypeClock"]
+    
     def fmi4c_getFmiVersion(self):
         return self.translateFmiVersion(self.hdll.fmi4c_getFmiVersion(self.fmu))
 
@@ -600,7 +711,7 @@ class fmi4c:
         else:
             return ret.decode()
 
-    def fmi1_getGenerationDateAndTime(self):
+    def fmi1_getGenerationDateAndTime(self):         
         ret = self.hdll.fmi1_getGenerationDateAndTime(self.fmu)
         if ret is None:
             return ""
@@ -1446,3 +1557,277 @@ class fmi4c:
 
     def fmi3_getDefaultStepSize(self):
         return self.hdll.fmi3_getDefaultStepSize(self.fmu)
+
+
+    def fmi3_getNumberOfVariables(self):
+        return self.hdll.fmi3_getNumberOfVariables(self.fmu)
+
+    def fmi3_getVariableByName(self, name):
+        return self.hdll.fmi3_getVariableByName(self.fmu, name)
+
+    def fmi3_getVariableByIndex(self, i):
+        return self.hdll.fmi3_getVariableByIndex(self.fmu, i)
+
+    def fmi3_getVariableByValueReference(self, vr):
+        return self.hdll.fmi3_getVariableByValueReference(self.fmu, vr)
+
+    def fmi3_getVariableName(self, var):
+        return self.hdll.fmi3_getVariableName(var).decode()
+
+    def fmi3_getVariableCausality(self, var):
+        return self.fmi3CausalityStrings[self.hdll.fmi3_getVariableCausality(var)]
+
+    def fmi3_getVariableVariability(self, var):
+        return self.fmi3VariabilityStrings[self.hdll.fmi3_getVariableVariability(var)]
+
+    def fmi3_getVariableInitial(self, var):
+        return self.fmi3InitialStrings[self.hdll.fmi3_getVariableInitial(var)]
+
+    def fmi3_getVariableSupportsIntermediateUpdate(self, var):
+        return self.hdll.fmi3_getVariableSupportsIntermediateUpdate(var)
+
+    def fmi3_getVariableDataType(self, var):
+        return self.fmi3DataTypeStrings[self.hdll.fmi3_getVariableDataType(var)]
+
+    def fmi3_getVariableDescription(self, var):
+        return self.hdll.fmi3_getVariableDescription(var).decode()
+
+    def fmi3_getVariableQuantity(self, var):
+        ret = self.hdll.fmi3_getVariableQuantity(var)
+        if ret is None:
+            return ""
+        else:
+            return ret.decode()    
+
+    def fmi3_getVariableUnit(self, var):
+        ret = self.hdll.fmi3_getVariableUnit(var)
+        if ret is None:
+            return ""
+        else:
+            return ret.decode()  
+
+    def fmi3_getVariableDisplayUnit(self, var):
+        ret = self.hdll.fmi3_getVariableDisplayUnit(var)
+        if ret is None:
+            return ""
+        else:
+            return ret.decode()  
+
+    def fmi3_getVariableHasStartValue(self, var):
+        return self.hdll.fmi3_getVariableHasStartValue(var)
+
+    def fmi3_getVariableStartFloat64(self, var):
+        return self.hdll.fmi3_getVariableStartFloat64(var)
+
+    def fmi3_getVariableStartFloat32(self, var):
+        return self.hdll.fmi3_getVariableStartFloat32(var)  
+
+    def fmi3_getVariableStartInt64(self, var):
+        return self.hdll.fmi3_getVariableStartInt64(var)
+
+    def fmi3_getVariableStartInt32(self, var):
+        return self.hdll.fmi3_getVariableStartInt32(var)
+
+    def fmi3_getVariableStartInt16(self, var):
+        return self.hdll.fmi3_getVariableStartInt16(var)
+
+    def fmi3_getVariableStartInt8(self, var):
+        return self.hdll.fmi3_getVariableStartInt8(var)
+
+    def fmi3_getVariableStartUInt64(self, var):
+        return self.hdll.fmi3_getVariableStartUInt64(var)
+
+    def fmi3_getVariableStartUInt32(self, var):
+        return self.hdll.fmi3_getVariableStartUInt32(var)
+
+    def fmi3_getVariableStartUInt16(self, var):
+        return self.hdll.fmi3_getVariableStartUInt16(var)
+
+    def fmi3_getVariableStartUInt8(self, var):
+        return self.hdll.fmi3_getVariableStartUInt8(var)
+
+    def fmi3_getVariableStartBoolean(self, var):
+        return self.hdll.fmi3_getVariableStartBoolean(var)
+
+    def fmi3_getVariableStartString(self, var):
+        return self.hdll.fmi3_getVariableStartString(var)
+
+    def fmi3_getVariableStartBinary(self, var):
+        return self.hdll.fmi3_getVariableStartBinary(var)
+
+    def fmi3_getVariableValueReference(self, var):
+        return self.hdll.fmi3_getVariableValueReference(var)
+
+    def fmi3_getNumberOfUnits(self):
+        return self.hdll.fmi3_getNumberOfUnits(self.fmu)
+
+    def fmi3_getUnitByIndex(self, i):
+        return self.hdll.fmi3_getUnitByIndex(self.fmu, i)
+
+    def fmi3_getUnitName(self, unit):
+        return self.hdll.fmi3_getUnitName(unit)
+
+    def fmi3_hasBaseUnit(self, unit):
+        return self.hdll.fmi3_hasBaseUnit(unit)
+        
+    def fmi3_getBaseUnit(self, unit):
+        factor = ct.c_double()
+        offset = ct.c_double()
+        kg = ct.c_int()
+        m = ct.c_int()
+        s = ct.c_int()
+        A = ct.c_int()
+        K = ct.c_int()
+        mol = ct.c_int()
+        cd = ct.c_int()
+        rad = ct.c_int()
+        self.hdll.fmi3_getBaseUnit(unit, ct.byref(factor), ct.byref(offset), ct.byref(kg), ct.byref(m), ct.byref(s), ct.byref(A), ct.byref(K), ct.byref(mol), ct.byref(cd), ct.byref(rad))
+        return (factor.value, offset.value, kg.value, m.value, s.value, A.value, K.value, mol.value, cd.value, rad.value)
+    
+    def fmi3_getNumberOfDisplayUnits(self, unit):
+        return self.hdll.fmi3_getNumberOfDisplayUnits(unit)
+    
+    def fmi3_getDisplayUnitByIndex(self, unit, id):
+        name = ct.c_char_p()
+        factor = ct.c_double()
+        offset = ct.c_double()
+        inverse = ct.c_bool()
+        self.hdll.fmi3_getDisplayUnitByIndex(unit, id, ct.byref(name), ct.byref(factor), ct.byref(offset), ct.byref(inverse))
+        return (name.value.decode(), factor.value, offset.value, inverse.value)
+
+    def fmi3_getFloat64Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        unit = ct.c_char_p()
+        displayUnit = ct.c_char_p()
+        relativeQuantity = ct.c_bool()
+        unbounded = ct.c_bool()
+        min = ct.c_double()
+        max = ct.c_double()
+        nominal = ct.c_double()
+        self.hdll.fmi3_getFloat64Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(unit), ct.byref(displayUnit), ct.byref(relativeQuantity), ct.byref(unbounded), ct.byref(min), ct.byref(max), ct.byref(nominal))
+        return (description.value.decode(), quantity.value.decode(), unit.value.decode(), displayUnit.value.decode(), relativeQuantity.value, unbounded.value, min.value, max.value, nominal.value)
+  
+    def fmi3_getFloat32Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        unit = ct.c_char_p()
+        displayUnit = ct.c_char_p()
+        relativeQuantity = ct.c_bool()
+        unbounded = ct.c_bool()
+        min = ct.c_float()
+        max = ct.c_float()
+        nominal = ct.c_float()
+        self.hdll.fmi3_getFloat32Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(unit), ct.byref(displayUnit), ct.byref(relativeQuantity), ct.byref(unbounded), ct.byref(min), ct.byref(max), ct.byref(nominal))
+        return (description.value.decode(), quantity.value.decode(), unit.value.decode(), displayUnit.value.decode(), relativeQuantity.value, unbounded.value, min.value, max.value, nominal.value)
+  
+    def fmi3_getInt64Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        min = ct.c_int64()
+        max = ct.c_int64()
+        self.hdll.fmi3_getInt64Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max))
+        return (description.value.decode(), quantity.value.decode(), unbounded.value, min.value, max.value)
+
+    def fmi3_getInt32Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        min = ct.c_int32()
+        max = ct.c_int32()
+        self.hdll.fmi3_getInt32Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max))
+        return (description.value.decode(), quantity.value.decode(), unbounded.value, min.value, max.value)
+        
+    def fmi3_getInt16Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        min = ct.c_int16()
+        max = ct.c_int16()
+        self.hdll.fmi3_getInt16Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max))
+        return (description.value.decode(), quantity.value.decode(), unbounded.value, min.value, max.value)
+
+    def fmi3_getInt8Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        min = ct.c_int8()
+        max = ct.c_int8()
+        self.hdll.fmi3_getInt8Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max))
+        return (description.value.decode(), quantity.value.decode(), unbounded.value, min.value, max.value)
+
+    def fmi3_getUInt64Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        min = ct.c_uint64()
+        max = ct.c_uint64()
+        self.hdll.fmi3_getUInt64Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max))
+        return (description.value.decode(), quantity.value.decode(), unbounded.value, min.value, max.value)
+
+    def fmi3_getUInt32Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        min = ct.c_uint32()
+        max = ct.c_uint32()
+        self.hdll.fmi3_getUInt32Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max))
+        return (description.value.decode(), quantity.value.decode(), unbounded.value, min.value, max.value)
+
+    def fmi3_getUInt16Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        min = ct.c_uint16()
+        max = ct.c_uint16()
+        self.hdll.fmi3_getUInt16Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max))
+        return (description.value.decode(), quantity.value.decode(), unbounded.value, min.value, max.value)              
+    
+    def fmi3_getUInt8Type(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        min = ct.c_uint8()
+        max = ct.c_uint8()
+        self.hdll.fmi3_getUInt8Type(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max))
+        return (description.value.decode(), quantity.value.decode(), unbounded.value, min.value, max.value)        
+        
+    def fmi3_getBooleanType(self, name):
+        description = ct.c_char_p()
+        self.hdll.fmi3_getBooleanType(self.fmu, name.encode(), ct.byref(description))
+        return description.value.decode()        
+        
+    def fmi3_getStringType(self, name):
+        description = ct.c_char_p()
+        self.hdll.fmi3_getStringType(self.fmu, name.encode(), ct.byref(description))
+        return description.value.decode()        
+
+    def fmi3_getBinaryType(self, name):
+        description = ct.c_char_p()
+        mimeType = ct.c_char_p()
+        maxSize = ct.c_uint32()
+        self.hdll.fmi3_getBinaryType(self.fmu, name.encode(), ct.byref(description), ct.byref(mimeType), ct.byref(maxSize))
+        return (description.value.decode(), mimeType.decode(), maxSize)
+        
+    def fmi3_getEnumerationType(self, name):
+        description = ct.c_char_p()
+        quantity = ct.c_char_p()
+        min = ct.c_int64()
+        max = ct.c_int64()
+        numberOfItems = ct.c_int()
+        self.hdll.fmi3_getEnumerationType(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max), ct.byref(numberOfItems))
+        return (description.value.decode(), quantity.value.decode(), min.value, max.value, numberOfItems.value)
+
+    def fmi3_getEnumerationItem(self, name, typeName, itemId):
+        itemName = ct.c_char_p()
+        value = ct.c_int64()
+        description = ct.c_char_p()
+        self.hdll.fmi3_getEnumerationItem(self.fmu, name.encode(), typeName.encode(), itemId, ct.byref(itemName), ct.byref(value), ct.byref(description))
+        return (itemName.value.decode(), value.value, description.value.decode())
+        
+    def fmi3_getClockType(self, name):
+        description = ct.c_char_p()
+        canBeDeactivated = ct.c_bool()
+        priority = ct.c_int32()
+        intervalVariability = ct.c_int()
+        intervalDecimal = ct.c_float()
+        shiftDecimal = ct.c_float()
+        supportsFraction = ct.c_bool()
+        resolution = ct.c_uint64()
+        intervalCounter = ct.c_uint64(),
+        shiftCounter = ct.c_uint64(),
+        self.hdll.fmi3_getClockType(self.fmu, name.encode(), ct.byref(description), ct.byref(quantity), ct.byref(min), ct.byref(max), ct.byref(numberOfItems))
+        return (description.value.decode(), quantity.value.decode(), min.value, max.value, numberOfItems.value)
