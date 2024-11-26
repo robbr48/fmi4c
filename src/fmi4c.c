@@ -946,7 +946,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             unit.displayUnits = NULL;
             parseStringAttributeEzXmlAndRememberPointer(unitElement, "name", &unit.name, fmu);
             unit.numberOfDisplayUnits = 0;
-            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->next) {
+            for(ezxml_t unitSubElement = unitElement->child; unitSubElement; unitSubElement = unitSubElement->ordered) {
                 if(!strcmp(unitSubElement->name, "BaseUnit")) {
                     unit.baseUnit = mallocAndRememberPointer(fmu, sizeof(fmi3BaseUnit));
                     unit.baseUnit->kg = 0;
