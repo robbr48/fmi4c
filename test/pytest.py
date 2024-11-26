@@ -915,8 +915,19 @@ verificationDict =	{
     "numberOfDisplayUnits": [2, 1],
     "displayUnits": [[('mm', 0.001, 0.0, False), ('km', 1000.0, 0.0, False)], [('km/h', 3.6, 0.0, False)]],
     "displayUnitUnits": [['deg/s', 'r/min'], ['km/h']],
-    "float64type": ('Speed that can only be positive', 'Velocity', 'm/s', '', False, False, 0.0, 1.7976931348623157e+308, 1.0)
-}
+    "float64type": ('Speed that can only be positive', 'Velocity', 'm/s', '', False, False, 0.0, 1.7976931348623157e+308, 1.0),
+    "numberOfLogCategories": 2,
+    "logCategories": [("logStatusError", "Log error messages"), ("logStatusWarning", "Log warning messages")],
+    "numberOfModelStructureOutputs": 1,
+    "modelStructureOutput": (2, 0, False),
+    "numberOfModelStructureContinuousStateDerivatives": 1,
+    "modelStructureContinuousStateDerivative": (1, 0, False),
+    "numberOfModelStructureInitialUnknown": 1,
+    "modelStructureInitialUnknown": (2, 1, False),
+    "modelStructureInitialUnknownDependency": (1, True),
+    "numberOfModelStructureClockedStates": 0,
+    "numberOfModelStructureEventIndicators": 0,
+}   
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi3.fmu", "testfmu")
 if not success:
     print("Failed to load fmi3.fmu")
@@ -926,50 +937,30 @@ else:
     print("Successfully loaded fmi3.fmu")
 
 verify("fmiVersion", f.fmi4c_getFmiVersion())
-
 verify("modelName", f.fmi3_modelName())
-
 verify("instantiationToken", f.fmi3_instantiationToken())
-
 verify("description", f.fmi3_description())
-
 verify("author", f.fmi3_author())
 
 #Must instantiate first
 #verify("version", f.fmi3_version())
 
 verify("copyright", f.fmi3_copyright())
-
 verify("license", f.fmi3_license())
-
 verify("generationTool", f.fmi3_generationTool())
-
 verify("generationDateAndTime", f.fmi3_generationDateAndTime())
-
 verify("variableNamingConvention", f.fmi3_variableNamingConvention())
-
 verify("supportsModelExchange", f.fmi3_supportsModelExchange())
-
 verify("supportsScheduledExecution", f.fmi3_supportsScheduledExecution())
-
 verify("supportsCoSimulation", f.fmi3_supportsCoSimulation())
-
 verify("defaultStartTimeDefined", f.fmi3_defaultStartTimeDefined())
-
 verify("defaultStopTimeDefined", f.fmi3_defaultStopTimeDefined())
-
 verify("defaultToleranceDefined", f.fmi3_defaultToleranceDefined())
-
 verify("defaultStepSizeDefined", f.fmi3_defaultStepSizeDefined())
-
 verify("defaultStartTime", f.fmi3_getDefaultStartTime())
-
 verify("defaultStopTime", f.fmi3_getDefaultStopTime())
-
 verify("defaultTolerance", f.fmi3_getDefaultTolerance())
-
 verify("defaultStepSize", f.fmi3_getDefaultStepSize())
-
 verify("numberOfVariables", f.fmi3_getNumberOfVariables())
 
 variableNames = []
@@ -1065,6 +1056,24 @@ verify("displayUnits", displayUnits)
 
 verify("float64type", f.fmi3_getFloat64Type("PositiveSpeed"))
 
+
+numberOfLogCategories = f.fmi3_getNumberOfLogCategories()
+verify("numberOfLogCategories", numberOfLogCategories)
+logCategories = []
+for i in range(numberOfLogCategories):
+    logCategories.append(f.fmi3_getLogCategory(i))
+verify("logCategories", logCategories);
+
+verify("numberOfModelStructureOutputs", f.fmi3_getNumberOfModelStructureOutputs())
+verify("modelStructureOutput", f.fmi3_getModelStructureOutput(0))
+verify("numberOfModelStructureContinuousStateDerivatives", f.fmi3_getNumberOfModelStructureContinuousStateDerivatives())
+verify("modelStructureContinuousStateDerivative", f.fmi3_getModelStructureContinuousStateDerivative(0))
+verify("numberOfModelStructureInitialUnknown", f.fmi3_getNumberOfModelStructureInitialUnknowns())
+verify("modelStructureInitialUnknown", f.fmi3_getModelStructureInitialUnknown(0))
+verify("modelStructureInitialUnknownDependency", f.fmi3_getModelStructureInitialUnknownDependency(0, 0))
+verify("numberOfModelStructureClockedStates", f.fmi3_getNumberOfModelStructureClockedStates());
+verify("numberOfModelStructureEventIndicators", f.fmi3_getNumberOfModelStructureEventIndicators());
+
 #Not tested
 
 #FMI4C_DLLAPI fmi3VariableHandle* fmi3_getVariableByName(fmiHandle *fmu, fmi3String name);
@@ -1086,7 +1095,17 @@ verify("float64type", f.fmi3_getFloat64Type("PositiveSpeed"))
 #FMI4C_DLLAPI void fmi3_getEnumerationItem(fmiHandle *fmu, const char *typeName, int itemId, const char **itemName, int64_t *value, const char **description);
 #FMI4C_DLLAPI void fmi3_getClockType(fmiHandle *fmu, const char *name, const char **description, bool *canBeDeactivated, uint32_t *priority, fmi3IntervalVariability *intervalVariability, float *intervalDecimal, float *shiftDecimal, bool *supportsFraction, uint64_t *resolution, uint64_t *intervalCounter, uint64_t *shiftCounter);
 
-
+#FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureOutputDependency(fmiHandle *fmu, int outputId, int dependencyId, bool *ok);
+#FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureOutputDependencyKind(fmiHandle *fmu, int outputId, int dependencyId, bool *ok);
+#FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureContinuousStateDerivativeDependency(fmiHandle *fmu, int derId, int dependencyId, bool *ok);
+#FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureContinuousStateDerivativeDependencyKind(fmiHandle *fmu, int derId, int dependencyId, bool *ok);
+#FMI4C_DLLAPI void fmi3_getModelStructureClockedState(fmiHandle *fmu, int id, fmi3ValueReference *vr, int *numberOfDependencies, bool *dependencyKindsDefined);
+#FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureClockedStateDependency(fmiHandle *fmu, int clockId, int dependencyId, bool *ok);
+#FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureClockedStateDependencyKind(fmiHandle *fmu, int clockId, int dependencyId, bool *ok);
+#FMI4C_DLLAPI fmi3ValueReference fmi3_modelStructureGetInitialUnknownDependencyKind(fmiHandle *fmu, int unknownId, int dependencyId, bool *ok);
+#FMI4C_DLLAPI void fmi3_getModelStructureEventIndicator(fmiHandle *fmu, int id, fmi3ValueReference *vr, int *numberOfDependencies, bool *dependencyKindsDefined);
+#FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureEventIndicatorDependency(fmiHandle *fmu, int indicatorId, int dependencyId, bool *ok);
+#FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureEventIndicatorDependencyKind(fmiHandle *fmu, int indicatorId, int dependencyId, bool *ok);
 
 f.fmi4c_freeFmu()
     
