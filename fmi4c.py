@@ -648,6 +648,39 @@ class fmi4c:
         self.hdll.fmi3_getModelStructureEventIndicatorDependencyKind.restype = ct.c_uint 
         self.hdll.fmi3_getModelStructureEventIndicatorDependencyKind.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
 
+        self.hdll.fmi3cs_getModelIdentifier.restype = ct.c_char_p
+        self.hdll.fmi3cs_getModelIdentifier.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getNeedsExecutionTool.restype = ct.c_bool 
+        self.hdll.fmi3cs_getNeedsExecutionTool.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getCanBeInstantiatedOnlyOncePerProcess.restype = ct.c_bool 
+        self.hdll.fmi3cs_getCanBeInstantiatedOnlyOncePerProcess.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getCanGetAndSetFMUState.restype = ct.c_bool 
+        self.hdll.fmi3cs_getCanGetAndSetFMUState.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getCanSerializeFMUState.restype = ct.c_bool 
+        self.hdll.fmi3cs_getCanSerializeFMUState.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getProvidesDirectionalDerivative.restype = ct.c_bool 
+        self.hdll.fmi3cs_getProvidesDirectionalDerivative.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getProvidesAdjointDerivatives.restype = ct.c_bool 
+        self.hdll.fmi3cs_getProvidesAdjointDerivatives.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getProvidesPerElementDependencies.restype = ct.c_bool 
+        self.hdll.fmi3cs_getProvidesPerElementDependencies.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getProvidesIntermediateUpdate.restype = ct.c_bool 
+        self.hdll.fmi3cs_getProvidesIntermediateUpdate.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getProvidesEvaluateDiscreteStates.restype = ct.c_bool 
+        self.hdll.fmi3cs_getProvidesEvaluateDiscreteStates.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getHasEventMode.restype = ct.c_bool 
+        self.hdll.fmi3cs_getHasEventMode.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getRecommendedIntermediateInputSmoothness.restype = ct.c_bool 
+        self.hdll.fmi3cs_getRecommendedIntermediateInputSmoothness.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getMaxOutputDerivativeOrder.restype = ct.c_int
+        self.hdll.fmi3cs_getMaxOutputDerivativeOrder.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getCanHandleVariableCommunicationStepSize.restype = ct.c_bool
+        self.hdll.fmi3cs_getCanHandleVariableCommunicationStepSize.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getCanReturnEarlyAfterIntermediateUpdate.restype = ct.c_bool
+        self.hdll.fmi3cs_getCanReturnEarlyAfterIntermediateUpdate.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getFixedInternalStepSize.restype = ct.c_double
+        self.hdll.fmi3cs_getFixedInternalStepSize.argtypes = ct.c_void_p,
+
     def translateFmiVersion(self, version):
         match version:
             case 0:
@@ -1985,3 +2018,52 @@ class fmi4c:
         ok = ct.c_bool()
         ret = self.hdll.fmi3_getModelStructureEventIndicatorDependencyKind(self.fmu, indicatorId, dependencyId, ct.byref(ok))
         return (ret, ok.value)
+        
+    def fmi3cs_getModelIdentifier(self):
+        return self.hdll.fmi3cs_getModelIdentifier(self.fmu).decode()
+
+    def fmi3cs_getNeedsExecutionTool(self):
+        return self.hdll.fmi3cs_getNeedsExecutionTool(self.fmu)
+        
+    def fmi3cs_getCanBeInstantiatedOnlyOncePerProcess(self):
+        return self.hdll.fmi3cs_getCanBeInstantiatedOnlyOncePerProcess(self.fmu)
+        
+    def fmi3cs_getCanGetAndSetFMUState(self):
+        return self.hdll.fmi3cs_getCanGetAndSetFMUState(self.fmu)
+        
+    def fmi3cs_getCanSerializeFMUState(self):
+        return self.hdll.fmi3cs_getCanSerializeFMUState(self.fmu)
+        
+    def fmi3cs_getProvidesDirectionalDerivative(self):
+        return self.hdll.fmi3cs_getProvidesDirectionalDerivative(self.fmu)
+        
+    def fmi3cs_getProvidesAdjointDerivatives(self):
+        return self.hdll.fmi3cs_getProvidesAdjointDerivatives(self.fmu)
+        
+    def fmi3cs_getProvidesPerElementDependencies(self):
+        return self.hdll.fmi3cs_getProvidesPerElementDependencies(self.fmu)
+        
+    def fmi3cs_getProvidesIntermediateUpdate(self):
+        return self.hdll.fmi3cs_getProvidesIntermediateUpdate(self.fmu)
+        
+    def fmi3cs_getProvidesEvaluateDiscreteStates(self):
+        return self.hdll.fmi3cs_getProvidesEvaluateDiscreteStates(self.fmu)
+        
+    def fmi3cs_getHasEventMode(self):
+        return self.hdll.fmi3cs_getHasEventMode(self.fmu)
+        
+    def fmi3cs_getRecommendedIntermediateInputSmoothness(self):
+        return self.hdll.fmi3cs_getRecommendedIntermediateInputSmoothness(self.fmu)
+    
+    def fmi3cs_getMaxOutputDerivativeOrder(self):
+        return self.hdll.fmi3cs_getMaxOutputDerivativeOrder(self.fmu)
+        
+    def fmi3cs_getCanHandleVariableCommunicationStepSize(self):
+        return self.hdll.fmi3cs_getCanHandleVariableCommunicationStepSize(self.fmu)
+        
+    def fmi3cs_getCanReturnEarlyAfterIntermediateUpdate(self):
+        return self.hdll.fmi3cs_getCanReturnEarlyAfterIntermediateUpdate(self.fmu)
+        
+    def fmi3cs_getFixedInternalStepSize(self):
+        return self.hdll.fmi3cs_getFixedInternalStepSize(self.fmu)
+        
