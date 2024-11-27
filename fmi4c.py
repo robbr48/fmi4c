@@ -681,6 +681,44 @@ class fmi4c:
         self.hdll.fmi3cs_getFixedInternalStepSize.restype = ct.c_double
         self.hdll.fmi3cs_getFixedInternalStepSize.argtypes = ct.c_void_p,
 
+        self.hdll.fmi3me_getModelIdentifier.restype = ct.c_char_p 
+        self.hdll.fmi3me_getModelIdentifier.argtypes = ct.c_void_p,
+        self.hdll.fmi3me_getNeedsExecutionTool.restype = ct.c_bool 
+        self.hdll.fmi3me_getNeedsExecutionTool.argtypes = ct.c_void_p,
+        self.hdll.fmi3me_getCanBeInstantiatedOnlyOncePerProcess.restype = ct.c_bool 
+        self.hdll.fmi3me_getCanBeInstantiatedOnlyOncePerProcess.argtypes = ct.c_void_p,
+        self.hdll.fmi3me_getCanGetAndSetFMUState.restype = ct.c_bool 
+        self.hdll.fmi3me_getCanGetAndSetFMUState.argtypes = ct.c_void_p,
+        self.hdll.fmi3me_getCanSerializeFMUState.restype = ct.c_bool 
+        self.hdll.fmi3me_getCanSerializeFMUState.argtypes = ct.c_void_p,
+        self.hdll.fmi3me_getProvidesDirectionalDerivative.restype = ct.c_bool 
+        self.hdll.fmi3me_getProvidesDirectionalDerivative.argtypes = ct.c_void_p,
+        self.hdll.fmi3me_getProvidesAdjointDerivatives.restype = ct.c_bool 
+        self.hdll.fmi3me_getProvidesAdjointDerivatives.argtypes = ct.c_void_p,
+        self.hdll.fmi3me_getProvidesPerElementDependencies.restype = ct.c_bool 
+        self.hdll.fmi3me_getProvidesPerElementDependencies.argtypes = ct.c_void_p,
+        self.hdll.fmi3me_getProvidesEvaluateDiscreteStates.restype = ct.c_bool 
+        self.hdll.fmi3me_getProvidesEvaluateDiscreteStates.argtypes = ct.c_void_p,
+        self.hdll.fmi3me_getNeedsCompletedIntegratorStep.restype = ct.c_bool 
+        self.hdll.fmi3me_getNeedsCompletedIntegratorStep.argtypes = ct.c_void_p,
+
+        self.hdll.fmi3se_getModelIdentifier.restype = ct.c_char_p 
+        self.hdll.fmi3se_getModelIdentifier.argtypes = ct.c_void_p,
+        self.hdll.fmi3se_getNeedsExecutionTool.restype = ct.c_bool 
+        self.hdll.fmi3se_getNeedsExecutionTool.argtypes = ct.c_void_p,
+        self.hdll.fmi3se_getCanBeInstantiatedOnlyOncePerProcess.restype = ct.c_bool 
+        self.hdll.fmi3se_getCanBeInstantiatedOnlyOncePerProcess.argtypes = ct.c_void_p,
+        self.hdll.fmi3se_getCanGetAndSetFMUState.restype = ct.c_bool 
+        self.hdll.fmi3se_getCanGetAndSetFMUState.argtypes = ct.c_void_p,
+        self.hdll.fmi3se_getCanSerializeFMUState.restype = ct.c_bool 
+        self.hdll.fmi3se_getCanSerializeFMUState.argtypes = ct.c_void_p,
+        self.hdll.fmi3se_getProvidesDirectionalDerivative.restype = ct.c_bool 
+        self.hdll.fmi3se_getProvidesDirectionalDerivative.argtypes = ct.c_void_p,
+        self.hdll.fmi3se_getProvidesAdjointDerivatives.restype = ct.c_bool 
+        self.hdll.fmi3se_getProvidesAdjointDerivatives.argtypes = ct.c_void_p,
+        self.hdll.fmi3se_getProvidesPerElementDependencies.restype = ct.c_bool 
+        self.hdll.fmi3se_getProvidesPerElementDependencies.argtypes = ct.c_void_p,
+
     def translateFmiVersion(self, version):
         match version:
             case 0:
@@ -2020,8 +2058,12 @@ class fmi4c:
         return (ret, ok.value)
         
     def fmi3cs_getModelIdentifier(self):
-        return self.hdll.fmi3cs_getModelIdentifier(self.fmu).decode()
-
+        ret = self.hdll.fmi3cs_getModelIdentifier(self.fmu)
+        if ret is None:
+            return ""
+        else:
+            return ret.decode()   
+            
     def fmi3cs_getNeedsExecutionTool(self):
         return self.hdll.fmi3cs_getNeedsExecutionTool(self.fmu)
         
@@ -2067,3 +2109,65 @@ class fmi4c:
     def fmi3cs_getFixedInternalStepSize(self):
         return self.hdll.fmi3cs_getFixedInternalStepSize(self.fmu)
         
+    def fmi3me_getModelIdentifier(self):
+        ret = self.hdll.fmi3me_getModelIdentifier(self.fmu)
+        if ret is None:
+            return ""
+        else:
+            return ret.decode()   
+            
+    def fmi3me_getNeedsExecutionTool(self):
+        return self.hdll.fmi3me_getNeedsExecutionTool(self.fmu)
+
+    def fmi3me_getCanBeInstantiatedOnlyOncePerProcess(self):
+        return self.hdll.fmi3me_getCanBeInstantiatedOnlyOncePerProcess(self.fmu)
+
+    def fmi3me_getCanGetAndSetFMUState(self):
+        return self.hdll.fmi3me_getCanGetAndSetFMUState(self.fmu)
+
+    def fmi3me_getCanSerializeFMUState(self):
+        return self.hdll.fmi3me_getCanSerializeFMUState(self.fmu)
+
+    def fmi3me_getProvidesDirectionalDerivative(self):
+        return self.hdll.fmi3me_getProvidesDirectionalDerivative(self.fmu)
+
+    def fmi3me_getProvidesAdjointDerivatives(self):
+        return self.hdll.fmi3me_getProvidesAdjointDerivatives(self.fmu)
+
+    def fmi3me_getProvidesPerElementDependencies(self):
+        return self.hdll.fmi3me_getProvidesPerElementDependencies(self.fmu)
+
+    def fmi3me_getProvidesEvaluateDiscreteStates(self):
+        return self.hdll.fmi3me_getProvidesEvaluateDiscreteStates(self.fmu)
+
+    def fmi3me_getNeedsCompletedIntegratorStep(self):
+        return self.hdll.fmi3me_getNeedsCompletedIntegratorStep(self.fmu)
+
+    def fmi3se_getModelIdentifier(self):
+        ret = self.hdll.fmi3se_getModelIdentifier(self.fmu)
+        if ret is None:
+            return ""
+        else:
+            return ret.decode()   
+
+    def fmi3se_getNeedsExecutionTool(self):
+        return self.hdll.fmi3se_getNeedsExecutionTool(self.fmu)
+
+    def fmi3se_getCanBeInstantiatedOnlyOncePerProcess(self):
+        return self.hdll.fmi3se_getCanBeInstantiatedOnlyOncePerProcess(self.fmu)
+
+    def fmi3se_getCanGetAndSetFMUState(self):
+        return self.hdll.fmi3se_getCanGetAndSetFMUState(self.fmu)
+
+    def fmi3se_getCanSerializeFMUState(self):
+        return self.hdll.fmi3se_getCanSerializeFMUState(self.fmu)
+
+    def fmi3se_getProvidesDirectionalDerivative(self):
+        return self.hdll.fmi3se_getProvidesDirectionalDerivative(self.fmu)
+
+    def fmi3se_getProvidesAdjointDerivatives(self):
+        return self.hdll.fmi3se_getProvidesAdjointDerivatives(self.fmu)
+
+    def fmi3se_getProvidesPerElementDependencies(self):
+        return self.hdll.fmi3se_getProvidesPerElementDependencies(self.fmu)
+

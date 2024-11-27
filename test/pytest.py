@@ -943,6 +943,8 @@ verificationDict =	{
     "canHandleVariableCommunicationStepSize": True,
     "canReturnEarlyAfterIntermediateUpdate": False,
     "fixedInternalStepSize": 0,
+    "needsCompletedIntegratorStep": False,
+    "modelIdentifierSE": "",
 }   
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi3.fmu", "testfmu")
 if not success:
@@ -1106,6 +1108,26 @@ verify("maxOutputDerivativeOrder", f.fmi3cs_getMaxOutputDerivativeOrder())
 verify("canHandleVariableCommunicationStepSize", f.fmi3cs_getCanHandleVariableCommunicationStepSize())
 verify("canReturnEarlyAfterIntermediateUpdate", f.fmi3cs_getCanReturnEarlyAfterIntermediateUpdate())
 verify("fixedInternalStepSize", f.fmi3cs_getFixedInternalStepSize()),
+
+verify("modelIdentifier", f.fmi3me_getModelIdentifier())
+verify("needsExecutionTool", f.fmi3me_getNeedsExecutionTool())
+verify("canBeInstantiatedOnlyOncePerProcess", f.fmi3me_getCanBeInstantiatedOnlyOncePerProcess())
+verify("canGetAndSetFMUState", f.fmi3me_getCanGetAndSetFMUState())
+verify("canSerializeFMUState", f.fmi3me_getCanSerializeFMUState())
+verify("providesDirectionalDerivative", f.fmi3me_getProvidesDirectionalDerivative())
+verify("providesAdjointDerivatives", f.fmi3me_getProvidesAdjointDerivatives())
+verify("providesPerElementDependencies", f.fmi3me_getProvidesPerElementDependencies())
+verify("providesEvaluateDiscreteStates", f.fmi3me_getProvidesEvaluateDiscreteStates())
+verify("needsCompletedIntegratorStep", f.fmi3me_getNeedsCompletedIntegratorStep())
+
+verify("modelIdentifierSE", f.fmi3se_getModelIdentifier())
+verify("needsExecutionTool", f.fmi3se_getNeedsExecutionTool())
+verify("canBeInstantiatedOnlyOncePerProcess", f.fmi3se_getCanBeInstantiatedOnlyOncePerProcess())
+verify("canGetAndSetFMUState", f.fmi3se_getCanGetAndSetFMUState())
+verify("canSerializeFMUState", f.fmi3se_getCanSerializeFMUState())
+verify("providesDirectionalDerivative", f.fmi3se_getProvidesDirectionalDerivative())
+verify("providesAdjointDerivatives", f.fmi3se_getProvidesAdjointDerivatives())
+verify("providesPerElementDependencies", f.fmi3se_getProvidesPerElementDependencies())
 
 #Not tested
 
