@@ -2376,7 +2376,7 @@ bool fmi3_instantiateCoSimulation(fmiHandle *fmu,
     return (fmu->fmi3.fmi3Instance != NULL);
 }
 
-bool fmi3_iInstantiateModelExchange(fmiHandle *fmu,
+bool fmi3_instantiateModelExchange(fmiHandle *fmu,
                                   fmi3Boolean               visible,
                                   fmi3Boolean                loggingOn,
                                   fmi3InstanceEnvironment    instanceEnvironment,
