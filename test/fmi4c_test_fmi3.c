@@ -316,6 +316,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
                 free(eventIndicatorsPrev);
                 free(rootsFound);
                 free(states);
+                free(nominalStates);
                 free(eventIndicators);
                 return 1;
             }
@@ -372,6 +373,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     free(eventIndicatorsPrev);
     free(rootsFound);
     free(states);
+    free(nominalStates);
     free(eventIndicators);
     printf("  Simulation finished.\n");
 
