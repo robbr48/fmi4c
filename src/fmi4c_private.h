@@ -22,7 +22,7 @@
 #define TRACEFUNC
 #endif
 
-extern const char* fmi4cErrorMessage;
+void fmi4c_addMessage(const char* msg);
 
 typedef struct {
     fmi1DataType datatype;
