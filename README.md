@@ -1,4 +1,5 @@
-# fmi4c
+#
+<img src="./fmi4c.svg">
 
 fmi4c is a C library that enables import of [Functional Mockup Units (FMUs)]((https://fmi-standard.org/)) from FMI 1.0, FMI 2.0 and FMI 3.0. 
 
