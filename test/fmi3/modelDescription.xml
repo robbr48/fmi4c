@@ -4,6 +4,7 @@
   modelName="fmi3" 
   description="Integrator (dx = der(x))" 
   author="Robert Braun" 
+  version="0.1"
   instantiationToken="123"
   copyright="N/A"
   license="N/A"

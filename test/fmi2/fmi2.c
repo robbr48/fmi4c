@@ -294,8 +294,9 @@ fmi2Status fmi2GetContinuousStates(fmi2Component c, fmi2Real states[], size_t nS
 fmi2Status fmi2GetNominalsOfContinuousStates(fmi2Component c, fmi2Real x_nominal[], size_t nx)
 {
     UNUSED(c);
-    UNUSED(x_nominal);
-    UNUSED(nx);
+    for(size_t i=0; i<nx; ++i) {
+        x_nominal[i] = 1.0;
+    }
     return fmi2OK;  //Nothing to do
 }
 
