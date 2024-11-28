@@ -41,6 +41,7 @@ extern "C" {
 // FMU access functions
 
 FMI4C_DLLAPI fmiVersion_t fmi4c_getFmiVersion(fmiHandle *fmu);
+FMI4C_DLLAPI fmiHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const char *unzipLocation);
 FMI4C_DLLAPI fmiHandle* fmi4c_loadFmu(const char *fmufile, const char* instanceName);
 FMI4C_DLLAPI void fmi4c_freeFmu(fmiHandle* fmu);
 FMI4C_DLLAPI const char* fmi4c_getErrorMessages();
