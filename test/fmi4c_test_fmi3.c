@@ -160,7 +160,7 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
 int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride) {
     //Instantiate FMU
-    if(!fmi3_iInstantiateModelExchange(fmu, fmi2False, fmi2True, NULL, loggerFmi3)) {
+    if(!fmi3_instantiateModelExchange(fmu, fmi2False, fmi2True, NULL, loggerFmi3)) {
         printf("  fmi2Instantiate() failed\n");
         exit(1);
     }

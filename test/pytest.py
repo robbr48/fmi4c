@@ -456,19 +456,19 @@ verify("initializeSuccess", initializeSuccess)
 setTimeSuccess = f.fmi1_setTime(0.5)
 verify("setTimeSuccess", setTimeSuccess)
 
-getDerivativesSuccess = f.fmi1_getDerivatives([1],1)
+getDerivativesSuccess = f.fmi1_getDerivatives(1)
 verify("getDerivativesSuccess", getDerivativesSuccess)
 
 getStateValueReferencesSuccess = f.fmi1_getStateValueReferences(1)
 verify("getStateValueReferencesSuccess", getStateValueReferencesSuccess)
 
-getNominalContinuousStatesSuccess = f.fmi1_getNominalContinuousStates([1],1)
+getNominalContinuousStatesSuccess = f.fmi1_getNominalContinuousStates(1)
 verify("getNominalContinuousStatesSuccess", getNominalContinuousStatesSuccess)
 
 setContinuousStatesSuccess = f.fmi1_setContinuousStates([42], 1)
 verify("setContinuousStatesSuccess", setContinuousStatesSuccess)
 
-getContinuousStatesSuccess = f.fmi1_getContinuousStates([1],1)
+getContinuousStatesSuccess = f.fmi1_getContinuousStates(1)
 verify("getContinuousStatesSuccess", getContinuousStatesSuccess)
 
 completedIntegratorStepSuccess = f.fmi1_completedIntegratorStep(False)
@@ -789,10 +789,7 @@ verify("doStepSuccess", f.fmi2_doStep(0,0.1,True))
 
 verify("getRealResults", f.fmi2_getReal([1, 2],2))
 
-#verify("terminateSuccess", f.fmi2_terminate())
 verify("resetSuccess", f.fmi2_reset())
-
-#f.fmi2_freeInstance()
 
 instantiateSuccess = f.fmi2_instantiate(0, False, False)    #1 = model exchange
 verify("instantiateSuccess", instantiateSuccess)
@@ -803,19 +800,19 @@ verify("exitInitializationModeSuccess", f.fmi2_exitInitializationMode())
 setTimeSuccess = f.fmi2_setTime(0.5)
 verify("setTimeSuccess", setTimeSuccess)
 
-getDerivativesSuccess = f.fmi2_getDerivatives([1],1)
+getDerivativesSuccess = f.fmi2_getDerivatives(1)
 verify("getDerivativesSuccess", getDerivativesSuccess)
 
 #getStateValueReferencesSuccess = f.fmi2_getStateValueReferences(1)
 #verify("getStateValueReferencesSuccess", getStateValueReferencesSuccess)
 
-getNominalsOfContinuousStatesSuccess = f.fmi2_getNominalsOfContinuousStates([1],1)
+getNominalsOfContinuousStatesSuccess = f.fmi2_getNominalsOfContinuousStates(1)
 verify("getNominalsOfContinuousStatesSuccess", getNominalsOfContinuousStatesSuccess)
 
 setContinuousStatesSuccess = f.fmi2_setContinuousStates([42], 1)
 verify("setContinuousStatesSuccess", setContinuousStatesSuccess)
 
-getContinuousStatesSuccess = f.fmi2_getContinuousStates([1],1)
+getContinuousStatesSuccess = f.fmi2_getContinuousStates(1)
 verify("getContinuousStatesSuccess", getContinuousStatesSuccess)
 
 completedIntegratorStepSuccess = f.fmi2_completedIntegratorStep(False)
@@ -874,6 +871,7 @@ print("")
 
 verificationDict =	{
     "fmiVersion": "fmiVersion3",
+    "fmiVersionNumber": "3.0",
     "modelName": "fmi3",
     "instantiationToken": "123",
     "description": "Integrator (dx = der(x))",
@@ -945,6 +943,26 @@ verificationDict =	{
     "fixedInternalStepSize": 0,
     "needsCompletedIntegratorStep": False,
     "modelIdentifierSE": "",
+    "instantiateSuccess": True,
+    "setDebugLoggingSuccess": 0,
+    "enterInitializationModeSuccess": 0,
+    "exitInitializationModeSuccess": 0,
+    "setFloat64Success": 0,
+    "doStepSuccess": 0,
+    "getFloat64Results": [0, [5.0, 0.0025]],
+    "terminateSuccess": 0,
+    "doStepResults": (0, False, False, False, 0.001),
+    "resetSuccess": 0,
+    "setTimeSuccess": 0,
+    "getContinousStateDerivativesSuccess": (0, [0.0]),
+    "getNominalsOfContinuousStatesSuccess": (0, [1.0]),
+    "setContinuousStatesSuccess": 0,
+    "getContinuousStatesSuccess": (0, [42.0]),
+    "completedIntegratorStepSuccess": (0, False, False),
+    "enterStepModeSuccess": 0,
+    "enterContinuousTimeModeSuccess": 0,
+    "numberOfEventIndicators": 0,
+    "numberOfContinuousStates": 1,
 }   
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi3.fmu", "testfmu")
 if not success:
@@ -959,9 +977,6 @@ verify("modelName", f.fmi3_modelName())
 verify("instantiationToken", f.fmi3_instantiationToken())
 verify("description", f.fmi3_description())
 verify("author", f.fmi3_author())
-
-#Must instantiate first
-#verify("version", f.fmi3_version())
 
 verify("copyright", f.fmi3_copyright())
 verify("license", f.fmi3_license())
@@ -979,8 +994,9 @@ verify("defaultStartTime", f.fmi3_getDefaultStartTime())
 verify("defaultStopTime", f.fmi3_getDefaultStopTime())
 verify("defaultTolerance", f.fmi3_getDefaultTolerance())
 verify("defaultStepSize", f.fmi3_getDefaultStepSize())
-verify("numberOfVariables", f.fmi3_getNumberOfVariables())
 
+#Test variables functions
+verify("numberOfVariables", f.fmi3_getNumberOfVariables())
 variableNames = []
 variableDescriptions = []
 variableValueReferences = []
@@ -994,11 +1010,12 @@ variableUnits = []
 variableDisplayUnits = []
 variablesHaveStartValues = []
 variableStartValues = []
-
 for i in range(numberOfVariables):
     var = f.fmi3_getVariableByIndex(i)
     variableNames.append(f.fmi3_getVariableName(var))
+    var = f.fmi3_getVariableByName(variableNames[-1])
     variableValueReferences.append(f.fmi3_getVariableValueReference(var))
+    var = f.fmi3_getVariableByValueReference(variableValueReferences[-1])
     variableDescriptions.append(f.fmi3_getVariableDescription(var))
     variableCausalities.append(f.fmi3_getVariableCausality(var))
     variableVariabilities.append(f.fmi3_getVariableVariability(var))
@@ -1036,7 +1053,6 @@ for i in range(numberOfVariables):
             variableStartValues.append(f.fmi3_getVariableStartString(var))
         if f.fmi3_getVariableDataType(var) == "fmi3DataTypeBinary":
             variableStartValues.append(f.fmi3_getVariableStartBinary(var))
-
 verify("variableNames", variableNames)
 verify("variableValueReferences", variableValueReferences)
 verify("variableDescriptions", variableDescriptions)
@@ -1074,7 +1090,6 @@ verify("displayUnits", displayUnits)
 
 verify("float64type", f.fmi3_getFloat64Type("PositiveSpeed"))
 
-
 numberOfLogCategories = f.fmi3_getNumberOfLogCategories()
 verify("numberOfLogCategories", numberOfLogCategories)
 logCategories = []
@@ -1092,6 +1107,7 @@ verify("modelStructureInitialUnknownDependency", f.fmi3_getModelStructureInitial
 verify("numberOfModelStructureClockedStates", f.fmi3_getNumberOfModelStructureClockedStates());
 verify("numberOfModelStructureEventIndicators", f.fmi3_getNumberOfModelStructureEventIndicators());
 
+#Test co-simulation capability flags
 verify("modelIdentifier", f.fmi3cs_getModelIdentifier())
 verify("needsExecutionTool", f.fmi3cs_getNeedsExecutionTool())
 verify("canBeInstantiatedOnlyOncePerProcess", f.fmi3cs_getCanBeInstantiatedOnlyOncePerProcess())
@@ -1109,6 +1125,7 @@ verify("canHandleVariableCommunicationStepSize", f.fmi3cs_getCanHandleVariableCo
 verify("canReturnEarlyAfterIntermediateUpdate", f.fmi3cs_getCanReturnEarlyAfterIntermediateUpdate())
 verify("fixedInternalStepSize", f.fmi3cs_getFixedInternalStepSize()),
 
+#Test model exchange capability flags
 verify("modelIdentifier", f.fmi3me_getModelIdentifier())
 verify("needsExecutionTool", f.fmi3me_getNeedsExecutionTool())
 verify("canBeInstantiatedOnlyOncePerProcess", f.fmi3me_getCanBeInstantiatedOnlyOncePerProcess())
@@ -1120,6 +1137,7 @@ verify("providesPerElementDependencies", f.fmi3me_getProvidesPerElementDependenc
 verify("providesEvaluateDiscreteStates", f.fmi3me_getProvidesEvaluateDiscreteStates())
 verify("needsCompletedIntegratorStep", f.fmi3me_getNeedsCompletedIntegratorStep())
 
+#Test scheduled execution capability flags
 verify("modelIdentifierSE", f.fmi3se_getModelIdentifier())
 verify("needsExecutionTool", f.fmi3se_getNeedsExecutionTool())
 verify("canBeInstantiatedOnlyOncePerProcess", f.fmi3se_getCanBeInstantiatedOnlyOncePerProcess())
@@ -1129,11 +1147,39 @@ verify("providesDirectionalDerivative", f.fmi3se_getProvidesDirectionalDerivativ
 verify("providesAdjointDerivatives", f.fmi3se_getProvidesAdjointDerivatives())
 verify("providesPerElementDependencies", f.fmi3se_getProvidesPerElementDependencies())
 
-#Not tested
+#Test co-simualtion
+verify("instantiateSuccess", f.fmi3_instantiateCoSimulation(False, False, False, False, [], 0))
+verify("fmiVersionNumber", f.fmi3_getVersion())
+verify("version", f.fmi3_version())
+verify("setDebugLoggingSuccess", f.fmi3_setDebugLogging(True, 0, None))
+verify("enterInitializationModeSuccess", f.fmi3_enterInitializationMode(True, 1e-5, 0, True, 2))
+verify("exitInitializationModeSuccess", f.fmi3_exitInitializationMode())
+verify("setFloat64Success", f.fmi3_setFloat64([1], 1, [5], 1))
+verify("doStepResults", f.fmi3_doStep(0, 0.001, True))
+verify("getFloat64Results", f.fmi3_getFloat64([1, 2],2,2))
+verify("resetSuccess", f.fmi3_reset())
 
-#FMI4C_DLLAPI fmi3VariableHandle* fmi3_getVariableByName(fmiHandle *fmu, fmi3String name);
-#FMI4C_DLLAPI fmi3VariableHandle* fmi3_getVariableByValueReference(fmiHandle *fmu, fmi3ValueReference vr);
+#Test model exchange
+verify("instantiateSuccess", f.fmi3_instantiateModelExchange(False, False))
+verify("setTimeSuccess", f.fmi3_setTime(0.5))
+verify("numberOfEventIndicators", f.fmi3_getNumberOfEventIndicators()[1])
+numberOfContinuousStates = f.fmi3_getNumberOfContinuousStates()[1]
+verify("numberOfContinuousStates", numberOfContinuousStates)
+verify("getContinousStateDerivativesSuccess", f.fmi3_getContinuousStateDerivatives(numberOfContinuousStates))
+verify("getNominalsOfContinuousStatesSuccess", f.fmi3_getNominalsOfContinuousStates(numberOfContinuousStates))
+verify("setContinuousStatesSuccess", f.fmi3_setContinuousStates([42], numberOfContinuousStates))
+verify("getContinuousStatesSuccess", f.fmi3_getContinuousStates(numberOfContinuousStates))
+verify("completedIntegratorStepSuccess", f.fmi3_completedIntegratorStep(False))
+verify("enterStepModeSuccess", f.fmi3_enterStepMode())
+verify("enterContinuousTimeModeSuccess", f.fmi3_enterContinuousTimeMode())
 
+verify("terminateSuccess", f.fmi3_terminate())
+
+f.fmi3_freeInstance()
+
+f.fmi4c_freeFmu()
+
+#Untested FMI3 functions;
 #FMI4C_DLLAPI void fmi3_getFloat32Type(fmiHandle* fmu, const char* name, const char** description, const char** quantity, const char** unit, const char** displayUnit, bool *relativeQuantity, bool *unbounded, float *min, float *max, float *nominal);
 #FMI4C_DLLAPI void fmi3_getInt64Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, int64_t* min, int64_t* max);
 #FMI4C_DLLAPI void fmi3_getInt32Type(fmiHandle *fmu, const char *name, const char** description, const char** quantity, int32_t* min, int32_t* max);
@@ -1149,7 +1195,6 @@ verify("providesPerElementDependencies", f.fmi3se_getProvidesPerElementDependenc
 #FMI4C_DLLAPI void fmi3_getEnumerationType(fmiHandle *fmu, const char *name, const char **description, const char **quantity, int64_t *min, int64_t *max, int *numberOfItems);
 #FMI4C_DLLAPI void fmi3_getEnumerationItem(fmiHandle *fmu, const char *typeName, int itemId, const char **itemName, int64_t *value, const char **description);
 #FMI4C_DLLAPI void fmi3_getClockType(fmiHandle *fmu, const char *name, const char **description, bool *canBeDeactivated, uint32_t *priority, fmi3IntervalVariability *intervalVariability, float *intervalDecimal, float *shiftDecimal, bool *supportsFraction, uint64_t *resolution, uint64_t *intervalCounter, uint64_t *shiftCounter);
-
 #FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureOutputDependency(fmiHandle *fmu, int outputId, int dependencyId, bool *ok);
 #FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureOutputDependencyKind(fmiHandle *fmu, int outputId, int dependencyId, bool *ok);
 #FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureContinuousStateDerivativeDependency(fmiHandle *fmu, int derId, int dependencyId, bool *ok);
@@ -1161,9 +1206,58 @@ verify("providesPerElementDependencies", f.fmi3se_getProvidesPerElementDependenc
 #FMI4C_DLLAPI void fmi3_getModelStructureEventIndicator(fmiHandle *fmu, int id, fmi3ValueReference *vr, int *numberOfDependencies, bool *dependencyKindsDefined);
 #FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureEventIndicatorDependency(fmiHandle *fmu, int indicatorId, int dependencyId, bool *ok);
 #FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureEventIndicatorDependencyKind(fmiHandle *fmu, int indicatorId, int dependencyId, bool *ok);
+#FMI4C_DLLAPI fmi3Status fmi3_enterEventMode(fmiHandle *fmu);
+#FMI4C_DLLAPI fmi3Status fmi3_getFloat32(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3Float32 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getInt8(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3Int8 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getUInt8(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3UInt8 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getInt16(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3Int16 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getUInt16(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3UInt16 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getInt32(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3Int32 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getUInt32(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3UInt32 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getInt64(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3Int64 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getUInt64(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3UInt64 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getBoolean(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3Boolean values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getString(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3String values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getBinary(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,size_t valueSizes[],fmi3Binary values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_getClock(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3Clock values[]);
+#FMI4C_DLLAPI fmi3Status fmi3_setFloat32(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3Float32 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setInt8(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3Int8 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setUInt8(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3UInt8 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setInt16(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3Int16 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setUInt16(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3UInt16 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setInt32(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3Int32 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setUInt32(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3UInt32 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setInt64(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3Int64 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setUInt64(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3UInt64 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setBoolean(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3Boolean values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setString(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3String values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setBinary(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const size_t valueSizes[],const fmi3Binary values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_setClock(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3Clock values[]);
+#FMI4C_DLLAPI fmi3Status fmi3_getNumberOfVariableDependencies(fmiHandle *fmu, fmi3ValueReference valueReference, size_t* nDependencies);
+#FMI4C_DLLAPI fmi3Status fmi3_getVariableDependencies(fmiHandle *fmu, fmi3ValueReference dependent, size_t elementIndicesOfDependent[], fmi3ValueReference independents[], size_t elementIndicesOfIndependents[], fmi3DependencyKind dependencyKinds[], size_t nDependencies);
+#FMI4C_DLLAPI fmi3Status fmi3_getFMUState(fmiHandle *fmu, fmi3FMUState* FMUState);
+#FMI4C_DLLAPI fmi3Status fmi3_setFMUState(fmiHandle *fmu, fmi3FMUState  FMUState);
+#FMI4C_DLLAPI fmi3Status fmi3_freeFMUState(fmiHandle *fmu, fmi3FMUState* FMUState);
+#FMI4C_DLLAPI fmi3Status fmi3_serializedFMUStateSize(fmiHandle *fmu,fmi3FMUState  FMUState,size_t* size);
+#FMI4C_DLLAPI fmi3Status fmi3_serializeFMUState(fmiHandle *fmu,fmi3FMUState  FMUState,fmi3Byte serializedState[],size_t size);
+#FMI4C_DLLAPI fmi3Status fmi3_deserializeFMUState(fmiHandle *fmu,const fmi3Byte serializedState[],size_t size,fmi3FMUState* FMUState);
+#FMI4C_DLLAPI fmi3Status fmi3_getDirectionalDerivative(fmiHandle *fmu,const fmi3ValueReference unknowns[],size_t nUnknowns,const fmi3ValueReference knowns[],size_t nKnowns,const fmi3Float64 seed[],size_t nSeed,fmi3Float64 sensitivity[],size_t nSensitivity);
+#FMI4C_DLLAPI fmi3Status fmi3_getAdjointDerivative(fmiHandle *fmu,const fmi3ValueReference unknowns[],size_t nUnknowns,const fmi3ValueReference knowns[],size_t nKnowns,const fmi3Float64 seed[],size_t nSeed,fmi3Float64 sensitivity[],size_t nSensitivity);
+#FMI4C_DLLAPI fmi3Status fmi3_enterConfigurationMode(fmiHandle *fmu);
+#FMI4C_DLLAPI fmi3Status fmi3_exitConfigurationMode(fmiHandle *fmu);
+#FMI4C_DLLAPI fmi3Status fmi3_getIntervalDecimal(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3Float64 intervals[],fmi3IntervalQualifier qualifiers[]);
+#FMI4C_DLLAPI fmi3Status fmi3_getIntervalFraction(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3UInt64 intervalCounters[],fmi3UInt64 resolutions[],fmi3IntervalQualifier qualifiers[]);
+#FMI4C_DLLAPI fmi3Status fmi3_getShiftDecimal(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3Float64 shifts[]);
+#FMI4C_DLLAPI fmi3Status fmi3_getShiftFraction(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,fmi3UInt64 shiftCounters[],fmi3UInt64 resolutions[]);
+#FMI4C_DLLAPI fmi3Status fmi3_setIntervalDecimal(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3Float64 intervals[]);
+#FMI4C_DLLAPI fmi3Status fmi3_setIntervalFraction(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3UInt64 intervalCounters[],const fmi3UInt64 resolutions[]);
+#FMI4C_DLLAPI fmi3Status fmi3_evaluateDiscreteStates(fmiHandle *fmu);
+#FMI4C_DLLAPI fmi3Status fmi3_updateDiscreteStates(fmiHandle *fmu,fmi3Boolean* discreteStatesNeedUpdate,fmi3Boolean* terminateSimulation,fmi3Boolean* nominalsOfContinuousStatesChanged,fmi3Boolean* valuesOfContinuousStatesChanged,fmi3Boolean* nextEventTimeDefined,fmi3Float64* nextEventTime);
+#FMI4C_DLLAPI fmi3Status fmi3_getEventIndicators(fmiHandle *fmu,fmi3Float64 eventIndicators[],size_t nEventIndicators);
+#FMI4C_DLLAPI fmi3Status fmi3_getOutputDerivatives(fmiHandle *fmu,const fmi3ValueReference valueReferences[],size_t nValueReferences,const fmi3Int32 orders[],fmi3Float64 values[],size_t nValues);
+#FMI4C_DLLAPI fmi3Status fmi3_activateModelPartition(fmiHandle *fmu,fmi3ValueReference clockReference,fmi3Float64 activationTime);
 
-f.fmi4c_freeFmu()
-    
+# # #
 print("")      
 print("All tests were successful!")
              

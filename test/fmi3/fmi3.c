@@ -638,8 +638,9 @@ fmi3Status fmi3GetNominalsOfContinuousStates(fmi3Instance instance,
                                              size_t nContinuousStates)
 {
     UNUSED(instance);
-    UNUSED(nominals);
-    UNUSED(nContinuousStates);
+    for(size_t i=0; i<nContinuousStates; ++i) {
+        nominals[i] = 1.0;
+    }
     return fmi3OK;  //Nothing to do
 }
 
@@ -689,6 +690,8 @@ fmi3Status fmi3DoStep(fmi3Instance instance,
     fmu->x = fmu->xold + communicationStepSize/2.0*(fmu->dx + fmu->dxold);
     fmu->xold = fmu->x;
     fmu->dxold = fmu->dx;
+
+    *lastSuccessfulTime = currentCommunicationPoint+communicationStepSize;
 
     return fmi3OK;
 }
