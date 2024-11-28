@@ -4420,6 +4420,7 @@ fmiHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const char *unzipLoca
     fmu->version = fmiVersionUnknown;
     fmu->instanceName = duplicateAndRememberString(fmu, instanceName);
     fmu->unzippedLocation = unzipLocation;  //Already duplicated
+    rememberPointer(fmu, (void*)unzipLocation);
 
     char cwd[FILENAME_MAX];
  #ifdef _WIN32
