@@ -4323,31 +4323,31 @@ const char* generateTempPath(const char *instanceName)
     const char* env_tmp = getenv("TMP");
     const char* env_temp = getenv("TEMP");
     if (env_tmpdir) {
-        strncat(unzipLocation, env_tmpdir, FILENAME_MAX-strlen(unzipLocation)-1);
+        strncat(unzipLocationTemp, env_tmpdir, FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
     else if (env_tmp) {
-        strncat(unzipLocation, env_tmp, FILENAME_MAX-strlen(unzipLocation)-1);
+        strncat(unzipLocationTemp, env_tmp, FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
     else if (env_temp) {
-        strncat(unzipLocation, env_temp, FILENAME_MAX-strlen(unzipLocation)-1);
+        strncat(unzipLocationTemp, env_temp, FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
     else if (access("/tmp/", W_OK) == 0) {
-        strncat(unzipLocation, "/tmp/", FILENAME_MAX-strlen(unzipLocation)-1);
+        strncat(unzipLocationTemp, "/tmp/", FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
     // If no suitable temp directory is found, the current working directory will be used
 
     // Append / if needed
-    if (strlen(unzipLocation) > 0 && unzipLocation[strlen(unzipLocation)-1] != '/') {
-        strncat(unzipLocation, "/", FILENAME_MAX-strlen(unzipLocation)-1);
+    if (strlen(unzipLocationTemp) > 0 && unzipLocationTemp[strlen(unzipLocationTemp)-1] != '/') {
+        strncat(unzipLocationTemp, "/", FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
 
-    strncat(unzipLocation, "fmi4c_", FILENAME_MAX-strlen(unzipLocation)-1);
+    strncat(unzipLocationTemp, "fmi4c_", FILENAME_MAX-strlen(unzipLocationTemp)-1);
     if(instanceNameIsAlphaNumeric) {
-        strncat(unzipLocation, instanceName, FILENAME_MAX-strlen(unzipLocation)-1);
-        strncat(unzipLocation, "_", FILENAME_MAX-strlen(unzipLocation)-1);
+        strncat(unzipLocationTemp, instanceName, FILENAME_MAX-strlen(unzipLocationTemp)-1);
+        strncat(unzipLocationTemp, "_", FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
-    strncat(unzipLocation, "XXXXXX", FILENAME_MAX-strlen(unzipLocation)-1); // XXXXXX is for unique name by mkdtemp
-    mkdtemp(unzipLocation);
+    strncat(unzipLocationTemp, "XXXXXX", FILENAME_MAX-strlen(unzipLocationTemp)-1); // XXXXXX is for unique name by mkdtemp
+    mkdtemp(unzipLocationTemp);
 #endif
 
      return _strdup(unzipLocationTemp); //Not freed automatically!
