@@ -2401,7 +2401,7 @@ bool fmi3_instantiateModelExchange(fmiHandle *fmu,
 
 const char* fmi3_getVersion(fmiHandle *fmu) {
 
-    return fmu->fmi3.getVersion(fmu->fmi3.fmi3Instance);
+    return fmu->fmi3.getVersion();
 }
 
 fmi3Status fmi3_setDebugLogging(fmiHandle *fmu,
@@ -4274,112 +4274,87 @@ bool fmi3me_getNeedsCompletedIntegratorStep(fmiHandle *fmu)
 }
 
 
-//! @brief Loads the FMU as version 1.
-//! First parses modelDescription.xml, then loads all required FMI functions.
-//! @param fmu FMU handle
-//! @returns Handle to FMU with FMI version 1
-fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
+const char* generateTempPath(const char *instanceName)
 {
-   char cwd[FILENAME_MAX];
-#ifdef _WIN32
-    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#else
-    getcwd(cwd, sizeof(char)*FILENAME_MAX);
-#endif
+    char cwd[FILENAME_MAX];
+ #ifdef _WIN32
+     _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+ #else
+     getcwd(cwd, sizeof(char)*FILENAME_MAX);
+ #endif
 
-    // Decide location for where to unzip
-    char unzippLocation[FILENAME_MAX] = {0};
+     // Decide location for where to unzip
+     char unzipLocationTemp[FILENAME_MAX] = {0};
 
-    bool instanceNameIsAlphaNumeric = true;
-    for(int i=0; i<strlen(instanceName); ++i) {
-        if(!isalnum(instanceName[i])) {
-            instanceNameIsAlphaNumeric = false;
-        }
-    }
-#ifdef _WIN32
-    DWORD len = GetTempPathA(FILENAME_MAX, unzippLocation);
-    if (len == 0) {
-       printf("Cannot find temp path, using current directory\n");
-    }
+     bool instanceNameIsAlphaNumeric = true;
+     for(int i=0; i<strlen(instanceName); ++i) {
+         if(!isalnum(instanceName[i])) {
+             instanceNameIsAlphaNumeric = false;
+         }
+     }
+ #ifdef _WIN32
+     DWORD len = GetTempPathA(FILENAME_MAX, unzipLocationTemp);
+     if (len == 0) {
+        printf("Cannot find temp path, using current directory\n");
+     }
 
-    // Create a unique name for the temp folder
-    char tempFileName[11] = "\0\0\0\0\0\0\0\0\0\0\0";
-    srand(getpid());
-    for(int i=0; i<10; ++i) {
-        tempFileName[i] = rand() % 26 + 65;
-    }
+     // Create a unique name for the temp folder
+     char tempFileName[11] = "\0\0\0\0\0\0\0\0\0\0\0";
+     srand(getpid());
+     for(int i=0; i<10; ++i) {
+         tempFileName[i] = rand() % 26 + 65;
+     }
 
-    strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
-    if(instanceNameIsAlphaNumeric) {
-        strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
-        strncat(unzippLocation, "_", FILENAME_MAX-strlen(unzippLocation)-1);
-    }
-    char * ds = strrchr(tempFileName, '\\');
-    if (ds) {
-        strncat(unzippLocation, ds+1, FILENAME_MAX-strlen(unzippLocation)-1);
-    }
-    else {
-        strncat(unzippLocation, tempFileName, FILENAME_MAX-strlen(unzippLocation)-1);
-    }
-    _mkdir(unzippLocation);
-
-#ifndef FMI4C_WITH_MINIZIP
-    const int commandLength = strlen("tar -xf \"") + strlen(fmufile) + strlen("\" -C \"") + strlen(unzippLocation) + 2;
-
-    // Allocate memory for the command
-    char *command = malloc(commandLength * sizeof(char));
-    if (command == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        return NULL;
-    }
-    // Build the command string
-    snprintf(command, commandLength, "tar -xf \"%s\" -C \"%s\"", fmufile, unzippLocation);
-#endif
+     strncat(unzipLocationTemp, "fmi4c_", FILENAME_MAX-strlen(unzipLocationTemp)-1);
+     if(instanceNameIsAlphaNumeric) {
+         strncat(unzipLocationTemp, instanceName, FILENAME_MAX-strlen(unzipLocationTemp)-1);
+         strncat(unzipLocationTemp, "_", FILENAME_MAX-strlen(unzipLocationTemp)-1);
+     }
+     char * ds = strrchr(tempFileName, '\\');
+     if (ds) {
+         strncat(unzipLocationTemp, ds+1, FILENAME_MAX-strlen(unzipLocationTemp)-1);
+     }
+     else {
+         strncat(unzipLocationTemp, tempFileName, FILENAME_MAX-strlen(unzipLocationTemp)-1);
+     }
+     _mkdir(unzipLocationTemp);
 #else
     const char* env_tmpdir = getenv("TMPDIR");
     const char* env_tmp = getenv("TMP");
     const char* env_temp = getenv("TEMP");
     if (env_tmpdir) {
-        strncat(unzippLocation, env_tmpdir, FILENAME_MAX-strlen(unzippLocation)-1);
+        strncat(unzipLocationTemp, env_tmpdir, FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
     else if (env_tmp) {
-        strncat(unzippLocation, env_tmp, FILENAME_MAX-strlen(unzippLocation)-1);
+        strncat(unzipLocationTemp, env_tmp, FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
     else if (env_temp) {
-        strncat(unzippLocation, env_temp, FILENAME_MAX-strlen(unzippLocation)-1);
+        strncat(unzipLocationTemp, env_temp, FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
     else if (access("/tmp/", W_OK) == 0) {
-        strncat(unzippLocation, "/tmp/", FILENAME_MAX-strlen(unzippLocation)-1);
+        strncat(unzipLocationTemp, "/tmp/", FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
     // If no suitable temp directory is found, the current working directory will be used
 
     // Append / if needed
-    if (strlen(unzippLocation) > 0 && unzippLocation[strlen(unzippLocation)-1] != '/') {
-        strncat(unzippLocation, "/", FILENAME_MAX-strlen(unzippLocation)-1);
+    if (strlen(unzipLocationTemp) > 0 && unzipLocationTemp[strlen(unzipLocationTemp)-1] != '/') {
+        strncat(unzipLocationTemp, "/", FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
 
-    strncat(unzippLocation, "fmi4c_", FILENAME_MAX-strlen(unzippLocation)-1);
+    strncat(unzipLocationTemp, "fmi4c_", FILENAME_MAX-strlen(unzipLocationTemp)-1);
     if(instanceNameIsAlphaNumeric) {
-        strncat(unzippLocation, instanceName, FILENAME_MAX-strlen(unzippLocation)-1);
-        strncat(unzippLocation, "_", FILENAME_MAX-strlen(unzippLocation)-1);
+        strncat(unzipLocationTemp, instanceName, FILENAME_MAX-strlen(unzipLocationTemp)-1);
+        strncat(unzipLocationTemp, "_", FILENAME_MAX-strlen(unzipLocationTemp)-1);
     }
-    strncat(unzippLocation, "XXXXXX", FILENAME_MAX-strlen(unzippLocation)-1); // XXXXXX is for unique name by mkdtemp
-    mkdtemp(unzippLocation);
-
-#ifndef FMI4C_WITH_MINIZIP
-    const int commandLength = strlen("unzip -o \"") + strlen(fmufile) + strlen("\" -d \"") + strlen(unzippLocation) + 2;
-
-    // Allocate memory for the command
-    char *command = malloc(commandLength * sizeof(char));
-    if (command == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        return NULL;
-    }
-    // Build the command string
-    snprintf(command, commandLength, "unzip -o \"%s\" -d \"%s\"", fmufile, unzippLocation);
-#endif
+    strncat(unzipLocationTemp, "XXXXXX", FILENAME_MAX-strlen(unzipLocationTemp)-1); // XXXXXX is for unique name by mkdtemp
+    mkdtemp(unzipLocationTemp);
 #endif
 
+     return _strdup(unzipLocationTemp); //Not freed automatically!
+}
+
+bool unzipFmu(const char* fmufile, const char* instanceName, const char* unzipLocation)
+{
 #ifdef FMI4C_WITH_MINIZIP
     int argc = 6;
     const char *argv[6];
@@ -4388,33 +4363,71 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
     argv[2] = "-o";
     argv[3] = fmufile;
     argv[4] = "-d";
-    argv[5] = unzippLocation;
+    argv[5] = unzipLocation;
 
     int status = miniunz(argc, (char**)argv);
     if (status != 0) {
-        printf("Failed to unzip FMU: status = %i, to location %s\n",status, unzippLocation);
-        return NULL;
+     printf("Failed to unzip FMU: status = %i, to location %s\n",status, unzipLocation);
+     return NULL;
     }
     // miniunzip will change dir to unzipLocation, lets change back
     chdir(cwd);
 #else
+#ifdef _WIN32
+    const int commandLength = strlen("tar -xf \"") + strlen(fmufile) + strlen("\" -C \"") + strlen(unzipLocation) + 2;
+
+    // Allocate memory for the command
+    char *command = malloc(commandLength * sizeof(char));
+    if (command == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return false;
+    }
+    // Build the command string
+    snprintf(command, commandLength, "tar -xf \"%s\" -C \"%s\"", fmufile, unzipLocation);
+#else
+    const int commandLength = strlen("unzip -o \"") + strlen(fmufile) + strlen("\" -d \"") + strlen(unzipLocation) + 2;
+
+    // Allocate memory for the command
+    char *command = malloc(commandLength * sizeof(char));
+    if (command == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return NULL;
+    }
+    // Build the command string
+    snprintf(command, commandLength, "unzip -o \"%s\" -d \"%s\"", fmufile, unzipLocation);
+#endif
     const int status = system(command);
     free(command);
     if (status != 0) {
-        printf("Failed to unzip FMU: status = %i, to location %s\n",status, unzippLocation);
-        return NULL;
+        printf("Failed to unzip FMU: status = %i, to location %s\n",status, unzipLocation);
+        return false;
     }
 #endif
 
+    return true;
+}
 
+//! @brief Loads an already unzippedFMU file
+//! Parses modelDescription.xml, and then loads all required FMI functions.
+//! @param fmu FMU handle
+//! @returns Handle to FMU
+fmiHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const char *unzipLocation)
+{
     fmiHandle *fmu = calloc(1, sizeof(fmiHandle)); // Using calloc to ensure all member pointers (and data) are initialized to NULL (0)
     fmu->dll = NULL;
     fmu->numAllocatedPointers = 0;
-    fmu->allocatedPointers = calloc(0, sizeof(void*));
+    fmu->allocatedPointers = NULL;
     fmu->version = fmiVersionUnknown;
     fmu->instanceName = duplicateAndRememberString(fmu, instanceName);
-    fmu->unzippedLocation = duplicateAndRememberString(fmu, unzippLocation);
+    fmu->unzippedLocation = unzipLocation;  //Already duplicated
+    rememberPointer(fmu, (void*)unzipLocation);
 
+    char cwd[FILENAME_MAX];
+ #ifdef _WIN32
+     _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+ #else
+     getcwd(cwd, sizeof(char)*FILENAME_MAX);
+ #endif
     chdir(fmu->unzippedLocation);
     ezxml_t rootElement = ezxml_parse_file("modelDescription.xml");
     if (rootElement == NULL) {
@@ -4457,19 +4470,19 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
 
     if(fmu->version == fmiVersion1) {
         char resourcesLocation[FILENAME_MAX] = "file:///";
-        strncat(resourcesLocation, unzippLocation, FILENAME_MAX-8);
+        strncat(resourcesLocation, unzipLocation, FILENAME_MAX-8);
         fmu->resourcesLocation = duplicateAndRememberString(fmu, resourcesLocation);
     }
     else if(fmu->version == fmiVersion2) {
         char resourcesLocation[FILENAME_MAX] = "file:///";
-        strncat(resourcesLocation, unzippLocation, FILENAME_MAX-8);
-        strncat(resourcesLocation, "/resources", FILENAME_MAX-8-strlen(unzippLocation)-1);
+        strncat(resourcesLocation, unzipLocation, FILENAME_MAX-8);
+        strncat(resourcesLocation, "/resources", FILENAME_MAX-8-strlen(unzipLocation)-1);
         fmu->resourcesLocation = duplicateAndRememberString(fmu, resourcesLocation);
     }
     else {
         char resourcesLocation[FILENAME_MAX] = "";
-        strncat(resourcesLocation, unzippLocation, FILENAME_MAX);
-        strncat(resourcesLocation, "/resources/", FILENAME_MAX-strlen(unzippLocation)-1);
+        strncat(resourcesLocation, unzipLocation, FILENAME_MAX);
+        strncat(resourcesLocation, "/resources/", FILENAME_MAX-strlen(unzipLocation)-1);
         fmu->resourcesLocation = duplicateAndRememberString(fmu, resourcesLocation);
     }
 
@@ -4671,6 +4684,25 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
         }
     }
 
+    fmu->unzippedLocationIsTemporary = false;
+
+    return fmu;
+}
+
+//! @brief Loads the specified FMU file
+//! First unzips the FMU, then parses modelDescription.xml, and then loads all required FMI functions.
+//! @param fmu FMU handle
+//! @returns Handle to FMU
+fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
+{
+    const char* unzipLocation = generateTempPath(instanceName);
+
+    if(!unzipFmu(fmufile, instanceName, unzipLocation)) {
+        return NULL;
+    }
+
+    fmiHandle *fmu = fmi4c_loadUnzippedFmu(instanceName, unzipLocation);
+    fmu->unzippedLocationIsTemporary = true;
     return fmu;
 }
 
@@ -4689,7 +4721,7 @@ void fmi4c_freeFmu(fmiHandle *fmu)
 #endif
     }
 
-    if (fmu->unzippedLocation) {
+    if (fmu->unzippedLocation && fmu->unzippedLocationIsTemporary) {
         removeDirectoryRecursively(fmu->unzippedLocation, "fmi4c_");
     }
 

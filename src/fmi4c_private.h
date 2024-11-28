@@ -777,6 +777,7 @@ typedef struct {
 
 typedef struct {
     fmiVersion_t version;
+    bool unzippedLocationIsTemporary;
     const char* unzippedLocation;
     const char* resourcesLocation;
     const char* instanceName;
