@@ -417,7 +417,7 @@ bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureElement *o
                     }
 
                     if(!strcmp(kind, "independent")) {
-                        fmi4cErrorMessage = _strdup("Dependency kind = \"independent\" is not allowed for output dependencies.");
+                        fmi4c_addMessage("Dependency kind = \"independent\" is not allowed for output dependencies.");
                         free(nonConstDependencyKinds);
                         free(nonConstDependencies);
                         return false;
@@ -438,7 +438,7 @@ bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureElement *o
                         output->dependencyKinds[j] = fmi3Dependent;
                     }
                     else {
-                        fmi4cErrorMessage = _strdup("Unknown dependency kind for output dependency.");
+                        fmi4c_addMessage("Unknown dependency kind for output dependency.");
                         free(nonConstDependencyKinds);
                         free(nonConstDependencies);
                         return false;

@@ -54,7 +54,9 @@
 FARPROC loadDllFunction(HINSTANCE dll, const char *name, bool *ok) {
     FARPROC fnc = GetProcAddress(dll, name);
     if(fnc == NULL) {
-        printf("Failed to load function \"%s\"\n", name);
+        char msg[100] = {0};
+        sprintf(msg, "Failed to load function \"%s\"", name);
+        fmi4c_addMessage(msg);
         (*ok) = false;
     }
     return fnc;
@@ -70,11 +72,49 @@ void *loadDllFunction(void *dll, const char *name, bool *ok) {
 }
 #endif
 
-const char* fmi4cErrorMessage = "";
+const char** fmi4cMessageQueue = NULL;
+size_t fmi4cNumberOfMessages = 0;
 
-const char* fmi4c_getErrorMessages()
+size_t fmi4c_getNumberOfMessages()
 {
-    return fmi4cErrorMessage;
+    return fmi4cNumberOfMessages;
+}
+
+const char* fmi4c_readMessage() {
+    if(fmi4cNumberOfMessages == 0) {
+        return "";
+    }
+    fmi4cNumberOfMessages--;
+
+    //Duplicate message
+    const char* ret = _strdup(fmi4cMessageQueue[0]);
+
+    //Free the printed message
+    free((void*)fmi4cMessageQueue[0]);
+
+    //Shift messages upwards
+    for(size_t i=0; i<fmi4cNumberOfMessages; ++i) {
+        fmi4cMessageQueue[i] = fmi4cMessageQueue[i+1];
+    }
+
+    fmi4cMessageQueue[fmi4cNumberOfMessages] = NULL;
+
+    //Reallocate memory
+    if(fmi4cNumberOfMessages == 0) {
+        fmi4cMessageQueue = NULL;
+    }
+    else {
+
+        fmi4cMessageQueue = realloc(fmi4cMessageQueue, fmi4cNumberOfMessages*sizeof(const char*));
+    }
+
+    return ret;
+}
+
+void fmi4c_addMessage(const char* msg) {
+    fmi4cNumberOfMessages++;
+    fmi4cMessageQueue = realloc(fmi4cMessageQueue, (fmi4cNumberOfMessages)*sizeof(const char*));
+    fmi4cMessageQueue[fmi4cNumberOfMessages-1] = _strdup(msg);
 }
 
 void freeDuplicatedConstChar(const char* ptr) {
@@ -2688,16 +2728,16 @@ bool fmi2_instantiate(fmiHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, 
 {
     TRACEFUNC
     if(type == fmi2CoSimulation && !fmu->fmi2.supportsCoSimulation) {
-        printf("FMI for co-simulation is not supported by this FMU.");
+        fmi4c_addMessage("FMI for co-simulation is not supported by this FMU.");
         return false;
     }
     else if(type == fmi2ModelExchange && !fmu->fmi2.supportsModelExchange) {
-        printf("FMI for model exchange is not supported by this FMU.");
+        fmi4c_addMessage("FMI for model exchange is not supported by this FMU.");
         return false;
     }
 
     if(!loadFunctionsFmi2(fmu, type)) {
-        printf("Failed to load functions for FMI 2.");
+        fmi4c_addMessage("Failed to load functions for FMI 2.");
         return false;
     }
 
@@ -4413,12 +4453,14 @@ bool fmi3me_getNeedsCompletedIntegratorStep(fmiHandle *fmu)
 
 const char* generateTempPath(const char *instanceName)
 {
-    char cwd[FILENAME_MAX];
- #ifdef _WIN32
-     _getcwd(cwd, sizeof(char)*FILENAME_MAX);
- #else
-     getcwd(cwd, sizeof(char)*FILENAME_MAX);
- #endif
+    fmi4c_addMessage("Loading FMU!");
+
+   char cwd[FILENAME_MAX];
+#ifdef _WIN32
+    _getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#else
+    getcwd(cwd, sizeof(char)*FILENAME_MAX);
+#endif
 
      // Decide location for where to unzip
      char unzipLocationTemp[FILENAME_MAX] = {0};
