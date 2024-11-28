@@ -45,6 +45,8 @@ FMI4C_DLLAPI fmiHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const ch
 FMI4C_DLLAPI fmiHandle* fmi4c_loadFmu(const char *fmufile, const char* instanceName);
 FMI4C_DLLAPI void fmi4c_freeFmu(fmiHandle* fmu);
 FMI4C_DLLAPI const char* fmi4c_getErrorMessages();
+FMI4C_DLLAPI size_t fmi4c_getNumberOfMessages();
+FMI4C_DLLAPI const char* fmi4c_readMessage();
 
 // FMI 1 wrapper functions
 FMI4C_DLLAPI fmi1Type fmi1_getType(fmiHandle *fmu);
