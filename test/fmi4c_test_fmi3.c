@@ -240,6 +240,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     }
 
     states = malloc(nStates*sizeof(fmi3Float64));
+    nominalStates = malloc(nStates*sizeof(fmi3Float64));
     derivatives = malloc(nStates*sizeof(fmi3Float64));
     eventIndicators = malloc(nEventIndicators*sizeof(fmi3Float64));
     eventIndicatorsPrev = malloc(nEventIndicators*sizeof(fmi3Float64));
