@@ -1,5 +1,5 @@
-#ifndef FMI4C_STDCALL placeholderS_H
-#define FMI4C_STDCALL placeholderS_H
+#ifndef FMI4C_PLACEHOLDERS_H
+#define FMI4C_PLACEHOLDERS_H
 
 #include "fmi4c_common.h"
 #include "fmi4c_types_fmi1.h"
@@ -1757,4 +1757,4 @@ fmi3Status STDCALL placeholder_fmi3ActivateModelPartition(fmi3Instance instance,
     return fmi3Error;
 }
 
-#endif // FMI4C_STDCALL placeholderS_H
+#endif // FMI4C_PLACEHOLDERS_H
