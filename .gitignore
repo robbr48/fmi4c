@@ -57,3 +57,5 @@ CMakeLists.txt.user
 # Backup Files
 *~
 \#*
+
+build/

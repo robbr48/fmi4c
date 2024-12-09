@@ -13,30 +13,30 @@
 
 #include <stdio.h>
 
-fmi1Status placeholder(fmi1Component_t component, fmi1Boolean x) {
+fmi1Status STDCALL placeholder(fmi1Component_t component, fmi1Boolean x) {
     return fmi1Error;
 }
 
 #define NOT_IMPLEMENTED(FUNCNAME) printf("Function \"%s\" is not provided by this FMU.\n",#FUNCNAME);
 
-const char* placeholder_fmiGetVersion() {
+const char* STDCALL placeholder_fmiGetVersion() {
     NOT_IMPLEMENTED(fmiGetVersion);
     return NULL;
 }
 
-const char* placeholder_fmiGetTypesPlatform() {
+const char* STDCALL placeholder_fmiGetTypesPlatform() {
     NOT_IMPLEMENTED(fmiGetTypesPlatform);
     return NULL;
 }
 
-fmi1Status placeholder_fmiSetDebugLogging(fmi1Component_t c, fmi1Boolean loggingOn) {
+fmi1Status STDCALL placeholder_fmiSetDebugLogging(fmi1Component_t c, fmi1Boolean loggingOn) {
     UNUSED(c);
     UNUSED(loggingOn);
     NOT_IMPLEMENTED(fmiSetDebugLogging);
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetReal(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, fmi1Real value[]) {
+fmi1Status STDCALL placeholder_fmiGetReal(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, fmi1Real value[]) {
     UNUSED(c);
     UNUSED(vr);
     UNUSED(nvr);
@@ -44,7 +44,7 @@ fmi1Status placeholder_fmiGetReal(fmi1Component_t c, const fmi1ValueReference vr
     NOT_IMPLEMENTED(fmiGetReal);
     return fmi1Error;
 }
-fmi1Status placeholder_fmiGetInteger(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, fmi1Integer value[]) {
+fmi1Status STDCALL placeholder_fmiGetInteger(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, fmi1Integer value[]) {
     UNUSED(c);
     UNUSED(vr);
     UNUSED(nvr);
@@ -53,7 +53,7 @@ fmi1Status placeholder_fmiGetInteger(fmi1Component_t c, const fmi1ValueReference
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetBoolean(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, fmi1Boolean value[]) {
+fmi1Status STDCALL placeholder_fmiGetBoolean(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, fmi1Boolean value[]) {
     UNUSED(c);
     UNUSED(vr);
     UNUSED(nvr);
@@ -62,7 +62,7 @@ fmi1Status placeholder_fmiGetBoolean(fmi1Component_t c, const fmi1ValueReference
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetString(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, fmi1String  value[]) {
+fmi1Status STDCALL placeholder_fmiGetString(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, fmi1String  value[]) {
     UNUSED(c);
     UNUSED(vr);
     UNUSED(nvr);
@@ -71,7 +71,7 @@ fmi1Status placeholder_fmiGetString(fmi1Component_t c, const fmi1ValueReference 
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiSetReal(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, const fmi1Real value[]) {
+fmi1Status STDCALL placeholder_fmiSetReal(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, const fmi1Real value[]) {
     UNUSED(c);
     UNUSED(vr);
     UNUSED(nvr);
@@ -80,7 +80,7 @@ fmi1Status placeholder_fmiSetReal(fmi1Component_t c, const fmi1ValueReference vr
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiSetInteger(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, const fmi1Integer value[]) {
+fmi1Status STDCALL placeholder_fmiSetInteger(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, const fmi1Integer value[]) {
     UNUSED(c);
     UNUSED(vr);
     UNUSED(nvr);
@@ -89,7 +89,7 @@ fmi1Status placeholder_fmiSetInteger(fmi1Component_t c, const fmi1ValueReference
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiSetBoolean(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, const fmi1Boolean value[]) {
+fmi1Status STDCALL placeholder_fmiSetBoolean(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, const fmi1Boolean value[]) {
     UNUSED(c);
     UNUSED(vr);
     UNUSED(nvr);
@@ -98,7 +98,7 @@ fmi1Status placeholder_fmiSetBoolean(fmi1Component_t c, const fmi1ValueReference
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiSetString(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, const fmi1String value[]) {
+fmi1Status STDCALL placeholder_fmiSetString(fmi1Component_t c, const fmi1ValueReference vr[], size_t nvr, const fmi1String value[]) {
     UNUSED(c);
     UNUSED(vr);
     UNUSED(nvr);
@@ -106,7 +106,7 @@ fmi1Status placeholder_fmiSetString(fmi1Component_t c, const fmi1ValueReference 
    NOT_IMPLEMENTED(fmiSetString);
    return fmi1Error;
 }
-fmi1Component_t placeholder_fmiInstantiateSlave(fmi1String instanceName,
+fmi1Component_t STDCALL placeholder_fmiInstantiateSlave(fmi1String instanceName,
                                                 fmi1String fmuGUID,
                                                 fmi1String fmuLocation,
                                                 fmi1String mimeType,
@@ -128,7 +128,7 @@ fmi1Component_t placeholder_fmiInstantiateSlave(fmi1String instanceName,
     return NULL;
 }
 
-fmi1Status placeholder_fmiInitializeSlave(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiInitializeSlave(fmi1Component_t c,
                                           fmi1Real tStart,
                                           fmi1Boolean StopTimeDefined,
                                           fmi1Real tStop) {
@@ -140,24 +140,24 @@ fmi1Status placeholder_fmiInitializeSlave(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiTerminateSlave(fmi1Component_t c) {
+fmi1Status STDCALL placeholder_fmiTerminateSlave(fmi1Component_t c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmiTerminateSlave);
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiResetSlave(fmi1Component_t c) {
+fmi1Status STDCALL placeholder_fmiResetSlave(fmi1Component_t c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmiResetSlave);
     return fmi1Error;
 }
 
-void placeholder_fmiFreeSlaveInstance(fmi1Component_t c) {
+void STDCALL placeholder_fmiFreeSlaveInstance(fmi1Component_t c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmiFreeSlaveInstance);
 }
 
-fmi1Status placeholder_fmiSetRealInputDerivatives(fmiComponent c,
+fmi1Status STDCALL placeholder_fmiSetRealInputDerivatives(fmiComponent c,
                                                   const  fmiValueReference vr[],
                                                   size_t nvr,
                                                   const  fmi1Integer order[],
@@ -171,7 +171,7 @@ fmi1Status placeholder_fmiSetRealInputDerivatives(fmiComponent c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetRealOutputDerivatives(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiGetRealOutputDerivatives(fmi1Component_t c,
                                                    const fmi1ValueReference vr[],
                                                    size_t nvr,
                                                    const fmi1Integer order[],
@@ -185,13 +185,13 @@ fmi1Status placeholder_fmiGetRealOutputDerivatives(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiCancelStep(fmi1Component_t c) {
+fmi1Status STDCALL placeholder_fmiCancelStep(fmi1Component_t c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmiCancelStep);
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiDoStep(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiDoStep(fmi1Component_t c,
                                  fmi1Real currentCommunicationPoint,
                                  fmi1Real communicationStepSize,
                                  fmi1Boolean newStep) {
@@ -203,7 +203,7 @@ fmi1Status placeholder_fmiDoStep(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1Status* value) {
+fmi1Status STDCALL placeholder_fmiGetStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1Status* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
@@ -211,7 +211,7 @@ fmi1Status placeholder_fmiGetStatus(fmi1Component_t c, const fmi1StatusKind s, f
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetRealStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1Real* value) {
+fmi1Status STDCALL placeholder_fmiGetRealStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1Real* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
@@ -219,7 +219,7 @@ fmi1Status placeholder_fmiGetRealStatus(fmi1Component_t c, const fmi1StatusKind 
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetIntegerStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1Integer* value) {
+fmi1Status STDCALL placeholder_fmiGetIntegerStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1Integer* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
@@ -227,7 +227,7 @@ fmi1Status placeholder_fmiGetIntegerStatus(fmi1Component_t c, const fmi1StatusKi
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetBooleanStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1Boolean* value) {
+fmi1Status STDCALL placeholder_fmiGetBooleanStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1Boolean* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
@@ -235,7 +235,7 @@ fmi1Status placeholder_fmiGetBooleanStatus(fmi1Component_t c, const fmi1StatusKi
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetStringStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1String* value) {
+fmi1Status STDCALL placeholder_fmiGetStringStatus(fmi1Component_t c, const fmi1StatusKind s, fmi1String* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
@@ -243,12 +243,12 @@ fmi1Status placeholder_fmiGetStringStatus(fmi1Component_t c, const fmi1StatusKin
     return fmi1Error;
 }
 
-const char* placeholder_fmiGetModelTypesPlatform() {
+const char* STDCALL placeholder_fmiGetModelTypesPlatform() {
     NOT_IMPLEMENTED(fmiGetModelTypesPlatform);
     return NULL;
 }
 
-fmi1Component_t placeholder_fmiInstantiateModel(fmi1String instanceName,
+fmi1Component_t STDCALL placeholder_fmiInstantiateModel(fmi1String instanceName,
                                                 fmi1String fmuGUID,
                                                 fmi1CallbackFunctionsModelExchange functions,
                                                 fmi1Boolean loggingOn) {
@@ -260,12 +260,12 @@ fmi1Component_t placeholder_fmiInstantiateModel(fmi1String instanceName,
     return NULL;
 }
 
-void placeholder_fmiFreeModelInstance(fmi1Component_t c) {
+void STDCALL placeholder_fmiFreeModelInstance(fmi1Component_t c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmiFreeModelInstance);
 }
 
-fmi1Status placeholder_fmiSetTime(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiSetTime(fmi1Component_t c,
                                   fmi1Real time) {
     UNUSED(c);
     UNUSED(time);
@@ -273,7 +273,7 @@ fmi1Status placeholder_fmiSetTime(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiSetContinuousStates(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiSetContinuousStates(fmi1Component_t c,
                                               const fmi1Real x[],
                                               size_t nx) {
     UNUSED(c);
@@ -283,14 +283,14 @@ fmi1Status placeholder_fmiSetContinuousStates(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiCompletedIntegratorStep(fmi1Component_t c, fmi1Boolean* callEventUpdate) {
+fmi1Status STDCALL placeholder_fmiCompletedIntegratorStep(fmi1Component_t c, fmi1Boolean* callEventUpdate) {
     UNUSED(c);
     UNUSED(callEventUpdate);
     NOT_IMPLEMENTED(fmiCompletedIntegratorStep);
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiInitialize(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiInitialize(fmi1Component_t c,
                                      fmi1Boolean toleranceControlled,
                                      fmi1Real relativeTolerance,
                                      fmi1EventInfo *eventInfo) {
@@ -302,7 +302,7 @@ fmi1Status placeholder_fmiInitialize(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetDerivatives(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiGetDerivatives(fmi1Component_t c,
                                          fmi1Real derivatives[],
                                          size_t nx) {
     UNUSED(c);
@@ -312,7 +312,7 @@ fmi1Status placeholder_fmiGetDerivatives(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetEventIndicators(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiGetEventIndicators(fmi1Component_t c,
                                              fmi1Real eventIndicators[],
                                              size_t ni) {
     UNUSED(c);
@@ -322,7 +322,7 @@ fmi1Status placeholder_fmiGetEventIndicators(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiEventUpdate(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiEventUpdate(fmi1Component_t c,
                                       fmi1Boolean intermediateResults,
                                       fmi1EventInfo* eventInfo) {
     UNUSED(c);
@@ -332,7 +332,7 @@ fmi1Status placeholder_fmiEventUpdate(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetContinuousStates(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiGetContinuousStates(fmi1Component_t c,
                                               fmi1Real states[],
                                               size_t nx) {
     UNUSED(c);
@@ -342,7 +342,7 @@ fmi1Status placeholder_fmiGetContinuousStates(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetNominalContinuousStates(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiGetNominalContinuousStates(fmi1Component_t c,
                                                      fmi1Real x_nominal[],
                                                      size_t nx) {
     UNUSED(c);
@@ -352,7 +352,7 @@ fmi1Status placeholder_fmiGetNominalContinuousStates(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiGetStateValueReferences(fmi1Component_t c,
+fmi1Status STDCALL placeholder_fmiGetStateValueReferences(fmi1Component_t c,
                                                   fmi1ValueReference vrx[],
                                                   size_t nx) {
     UNUSED(c);
@@ -362,23 +362,23 @@ fmi1Status placeholder_fmiGetStateValueReferences(fmi1Component_t c,
     return fmi1Error;
 }
 
-fmi1Status placeholder_fmiTerminate(fmi1Component_t c) {
+fmi1Status STDCALL placeholder_fmiTerminate(fmi1Component_t c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmiTerminate);
     return fmi1Error;
 }
 
-const char* placeholder_fmi2_getTypesPlatform(void) {
+const char* STDCALL placeholder_fmi2_getTypesPlatform(void) {
     NOT_IMPLEMENTED(fmi2_getTypesPlatform);
     return NULL;
 }
 
-const char* placeholder_fmi2_getVersion(void) {
+const char* STDCALL placeholder_fmi2_getVersion(void) {
     NOT_IMPLEMENTED(fmi2_getVersion);
     return NULL;
 }
 
-fmi2Status placeholder_fmi2_setDebugLogging(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_setDebugLogging(fmi2Component c,
                                fmi2Boolean loggingOn,
                                size_t nCategories,
                                const fmi2String categories[]) {
@@ -391,7 +391,7 @@ fmi2Status placeholder_fmi2_setDebugLogging(fmi2Component c,
 }
 
 /* Creation and destruction of FMU instances and setting debug status */
-fmi2Component placeholder_fmi2Instantiate(fmi2String instanceName,
+fmi2Component STDCALL placeholder_fmi2Instantiate(fmi2String instanceName,
                               fmi2Type fmuType,
                               fmi2String fmuGUID,
                               fmi2String fmuResourceLocation,
@@ -410,13 +410,13 @@ fmi2Component placeholder_fmi2Instantiate(fmi2String instanceName,
     return NULL;
 }
 
-void placeholder_fmi2FreeInstance(fmi2Component c) {
+void STDCALL placeholder_fmi2FreeInstance(fmi2Component c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmi2FreeInstance);
 }
 
 /* Enter and exit initialization mode, terminate and reset */
-fmi2Status placeholder_fmi2_setupExperiment(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_setupExperiment(fmi2Component c,
                                            fmi2Boolean toleranceDefined,
                                            fmi2Real tolerance,
                                            fmi2Real startTime,
@@ -432,31 +432,31 @@ fmi2Status placeholder_fmi2_setupExperiment(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2EnterInitializationMode(fmi2Component c) {
+fmi2Status STDCALL placeholder_fmi2EnterInitializationMode(fmi2Component c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmi2EnterInitializationMode);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2ExitInitializationMode(fmi2Component c) {
+fmi2Status STDCALL placeholder_fmi2ExitInitializationMode(fmi2Component c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmi2ExitInitializationMode);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2Terminate(fmi2Component c) {
+fmi2Status STDCALL placeholder_fmi2Terminate(fmi2Component c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmi2Terminate);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2Reset(fmi2Component c) {
+fmi2Status STDCALL placeholder_fmi2Reset(fmi2Component c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmi2Reset);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getReal(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getReal(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    fmi2Real value[]) {
@@ -468,7 +468,7 @@ fmi2Status placeholder_fmi2_getReal(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getInteger(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getInteger(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    fmi2Integer value[]) {
@@ -480,7 +480,7 @@ fmi2Status placeholder_fmi2_getInteger(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getBoolean(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getBoolean(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    fmi2Boolean value[]) {
@@ -492,7 +492,7 @@ fmi2Status placeholder_fmi2_getBoolean(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getString(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getString(fmi2Component c,
                                      const fmi2ValueReference vr[],
                                      size_t nvr,
                                      fmi2String value[]) {
@@ -504,7 +504,7 @@ fmi2Status placeholder_fmi2_getString(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_setReal(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_setReal(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    const fmi2Real value[]) {
@@ -516,7 +516,7 @@ fmi2Status placeholder_fmi2_setReal(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_setInteger(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_setInteger(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    const fmi2Integer value[]) {
@@ -528,7 +528,7 @@ fmi2Status placeholder_fmi2_setInteger(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_setBoolean(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_setBoolean(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    const fmi2Boolean value[]) {
@@ -540,7 +540,7 @@ fmi2Status placeholder_fmi2_setBoolean(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_setString(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_setString(fmi2Component c,
                                    const fmi2ValueReference vr[],
                                    size_t nvr,
                                    const fmi2String value[]) {
@@ -552,13 +552,13 @@ fmi2Status placeholder_fmi2_setString(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2EnterEventMode(fmi2Component c) {
+fmi2Status STDCALL placeholder_fmi2EnterEventMode(fmi2Component c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmi2EnterEventMode);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2NewDiscreteStates(fmi2Component c, fmi2EventInfo* eventInfo)
+fmi2Status STDCALL placeholder_fmi2NewDiscreteStates(fmi2Component c, fmi2EventInfo* eventInfo)
 {
     UNUSED(c);
     UNUSED(eventInfo);
@@ -566,14 +566,14 @@ fmi2Status placeholder_fmi2NewDiscreteStates(fmi2Component c, fmi2EventInfo* eve
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2EnterContinuousTimeMode(fmi2Component c)
+fmi2Status STDCALL placeholder_fmi2EnterContinuousTimeMode(fmi2Component c)
 {
     UNUSED(c);
     NOT_IMPLEMENTED(fmi2EnterContinuousTimeMode);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2CompletedIntegratorStep(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2CompletedIntegratorStep(fmi2Component c,
                                        fmi2Boolean noSetFMUStatePriorToCurrentPoint,
                                        fmi2Boolean* enterEventMode,
                                        fmi2Boolean* terminateSimulation)
@@ -586,7 +586,7 @@ fmi2Status placeholder_fmi2CompletedIntegratorStep(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_setTime(fmi2Component c, fmi2Real time)
+fmi2Status STDCALL placeholder_fmi2_setTime(fmi2Component c, fmi2Real time)
 {
     UNUSED(c);
     UNUSED(time);
@@ -594,7 +594,7 @@ fmi2Status placeholder_fmi2_setTime(fmi2Component c, fmi2Real time)
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_setContinuousStates(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_setContinuousStates(fmi2Component c,
                                                const fmi2Real states[],
                                                size_t nStates)
 {
@@ -605,7 +605,7 @@ fmi2Status placeholder_fmi2_setContinuousStates(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getDerivatives(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getDerivatives(fmi2Component c,
                                           fmi2Real derivatives[],
                                           size_t nx)
 {
@@ -616,7 +616,7 @@ fmi2Status placeholder_fmi2_getDerivatives(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getEventIndicators(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getEventIndicators(fmi2Component c,
                                               fmi2Real eventIndicators[],
                                               size_t ni)
 {
@@ -627,7 +627,7 @@ fmi2Status placeholder_fmi2_getEventIndicators(fmi2Component c,
    return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getContinuousStates(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getContinuousStates(fmi2Component c,
                                    fmi2Real states[],
                                    size_t nStates)
 {
@@ -638,7 +638,7 @@ fmi2Status placeholder_fmi2_getContinuousStates(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getNominalsOfContinuousStates(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getNominalsOfContinuousStates(fmi2Component c,
                                                          fmi2Real x_nominal[],
                                                          size_t nx)
 {
@@ -649,7 +649,7 @@ fmi2Status placeholder_fmi2_getNominalsOfContinuousStates(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2DoStep(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2DoStep(fmi2Component c,
                       fmi2Real currentCommunicationPoint,
                       fmi2Real communicationStepSize,
                       fmi2Boolean noSetFMUStatePriorToCurrentPoint) {
@@ -661,7 +661,7 @@ fmi2Status placeholder_fmi2DoStep(fmi2Component c,
     return fmi2OK;
 }
 
-fmi2Status placeholder_fmi2_getFMUstate(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getFMUstate(fmi2Component c,
                                        fmi2FMUstate* FMUstate) {
     UNUSED(c);
     UNUSED(FMUstate);
@@ -669,7 +669,7 @@ fmi2Status placeholder_fmi2_getFMUstate(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_setFMUstate(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_setFMUstate(fmi2Component c,
                                        fmi2FMUstate FMUstate) {
     UNUSED(c);
     UNUSED(FMUstate);
@@ -677,7 +677,7 @@ fmi2Status placeholder_fmi2_setFMUstate(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2FreeFMUstate(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2FreeFMUstate(fmi2Component c,
                                         fmi2FMUstate* FMUstate) {
     UNUSED(c);
     UNUSED(FMUstate);
@@ -685,7 +685,7 @@ fmi2Status placeholder_fmi2FreeFMUstate(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SerializedFMUstateSize(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2SerializedFMUstateSize(fmi2Component c,
                                                   fmi2FMUstate FMUstate,
                                                   size_t* size) {
     UNUSED(c);
@@ -695,7 +695,7 @@ fmi2Status placeholder_fmi2SerializedFMUstateSize(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2SerializeFMUstate(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2SerializeFMUstate(fmi2Component c,
                                              fmi2FMUstate FMUstate,
                                              fmi2Byte serializedState[],
                                              size_t size) {
@@ -707,7 +707,7 @@ fmi2Status placeholder_fmi2SerializeFMUstate(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2DeSerializeFMUstate(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2DeSerializeFMUstate(fmi2Component c,
                                                const fmi2Byte serializedState[],
                                                size_t size,
                                                fmi2FMUstate* FMUstate) {
@@ -719,7 +719,7 @@ fmi2Status placeholder_fmi2DeSerializeFMUstate(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getDirectionalDerivative(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getDirectionalDerivative(fmi2Component c,
                                                     const fmi2ValueReference vUnknownRef[],
                                                     size_t nUnknown,
                                                     const fmi2ValueReference vKnownRef[],
@@ -737,7 +737,7 @@ fmi2Status placeholder_fmi2_getDirectionalDerivative(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_setRealInputDerivatives(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_setRealInputDerivatives(fmi2Component c,
                                                    const fmi2ValueReference vr[],
                                                    size_t nvr,
                                                    const fmi2Integer order[],
@@ -751,7 +751,7 @@ fmi2Status placeholder_fmi2_setRealInputDerivatives(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getRealOutputDerivatives(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getRealOutputDerivatives(fmi2Component c,
                                                     const fmi2ValueReference vr[],
                                                     size_t nvr,
                                                     const fmi2Integer order[],
@@ -765,13 +765,13 @@ fmi2Status placeholder_fmi2_getRealOutputDerivatives(fmi2Component c,
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2CancelStep(fmi2Component c) {
+fmi2Status STDCALL placeholder_fmi2CancelStep(fmi2Component c) {
     UNUSED(c);
     NOT_IMPLEMENTED(fmi2CancelStep);
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getStatus(fmi2Component c, const fmi2StatusKind s, fmi2Status* value) {
+fmi2Status STDCALL placeholder_fmi2_getStatus(fmi2Component c, const fmi2StatusKind s, fmi2Status* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
@@ -779,7 +779,7 @@ fmi2Status placeholder_fmi2_getStatus(fmi2Component c, const fmi2StatusKind s, f
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getRealStatus(fmi2Component c, const fmi2StatusKind s, fmi2Real* value) {
+fmi2Status STDCALL placeholder_fmi2_getRealStatus(fmi2Component c, const fmi2StatusKind s, fmi2Real* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
@@ -787,7 +787,7 @@ fmi2Status placeholder_fmi2_getRealStatus(fmi2Component c, const fmi2StatusKind 
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getIntegerStatus(fmi2Component c, const fmi2StatusKind s, fmi2Integer* value) {
+fmi2Status STDCALL placeholder_fmi2_getIntegerStatus(fmi2Component c, const fmi2StatusKind s, fmi2Integer* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
@@ -795,7 +795,7 @@ fmi2Status placeholder_fmi2_getIntegerStatus(fmi2Component c, const fmi2StatusKi
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getBooleanStatus(fmi2Component c, const fmi2StatusKind s, fmi2Boolean* value) {
+fmi2Status STDCALL placeholder_fmi2_getBooleanStatus(fmi2Component c, const fmi2StatusKind s, fmi2Boolean* value) {
     UNUSED(c);
     UNUSED(s);
     UNUSED(value);
@@ -803,7 +803,7 @@ fmi2Status placeholder_fmi2_getBooleanStatus(fmi2Component c, const fmi2StatusKi
     return fmi2Error;
 }
 
-fmi2Status placeholder_fmi2_getStringStatus(fmi2Component c,
+fmi2Status STDCALL placeholder_fmi2_getStringStatus(fmi2Component c,
                                            const fmi2StatusKind s,
                                            fmi2String* value) {
     UNUSED(c);
@@ -813,12 +813,12 @@ fmi2Status placeholder_fmi2_getStringStatus(fmi2Component c,
     return fmi2Error;
 }
 
-const char* placeholder_fmi3GetVersion() {
+const char* STDCALL placeholder_fmi3GetVersion() {
     NOT_IMPLEMENTED(fmi3GetVersion);
     return NULL;
 }
 
-fmi3Status placeholder_fmi3SetDebugLogging(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetDebugLogging(fmi3Instance instance,
                                            fmi3Boolean loggingOn,
                                            size_t nCategories,
                                            const fmi3String categories[]) {
@@ -830,7 +830,7 @@ fmi3Status placeholder_fmi3SetDebugLogging(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Instance placeholder_fmi3InstantiateCoSimulation(fmi3String instanceName,
+fmi3Instance STDCALL placeholder_fmi3InstantiateCoSimulation(fmi3String instanceName,
                                                        fmi3String instantiationToken,
                                                        fmi3String resourcePath,
                                                        fmi3Boolean visible,
@@ -858,7 +858,7 @@ fmi3Instance placeholder_fmi3InstantiateCoSimulation(fmi3String instanceName,
     return NULL;
 }
 
-fmi3Instance placeholder_fmi3InstantiateModelExchange(fmi3String instanceName,
+fmi3Instance STDCALL placeholder_fmi3InstantiateModelExchange(fmi3String instanceName,
                                                         fmi3String instantiationToken,
                                                         fmi3String resourcePath,
                                                         fmi3Boolean visible,
@@ -876,7 +876,7 @@ fmi3Instance placeholder_fmi3InstantiateModelExchange(fmi3String instanceName,
     return NULL;
 }
 
-fmi3Instance placeholder_fmi3InstantiateScheduledExecution(fmi3String instanceName,
+fmi3Instance STDCALL placeholder_fmi3InstantiateScheduledExecution(fmi3String instanceName,
                                                              fmi3String instantiationToken,
                                                              fmi3String resourcePath,
                                                              fmi3Boolean visible,
@@ -900,12 +900,12 @@ fmi3Instance placeholder_fmi3InstantiateScheduledExecution(fmi3String instanceNa
     return NULL;
 }
 
-void placeholder_fmi3FreeInstance(fmi3Instance instance) {
+void STDCALL placeholder_fmi3FreeInstance(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3FreeInstance);
 }
 
-fmi3Status placeholder_fmi3EnterInitializationMode(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3EnterInitializationMode(fmi3Instance instance,
                                                    fmi3Boolean toleranceDefined,
                                                    fmi3Float64 tolerance,
                                                    fmi3Float64 startTime,
@@ -921,19 +921,19 @@ fmi3Status placeholder_fmi3EnterInitializationMode(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3ExitInitializationMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3ExitInitializationMode(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3ExitInitializationMode);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3Terminate(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3Terminate(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3Terminate);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3DoStep(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3DoStep(fmi3Instance instance,
                                   fmi3Float64 currentCommunicationPoint,
                                   fmi3Float64 communicationStepSize,
                                   fmi3Boolean noSetFMUStatePriorToCurrentPoint,
@@ -954,19 +954,19 @@ fmi3Status placeholder_fmi3DoStep(fmi3Instance instance,
 
 }
 
-fmi3Status placeholder_fmi3EnterEventMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EnterEventMode(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EnterEventMode);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3Reset(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3Reset(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3Reset);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetFloat64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetFloat64(fmi3Instance instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3Float64 values[],
@@ -980,7 +980,7 @@ fmi3Status placeholder_fmi3GetFloat64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetFloat64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetFloat64(fmi3Instance instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3Float64 values[],
@@ -994,7 +994,7 @@ fmi3Status placeholder_fmi3SetFloat64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetFloat32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetFloat32(fmi3Instance instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3Float32 values[],
@@ -1008,7 +1008,7 @@ fmi3Status placeholder_fmi3GetFloat32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetInt8(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetInt8(fmi3Instance instance,
                                    const fmi3ValueReference valueReferences[],
                                    size_t nValueReferences,
                                    fmi3Int8 values[],
@@ -1022,7 +1022,7 @@ fmi3Status placeholder_fmi3GetInt8(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetUInt8(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetUInt8(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3UInt8 values[],
@@ -1036,7 +1036,7 @@ fmi3Status placeholder_fmi3GetUInt8(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetInt16(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetInt16(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3Int16 values[],
@@ -1050,7 +1050,7 @@ fmi3Status placeholder_fmi3GetInt16(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetUInt16(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetUInt16(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3UInt16 values[],
@@ -1064,7 +1064,7 @@ fmi3Status placeholder_fmi3GetUInt16(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetInt32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetInt32(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3Int32 values[],
@@ -1078,7 +1078,7 @@ fmi3Status placeholder_fmi3GetInt32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetUInt32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetUInt32(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3UInt32 values[],
@@ -1092,7 +1092,7 @@ fmi3Status placeholder_fmi3GetUInt32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetInt64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetInt64(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3Int64 values[],
@@ -1106,7 +1106,7 @@ fmi3Status placeholder_fmi3GetInt64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetUInt64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetUInt64(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3UInt64 values[],
@@ -1120,7 +1120,7 @@ fmi3Status placeholder_fmi3GetUInt64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetBoolean(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetBoolean(fmi3Instance instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3Boolean values[],
@@ -1134,7 +1134,7 @@ fmi3Status placeholder_fmi3GetBoolean(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetString(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetString(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3String values[],
@@ -1148,7 +1148,7 @@ fmi3Status placeholder_fmi3GetString(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetBinary(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetBinary(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      size_t valueSizes[],
@@ -1164,7 +1164,7 @@ fmi3Status placeholder_fmi3GetBinary(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetClock(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetClock(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3Clock values[]) {
@@ -1176,7 +1176,7 @@ fmi3Status placeholder_fmi3GetClock(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetFloat32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetFloat32(fmi3Instance instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3Float32 values[],
@@ -1190,7 +1190,7 @@ fmi3Status placeholder_fmi3SetFloat32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetInt8(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetInt8(fmi3Instance instance,
                                    const fmi3ValueReference valueReferences[],
                                    size_t nValueReferences,
                                    const fmi3Int8 values[],
@@ -1204,7 +1204,7 @@ fmi3Status placeholder_fmi3SetInt8(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetUInt8(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetUInt8(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3UInt8 values[],
@@ -1218,7 +1218,7 @@ fmi3Status placeholder_fmi3SetUInt8(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetInt16(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetInt16(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3Int16 values[],
@@ -1232,7 +1232,7 @@ fmi3Status placeholder_fmi3SetInt16(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetUInt16(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetUInt16(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3UInt16 values[],
@@ -1246,7 +1246,7 @@ fmi3Status placeholder_fmi3SetUInt16(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetInt32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetInt32(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3Int32 values[],
@@ -1260,7 +1260,7 @@ fmi3Status placeholder_fmi3SetInt32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetUInt32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetUInt32(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3UInt32 values[],
@@ -1274,7 +1274,7 @@ fmi3Status placeholder_fmi3SetUInt32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetInt64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetInt64(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3Int64 values[],
@@ -1288,7 +1288,7 @@ fmi3Status placeholder_fmi3SetInt64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetUInt64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetUInt64(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3UInt64 values[],
@@ -1302,7 +1302,7 @@ fmi3Status placeholder_fmi3SetUInt64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetBoolean(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetBoolean(fmi3Instance instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3Boolean values[],
@@ -1316,7 +1316,7 @@ fmi3Status placeholder_fmi3SetBoolean(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetString(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetString(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3String values[],
@@ -1330,7 +1330,7 @@ fmi3Status placeholder_fmi3SetString(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetBinary(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetBinary(fmi3Instance instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const size_t valueSizes[],
@@ -1346,7 +1346,7 @@ fmi3Status placeholder_fmi3SetBinary(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetClock(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetClock(fmi3Instance instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3Clock values[]) {
@@ -1358,7 +1358,7 @@ fmi3Status placeholder_fmi3SetClock(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetNumberOfVariableDependencies(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetNumberOfVariableDependencies(fmi3Instance instance,
                                                            fmi3ValueReference valueReference,
                                                            size_t* nDependencies) {
     UNUSED(instance);
@@ -1368,7 +1368,7 @@ fmi3Status placeholder_fmi3GetNumberOfVariableDependencies(fmi3Instance instance
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetVariableDependencies(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetVariableDependencies(fmi3Instance instance,
                                                    fmi3ValueReference dependent,
                                                    size_t elementIndicesOfDependent[],
                                                    fmi3ValueReference independents[],
@@ -1386,7 +1386,7 @@ fmi3Status placeholder_fmi3GetVariableDependencies(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetFMUState(fmi3Instance instance,
                                        fmi3FMUState* FMUState) {
     UNUSED(instance);
     UNUSED(FMUState);
@@ -1394,7 +1394,7 @@ fmi3Status placeholder_fmi3GetFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetFMUState(fmi3Instance instance,
                                        fmi3FMUState FMUState) {
     UNUSED(instance);
     UNUSED(FMUState);
@@ -1402,7 +1402,7 @@ fmi3Status placeholder_fmi3SetFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3FreeFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3FreeFMUState(fmi3Instance instance,
                                         fmi3FMUState* FMUState) {
     UNUSED(instance);
     UNUSED(FMUState);
@@ -1410,7 +1410,7 @@ fmi3Status placeholder_fmi3FreeFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SerializedFMUStateSize(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SerializedFMUStateSize(fmi3Instance instance,
                                                   fmi3FMUState FMUState,
                                                   size_t* size) {
     UNUSED(instance);
@@ -1420,7 +1420,7 @@ fmi3Status placeholder_fmi3SerializedFMUStateSize(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SerializeFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SerializeFMUState(fmi3Instance instance,
                                              fmi3FMUState FMUState,
                                              fmi3Byte serializedState[],
                                              size_t size) {
@@ -1432,7 +1432,7 @@ fmi3Status placeholder_fmi3SerializeFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3DeserializeFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3DeserializeFMUState(fmi3Instance instance,
                                                const fmi3Byte serializedState[],
                                                size_t size,
                                                fmi3FMUState* FMUState) {
@@ -1444,7 +1444,7 @@ fmi3Status placeholder_fmi3DeserializeFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetDirectionalDerivative(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetDirectionalDerivative(fmi3Instance instance,
                                                     const fmi3ValueReference unknowns[],
                                                     size_t nUnknowns,
                                                     const fmi3ValueReference knowns[],
@@ -1466,7 +1466,7 @@ fmi3Status placeholder_fmi3GetDirectionalDerivative(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetAdjointDerivative(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetAdjointDerivative(fmi3Instance instance,
                                                 const fmi3ValueReference unknowns[],
                                                 size_t nUnknowns,
                                                 const fmi3ValueReference knowns[],
@@ -1488,19 +1488,19 @@ fmi3Status placeholder_fmi3GetAdjointDerivative(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3EnterConfigurationMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EnterConfigurationMode(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EnterConfigurationMode);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3ExitConfigurationMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3ExitConfigurationMode(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3ExitConfigurationMode);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetIntervalDecimal(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetIntervalDecimal(fmi3Instance instance,
                                               const fmi3ValueReference valueReferences[],
                                               size_t nValueReferences,
                                               fmi3Float64 intervals[],
@@ -1514,7 +1514,7 @@ fmi3Status placeholder_fmi3GetIntervalDecimal(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetIntervalFraction(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetIntervalFraction(fmi3Instance instance,
                                                const fmi3ValueReference valueReferences[],
                                                size_t nValueReferences,
                                                fmi3UInt64 intervalCounters[],
@@ -1530,7 +1530,7 @@ fmi3Status placeholder_fmi3GetIntervalFraction(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetShiftDecimal(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetShiftDecimal(fmi3Instance instance,
                                            const fmi3ValueReference valueReferences[],
                                            size_t nValueReferences,
                                            fmi3Float64 shifts[]) {
@@ -1542,7 +1542,7 @@ fmi3Status placeholder_fmi3GetShiftDecimal(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetShiftFraction(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetShiftFraction(fmi3Instance instance,
                                             const fmi3ValueReference valueReferences[],
                                             size_t nValueReferences,
                                             fmi3UInt64 shiftCounters[],
@@ -1556,7 +1556,7 @@ fmi3Status placeholder_fmi3GetShiftFraction(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetIntervalDecimal(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetIntervalDecimal(fmi3Instance instance,
                                               const fmi3ValueReference valueReferences[],
                                               size_t nValueReferences,
                                               const fmi3Float64 intervals[]) {
@@ -1568,7 +1568,7 @@ fmi3Status placeholder_fmi3SetIntervalDecimal(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetIntervalFraction(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetIntervalFraction(fmi3Instance instance,
                                                const fmi3ValueReference valueReferences[],
                                                size_t nValueReferences,
                                                const fmi3UInt64 intervalCounters[],
@@ -1582,7 +1582,7 @@ fmi3Status placeholder_fmi3SetIntervalFraction(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetShiftDecimal(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetShiftDecimal(fmi3Instance instance,
                                            const fmi3ValueReference valueReferences[],
                                            size_t nValueReferences,
                                            const fmi3Float64 shifts[]) {
@@ -1590,11 +1590,11 @@ fmi3Status placeholder_fmi3SetShiftDecimal(fmi3Instance instance,
     UNUSED(valueReferences);
     UNUSED(nValueReferences);
     UNUSED(shifts);
-    NOT_IMPLEMENTED(placeholder_fmi3SetShiftDecimal);
+    NOT_IMPLEMENTED(STDCALL placeholder_fmi3SetShiftDecimal);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetShiftFraction(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetShiftFraction(fmi3Instance instance,
                                             const fmi3ValueReference valueReferences[],
                                             size_t nValueReferences,
                                             const fmi3UInt64 counters[],
@@ -1604,18 +1604,18 @@ fmi3Status placeholder_fmi3SetShiftFraction(fmi3Instance instance,
     UNUSED(nValueReferences);
     UNUSED(counters);
     UNUSED(resolutions);
-    NOT_IMPLEMENTED(placeholder_fmi3SetShiftFraction);
+    NOT_IMPLEMENTED(STDCALL placeholder_fmi3SetShiftFraction);
     return fmi3Error;
 }
 
 
-fmi3Status placeholder_fmi3EvaluateDiscreteStates(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EvaluateDiscreteStates(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EvaluateDiscreteStates);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3UpdateDiscreteStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3UpdateDiscreteStates(fmi3Instance instance,
                                                 fmi3Boolean* discreteStatesNeedUpdate,
                                                 fmi3Boolean* terminateSimulation,
                                                 fmi3Boolean* nominalsOfContinuousStatesChanged,
@@ -1633,13 +1633,13 @@ fmi3Status placeholder_fmi3UpdateDiscreteStates(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3EnterContinuousTimeMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EnterContinuousTimeMode(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EnterContinuousTimeMode);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3CompletedIntegratorStep(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3CompletedIntegratorStep(fmi3Instance instance,
                                                    fmi3Boolean noSetFMUStatePriorToCurrentPoint,
                                                    fmi3Boolean* enterEventMode,
                                                    fmi3Boolean* terminateSimulation) {
@@ -1651,7 +1651,7 @@ fmi3Status placeholder_fmi3CompletedIntegratorStep(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetTime(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetTime(fmi3Instance instance,
                                    fmi3Float64 time) {
     UNUSED(instance);
     UNUSED(time);
@@ -1659,7 +1659,7 @@ fmi3Status placeholder_fmi3SetTime(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3SetContinuousStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetContinuousStates(fmi3Instance instance,
                                                const fmi3Float64 continuousStates[],
                                                size_t nContinuousStates) {
     UNUSED(instance);
@@ -1669,7 +1669,7 @@ fmi3Status placeholder_fmi3SetContinuousStates(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetContinuousStateDerivatives(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetContinuousStateDerivatives(fmi3Instance instance,
                                                          fmi3Float64 derivatives[],
                                                          size_t nContinuousStates) {
     UNUSED(instance);
@@ -1679,7 +1679,7 @@ fmi3Status placeholder_fmi3GetContinuousStateDerivatives(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetEventIndicators(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetEventIndicators(fmi3Instance instance,
                                               fmi3Float64 eventIndicators[],
                                               size_t nEventIndicators) {
     UNUSED(instance);
@@ -1689,7 +1689,7 @@ fmi3Status placeholder_fmi3GetEventIndicators(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetContinuousStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetContinuousStates(fmi3Instance instance,
                                                fmi3Float64 continuousStates[],
                                                size_t nContinuousStates) {
     UNUSED(instance);
@@ -1699,7 +1699,7 @@ fmi3Status placeholder_fmi3GetContinuousStates(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetNominalsOfContinuousStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetNominalsOfContinuousStates(fmi3Instance instance,
                                                          fmi3Float64 nominals[],
                                                          size_t nContinuousStates) {
     UNUSED(instance);
@@ -1709,7 +1709,7 @@ fmi3Status placeholder_fmi3GetNominalsOfContinuousStates(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetNumberOfEventIndicators(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetNumberOfEventIndicators(fmi3Instance instance,
                                                       size_t* nEventIndicators) {
     UNUSED(instance);
     UNUSED(nEventIndicators);
@@ -1717,7 +1717,7 @@ fmi3Status placeholder_fmi3GetNumberOfEventIndicators(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetNumberOfContinuousStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetNumberOfContinuousStates(fmi3Instance instance,
                                                        size_t* nContinuousStates) {
     UNUSED(instance);
     UNUSED(nContinuousStates);
@@ -1725,13 +1725,13 @@ fmi3Status placeholder_fmi3GetNumberOfContinuousStates(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3EnterStepMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EnterStepMode(fmi3Instance instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EnterStepMode);
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3GetOutputDerivatives(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetOutputDerivatives(fmi3Instance instance,
                                                 const fmi3ValueReference valueReferences[],
                                                 size_t nValueReferences,
                                                 const fmi3Int32 orders[],
@@ -1747,7 +1747,7 @@ fmi3Status placeholder_fmi3GetOutputDerivatives(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status placeholder_fmi3ActivateModelPartition(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3ActivateModelPartition(fmi3Instance instance,
                                                   fmi3ValueReference clockReference,
                                                   fmi3Float64 activationTime) {
     UNUSED(instance);
