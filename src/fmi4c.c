@@ -760,6 +760,84 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
         }
     }
 
+    fmu->fmi2.numberOfModelStructureOutputs = 0;
+    ezxml_t modelStructureElement = ezxml_child(rootElement, "ModelStructure");
+    if(modelStructureElement) {
+        ezxml_t outputsElement = ezxml_child(modelStructureElement, "Outputs");
+        if(outputsElement) {
+            //Count outputs
+            ezxml_t unknownElement = ezxml_child(outputsElement, "Unknown");
+            for(;unknownElement;unknownElement = unknownElement->next) {
+                ++fmu->fmi2.numberOfModelStructureOutputs;
+            }
+
+            //Allocate memory for outputs
+            fmu->fmi2.modelStructureOutputs = NULL;
+            if(fmu->fmi2.numberOfModelStructureOutputs > 0) {
+                fmu->fmi2.modelStructureOutputs = mallocAndRememberPointer(fmu, fmu->fmi2.numberOfModelStructureOutputs*sizeof(fmi2ModelStructureHandle));
+            }
+
+            //Read outputs
+            int i=0;
+            unknownElement = ezxml_child(outputsElement, "Unknown");
+            for(;unknownElement;unknownElement = unknownElement->next) {
+                if(!parseModelStructureElementFmi2(fmu, &fmu->fmi2.modelStructureOutputs[i], &unknownElement)) {
+                    return false;
+                }
+                ++i;
+            }
+        }
+        ezxml_t derivativesElement = ezxml_child(modelStructureElement, "Derivatives");
+        if(derivativesElement) {
+            //Count derivatives
+            ezxml_t unknownElement = ezxml_child(derivativesElement, "Unknown");
+            for(;unknownElement;unknownElement = unknownElement->next) {
+                ++fmu->fmi2.numberOfModelStructureDerivatives;
+            }
+
+            //Allocate memory for derivativse
+            fmu->fmi2.modelStructureDerivatives = NULL;
+            if(fmu->fmi2.numberOfModelStructureDerivatives > 0) {
+                fmu->fmi2.modelStructureDerivatives = mallocAndRememberPointer(fmu, fmu->fmi2.numberOfModelStructureDerivatives*sizeof(fmi2ModelStructureHandle));
+            }
+
+            //Read derivatives
+            int i=0;
+            unknownElement = ezxml_child(derivativesElement, "Unknown");
+            for(;unknownElement;unknownElement = unknownElement->next) {
+                if(!parseModelStructureElementFmi2(fmu, &fmu->fmi2.modelStructureDerivatives[i], &unknownElement)) {
+                    return false;
+                }
+                ++i;
+            }
+        }
+        ezxml_t initialUnknownsElement = ezxml_child(modelStructureElement, "InitialUnknowns");
+        if(initialUnknownsElement) {
+            //Count initial unknowns
+            ezxml_t unknownElement = ezxml_child(initialUnknownsElement, "Unknown");
+            for(;unknownElement;unknownElement = unknownElement->next) {
+                ++fmu->fmi2.numberOfModelStructureInitialUnknowns;
+            }
+
+            //Allocate memory for initial unknowns
+            fmu->fmi2.modelStructureInitialUnknowns = NULL;
+            if(fmu->fmi2.numberOfModelStructureInitialUnknowns > 0) {
+                fmu->fmi2.modelStructureInitialUnknowns = mallocAndRememberPointer(fmu, fmu->fmi2.numberOfModelStructureInitialUnknowns*sizeof(fmi2ModelStructureHandle));
+            }
+
+            //Read initial unknowns
+            int i=0;
+            unknownElement = ezxml_child(initialUnknownsElement, "Unknown");
+            for(;unknownElement;unknownElement = unknownElement->next) {
+                if(!parseModelStructureElementFmi2(fmu, &fmu->fmi2.modelStructureInitialUnknowns[i], &unknownElement)) {
+                    return false;
+                }
+                ++i;
+            }
+        }
+
+    }
+
     ezxml_free(rootElement);
 
     chdir(cwd);
@@ -1806,7 +1884,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         int i=0;
         outputElement = ezxml_child(modelStructureElement, "Output");
         for(;outputElement;outputElement = outputElement->next) {
-            if(!parseModelStructureElement(fmu, &fmu->fmi3.outputs[i], &outputElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.outputs[i], &outputElement)) {
                 return false;
             }
             ++i;
@@ -1816,7 +1894,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         continuousStateDerElement = ezxml_child(modelStructureElement, "ContinuousStateDerivative");
         for(;continuousStateDerElement;continuousStateDerElement = continuousStateDerElement->next) {
-            if(!parseModelStructureElement(fmu, &fmu->fmi3.continuousStateDerivatives[i], &continuousStateDerElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.continuousStateDerivatives[i], &continuousStateDerElement)) {
                 return false;
             }
             ++i;
@@ -1826,7 +1904,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         clockedStateElement = ezxml_child(modelStructureElement, "ClockedState");
         for(;clockedStateElement;clockedStateElement = clockedStateElement->next) {
-            if(!parseModelStructureElement(fmu, &fmu->fmi3.clockedStates[i], &clockedStateElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.clockedStates[i], &clockedStateElement)) {
                 return false;
             }
             ++i;
@@ -1836,7 +1914,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         initialUnknownElement = ezxml_child(modelStructureElement, "InitialUnknown");
         for(;initialUnknownElement;initialUnknownElement = initialUnknownElement->next) {
-            if(!parseModelStructureElement(fmu, &fmu->fmi3.initialUnknowns[i], &initialUnknownElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.initialUnknowns[i], &initialUnknownElement)) {
                 return false;
             }
             ++i;
@@ -1846,7 +1924,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         eventIndicatorElement = ezxml_child(modelStructureElement, "EventIndicator");
         for(;eventIndicatorElement;eventIndicatorElement = eventIndicatorElement->next) {
-            if(!parseModelStructureElement(fmu, &fmu->fmi3.eventIndicators[i], &eventIndicatorElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.eventIndicators[i], &eventIndicatorElement)) {
                 return false;
             }
             ++i;

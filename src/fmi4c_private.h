@@ -309,6 +309,14 @@ typedef struct {
 } fmi2DataMe_t;
 
 typedef struct {
+    int index;
+    int numberOfDependencies;
+    bool dependencyKindsDefined;
+    int *dependencies;
+    fmi2DependencyKind *dependencyKinds;
+} fmi2ModelStructureHandle;
+
+typedef struct {
     const char* fmiVersion_;
     const char* modelName;
     const char* guid;
@@ -352,6 +360,13 @@ typedef struct {
     int numberOfVariables;
     fmi2VariableHandle *variables;
     int variablesSize;
+
+    int numberOfModelStructureOutputs;
+    int numberOfModelStructureDerivatives;
+    int numberOfModelStructureInitialUnknowns;
+    fmi2ModelStructureHandle *modelStructureOutputs;
+    fmi2ModelStructureHandle *modelStructureDerivatives;
+    fmi2ModelStructureHandle *modelStructureInitialUnknowns;
 
     fmi2Component component;
 
