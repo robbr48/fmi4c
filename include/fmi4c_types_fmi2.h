@@ -25,5 +25,6 @@ typedef enum { fmi2CausalityInput, fmi2CausalityOutput, fmi2CausalityParameter, 
 typedef enum { fmi2VariabilityFixed, fmi2VariabilityTunable, fmi2VariabilityConstant, fmi2VariabilityDiscrete, fmi2VariabilityContinuous } fmi2Variability;
 typedef enum { fmi2InitialExact, fmi2InitialApprox, fmi2InitialCalculated, fmi2InitialUnknown } fmi2Initial;
 typedef enum { fmi2DataTypeReal, fmi2DataTypeInteger, fmi2DataTypeBoolean, fmi2DataTypeString, fmi2DataTypeEnumeration } fmi2DataType;
+typedef enum { fmi2Dependent, fmi2Constant, fmi2Fixed, fmi2Tunable, fmi2Discrete } fmi2DependencyKind;
 
 #endif // FMIC_FMI2_TYPES_H
