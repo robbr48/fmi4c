@@ -304,7 +304,7 @@ bool parseModelStructureElementFmi2(fmiHandle *fmu, fmi2ModelStructureHandle *ou
                 free((char*)dependencyKinds);
 
                 //Allocate memory for dependencies (assume same number as dependencies, according to FMI3 specification)
-                output->dependencyKinds = malloc(output->numberOfDependencies*sizeof(fmi2DependencyKind));
+                output->dependencyKinds = mallocAndRememberPointer(fmu, output->numberOfDependencies*sizeof(fmi2DependencyKind));
 
                 //Read dependency kinds
                 for(int j=0; j<output->numberOfDependencies; ++j) {
