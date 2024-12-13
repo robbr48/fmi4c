@@ -345,7 +345,7 @@ int testFMI1(fmiHandle *fmu, bool forceModelExchange, bool forceCosimulation, bo
     //Loop through variables in FMU
     for(size_t i=0; i<fmi1_getNumberOfVariables(fmu); ++i)
     {
-        fmi1VariableHandle* var = fmi1_getVariableByIndex(fmu, i);
+        fmi1VariableHandle* var = fmi1_getVariableByIndex(fmu, i+1);
         fmi1Causality causality = fmi1_getVariableCausality(var);
         long vr = fmi1_getVariableValueReference(var);
 

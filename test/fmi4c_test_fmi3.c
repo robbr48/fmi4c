@@ -392,7 +392,7 @@ int testFMI3(fmiHandle *fmu, bool forceModelExchange, bool forceCosimulation, bo
     //Loop through variables in FMU
     for(size_t i=0; i<fmi3_getNumberOfVariables(fmu); ++i)
     {
-        fmi3VariableHandle* var = fmi3_getVariableByIndex(fmu, i);
+        fmi3VariableHandle* var = fmi3_getVariableByIndex(fmu, i+1);
         fmi3Causality causality = fmi3_getVariableCausality(var);
         unsigned int vr = fmi3_getVariableValueReference(var);
 
