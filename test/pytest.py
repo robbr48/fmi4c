@@ -518,9 +518,9 @@ verificationDict =	{
     "numberOfVariables": 2,
     "variableNames": ['dx', 'x'],
     "variableValueReferences": [1, 2],
-    "variableCausalities": ["fmi2CausalityInput", "fmi2CausalityOutput"],
+    "variableCausalities": ["fmi2CausalityLocal", "fmi2CausalityOutput"],
     "variableVariabilities": ["fmi2VariabilityContinuous", "fmi2VariabilityContinuous"],
-    "variableInitials": ["fmi2InitialUnknown", "fmi2InitialExact"],
+    "variableInitials": ["fmi2InitialApprox", "fmi2InitialExact"],
     "variableDescriptions": ['Derivative of x', 'x'],
     "variableQuantities": ['', ''],
     "variableUnits": ['m/s', 'm'],
@@ -573,6 +573,14 @@ verificationDict =	{
     "completedIntegratorStepNotNeeded": False,
     "supportsCoSimulation": True,
     "supportsModelExchange": True,
+    "numberOfModelStructureOutputs": 1,
+    "numberOfModelStructureDerivatives": 1,
+    "numberOfModelStructureInitialUnknowns": 1,    
+    "modelStructureIndexes": [2, 1, 1],
+    "modelStructureNumberOfDependencies": [0, 0, 1],
+    "modelStructureDependencies": [[], [], [2]],
+    "modelStructureDependencyKindsDefined": [False, False, True],
+    "modelStructureDependencyKinds": [[], [], [0]],
 }
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi2.fmu", "testfmu")
 if not success:
@@ -766,6 +774,64 @@ verify("numberOfEventIndicators", f.fmi2_getNumberOfEventIndicators())
 verify("supportsCoSimulation", f.fmi2_getSupportsCoSimulation())
 verify("supportsModelExchange", f.fmi2_getSupportsModelExchange())
 
+numberOfModelStructureOutputs = f.fmi2_getNumberOfModelStructureOutputs()
+numberOfModelStructureDerivatives = f.fmi2_getNumberOfModelStructureDerivatives()
+numberOfModelStructureInitialUnknowns = f.fmi2_getNumberOfModelStructureInitialUnknowns()
+
+
+modelStructureIndexes = []
+modelStructureNumberOfDependencies = []
+modelStructureDependencies = []
+modelStructureDependencyKindsDefined = []
+modelStructureDependencyKinds = []
+for i in range(numberOfModelStructureOutputs):
+    unknown = f.fmi2_getModelStructureOutput(i)
+    modelStructureIndexes.append(f.fmi2_getModelStructureIndex(unknown))
+    nDependencies = f.fmi2_getModelStructureNumberOfDependencies(unknown)
+    modelStructureNumberOfDependencies.append(nDependencies)
+    modelStructureDependencies.append(f.fmi2_getModelStructureDependencies(unknown, nDependencies))
+    dependencyKindsDefined = f.fmi2_getModelStructureDependencyKindsDefined(unknown)
+    modelStructureDependencyKindsDefined.append(dependencyKindsDefined)
+    if dependencyKindsDefined:
+        modelStructureDependencyKinds.append(f.fmi2_getModelStructureDependencyKinds(unknown, nDependencies))
+    else:
+        modelStructureDependencyKinds.append([])
+    
+for i in range(numberOfModelStructureDerivatives):
+    unknown = f.fmi2_getModelStructureDerivative(i)
+    modelStructureIndexes.append(f.fmi2_getModelStructureIndex(unknown))
+    nDependencies = f.fmi2_getModelStructureNumberOfDependencies(unknown)
+    modelStructureNumberOfDependencies.append(nDependencies)
+    modelStructureDependencies.append(f.fmi2_getModelStructureDependencies(unknown, nDependencies))
+    dependencyKindsDefined = f.fmi2_getModelStructureDependencyKindsDefined(unknown)
+    modelStructureDependencyKindsDefined.append(dependencyKindsDefined)
+    if dependencyKindsDefined:
+        modelStructureDependencyKinds.append(f.fmi2_getModelStructureDependencyKinds(unknown, nDependencies))
+    else:
+        modelStructureDependencyKinds.append([])
+
+for i in range(numberOfModelStructureInitialUnknowns):
+    unknown = f.fmi2_getModelStructureInitialUnknown(i)
+    modelStructureIndexes.append(f.fmi2_getModelStructureIndex(unknown))
+    nDependencies = f.fmi2_getModelStructureNumberOfDependencies(unknown)
+    modelStructureNumberOfDependencies.append(nDependencies)
+    modelStructureDependencies.append(f.fmi2_getModelStructureDependencies(unknown, nDependencies))
+    dependencyKindsDefined = f.fmi2_getModelStructureDependencyKindsDefined(unknown)
+    modelStructureDependencyKindsDefined.append(dependencyKindsDefined)
+    if dependencyKindsDefined:
+        modelStructureDependencyKinds.append(f.fmi2_getModelStructureDependencyKinds(unknown, nDependencies))
+    else:
+        modelStructureDependencyKinds.append([])
+    
+verify("numberOfModelStructureOutputs", numberOfModelStructureOutputs)
+verify("numberOfModelStructureDerivatives", numberOfModelStructureDerivatives)
+verify("numberOfModelStructureInitialUnknowns", numberOfModelStructureInitialUnknowns)
+verify("modelStructureIndexes", modelStructureIndexes)
+verify("modelStructureNumberOfDependencies", modelStructureNumberOfDependencies)
+verify("modelStructureDependencies", modelStructureDependencies)
+verify("modelStructureDependencyKindsDefined", modelStructureDependencyKindsDefined)
+verify("modelStructureDependencyKinds", modelStructureDependencyKinds)
+   
 instantiateSuccess = f.fmi2_instantiate(1, False, False)    # 1 = co-simulation
 verify("instantiateSuccess", instantiateSuccess)
 
@@ -858,9 +924,7 @@ f.fmi4c_freeFmu()
 #fmi2_getBooleanStatus
 #fmi2_getStringStatus
 
-
-#Test FMI2
-     
+    
 print("")     
 print("###################")
 print("## Testing FMI 3 ##")           

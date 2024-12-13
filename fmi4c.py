@@ -340,6 +340,29 @@ class fmi4c:
         self.hdll.fmi2_getSupportsModelExchange.restype = ct.c_bool
         self.hdll.fmi2_getSupportsModelExchange.argtypes =ct.c_void_p,
 
+        self.hdll.fmi2_getNumberOfModelStructureOutputs.restype = ct.c_int;
+        self.hdll.fmi2_getNumberOfModelStructureOutputs.argtypes = ct.c_void_p,
+        self.hdll.fmi2_getNumberOfModelStructureDerivatives.restype = ct.c_int;
+        self.hdll.fmi2_getNumberOfModelStructureDerivatives.argtypes = ct.c_void_p,
+        self.hdll.fmi2_getNumberOfModelStructureInitialUnknowns.restype = ct.c_int;
+        self.hdll.fmi2_getNumberOfModelStructureInitialUnknowns.argtypes = ct.c_void_p,
+        self.hdll.fmi2_getModelStructureOutput.restype =  ct.c_void_p
+        self.hdll.fmi2_getModelStructureOutput.argtypes = ct.c_void_p,ct.c_size_t,
+        self.hdll.fmi2_getModelStructureDerivative.restype =  ct.c_void_p
+        self.hdll.fmi2_getModelStructureDerivative.argtypes = ct.c_void_p,ct.c_size_t,
+        self.hdll.fmi2_getModelStructureInitialUnknown.restype =  ct.c_void_p
+        self.hdll.fmi2_getModelStructureInitialUnknown.argtypes = ct.c_void_p,ct.c_size_t,
+        self.hdll.fmi2_getModelStructureIndex.restype = ct.c_int
+        self.hdll.fmi2_getModelStructureIndex.argtypes = ct.c_void_p,
+        self.hdll.fmi2_getModelStructureNumberOfDependencies.restype = ct.c_int
+        self.hdll.fmi2_getModelStructureNumberOfDependencies.argtypes = ct.c_void_p,
+        self.hdll.fmi2_getModelStructureDependencyKindsDefined.restype = ct.c_bool
+        self.hdll.fmi2_getModelStructureDependencyKindsDefined.argtypes = ct.c_void_p,
+        self.hdll.fmi2_getModelStructureDependencies.restype = None
+        self.hdll.fmi2_getModelStructureDependencies.argtypes = ct.c_void_p, ct.POINTER(ct.c_int), ct.c_size_t,
+        self.hdll.fmi2_getModelStructureDependencyKinds.restype = None
+        self.hdll.fmi2_getModelStructureDependencyKinds.argtypes = ct.c_void_p, ct.POINTER(ct.c_int), ct.c_size_t,
+
         self.hdll.fmi2_instantiate.restype = ct.c_bool
         self.hdll.fmi2_instantiate.argtypes =ct.c_void_p, ct.c_int, ct.c_void_p, ct.c_void_p, ct.c_void_p, ct.c_void_p, ct.c_void_p, ct.c_bool, ct.c_bool,
         self.hdll.fmi2_freeInstance.restype = None
@@ -1529,7 +1552,7 @@ class fmi4c:
 
     def fmi2_getNumberOfContinuousStates(self):
         return self.hdll.fmi2_getNumberOfContinuousStates(self.fmu)
-
+        
     def fmi2_getNumberOfEventIndicators(self):
         return self.hdll.fmi2_getNumberOfEventIndicators(self.fmu)
 
@@ -1538,6 +1561,45 @@ class fmi4c:
 
     def fmi2_getSupportsModelExchange(self):
         return self.hdll.fmi2_getSupportsModelExchange(self.fmu)
+
+    def fmi2_getNumberOfModelStructureOutputs(self):
+        return self.hdll.fmi2_getNumberOfModelStructureOutputs(self.fmu)
+        
+    def fmi2_getNumberOfModelStructureDerivatives(self):
+        return self.hdll.fmi2_getNumberOfModelStructureDerivatives(self.fmu)
+        
+    def fmi2_getNumberOfModelStructureInitialUnknowns(self):
+        return self.hdll.fmi2_getNumberOfModelStructureInitialUnknowns(self.fmu)
+        
+    def fmi2_getModelStructureOutput(self, i):
+        return self.hdll.fmi2_getModelStructureOutput(self.fmu, i)
+        
+    def fmi2_getModelStructureDerivative(self, i):
+        return self.hdll.fmi2_getModelStructureDerivative(self.fmu, i)        
+        
+    def fmi2_getModelStructureInitialUnknown(self, i):
+        return self.hdll.fmi2_getModelStructureInitialUnknown(self.fmu, i)
+
+    def fmi2_getModelStructureIndex(self, handle):
+        return self.hdll.fmi2_getModelStructureIndex(handle)
+        
+    def fmi2_getModelStructureNumberOfDependencies(self, handle):
+        return self.hdll.fmi2_getModelStructureNumberOfDependencies(handle)
+        
+    def fmi2_getModelStructureDependencyKindsDefined(self, handle):
+        return self.hdll.fmi2_getModelStructureDependencyKindsDefined(handle)    
+    
+    def fmi2_getModelStructureDependencies(self, handle, nDependencies):
+        int_array_type = ct.c_int * nDependencies
+        dependencies = int_array_type()
+        self.hdll.fmi2_getModelStructureDependencies(handle, dependencies, nDependencies)
+        return list(dependencies)
+    
+    def fmi2_getModelStructureDependencyKinds(self, handle, nDependencies):
+        int_array_type = ct.c_int * nDependencies
+        dependencyKinds = int_array_type()
+        self.hdll.fmi2_getModelStructureDependencyKinds(handle, dependencyKinds, nDependencies)
+        return list(dependencyKinds)    
 
     def fmi2_instantiate(self, type, visible,  loggingOn):
         return self.hdll.fmi2_instantiate(self.fmu,  type, None, None, None, None, None,  visible,  loggingOn)

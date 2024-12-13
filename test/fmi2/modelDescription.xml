@@ -12,8 +12,8 @@
   generationDateAndTime="2009-12-08T14:33:22Z"
   variableNamingConvention="flat"  
   numberOfEventIndicators="0">
-<CoSimulation modelIdentifier="fmi2" canHandleVariableCommunicationStepSize="true"/>
 <ModelExchange modelIdentifier="fmi2"/>
+<CoSimulation modelIdentifier="fmi2" canHandleVariableCommunicationStepSize="true"/>
 <UnitDefinitions>
     <Unit name="m">
         <BaseUnit m="1"/>
@@ -25,15 +25,25 @@
         <DisplayUnit name="km/h" factor="3.6"/>
     </Unit>
 </UnitDefinitions>
-<DefaultExperiment startTime="0.0" stopTime="3.0" tolerance="0.0001", stepSize="0.002"/>
+<DefaultExperiment startTime="0.0" stopTime="3.0" tolerance="0.0001" stepSize="0.002"/>
 <ModelVariables>
-  <ScalarVariable name="dx" valueReference="1" causality="input" description="Derivative of x">
+  <ScalarVariable name="dx" valueReference="1" causality="local" initial="approx" description="Derivative of x">
      <Real start="0.0" derivative="2" unit="m/s"/>
   </ScalarVariable>
   <ScalarVariable name="x" valueReference="2" causality="output" initial="exact" description="x">
      <Real start="1.0" unit="m"/>
   </ScalarVariable> 
 </ModelVariables>
-<ModelStructure/>
+<ModelStructure>
+    <Outputs>
+        <Unknown index="2" dependencies=""/>
+    </Outputs>
+    <Derivatives>
+        <Unknown index="1" dependencies=""/>
+    </Derivatives>
+    <InitialUnknowns>
+        <Unknown index="1" dependencies="2" dependenciesKind="dependent"/>
+    </InitialUnknowns>
+</ModelStructure>
 </fmiModelDescription>
 
