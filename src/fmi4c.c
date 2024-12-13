@@ -3393,7 +3393,7 @@ fmi3VariableHandle *fmi3_getVariableByName(fmiHandle *fmu, fmi3String name)
 fmi3VariableHandle *fmi3_getVariableByIndex(fmiHandle *fmu, int i)
 {
 
-    if(i-1 >= fmu->fmi3.numberOfVariables) {
+    if(i-1 >= fmu->fmi3.numberOfVariables || i<1) {
         printf("Variable index out of bounds: %i\n",i);
         return NULL;
     }
@@ -3423,7 +3423,7 @@ fmi2VariableHandle *fmi2_getVariableByIndex(fmiHandle *fmu, int i)
 {
     TRACEFUNC
 
-    if(i-1 >= fmu->fmi2.numberOfVariables) {
+    if(i-1 >= fmu->fmi2.numberOfVariables || i<1) {
         printf("Variable index out of bounds: %i\n",i);
         return NULL;
     }
@@ -4837,7 +4837,7 @@ fmi1VariableHandle *fmi1_getVariableByIndex(fmiHandle *fmu, int i)
 {
     TRACEFUNC
 
-    if(i-1 >= fmu->fmi1.numberOfVariables) {
+    if(i-1 >= fmu->fmi1.numberOfVariables || i<1) {
         printf("Variable index out of bounds: %i\n",i);
         return NULL;
     }
