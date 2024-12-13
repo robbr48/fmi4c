@@ -214,9 +214,22 @@ FMI4C_DLLAPI bool fmi2me_getCanSerializeFMUState(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi2me_getProvidesDirectionalDerivative(fmiHandle* fmu);
 
 FMI4C_DLLAPI int fmi2_getNumberOfContinuousStates(fmiHandle *fmu);
+FMI4C_DLLAPI void fmi2_getContinuousStateValueReferences(fmiHandle *fmu, fmi2ValueReference valueReferences[], size_t nValueReferences);
 FMI4C_DLLAPI int fmi2_getNumberOfEventIndicators(fmiHandle *fmu);
 FMI4C_DLLAPI bool fmi2_getSupportsCoSimulation(fmiHandle *fmu);
 FMI4C_DLLAPI bool fmi2_getSupportsModelExchange(fmiHandle *fmu);
+
+FMI4C_DLLAPI int fmi2_getNumberOfModelStructureOutputs(fmiHandle *fmu);
+FMI4C_DLLAPI int fmi2_getNumberOfModelStructureDerivatives(fmiHandle *fmu);
+FMI4C_DLLAPI int fmi2_getNumberOfModelStructureInitialUnknowns(fmiHandle *fmu);
+FMI4C_DLLAPI fmi2ModelStructureHandle *fmi2_getModelStructureOutput(fmiHandle *fmu, size_t i);
+FMI4C_DLLAPI fmi2ModelStructureHandle *fmi2_getModelStructureDerivative(fmiHandle *fmu, size_t i);
+FMI4C_DLLAPI fmi2ModelStructureHandle *fmi2_getModelStructureInitialUnknown(fmiHandle *fmu, size_t i);
+FMI4C_DLLAPI int fmi2_getModelStructureIndex(fmi2ModelStructureHandle *handle);
+FMI4C_DLLAPI int fmi2_getModelStructureNumberOfDependencies(fmi2ModelStructureHandle *handle);
+FMI4C_DLLAPI bool fmi2_getModelStructureDependencyKindsDefined(fmi2ModelStructureHandle *handle);
+FMI4C_DLLAPI void fmi2_getModelStructureDependencies(fmi2ModelStructureHandle *handle, int *dependencies, size_t numberOfDependencies);
+FMI4C_DLLAPI void fmi2_getModelStructureDependencyKinds(fmi2ModelStructureHandle *handle, int *dependencyKinds, size_t numberOfDependencies);
 
 FMI4C_DLLAPI bool fmi2_instantiate(fmiHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, fmi2CallbackAllocateMemory allocateMemory, fmi2CallbackFreeMemory freeMemory, fmi2StepFinished stepFinished, fmi2ComponentEnvironment componentEnvironment, fmi2Boolean visible, fmi2Boolean loggingOn);
 FMI4C_DLLAPI void fmi2_freeInstance(fmiHandle* fmu);

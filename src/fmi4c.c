@@ -4147,6 +4147,65 @@ bool fmi2_getSupportsModelExchange(fmiHandle *fmu)
     return fmu->fmi2.supportsModelExchange;
 }
 
+int fmi2_getNumberOfModelStructureOutputs(fmiHandle *fmu)
+{
+    return fmu->fmi2.numberOfModelStructureOutputs;
+}
+
+int fmi2_getNumberOfModelStructureDerivatives(fmiHandle *fmu)
+{
+    return fmu->fmi2.numberOfModelStructureDerivatives;
+}
+
+int fmi2_getNumberOfModelStructureInitialUnknowns(fmiHandle *fmu)
+{
+    return fmu->fmi2.numberOfModelStructureInitialUnknowns;
+}
+
+fmi2ModelStructureHandle *fmi2_getModelStructureOutput(fmiHandle *fmu, size_t i)
+{
+    return &fmu->fmi2.modelStructureOutputs[i];
+}
+
+fmi2ModelStructureHandle *fmi2_getModelStructureDerivative(fmiHandle *fmu, size_t i)
+{
+    return &fmu->fmi2.modelStructureDerivatives[i];
+}
+
+fmi2ModelStructureHandle *fmi2_getModelStructureInitialUnknown(fmiHandle *fmu, size_t i)
+{
+    return &fmu->fmi2.modelStructureInitialUnknowns[i];
+}
+
+int fmi2_getModelStructureIndex(fmi2ModelStructureHandle *handle)
+{
+    return handle->index;
+}
+
+int fmi2_getModelStructureNumberOfDependencies(fmi2ModelStructureHandle *handle)
+{
+    return handle->numberOfDependencies;
+}
+
+bool fmi2_getModelStructureDependencyKindsDefined(fmi2ModelStructureHandle *handle)
+{
+    return handle->dependencyKindsDefined;
+}
+
+void fmi2_getModelStructureDependencies(fmi2ModelStructureHandle *handle, int *dependencies, size_t numberOfDependencies)
+{
+    for(size_t i=0; i<numberOfDependencies; ++i) {
+        dependencies[i] = handle->dependencies[i];
+    }
+}
+
+void fmi2_getModelStructureDependencyKinds(fmi2ModelStructureHandle *handle, int *dependencyKinds, size_t numberOfDependencies)
+{
+    for(size_t i=0; i<numberOfDependencies; ++i) {
+        dependencyKinds[i] = handle->dependencyKinds[i];
+    }
+}
+
 const char *fmi3cs_getModelIdentifier(fmiHandle *fmu)
 {
     TRACEFUNC
