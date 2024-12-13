@@ -3393,11 +3393,11 @@ fmi3VariableHandle *fmi3_getVariableByName(fmiHandle *fmu, fmi3String name)
 fmi3VariableHandle *fmi3_getVariableByIndex(fmiHandle *fmu, int i)
 {
 
-    if(i >= fmu->fmi3.numberOfVariables) {
+    if(i-1 >= fmu->fmi3.numberOfVariables) {
         printf("Variable index out of bounds: %i\n",i);
         return NULL;
     }
-    return &fmu->fmi3.variables[i];
+    return &fmu->fmi3.variables[i-1];
 }
 
 fmi3VariableHandle *fmi3_getVariableByValueReference(fmiHandle *fmu, fmi3ValueReference vr)
@@ -3423,11 +3423,11 @@ fmi2VariableHandle *fmi2_getVariableByIndex(fmiHandle *fmu, int i)
 {
     TRACEFUNC
 
-    if(i >= fmu->fmi2.numberOfVariables) {
+    if(i-1 >= fmu->fmi2.numberOfVariables) {
         printf("Variable index out of bounds: %i\n",i);
         return NULL;
     }
-    return &fmu->fmi2.variables[i];
+    return &fmu->fmi2.variables[i-1];
 }
 
 fmi2VariableHandle *fmi2_getVariableByValueReference(fmiHandle *fmu, fmi2ValueReference vr)
@@ -4837,11 +4837,11 @@ fmi1VariableHandle *fmi1_getVariableByIndex(fmiHandle *fmu, int i)
 {
     TRACEFUNC
 
-    if(i >= fmu->fmi1.numberOfVariables) {
+    if(i-1 >= fmu->fmi1.numberOfVariables) {
         printf("Variable index out of bounds: %i\n",i);
         return NULL;
     }
-    return &fmu->fmi1.variables[i];
+    return &fmu->fmi1.variables[i-1];
 }
 
 fmi1VariableHandle *fmi1_getVariableByValueReference(fmiHandle *fmu, fmi1ValueReference vr)

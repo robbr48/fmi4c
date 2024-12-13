@@ -146,7 +146,7 @@ variableMaxValues = []
 variableNominals = []
 variableDataTypes = []
 for i in range(numberOfVariables):
-    var = f.fmi1_getVariableByIndex(i)
+    var = f.fmi1_getVariableByIndex(i+1)
     variableNames.append(f.fmi1_getVariableName(var))
     variableValueReferences.append(f.fmi1_getVariableValueReference(var))
     variableDescriptions.append(f.fmi1_getVariableDescription(var))
@@ -191,7 +191,7 @@ verify("displayUnitUnits", displayUnitUnits)
 
 variableStartValues = []
 for i in range(numberOfVariables):
-    var = f.fmi1_getVariableByIndex(i);
+    var = f.fmi1_getVariableByIndex(i+1);
     if f.fmi1_getVariableHasStartValue(var):
         if f.fmi1_getVariableDataType(var) == "fmi1DataTypeReal":
             variableStartValues.append(f.fmi1_getVariableStartReal(var))
@@ -378,7 +378,7 @@ variableNominals = []
 variableDataTypes = []
 variableValueReferences = []
 for i in range(numberOfVariables):
-    var = f.fmi1_getVariableByIndex(i)
+    var = f.fmi1_getVariableByIndex(i+1)
     variableNames.append(f.fmi1_getVariableName(var))
     variableValueReferences.append(f.fmi1_getVariableValueReference(var))
     variableDescriptions.append(f.fmi1_getVariableDescription(var))
@@ -423,7 +423,7 @@ verify("displayUnitUnits", displayUnitUnits)
 
 variableStartValues = []
 for i in range(numberOfVariables):
-    var = f.fmi1_getVariableByIndex(i);
+    var = f.fmi1_getVariableByIndex(i+1);
     if f.fmi1_getVariableHasStartValue(var):
         if f.fmi1_getVariableDataType(var) == "fmi1DataTypeReal":
             variableStartValues.append(f.fmi1_getVariableStartReal(var))
@@ -661,7 +661,7 @@ variableDerivativeIndexes = []
 variablesHaveStartValues = []
 variableDataTypes = []
 for i in range(numberOfVariables):
-    var = f.fmi2_getVariableByIndex(i)
+    var = f.fmi2_getVariableByIndex(i+1)
     variableNames.append(f.fmi2_getVariableName(var))
     variableCausalities.append(f.fmi2_getVariableCausality(var))
     variableVariabilities.append(f.fmi2_getVariableVariability(var))
@@ -702,7 +702,7 @@ verify("variablesCanHandleMultipleSetPerTimeInstant", variablesCanHandleMultiple
 
 variableStartValues = []
 for i in range(numberOfVariables):
-    var = f.fmi2_getVariableByIndex(i)
+    var = f.fmi2_getVariableByIndex(i+1)
     if f.fmi2_getVariableHasStartValue(var):
         if f.fmi2_getVariableDataType(var) == "fmi2DataTypeReal":
             variableStartValues.append(f.fmi2_getVariableStartReal(var))
@@ -1011,7 +1011,7 @@ variableDisplayUnits = []
 variablesHaveStartValues = []
 variableStartValues = []
 for i in range(numberOfVariables):
-    var = f.fmi3_getVariableByIndex(i)
+    var = f.fmi3_getVariableByIndex(i+1)
     variableNames.append(f.fmi3_getVariableName(var))
     var = f.fmi3_getVariableByName(variableNames[-1])
     variableValueReferences.append(f.fmi3_getVariableValueReference(var))
