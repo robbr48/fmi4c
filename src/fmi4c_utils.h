@@ -30,7 +30,7 @@ bool parseUInt16AttributeEzXml(ezxml_t element, const char *attributeName, uint1
 bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, uint8_t *target);
 
 bool parseModelStructureElementFmi2(fmiHandle *fmu, fmi2ModelStructureHandle *output, ezxml_t *element);
-bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureElement *output, ezxml_t *element);
+bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureHandle *output, ezxml_t *element);
 
 
 #endif // FMIC_UTILS_H

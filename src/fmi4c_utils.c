@@ -350,7 +350,7 @@ bool parseModelStructureElementFmi2(fmiHandle *fmu, fmi2ModelStructureHandle *ou
     return true;
 }
 
-bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureElement *output, ezxml_t *element)
+bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureHandle *output, ezxml_t *element)
 {
     parseUInt32AttributeEzXml(*element, "valueReference", &output->valueReference);
 
