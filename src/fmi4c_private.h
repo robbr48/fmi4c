@@ -317,6 +317,15 @@ typedef struct {
 } fmi2ModelStructureHandle;
 
 typedef struct {
+    int numberOfOutputs;
+    int numberOfDerivatives;
+    int numberOfInitialUnknowns;
+    fmi2ModelStructureHandle *outputs;
+    fmi2ModelStructureHandle *derivatives;
+    fmi2ModelStructureHandle *initialUnknowns;
+} fmi2ModelStructureData_t;
+
+typedef struct {
     const char* fmiVersion_;
     const char* modelName;
     const char* guid;
@@ -361,12 +370,7 @@ typedef struct {
     fmi2VariableHandle *variables;
     int variablesSize;
 
-    int numberOfModelStructureOutputs;
-    int numberOfModelStructureDerivatives;
-    int numberOfModelStructureInitialUnknowns;
-    fmi2ModelStructureHandle *modelStructureOutputs;
-    fmi2ModelStructureHandle *modelStructureDerivatives;
-    fmi2ModelStructureHandle *modelStructureInitialUnknowns;
+    fmi2ModelStructureData_t modelStructure;
 
     fmi2Component component;
 
