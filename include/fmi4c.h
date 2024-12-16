@@ -504,7 +504,7 @@ FMI4C_DLLAPI void fmi3_getLogCategory(fmiHandle *fmu, int id, const char **name,
 
 FMI4C_DLLAPI int fmi3_getNumberOfModelStructureOutputs(fmiHandle *fmu);
 FMI4C_DLLAPI int fmi3_getNumberOfModelStructureContinuousStateDerivatives(fmiHandle *fmu);
-FMI4C_DLLAPI int fmi3_getNumberOfModelStructureClockedState(fmiHandle *fmu);
+FMI4C_DLLAPI int fmi3_getNumberOfModelStructureClockedStates(fmiHandle *fmu);
 FMI4C_DLLAPI int fmi3_getNumberOfModelStructureInitialUnknowns(fmiHandle *fmu);
 FMI4C_DLLAPI int fmi3_getNumberOfModelStructureEventIndicators(fmiHandle *fmu);
 FMI4C_DLLAPI fmi3ModelStructureHandle *fmi3_getModelStructureOutput(fmiHandle *fmu, size_t i);
