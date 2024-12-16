@@ -981,14 +981,15 @@ verificationDict =	{
     "numberOfLogCategories": 2,
     "logCategories": [("logStatusError", "Log error messages"), ("logStatusWarning", "Log warning messages")],
     "numberOfModelStructureOutputs": 1,
-    "modelStructureOutput": (2, 0, False),
     "numberOfModelStructureContinuousStateDerivatives": 1,
-    "modelStructureContinuousStateDerivative": (1, 0, False),
-    "numberOfModelStructureInitialUnknown": 1,
-    "modelStructureInitialUnknown": (2, 1, False),
-    "modelStructureInitialUnknownDependency": (1, True),
     "numberOfModelStructureClockedStates": 0,
     "numberOfModelStructureEventIndicators": 0,
+    "numberOfModelStructureInitialUnknowns": 1,
+    "modelStructureValueReferences": [2, 1, 1],
+    "modelStructureNumberOfDependencies": [0, 0, 1],
+    "modelStructureDependencies": [[], [], [2]],
+    "modelStructureDependencyKindsDefined": [False, False, True],
+    "modelStructureDependencyKinds": [[], [], [5]],
     "modelIdentifier": "fmi3",
     "needsExecutionTool": False,
     "canBeInstantiatedOnlyOncePerProcess": False,
@@ -1130,6 +1131,93 @@ verify("variableUnits", variableUnits)
 verify("variableDisplayUnits", variableDisplayUnits)
 verify("variableStartValues", variableStartValues)
 
+numberOfModelStructureOutputs = f.fmi3_getNumberOfModelStructureOutputs()
+numberOfModelStructureContinuousStateDerivatives = f.fmi3_getNumberOfModelStructureContinuousStateDerivatives()
+numberOfModelStructureClockedStates = f.fmi3_getNumberOfModelStructureClockedStates()
+numberOfModelStructureEventIndicators= f.fmi3_getNumberOfModelStructureEventIndicators()
+numberOfModelStructureInitialUnknowns = f.fmi3_getNumberOfModelStructureInitialUnknowns()
+
+modelStructureValueReferences = []
+modelStructureNumberOfDependencies = []
+modelStructureDependencies = []
+modelStructureDependencyKindsDefined = []
+modelStructureDependencyKinds = []
+for i in range(numberOfModelStructureOutputs):
+    unknown = f.fmi3_getModelStructureOutput(i)
+    modelStructureValueReferences.append(f.fmi3_getModelStructureValueReference(unknown))
+    nDependencies = f.fmi3_getModelStructureNumberOfDependencies(unknown)
+    modelStructureNumberOfDependencies.append(nDependencies)
+    modelStructureDependencies.append(f.fmi3_getModelStructureDependencies(unknown, nDependencies))
+    dependencyKindsDefined = f.fmi3_getModelStructureDependencyKindsDefined(unknown)
+    modelStructureDependencyKindsDefined.append(dependencyKindsDefined)
+    if dependencyKindsDefined:
+        modelStructureDependencyKinds.append(f.fmi3_getModelStructureDependencyKinds(unknown, nDependencies))
+    else:
+        modelStructureDependencyKinds.append([])
+    
+for i in range(numberOfModelStructureContinuousStateDerivatives):
+    unknown = f.fmi3_getModelStructureContinuousStateDerivative(i)
+    modelStructureValueReferences.append(f.fmi3_getModelStructureValueReference(unknown))
+    nDependencies = f.fmi3_getModelStructureNumberOfDependencies(unknown)
+    modelStructureNumberOfDependencies.append(nDependencies)
+    modelStructureDependencies.append(f.fmi3_getModelStructureDependencies(unknown, nDependencies))
+    dependencyKindsDefined = f.fmi3_getModelStructureDependencyKindsDefined(unknown)
+    modelStructureDependencyKindsDefined.append(dependencyKindsDefined)
+    if dependencyKindsDefined:
+        modelStructureDependencyKinds.append(f.fmi3_getModelStructureDependencyKinds(unknown, nDependencies))
+    else:
+        modelStructureDependencyKinds.append([])
+
+for i in range(numberOfModelStructureClockedStates):
+    unknown = f.fmi3_getModelStructureClockedState(i)
+    modelStructureValueReferences.append(f.fmi3_getModelStructureValueReference(unknown))
+    nDependencies = f.fmi3_getModelStructureNumberOfDependencies(unknown)
+    modelStructureNumberOfDependencies.append(nDependencies)
+    modelStructureDependencies.append(f.fmi3_getModelStructureDependencies(unknown, nDependencies))
+    dependencyKindsDefined = f.fmi3_getModelStructureDependencyKindsDefined(unknown)
+    modelStructureDependencyKindsDefined.append(dependencyKindsDefined)
+    if dependencyKindsDefined:
+        modelStructureDependencyKinds.append(f.fmi3_getModelStructureDependencyKinds(unknown, nDependencies))
+    else:
+        modelStructureDependencyKinds.append([])
+
+for i in range(numberOfModelStructureEventIndicators):
+    unknown = f.fmi3_getModelStructureEventIndicator(i)
+    modelStructureValueReferences.append(f.fmi3_getModelStructureValueReference(unknown))
+    nDependencies = f.fmi3_getModelStructureNumberOfDependencies(unknown)
+    modelStructureNumberOfDependencies.append(nDependencies)
+    modelStructureDependencies.append(f.fmi3_getModelStructureDependencies(unknown, nDependencies))
+    dependencyKindsDefined = f.fmi3_getModelStructureDependencyKindsDefined(unknown)
+    modelStructureDependencyKindsDefined.append(dependencyKindsDefined)
+    if dependencyKindsDefined:
+        modelStructureDependencyKinds.append(f.fmi3_getModelStructureDependencyKinds(unknown, nDependencies))
+    else:
+        modelStructureDependencyKinds.append([])
+
+for i in range(numberOfModelStructureInitialUnknowns):
+    unknown = f.fmi3_getModelStructureInitialUnknown(i)
+    modelStructureValueReferences.append(f.fmi3_getModelStructureValueReference(unknown))
+    nDependencies = f.fmi3_getModelStructureNumberOfDependencies(unknown)
+    modelStructureNumberOfDependencies.append(nDependencies)
+    modelStructureDependencies.append(f.fmi3_getModelStructureDependencies(unknown, nDependencies))
+    dependencyKindsDefined = f.fmi3_getModelStructureDependencyKindsDefined(unknown)
+    modelStructureDependencyKindsDefined.append(dependencyKindsDefined)
+    if dependencyKindsDefined:
+        modelStructureDependencyKinds.append(f.fmi3_getModelStructureDependencyKinds(unknown, nDependencies))
+    else:
+        modelStructureDependencyKinds.append([])
+    
+verify("numberOfModelStructureOutputs", numberOfModelStructureOutputs)
+verify("numberOfModelStructureContinuousStateDerivatives", numberOfModelStructureContinuousStateDerivatives)
+verify("numberOfModelStructureClockedStates", numberOfModelStructureClockedStates)
+verify("numberOfModelStructureEventIndicators", numberOfModelStructureEventIndicators)
+verify("numberOfModelStructureInitialUnknowns", numberOfModelStructureInitialUnknowns)
+verify("modelStructureValueReferences", modelStructureValueReferences)
+verify("modelStructureNumberOfDependencies", modelStructureNumberOfDependencies)
+verify("modelStructureDependencies", modelStructureDependencies)
+verify("modelStructureDependencyKindsDefined", modelStructureDependencyKindsDefined)
+verify("modelStructureDependencyKinds", modelStructureDependencyKinds)
+
 numberOfUnits = f.fmi3_getNumberOfUnits()   
 verify("numberOfUnits", numberOfUnits)
  
@@ -1160,16 +1248,6 @@ logCategories = []
 for i in range(numberOfLogCategories):
     logCategories.append(f.fmi3_getLogCategory(i))
 verify("logCategories", logCategories);
-
-verify("numberOfModelStructureOutputs", f.fmi3_getNumberOfModelStructureOutputs())
-verify("modelStructureOutput", f.fmi3_getModelStructureOutput(0))
-verify("numberOfModelStructureContinuousStateDerivatives", f.fmi3_getNumberOfModelStructureContinuousStateDerivatives())
-verify("modelStructureContinuousStateDerivative", f.fmi3_getModelStructureContinuousStateDerivative(0))
-verify("numberOfModelStructureInitialUnknown", f.fmi3_getNumberOfModelStructureInitialUnknowns())
-verify("modelStructureInitialUnknown", f.fmi3_getModelStructureInitialUnknown(0))
-verify("modelStructureInitialUnknownDependency", f.fmi3_getModelStructureInitialUnknownDependency(0, 0))
-verify("numberOfModelStructureClockedStates", f.fmi3_getNumberOfModelStructureClockedStates());
-verify("numberOfModelStructureEventIndicators", f.fmi3_getNumberOfModelStructureEventIndicators());
 
 #Test co-simulation capability flags
 verify("modelIdentifier", f.fmi3cs_getModelIdentifier())

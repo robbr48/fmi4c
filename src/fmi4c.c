@@ -5865,7 +5865,7 @@ int fmi3_getNumberOfModelStructureContinuousStateDerivatives(fmiHandle *fmu)
     return fmu->fmi3.numberOfModelStructureContinuousStateDerivatives;
 }
 
-int fmi3_getNumberOfModelStructureClockedState(fmiHandle *fmu)
+int fmi3_getNumberOfModelStructureClockedStates(fmiHandle *fmu)
 {
     return fmu->fmi3.numberOfModelStructureClockedStates;
 }

@@ -630,47 +630,34 @@ class fmi4c:
         self.hdll.fmi3_getNumberOfLogCategories.argtypes = ct.c_void_p,
         self.hdll.fmi3_getLogCategory.restype = None 
         self.hdll.fmi3_getLogCategory.argtypes = ct.c_void_p, ct.c_int, ct.POINTER(ct.c_char_p), ct.POINTER(ct.c_char_p),
-        self.hdll.fmi3_getNumberOfModelStructureOutputs.restype = ct.c_int 
+        
+        self.hdll.fmi3_getNumberOfModelStructureOutputs.restype = ct.c_int;
         self.hdll.fmi3_getNumberOfModelStructureOutputs.argtypes = ct.c_void_p,
-        self.hdll.fmi3_getModelStructureOutput.restype = None 
-        self.hdll.fmi3_getModelStructureOutput.argtypes = ct.c_void_p, ct.c_int, ct.POINTER(ct.c_uint), ct.POINTER(ct.c_int), ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getModelStructureOutputDependency.restype = ct.c_uint 
-        self.hdll.fmi3_getModelStructureOutputDependency.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getModelStructureOutputDependencyKind.restype = ct.c_uint 
-        self.hdll.fmi3_getModelStructureOutputDependencyKind.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getNumberOfModelStructureContinuousStateDerivatives.restype = ct.c_int 
+        self.hdll.fmi3_getNumberOfModelStructureContinuousStateDerivatives.restype = ct.c_int;
         self.hdll.fmi3_getNumberOfModelStructureContinuousStateDerivatives.argtypes = ct.c_void_p,
-        self.hdll.fmi3_getModelStructureContinuousStateDerivative.restype = None 
-        self.hdll.fmi3_getModelStructureContinuousStateDerivative.argtypes = ct.c_void_p, ct.c_int, ct.POINTER(ct.c_uint), ct.POINTER(ct.c_int), ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getModelStructureContinuousStateDerivativeDependency.restype = ct.c_uint 
-        self.hdll.fmi3_getModelStructureContinuousStateDerivativeDependency.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getModelStructureContinuousStateDerivativeDependencyKind.restype = ct.c_uint 
-        self.hdll.fmi3_getModelStructureContinuousStateDerivativeDependencyKind.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getNumberOfModelStructureClockedStates.restype = ct.c_int
+        self.hdll.fmi3_getNumberOfModelStructureClockedStates.restype = ct.c_int;
         self.hdll.fmi3_getNumberOfModelStructureClockedStates.argtypes = ct.c_void_p,
-        self.hdll.fmi3_getModelStructureClockedState.restype = None 
-        self.hdll.fmi3_getModelStructureClockedState.argtypes = ct.c_void_p, ct.c_int, ct.POINTER(ct.c_uint), ct.POINTER(ct.c_int), ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getModelStructureClockedStateDependency.restype = ct.c_uint 
-        self.hdll.fmi3_getModelStructureClockedStateDependency.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getModelStructureClockedStateDependencyKind.restype = ct.c_uint 
-        self.hdll.fmi3_getModelStructureClockedStateDependencyKind.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getNumberOfModelStructureInitialUnknowns.restype = ct.c_int
-        self.hdll.fmi3_getNumberOfModelStructureInitialUnknowns.argtypes = ct.c_void_p,
-        self.hdll.fmi3_getModelStructureInitialUnknown.restype = None 
-        self.hdll.fmi3_getModelStructureInitialUnknown.argtypes = ct.c_void_p, ct.c_int, ct.POINTER(ct.c_uint), ct.POINTER(ct.c_int), ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getModelStructureInitialUnknownDependency.restype = ct.c_uint 
-        self.hdll.fmi3_getModelStructureInitialUnknownDependency.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_modelStructureGetInitialUnknownDependencyKind.restype = ct.c_uint 
-        self.hdll.fmi3_modelStructureGetInitialUnknownDependencyKind.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getNumberOfModelStructureEventIndicators.restype = ct.c_int
+        self.hdll.fmi3_getNumberOfModelStructureEventIndicators.restype = ct.c_int;
         self.hdll.fmi3_getNumberOfModelStructureEventIndicators.argtypes = ct.c_void_p,
-        self.hdll.fmi3_getModelStructureEventIndicator.restype = None 
-        self.hdll.fmi3_getModelStructureEventIndicator.argtypes = ct.c_void_p, ct.c_int, ct.POINTER(ct.c_uint), ct.POINTER(ct.c_int), ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getModelStructureEventIndicatorDependency.restype = ct.c_uint 
-        self.hdll.fmi3_getModelStructureEventIndicatorDependency.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-        self.hdll.fmi3_getModelStructureEventIndicatorDependencyKind.restype = ct.c_uint 
-        self.hdll.fmi3_getModelStructureEventIndicatorDependencyKind.argtypes = ct.c_void_p, ct.c_int, ct.c_int, ct.POINTER(ct.c_bool),
-
+        self.hdll.fmi3_getNumberOfModelStructureInitialUnknowns.restype = ct.c_int;
+        self.hdll.fmi3_getNumberOfModelStructureInitialUnknowns.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getModelStructureOutput.restype =  ct.c_void_p
+        self.hdll.fmi3_getModelStructureOutput.argtypes = ct.c_void_p,ct.c_size_t,
+        self.hdll.fmi3_getModelStructureContinuousStateDerivative.restype =  ct.c_void_p
+        self.hdll.fmi3_getModelStructureContinuousStateDerivative.argtypes = ct.c_void_p,ct.c_size_t,
+        self.hdll.fmi3_getModelStructureInitialUnknown.restype =  ct.c_void_p
+        self.hdll.fmi3_getModelStructureInitialUnknown.argtypes = ct.c_void_p,ct.c_size_t,
+        self.hdll.fmi3_getModelStructureValueReference.restype = ct.c_int
+        self.hdll.fmi3_getModelStructureValueReference.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getModelStructureNumberOfDependencies.restype = ct.c_int
+        self.hdll.fmi3_getModelStructureNumberOfDependencies.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getModelStructureDependencyKindsDefined.restype = ct.c_bool
+        self.hdll.fmi3_getModelStructureDependencyKindsDefined.argtypes = ct.c_void_p,
+        self.hdll.fmi3_getModelStructureDependencies.restype = None
+        self.hdll.fmi3_getModelStructureDependencies.argtypes = ct.c_void_p, ct.POINTER(ct.c_int), ct.c_size_t,
+        self.hdll.fmi3_getModelStructureDependencyKinds.restype = None
+        self.hdll.fmi3_getModelStructureDependencyKinds.argtypes = ct.c_void_p, ct.POINTER(ct.c_int), ct.c_size_t,
+  
         self.hdll.fmi3cs_getModelIdentifier.restype = ct.c_char_p
         self.hdll.fmi3cs_getModelIdentifier.argtypes = ct.c_void_p,
         self.hdll.fmi3cs_getNeedsExecutionTool.restype = ct.c_bool 
@@ -2199,103 +2186,48 @@ class fmi4c:
 
     def fmi3_getNumberOfModelStructureOutputs(self):
         return self.hdll.fmi3_getNumberOfModelStructureOutputs(self.fmu)
-
-    def fmi3_getModelStructureOutput(self, id):
-        vr = ct.c_uint()
-        numberOfDependencies = ct.c_int()
-        dependencyKindsDefined = ct.c_bool()
-        self.hdll.fmi3_getModelStructureOutput(self.fmu, id, ct.byref(vr), ct.byref(numberOfDependencies), ct.byref(dependencyKindsDefined))
-        return (vr.value, numberOfDependencies.value, dependencyKindsDefined.value)
-
-    def fmi3_getModelStructureOutputDependency(self, outputId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureOutputDependency(self.fmu, outputId, dependencyId, ct.byref(ok))
-        return (ret, ok.value)
-
-    def fmi3_getModelStructureOutputDependencyKind(self, outputId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureOutputDependencyKind(self.fmu, outputId, dependencyId, ct.byref(ok))
-        return (ret, ok.value)
-
+        
     def fmi3_getNumberOfModelStructureContinuousStateDerivatives(self):
         return self.hdll.fmi3_getNumberOfModelStructureContinuousStateDerivatives(self.fmu)
-
-    def fmi3_getModelStructureContinuousStateDerivative(self, id):
-        vr = ct.c_uint()
-        numberOfDependencies = ct.c_int()
-        dependencyKindsDefined = ct.c_bool()
-        self.hdll.fmi3_getModelStructureContinuousStateDerivative(self.fmu, id, ct.byref(vr), ct.byref(numberOfDependencies), ct.byref(dependencyKindsDefined))
-        return (vr.value, numberOfDependencies.value, dependencyKindsDefined.value)
-
-    def fmi3_getModelStructureContinuousStateDerivativeDependency(self, derId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureContinuousStateDerivativeDependency(self.fmu, derId, dependencyId, ct.byref(ok))
-        return (ret, ok.value)
-
-    def fmi3_getModelStructureContinuousStateDerivativeDependencyKind(self, derId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureContinuousStateDerivativeDependencyKind(self.fmu, derId, dependency, ct.byref(ok))
-        return (ret, ok.value)
-
+    
     def fmi3_getNumberOfModelStructureClockedStates(self):
         return self.hdll.fmi3_getNumberOfModelStructureClockedStates(self.fmu)
-
-    def fmi3_getModelStructureClockedState(self, id):
-        vr = ct.c_uint()
-        numberOfDependencies = ct.c_int()
-        dependencyKindsDefined = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureClockedState(self.fmu, id, ct.byref(vr), ct.byref(numberOfDependencies), ct.byref(dependencyKindsDefined))
-        return (vr.value, numberOfDependencies.value, dependencyKindsDefined.value)
         
-    def fmi3_getModelStructureClockedStateDependency(self, clockId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureClockedStateDependency(self.fmu, clockId, dependencyId, ct.byref(ok))
-        return (ret, ok.value)
-
-    def fmi3_getModelStructureClockedStateDependencyKind(self, clockId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureClockedStateDependencyKind(self.fmu, clockId, dependencyId, ct.byref(ok))
-        return (ret, ok.value)
-
-    def fmi3_getNumberOfModelStructureInitialUnknowns(self):
-        return self.hdll.fmi3_getNumberOfModelStructureInitialUnknowns(self.fmu)
-
-    def fmi3_getModelStructureInitialUnknown(self, id):
-        vr = ct.c_uint()
-        numberOfDependencies = ct.c_int()
-        dependencyKindsDefined = ct.c_bool()
-        self.hdll.fmi3_getModelStructureInitialUnknown(self.fmu, id, ct.byref(vr), ct.byref(numberOfDependencies), ct.byref(dependencyKindsDefined))
-        return (vr.value, numberOfDependencies.value, dependencyKindsDefined.value)
-
-    def fmi3_getModelStructureInitialUnknownDependency(self, unknownId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureInitialUnknownDependency(self.fmu, unknownId, dependencyId, ct.byref(ok))
-        return (ret, ok.value)
-
-    def fmi3_modelStructureGetInitialUnknownDependencyKind(self, unknownId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_modelStructureGetInitialUnknownDependencyKind(self.fmu, unknownId, dependencyId, ct.byref(ok))
-        return (ret, ok.value)
-
     def fmi3_getNumberOfModelStructureEventIndicators(self):
         return self.hdll.fmi3_getNumberOfModelStructureEventIndicators(self.fmu)
+    
+    def fmi3_getNumberOfModelStructureInitialUnknowns(self):
+        return self.hdll.fmi3_getNumberOfModelStructureInitialUnknowns(self.fmu)
+        
+    def fmi3_getModelStructureOutput(self, i):
+        return self.hdll.fmi3_getModelStructureOutput(self.fmu, i)
+        
+    def fmi3_getModelStructureContinuousStateDerivative(self, i):
+        return self.hdll.fmi3_getModelStructureContinuousStateDerivative(self.fmu, i)        
+        
+    def fmi3_getModelStructureInitialUnknown(self, i):
+        return self.hdll.fmi3_getModelStructureInitialUnknown(self.fmu, i)
 
-    def fmi3_getModelStructureEventIndicator(self, id,):
-        vr = ct.c_uint()
-        numberOfDependencies = ct.c_int()
-        dependencyKindsDefined = ct.c_bool()
-        self.hdll.fmi3_getModelStructureEventIndicator(self.fmu, id, ct.byref(vr), ct.byref(numberOfDependencies), ct.byref(dependencyKindsDefined))
-        return (vr, numberOfDependencies, dependencyKindsDefined)
-
-    def fmi3_getModelStructureEventIndicatorDependency(self, indicatorId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureEventIndicatorDependency(self.fmu, indicatorId, dependencyId, ct.byref(ok))
-        return (ret, ok.value)
-
-    def fmi3_getModelStructureEventIndicatorDependencyKind(self, indicatorId, dependencyId):
-        ok = ct.c_bool()
-        ret = self.hdll.fmi3_getModelStructureEventIndicatorDependencyKind(self.fmu, indicatorId, dependencyId, ct.byref(ok))
-        return (ret, ok.value)
+    def fmi3_getModelStructureValueReference(self, handle):
+        return self.hdll.fmi3_getModelStructureValueReference(handle)
+        
+    def fmi3_getModelStructureNumberOfDependencies(self, handle):
+        return self.hdll.fmi3_getModelStructureNumberOfDependencies(handle)
+        
+    def fmi3_getModelStructureDependencyKindsDefined(self, handle):
+        return self.hdll.fmi3_getModelStructureDependencyKindsDefined(handle)    
+    
+    def fmi3_getModelStructureDependencies(self, handle, nDependencies):
+        int_array_type = ct.c_int * nDependencies
+        dependencies = int_array_type()
+        self.hdll.fmi3_getModelStructureDependencies(handle, dependencies, nDependencies)
+        return list(dependencies)
+    
+    def fmi3_getModelStructureDependencyKinds(self, handle, nDependencies):
+        int_array_type = ct.c_int * nDependencies
+        dependencyKinds = int_array_type()
+        self.hdll.fmi3_getModelStructureDependencyKinds(handle, dependencyKinds, nDependencies)
+        return list(dependencyKinds)    
         
     def fmi3cs_getModelIdentifier(self):
         ret = self.hdll.fmi3cs_getModelIdentifier(self.fmu)
