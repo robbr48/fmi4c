@@ -40,9 +40,6 @@ int testFMI2ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 {
     //Instantiate FMU
     if(!fmi2_instantiate(fmu, fmi2ModelExchange, loggerFmi2, calloc, free, NULL, NULL, fmi2False, fmi2True)) {
-        while(fmi4c_getNumberOfMessages() > 0) {
-            printf("%s\n", fmi4c_readMessage());
-        }
         printf("fmi2Instantiate() failed\n");
         exit(1);
     }

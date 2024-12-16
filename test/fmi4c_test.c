@@ -69,6 +69,12 @@ void printUsage() {
     printf("-t, --tlm                Run a TLM test (requires two FMUs)\n");
 }
 
+void messageCallback(const char* msg)
+{
+    printf(msg);
+    printf("\n");
+}
+
 int main(int argc, char *argv[])
 {
     if(argc == 1) {
@@ -228,6 +234,7 @@ int main(int argc, char *argv[])
         printf("  Using log level 5 (fatal, errors, warnings, info & debug)\n");
     }
 
+    fmi4c_setMessageFunction(&messageCallback);
     fmiHandle *fmu = fmi4c_loadFmu(fmuPath, "testfmu");
 
     if(fmu == NULL) {
