@@ -566,7 +566,7 @@ typedef struct {
     bool dependencyKindsDefined;
     fmi3ValueReference *dependencies;
     fmi3DependencyKind *dependencyKinds;
-} fmi3ModelStructureElement;
+} fmi3ModelStructureHandle;
 
 typedef struct {
     const char* modelIdentifier;
@@ -777,16 +777,16 @@ typedef struct {
     int numberOfLogCategories;
     fmi3LogCategory *logCategories;
 
-    int numberOfOutputs;
-    int numberOfContinuousStateDerivatives;
-    int numberOfClockedStates;
-    int numberOfInitialUnknowns;
-    int numberOfEventIndicators;
-    fmi3ModelStructureElement *outputs;
-    fmi3ModelStructureElement *continuousStateDerivatives;
-    fmi3ModelStructureElement *clockedStates;
-    fmi3ModelStructureElement *initialUnknowns;
-    fmi3ModelStructureElement *eventIndicators;
+    int numberOfModelStructureOutputs;
+    int numberOfModelStructureContinuousStateDerivatives;
+    int numberOfModelStructureClockedStates;
+    int numberOfModelStructureInitialUnknowns;
+    int numberOfModelStructureEventIndicators;
+    fmi3ModelStructureHandle *modelStructureOutputs;
+    fmi3ModelStructureHandle *modelStructureContinuousStateDerivatives;
+    fmi3ModelStructureHandle *modelStructureClockedStates;
+    fmi3ModelStructureHandle *modelStructureInitialUnknowns;
+    fmi3ModelStructureHandle *modelStructureEventIndicators;
 } fmi3Data_t;
 
 

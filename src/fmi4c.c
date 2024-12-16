@@ -1842,49 +1842,49 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
     }
 
     ezxml_t modelStructureElement = ezxml_child(rootElement, "ModelStructure");
-    fmu->fmi3.numberOfOutputs = 0;
+    fmu->fmi3.numberOfModelStructureOutputs = 0;
     if(modelStructureElement) {
         //Count each element type
         ezxml_t outputElement = ezxml_child(modelStructureElement, "Output");
         for(;outputElement;outputElement = outputElement->next) {
-            ++fmu->fmi3.numberOfOutputs;
+            ++fmu->fmi3.numberOfModelStructureOutputs;
         }
         ezxml_t continuousStateDerElement = ezxml_child(modelStructureElement, "ContinuousStateDerivative");
         for(;continuousStateDerElement;continuousStateDerElement = continuousStateDerElement->next) {
-            ++fmu->fmi3.numberOfContinuousStateDerivatives;
+            ++fmu->fmi3.numberOfModelStructureContinuousStateDerivatives;
         }
         ezxml_t clockedStateElement = ezxml_child(modelStructureElement, "ClockedState");
         for(;clockedStateElement;clockedStateElement = clockedStateElement->next) {
-            ++fmu->fmi3.numberOfClockedStates;
+            ++fmu->fmi3.numberOfModelStructureClockedStates;
         }
         ezxml_t initialUnknownElement = ezxml_child(modelStructureElement, "InitialUnknown");
         for(;initialUnknownElement;initialUnknownElement = initialUnknownElement->next) {
-            ++fmu->fmi3.numberOfInitialUnknowns;
+            ++fmu->fmi3.numberOfModelStructureInitialUnknowns;
         }
         ezxml_t eventIndicatorElement = ezxml_child(modelStructureElement, "EventIndicator");
         for(;eventIndicatorElement;eventIndicatorElement = eventIndicatorElement->next) {
-            ++fmu->fmi3.numberOfEventIndicators;
+            ++fmu->fmi3.numberOfModelStructureEventIndicators;
         }
 
         //Allocate memory for each element type
-        fmu->fmi3.outputs = NULL;
-        fmu->fmi3.continuousStateDerivatives = NULL;
-        fmu->fmi3.clockedStates = NULL;
-        fmu->fmi3.initialUnknowns = NULL;
-        fmu->fmi3.eventIndicators = NULL;
-        if(fmu->fmi3.numberOfOutputs > 0) {
-            fmu->fmi3.outputs = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfOutputs*sizeof(fmi3ModelStructureElement));
+        fmu->fmi3.modelStructureOutputs = NULL;
+        fmu->fmi3.modelStructureContinuousStateDerivatives = NULL;
+        fmu->fmi3.modelStructureClockedStates = NULL;
+        fmu->fmi3.modelStructureInitialUnknowns = NULL;
+        fmu->fmi3.modelStructureEventIndicators = NULL;
+        if(fmu->fmi3.numberOfModelStructureOutputs > 0) {
+            fmu->fmi3.modelStructureOutputs = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureOutputs*sizeof(fmi3ModelStructureHandle));
         }
-        fmu->fmi3.continuousStateDerivatives = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfContinuousStateDerivatives*sizeof(fmi3ModelStructureElement));
-        fmu->fmi3.clockedStates = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfClockedStates*sizeof(fmi3ModelStructureElement));
-        fmu->fmi3.initialUnknowns = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfInitialUnknowns*sizeof(fmi3ModelStructureElement));
-        fmu->fmi3.eventIndicators = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfEventIndicators*sizeof(fmi3ModelStructureElement));
+        fmu->fmi3.modelStructureContinuousStateDerivatives = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureContinuousStateDerivatives*sizeof(fmi3ModelStructureHandle));
+        fmu->fmi3.modelStructureClockedStates = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureClockedStates*sizeof(fmi3ModelStructureHandle));
+        fmu->fmi3.modelStructureInitialUnknowns = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureInitialUnknowns*sizeof(fmi3ModelStructureHandle));
+        fmu->fmi3.modelStructureEventIndicators = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureEventIndicators*sizeof(fmi3ModelStructureHandle));
 
         //Read outputs
         int i=0;
         outputElement = ezxml_child(modelStructureElement, "Output");
         for(;outputElement;outputElement = outputElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.outputs[i], &outputElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureOutputs[i], &outputElement)) {
                 return false;
             }
             ++i;
@@ -1894,7 +1894,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         continuousStateDerElement = ezxml_child(modelStructureElement, "ContinuousStateDerivative");
         for(;continuousStateDerElement;continuousStateDerElement = continuousStateDerElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.continuousStateDerivatives[i], &continuousStateDerElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureContinuousStateDerivatives[i], &continuousStateDerElement)) {
                 return false;
             }
             ++i;
@@ -1904,7 +1904,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         clockedStateElement = ezxml_child(modelStructureElement, "ClockedState");
         for(;clockedStateElement;clockedStateElement = clockedStateElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.clockedStates[i], &clockedStateElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureClockedStates[i], &clockedStateElement)) {
                 return false;
             }
             ++i;
@@ -1914,7 +1914,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         initialUnknownElement = ezxml_child(modelStructureElement, "InitialUnknown");
         for(;initialUnknownElement;initialUnknownElement = initialUnknownElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.initialUnknowns[i], &initialUnknownElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureInitialUnknowns[i], &initialUnknownElement)) {
                 return false;
             }
             ++i;
@@ -1924,7 +1924,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         eventIndicatorElement = ezxml_child(modelStructureElement, "EventIndicator");
         for(;eventIndicatorElement;eventIndicatorElement = eventIndicatorElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.eventIndicators[i], &eventIndicatorElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureEventIndicators[i], &eventIndicatorElement)) {
                 return false;
             }
             ++i;
@@ -5857,229 +5857,80 @@ void fmi3_getLogCategory(fmiHandle *fmu, int id, const char **name, const char *
 
 int fmi3_getNumberOfModelStructureOutputs(fmiHandle *fmu)
 {
-    return fmu->fmi3.numberOfOutputs;
-}
-
-void fmi3_getModelStructureOutput(fmiHandle *fmu,
-                       int id,
-                       fmi3ValueReference *vr,
-                       int *numberOfDependencies,
-                       bool *dependencyKindsDefined)
-{
-    if(id < fmu->fmi3.numberOfOutputs) {
-        *vr = fmu->fmi3.outputs[id].valueReference;
-        *numberOfDependencies = fmu->fmi3.outputs[id].numberOfDependencies;
-        *dependencyKindsDefined = fmu->fmi3.outputs[id].dependencyKindsDefined;
-    }
-}
-
-fmi3ValueReference fmi3_getModelStructureOutputDependency(fmiHandle *fmu, int outputId, int dependencyId, bool *ok)
-{
-    *ok = false;
-    if(outputId < fmu->fmi3.numberOfOutputs &&
-       dependencyId < fmu->fmi3.outputs[outputId].numberOfDependencies) {
-        *ok = true;
-        return fmu->fmi3.outputs[outputId].dependencies[dependencyId];
-    }
-    return 0;
-}
-
-fmi3ValueReference fmi3_getModelStructureOutputDependencyKind(fmiHandle *fmu, int outputId, int dependencyId, bool *ok)
-{
-    *ok = false;
-    if(outputId < fmu->fmi3.numberOfOutputs &&
-       dependencyId < fmu->fmi3.outputs[outputId].numberOfDependencies &&
-       fmu->fmi3.outputs[outputId].dependencyKindsDefined) {
-        *ok = true;
-        return fmu->fmi3.outputs[outputId].dependencyKinds[dependencyId];
-    }
-    return 0;
+    return fmu->fmi3.numberOfModelStructureOutputs;
 }
 
 int fmi3_getNumberOfModelStructureContinuousStateDerivatives(fmiHandle *fmu)
 {
-    return fmu->fmi3.numberOfContinuousStateDerivatives;
+    return fmu->fmi3.numberOfModelStructureContinuousStateDerivatives;
 }
 
-void fmi3_getModelStructureContinuousStateDerivative(fmiHandle *fmu,
-                                                    int id,
-                                                    fmi3ValueReference *vr,
-                                                    int *numberOfDependencies,
-                                                    bool *dependencyKindsDefined)
+int fmi3_getNumberOfModelStructureClockedState(fmiHandle *fmu)
 {
-    if(id < fmu->fmi3.numberOfContinuousStateDerivatives) {
-        *vr = fmu->fmi3.continuousStateDerivatives[id].valueReference;
-        *numberOfDependencies = fmu->fmi3.continuousStateDerivatives[id].numberOfDependencies;
-        *dependencyKindsDefined = fmu->fmi3.continuousStateDerivatives[id].dependencyKindsDefined;
-    }
-}
-
-fmi3ValueReference fmi3_getModelStructureContinuousStateDerivativeDependency(fmiHandle *fmu,
-                                                                            int derId,
-                                                                            int dependencyId,
-                                                                            bool *ok)
-{
-    *ok = false;
-    if(derId < fmu->fmi3.numberOfContinuousStateDerivatives &&
-       dependencyId < fmu->fmi3.continuousStateDerivatives[derId].numberOfDependencies) {
-        *ok = true;
-        return fmu->fmi3.continuousStateDerivatives[derId].dependencies[dependencyId];
-    }
-    return 0;
-}
-
-fmi3ValueReference fmi3_getModelStructureContinuousStateDerivativeDependencyKind(fmiHandle *fmu,
-                                                                                int derId,
-                                                                                int dependencyId,
-                                                                                bool *ok)
-{
-    *ok = false;
-    if(derId < fmu->fmi3.numberOfContinuousStateDerivatives &&
-       dependencyId < fmu->fmi3.continuousStateDerivatives[derId].numberOfDependencies &&
-       fmu->fmi3.continuousStateDerivatives[derId].dependencyKindsDefined) {
-        *ok = true;
-        return fmu->fmi3.continuousStateDerivatives[derId].dependencyKinds[dependencyId];
-    }
-    return 0;
-}
-
-int fmi3_getNumberOfModelStructureClockedStates(fmiHandle *fmu)
-{
-    return fmu->fmi3.numberOfClockedStates;
-}
-
-void fmi3_getModelStructureClockedState(fmiHandle *fmu,
-                                      int id,
-                                      fmi3ValueReference *vr,
-                                      int *numberOfDependencies,
-                                      bool *dependencyKindsDefined)
-{
-    if(id < fmu->fmi3.numberOfClockedStates) {
-        *vr = fmu->fmi3.clockedStates[id].valueReference;
-        *numberOfDependencies = fmu->fmi3.clockedStates[id].numberOfDependencies;
-        *dependencyKindsDefined = fmu->fmi3.clockedStates[id].dependencyKindsDefined;
-    }
-}
-
-fmi3ValueReference fmi3_getModelStructureClockedStateDependency(fmiHandle *fmu,
-                                                               int clockId,
-                                                               int dependencyId,
-                                                               bool *ok)
-{
-    *ok = false;
-    if(clockId < fmu->fmi3.numberOfClockedStates &&
-       dependencyId < fmu->fmi3.clockedStates[clockId].numberOfDependencies) {
-        *ok = true;
-        return fmu->fmi3.clockedStates[clockId].dependencies[dependencyId];
-    }
-    return 0;
-}
-
-fmi3ValueReference fmi3_getModelStructureClockedStateDependencyKind(fmiHandle *fmu,
-                                                                   int clockId,
-                                                                   int dependencyId,
-                                                                   bool *ok)
-{
-    *ok = false;
-    if(clockId < fmu->fmi3.numberOfClockedStates &&
-       dependencyId < fmu->fmi3.clockedStates[clockId].numberOfDependencies &&
-       fmu->fmi3.clockedStates[clockId].dependencyKindsDefined) {
-        *ok = true;
-        return fmu->fmi3.clockedStates[clockId].dependencyKinds[dependencyId];
-    }
-    return 0;
-}
-
-int fmi3_getNumberOfModelStructureInitialUnknowns(fmiHandle *fmu)
-{
-    return fmu->fmi3.numberOfInitialUnknowns;
-}
-
-void fmi3_getModelStructureInitialUnknown(fmiHandle *fmu,
-                                      int id,
-                                      fmi3ValueReference *vr,
-                                      int *numberOfDependencies,
-                                      bool *dependencyKindsDefined)
-{
-    if(id < fmu->fmi3.numberOfInitialUnknowns) {
-        *vr = fmu->fmi3.initialUnknowns[id].valueReference;
-        *numberOfDependencies = fmu->fmi3.initialUnknowns[id].numberOfDependencies;
-        *dependencyKindsDefined = fmu->fmi3.initialUnknowns[id].dependencyKindsDefined;
-    }
-}
-
-fmi3ValueReference fmi3_getModelStructureInitialUnknownDependency(fmiHandle *fmu,
-                                                                 int unknownId,
-                                                                 int dependencyId,
-                                                                 bool *ok)
-{
-    *ok = false;
-    if(unknownId < fmu->fmi3.numberOfInitialUnknowns &&
-       dependencyId < fmu->fmi3.initialUnknowns[unknownId].numberOfDependencies) {
-        *ok = true;
-        return fmu->fmi3.initialUnknowns[unknownId].dependencies[dependencyId];
-    }
-    return 0;
-}
-
-fmi3ValueReference fmi3_modelStructureGetInitialUnknownDependencyKind(fmiHandle *fmu,
-                                                                     int unknownId,
-                                                                     int dependencyId,
-                                                                     bool *ok)
-{
-    *ok = false;
-    if(unknownId < fmu->fmi3.numberOfInitialUnknowns &&
-       dependencyId < fmu->fmi3.initialUnknowns[unknownId].numberOfDependencies &&
-       fmu->fmi3.initialUnknowns[unknownId].dependencyKindsDefined) {
-        *ok = true;
-        return fmu->fmi3.initialUnknowns[unknownId].dependencyKinds[dependencyId];
-    }
-    return 0;
+    return fmu->fmi3.numberOfModelStructureClockedStates;
 }
 
 int fmi3_getNumberOfModelStructureEventIndicators(fmiHandle *fmu)
 {
-    return fmu->fmi3.numberOfEventIndicators;
+    return fmu->fmi3.numberOfModelStructureEventIndicators;
 }
 
-void fmi3_getModelStructureEventIndicator(fmiHandle *fmu,
-                           int id,
-                           fmi3ValueReference *vr,
-                           int *numberOfDependencies,
-                           bool *dependencyKindsDefined)
+int fmi3_getNumberOfModelStructureInitialUnknowns(fmiHandle *fmu)
 {
-    if(id < fmu->fmi3.numberOfEventIndicators) {
-        *vr = fmu->fmi3.eventIndicators[id].valueReference;
-        *numberOfDependencies = fmu->fmi3.eventIndicators[id].numberOfDependencies;
-        *dependencyKindsDefined = fmu->fmi3.eventIndicators[id].dependencyKindsDefined;
+    return fmu->fmi3.numberOfModelStructureInitialUnknowns;
+}
+
+fmi3ModelStructureHandle *fmi3_getModelStructureOutput(fmiHandle *fmu, size_t i)
+{
+    return &fmu->fmi3.modelStructureOutputs[i];
+}
+
+fmi3ModelStructureHandle *fmi3_getModelStructureContinuousStateDerivative(fmiHandle *fmu, size_t i)
+{
+    return &fmu->fmi3.modelStructureContinuousStateDerivatives[i];
+}
+
+fmi3ModelStructureHandle *fmi3_getModelStructureClockedState(fmiHandle *fmu, size_t i)
+{
+    return &fmu->fmi3.modelStructureClockedStates[i];
+}
+
+fmi3ModelStructureHandle *fmi3_getModelStructureInitialUnknown(fmiHandle *fmu, size_t i)
+{
+    return &fmu->fmi3.modelStructureInitialUnknowns[i];
+}
+
+fmi3ModelStructureHandle *fmi3_getModelStructureEventIndicator(fmiHandle *fmu, size_t i)
+{
+    return &fmu->fmi3.modelStructureEventIndicators[i];
+}
+
+
+fmi3ValueReference fmi3_getModelStructureValueReference(fmi3ModelStructureHandle *handle)
+{
+    return handle->valueReference;
+}
+
+int fmi3_getModelStructureNumberOfDependencies(fmi3ModelStructureHandle *handle)
+{
+    return handle->numberOfDependencies;
+}
+
+bool fmi3_getModelStructureDependencyKindsDefined(fmi3ModelStructureHandle *handle)
+{
+    return handle->dependencyKindsDefined;
+}
+
+void fmi3_getModelStructureDependencies(fmi3ModelStructureHandle *handle, int *dependencies, size_t numberOfDependencies)
+{
+    for(size_t i=0; i<numberOfDependencies; ++i) {
+        dependencies[i] = handle->dependencies[i];
     }
 }
 
-fmi3ValueReference fmi3_getModelStructureEventIndicatorDependency(fmiHandle *fmu,
-                                                                 int indicatorId,
-                                                                 int dependencyId,
-                                                                 bool *ok)
+void fmi3_getModelStructureDependencyKinds(fmi3ModelStructureHandle *handle, int *dependencyKinds, size_t numberOfDependencies)
 {
-    *ok = false;
-    if(indicatorId < fmu->fmi3.numberOfEventIndicators &&
-       dependencyId < fmu->fmi3.eventIndicators[indicatorId].numberOfDependencies) {
-        *ok = true;
-        return fmu->fmi3.eventIndicators[indicatorId].dependencies[dependencyId];
+    for(size_t i=0; i<numberOfDependencies; ++i) {
+        dependencyKinds[i] = handle->dependencyKinds[i];
     }
-    return 0;
-}
-
-fmi3ValueReference fmi3_getModelStructureEventIndicatorDependencyKind(fmiHandle *fmu,
-                                                                     int indicatorId,
-                                                                     int dependencyId,
-                                                                     bool *ok)
-{
-    *ok = false;
-    if(indicatorId < fmu->fmi3.numberOfEventIndicators &&
-       dependencyId < fmu->fmi3.eventIndicators[indicatorId].numberOfDependencies &&
-       fmu->fmi3.eventIndicators[indicatorId].dependencyKindsDefined) {
-        *ok = true;
-        return fmu->fmi3.eventIndicators[indicatorId].dependencyKinds[dependencyId];
-    }
-    return 0;
 }

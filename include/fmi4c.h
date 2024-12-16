@@ -503,75 +503,20 @@ FMI4C_DLLAPI int fmi3_getNumberOfLogCategories(fmiHandle *fmu);
 FMI4C_DLLAPI void fmi3_getLogCategory(fmiHandle *fmu, int id, const char **name, const char **description);
 
 FMI4C_DLLAPI int fmi3_getNumberOfModelStructureOutputs(fmiHandle *fmu);
-FMI4C_DLLAPI void fmi3_getModelStructureOutput(fmiHandle *fmu,
-                                               int id,
-                                               fmi3ValueReference *vr,
-                                               int *numberOfDependencies,
-                                               bool *dependencyKindsDefined);
-FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureOutputDependency(fmiHandle *fmu,
-                                                                       int outputId,
-                                                                       int dependencyId,
-                                                                       bool *ok);
-FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureOutputDependencyKind(fmiHandle *fmu,
-                                                                           int outputId,
-                                                                           int dependencyId,
-                                                                           bool *ok);
 FMI4C_DLLAPI int fmi3_getNumberOfModelStructureContinuousStateDerivatives(fmiHandle *fmu);
-FMI4C_DLLAPI void fmi3_getModelStructureContinuousStateDerivative(fmiHandle *fmu,
-                                                                  int id,
-                                                                  fmi3ValueReference *vr,
-                                                                  int *numberOfDependencies,
-                                                                  bool *dependencyKindsDefined);
-FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureContinuousStateDerivativeDependency(fmiHandle *fmu,
-                                                                                          int derId,
-                                                                                          int dependencyId,
-                                                                                          bool *ok);
-FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureContinuousStateDerivativeDependencyKind(fmiHandle *fmu,
-                                                                                              int derId,
-                                                                                              int dependencyId,
-                                                                                              bool *ok);
-FMI4C_DLLAPI int fmi3_getNumberOfModelStructureClockedStates(fmiHandle *fmu);
-FMI4C_DLLAPI void fmi3_getModelStructureClockedState(fmiHandle *fmu,
-                                                     int id,
-                                                     fmi3ValueReference *vr,
-                                                     int *numberOfDependencies,
-                                                     bool *dependencyKindsDefined);
-FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureClockedStateDependency(fmiHandle *fmu,
-                                                                             int clockId,
-                                                                             int dependencyId,
-                                                                             bool *ok);
-FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureClockedStateDependencyKind(fmiHandle *fmu,
-                                                                                 int clockId,
-                                                                                 int dependencyId,
-                                                                                 bool *ok);
+FMI4C_DLLAPI int fmi3_getNumberOfModelStructureClockedState(fmiHandle *fmu);
 FMI4C_DLLAPI int fmi3_getNumberOfModelStructureInitialUnknowns(fmiHandle *fmu);
-FMI4C_DLLAPI void fmi3_getModelStructureInitialUnknown(fmiHandle *fmu,
-                                                       int id,
-                                                       fmi3ValueReference *vr,
-                                                       int *numberOfDependencies,
-                                                       bool *dependencyKindsDefined);
-FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureInitialUnknownDependency(fmiHandle *fmu,
-                                                                               int unknownId,
-                                                                               int dependencyId,
-                                                                               bool *ok);
-FMI4C_DLLAPI fmi3ValueReference fmi3_modelStructureGetInitialUnknownDependencyKind(fmiHandle *fmu,
-                                                                                   int unknownId,
-                                                                                   int dependencyId,
-                                                                                   bool *ok);
 FMI4C_DLLAPI int fmi3_getNumberOfModelStructureEventIndicators(fmiHandle *fmu);
-FMI4C_DLLAPI void fmi3_getModelStructureEventIndicator(fmiHandle *fmu,
-                                                       int id,
-                                                       fmi3ValueReference *vr,
-                                                       int *numberOfDependencies,
-                                                       bool *dependencyKindsDefined);
-FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureEventIndicatorDependency(fmiHandle *fmu,
-                                                                               int indicatorId,
-                                                                               int dependencyId,
-                                                                               bool *ok);
-FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureEventIndicatorDependencyKind(fmiHandle *fmu,
-                                                                                   int indicatorId,
-                                                                                   int dependencyId,
-                                                                                   bool *ok);
+FMI4C_DLLAPI fmi3ModelStructureHandle *fmi3_getModelStructureOutput(fmiHandle *fmu, size_t i);
+FMI4C_DLLAPI fmi3ModelStructureHandle *fmi3_getModelStructureContinuousStateDerivative(fmiHandle *fmu, size_t i);
+FMI4C_DLLAPI fmi3ModelStructureHandle *fmi3_getModelStructureClockedState(fmiHandle *fmu, size_t i);
+FMI4C_DLLAPI fmi3ModelStructureHandle *fmi3_getModelStructureInitialUnknown(fmiHandle *fmu, size_t i);
+FMI4C_DLLAPI fmi3ModelStructureHandle *fmi3_getModelStructureEventIndicator(fmiHandle *fmu, size_t i);
+FMI4C_DLLAPI fmi3ValueReference fmi3_getModelStructureValueReference(fmi3ModelStructureHandle *handle);
+FMI4C_DLLAPI int fmi3_getModelStructureNumberOfDependencies(fmi3ModelStructureHandle *handle);
+FMI4C_DLLAPI bool fmi3_getModelStructureDependencyKindsDefined(fmi3ModelStructureHandle *handle);
+FMI4C_DLLAPI void fmi3_getModelStructureDependencies(fmi3ModelStructureHandle *handle, int *dependencies, size_t numberOfDependencies);
+FMI4C_DLLAPI void fmi3_getModelStructureDependencyKinds(fmi3ModelStructureHandle *handle, int *dependencyKinds, size_t numberOfDependencies);
 
 FMI4C_DLLAPI const char* fmi3cs_getModelIdentifier(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi3cs_getNeedsExecutionTool(fmiHandle* fmu);
