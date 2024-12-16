@@ -1842,49 +1842,49 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
     }
 
     ezxml_t modelStructureElement = ezxml_child(rootElement, "ModelStructure");
-    fmu->fmi3.numberOfModelStructureOutputs = 0;
+    fmu->fmi3.modelStructure.numberOfOutputs = 0;
     if(modelStructureElement) {
         //Count each element type
         ezxml_t outputElement = ezxml_child(modelStructureElement, "Output");
         for(;outputElement;outputElement = outputElement->next) {
-            ++fmu->fmi3.numberOfModelStructureOutputs;
+            ++fmu->fmi3.modelStructure.numberOfOutputs;
         }
         ezxml_t continuousStateDerElement = ezxml_child(modelStructureElement, "ContinuousStateDerivative");
         for(;continuousStateDerElement;continuousStateDerElement = continuousStateDerElement->next) {
-            ++fmu->fmi3.numberOfModelStructureContinuousStateDerivatives;
+            ++fmu->fmi3.modelStructure.numberOfContinuousStateDerivatives;
         }
         ezxml_t clockedStateElement = ezxml_child(modelStructureElement, "ClockedState");
         for(;clockedStateElement;clockedStateElement = clockedStateElement->next) {
-            ++fmu->fmi3.numberOfModelStructureClockedStates;
+            ++fmu->fmi3.modelStructure.numberOfClockedStates;
         }
         ezxml_t initialUnknownElement = ezxml_child(modelStructureElement, "InitialUnknown");
         for(;initialUnknownElement;initialUnknownElement = initialUnknownElement->next) {
-            ++fmu->fmi3.numberOfModelStructureInitialUnknowns;
+            ++fmu->fmi3.modelStructure.numberOfInitialUnknowns;
         }
         ezxml_t eventIndicatorElement = ezxml_child(modelStructureElement, "EventIndicator");
         for(;eventIndicatorElement;eventIndicatorElement = eventIndicatorElement->next) {
-            ++fmu->fmi3.numberOfModelStructureEventIndicators;
+            ++fmu->fmi3.modelStructure.numberOfEventIndicators;
         }
 
         //Allocate memory for each element type
-        fmu->fmi3.modelStructureOutputs = NULL;
-        fmu->fmi3.modelStructureContinuousStateDerivatives = NULL;
-        fmu->fmi3.modelStructureClockedStates = NULL;
-        fmu->fmi3.modelStructureInitialUnknowns = NULL;
-        fmu->fmi3.modelStructureEventIndicators = NULL;
-        if(fmu->fmi3.numberOfModelStructureOutputs > 0) {
-            fmu->fmi3.modelStructureOutputs = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureOutputs*sizeof(fmi3ModelStructureHandle));
+        fmu->fmi3.modelStructure.outputs = NULL;
+        fmu->fmi3.modelStructure.continuousStateDerivatives = NULL;
+        fmu->fmi3.modelStructure.clockedStates = NULL;
+        fmu->fmi3.modelStructure.initialUnknowns = NULL;
+        fmu->fmi3.modelStructure.eventIndicators = NULL;
+        if(fmu->fmi3.modelStructure.numberOfOutputs > 0) {
+            fmu->fmi3.modelStructure.outputs = mallocAndRememberPointer(fmu, fmu->fmi3.modelStructure.numberOfOutputs*sizeof(fmi3ModelStructureHandle));
         }
-        fmu->fmi3.modelStructureContinuousStateDerivatives = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureContinuousStateDerivatives*sizeof(fmi3ModelStructureHandle));
-        fmu->fmi3.modelStructureClockedStates = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureClockedStates*sizeof(fmi3ModelStructureHandle));
-        fmu->fmi3.modelStructureInitialUnknowns = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureInitialUnknowns*sizeof(fmi3ModelStructureHandle));
-        fmu->fmi3.modelStructureEventIndicators = mallocAndRememberPointer(fmu, fmu->fmi3.numberOfModelStructureEventIndicators*sizeof(fmi3ModelStructureHandle));
+        fmu->fmi3.modelStructure.continuousStateDerivatives = mallocAndRememberPointer(fmu, fmu->fmi3.modelStructure.numberOfContinuousStateDerivatives*sizeof(fmi3ModelStructureHandle));
+        fmu->fmi3.modelStructure.clockedStates = mallocAndRememberPointer(fmu, fmu->fmi3.modelStructure.numberOfClockedStates*sizeof(fmi3ModelStructureHandle));
+        fmu->fmi3.modelStructure.initialUnknowns = mallocAndRememberPointer(fmu, fmu->fmi3.modelStructure.numberOfInitialUnknowns*sizeof(fmi3ModelStructureHandle));
+        fmu->fmi3.modelStructure.eventIndicators = mallocAndRememberPointer(fmu, fmu->fmi3.modelStructure.numberOfEventIndicators*sizeof(fmi3ModelStructureHandle));
 
         //Read outputs
         int i=0;
         outputElement = ezxml_child(modelStructureElement, "Output");
         for(;outputElement;outputElement = outputElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureOutputs[i], &outputElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructure.outputs[i], &outputElement)) {
                 return false;
             }
             ++i;
@@ -1894,7 +1894,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         continuousStateDerElement = ezxml_child(modelStructureElement, "ContinuousStateDerivative");
         for(;continuousStateDerElement;continuousStateDerElement = continuousStateDerElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureContinuousStateDerivatives[i], &continuousStateDerElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructure.continuousStateDerivatives[i], &continuousStateDerElement)) {
                 return false;
             }
             ++i;
@@ -1904,7 +1904,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         clockedStateElement = ezxml_child(modelStructureElement, "ClockedState");
         for(;clockedStateElement;clockedStateElement = clockedStateElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureClockedStates[i], &clockedStateElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructure.clockedStates[i], &clockedStateElement)) {
                 return false;
             }
             ++i;
@@ -1914,7 +1914,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         initialUnknownElement = ezxml_child(modelStructureElement, "InitialUnknown");
         for(;initialUnknownElement;initialUnknownElement = initialUnknownElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureInitialUnknowns[i], &initialUnknownElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructure.initialUnknowns[i], &initialUnknownElement)) {
                 return false;
             }
             ++i;
@@ -1924,7 +1924,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         eventIndicatorElement = ezxml_child(modelStructureElement, "EventIndicator");
         for(;eventIndicatorElement;eventIndicatorElement = eventIndicatorElement->next) {
-            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructureEventIndicators[i], &eventIndicatorElement)) {
+            if(!parseModelStructureElementFmi3(fmu, &fmu->fmi3.modelStructure.eventIndicators[i], &eventIndicatorElement)) {
                 return false;
             }
             ++i;
@@ -5857,52 +5857,52 @@ void fmi3_getLogCategory(fmiHandle *fmu, int id, const char **name, const char *
 
 int fmi3_getNumberOfModelStructureOutputs(fmiHandle *fmu)
 {
-    return fmu->fmi3.numberOfModelStructureOutputs;
+    return fmu->fmi3.modelStructure.numberOfOutputs;
 }
 
 int fmi3_getNumberOfModelStructureContinuousStateDerivatives(fmiHandle *fmu)
 {
-    return fmu->fmi3.numberOfModelStructureContinuousStateDerivatives;
+    return fmu->fmi3.modelStructure.numberOfContinuousStateDerivatives;
 }
 
 int fmi3_getNumberOfModelStructureClockedStates(fmiHandle *fmu)
 {
-    return fmu->fmi3.numberOfModelStructureClockedStates;
+    return fmu->fmi3.modelStructure.numberOfClockedStates;
 }
 
 int fmi3_getNumberOfModelStructureEventIndicators(fmiHandle *fmu)
 {
-    return fmu->fmi3.numberOfModelStructureEventIndicators;
+    return fmu->fmi3.modelStructure.numberOfEventIndicators;
 }
 
 int fmi3_getNumberOfModelStructureInitialUnknowns(fmiHandle *fmu)
 {
-    return fmu->fmi3.numberOfModelStructureInitialUnknowns;
+    return fmu->fmi3.modelStructure.numberOfInitialUnknowns;
 }
 
 fmi3ModelStructureHandle *fmi3_getModelStructureOutput(fmiHandle *fmu, size_t i)
 {
-    return &fmu->fmi3.modelStructureOutputs[i];
+    return &fmu->fmi3.modelStructure.outputs[i];
 }
 
 fmi3ModelStructureHandle *fmi3_getModelStructureContinuousStateDerivative(fmiHandle *fmu, size_t i)
 {
-    return &fmu->fmi3.modelStructureContinuousStateDerivatives[i];
+    return &fmu->fmi3.modelStructure.continuousStateDerivatives[i];
 }
 
 fmi3ModelStructureHandle *fmi3_getModelStructureClockedState(fmiHandle *fmu, size_t i)
 {
-    return &fmu->fmi3.modelStructureClockedStates[i];
+    return &fmu->fmi3.modelStructure.clockedStates[i];
 }
 
 fmi3ModelStructureHandle *fmi3_getModelStructureInitialUnknown(fmiHandle *fmu, size_t i)
 {
-    return &fmu->fmi3.modelStructureInitialUnknowns[i];
+    return &fmu->fmi3.modelStructure.initialUnknowns[i];
 }
 
 fmi3ModelStructureHandle *fmi3_getModelStructureEventIndicator(fmiHandle *fmu, size_t i)
 {
-    return &fmu->fmi3.modelStructureEventIndicators[i];
+    return &fmu->fmi3.modelStructure.eventIndicators[i];
 }
 
 

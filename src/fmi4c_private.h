@@ -613,6 +613,19 @@ typedef struct {
 } fmi3DataSe_t;
 
 typedef struct {
+    int numberOfOutputs;
+    int numberOfContinuousStateDerivatives;
+    int numberOfClockedStates;
+    int numberOfInitialUnknowns;
+    int numberOfEventIndicators;
+    fmi3ModelStructureHandle *outputs;
+    fmi3ModelStructureHandle *continuousStateDerivatives;
+    fmi3ModelStructureHandle *clockedStates;
+    fmi3ModelStructureHandle *initialUnknowns;
+    fmi3ModelStructureHandle *eventIndicators;
+} fmi3ModelStructureData_t;
+
+typedef struct {
     bool supportsModelExchange;
     bool supportsCoSimulation;
     bool supportsScheduledExecution;
@@ -777,16 +790,7 @@ typedef struct {
     int numberOfLogCategories;
     fmi3LogCategory *logCategories;
 
-    int numberOfModelStructureOutputs;
-    int numberOfModelStructureContinuousStateDerivatives;
-    int numberOfModelStructureClockedStates;
-    int numberOfModelStructureInitialUnknowns;
-    int numberOfModelStructureEventIndicators;
-    fmi3ModelStructureHandle *modelStructureOutputs;
-    fmi3ModelStructureHandle *modelStructureContinuousStateDerivatives;
-    fmi3ModelStructureHandle *modelStructureClockedStates;
-    fmi3ModelStructureHandle *modelStructureInitialUnknowns;
-    fmi3ModelStructureHandle *modelStructureEventIndicators;
+    fmi3ModelStructureData_t modelStructure;
 } fmi3Data_t;
 
 
