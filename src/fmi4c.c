@@ -760,7 +760,7 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
         }
     }
 
-    fmu->fmi2.numberOfModelStructureOutputs = 0;
+    fmu->fmi2.modelStructure.numberOfOutputs = 0;
     ezxml_t modelStructureElement = ezxml_child(rootElement, "ModelStructure");
     if(modelStructureElement) {
         ezxml_t outputsElement = ezxml_child(modelStructureElement, "Outputs");
@@ -768,20 +768,20 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             //Count outputs
             ezxml_t unknownElement = ezxml_child(outputsElement, "Unknown");
             for(;unknownElement;unknownElement = unknownElement->next) {
-                ++fmu->fmi2.numberOfModelStructureOutputs;
+                ++fmu->fmi2.modelStructure.numberOfOutputs;
             }
 
             //Allocate memory for outputs
-            fmu->fmi2.modelStructureOutputs = NULL;
-            if(fmu->fmi2.numberOfModelStructureOutputs > 0) {
-                fmu->fmi2.modelStructureOutputs = mallocAndRememberPointer(fmu, fmu->fmi2.numberOfModelStructureOutputs*sizeof(fmi2ModelStructureHandle));
+            fmu->fmi2.modelStructure.outputs = NULL;
+            if(fmu->fmi2.modelStructure.numberOfOutputs > 0) {
+                fmu->fmi2.modelStructure.outputs = mallocAndRememberPointer(fmu, fmu->fmi2.modelStructure.numberOfOutputs*sizeof(fmi2ModelStructureHandle));
             }
 
             //Read outputs
             int i=0;
             unknownElement = ezxml_child(outputsElement, "Unknown");
             for(;unknownElement;unknownElement = unknownElement->next) {
-                if(!parseModelStructureElementFmi2(fmu, &fmu->fmi2.modelStructureOutputs[i], &unknownElement)) {
+                if(!parseModelStructureElementFmi2(fmu, &fmu->fmi2.modelStructure.outputs[i], &unknownElement)) {
                     return false;
                 }
                 ++i;
@@ -792,20 +792,20 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             //Count derivatives
             ezxml_t unknownElement = ezxml_child(derivativesElement, "Unknown");
             for(;unknownElement;unknownElement = unknownElement->next) {
-                ++fmu->fmi2.numberOfModelStructureDerivatives;
+                ++fmu->fmi2.modelStructure.numberOfDerivatives;
             }
 
             //Allocate memory for derivativse
-            fmu->fmi2.modelStructureDerivatives = NULL;
-            if(fmu->fmi2.numberOfModelStructureDerivatives > 0) {
-                fmu->fmi2.modelStructureDerivatives = mallocAndRememberPointer(fmu, fmu->fmi2.numberOfModelStructureDerivatives*sizeof(fmi2ModelStructureHandle));
+            fmu->fmi2.modelStructure.derivatives = NULL;
+            if(fmu->fmi2.modelStructure.numberOfDerivatives > 0) {
+                fmu->fmi2.modelStructure.derivatives = mallocAndRememberPointer(fmu, fmu->fmi2.modelStructure.numberOfDerivatives*sizeof(fmi2ModelStructureHandle));
             }
 
             //Read derivatives
             int i=0;
             unknownElement = ezxml_child(derivativesElement, "Unknown");
             for(;unknownElement;unknownElement = unknownElement->next) {
-                if(!parseModelStructureElementFmi2(fmu, &fmu->fmi2.modelStructureDerivatives[i], &unknownElement)) {
+                if(!parseModelStructureElementFmi2(fmu, &fmu->fmi2.modelStructure.derivatives[i], &unknownElement)) {
                     return false;
                 }
                 ++i;
@@ -816,20 +816,20 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             //Count initial unknowns
             ezxml_t unknownElement = ezxml_child(initialUnknownsElement, "Unknown");
             for(;unknownElement;unknownElement = unknownElement->next) {
-                ++fmu->fmi2.numberOfModelStructureInitialUnknowns;
+                ++fmu->fmi2.modelStructure.numberOfInitialUnknowns;
             }
 
             //Allocate memory for initial unknowns
-            fmu->fmi2.modelStructureInitialUnknowns = NULL;
-            if(fmu->fmi2.numberOfModelStructureInitialUnknowns > 0) {
-                fmu->fmi2.modelStructureInitialUnknowns = mallocAndRememberPointer(fmu, fmu->fmi2.numberOfModelStructureInitialUnknowns*sizeof(fmi2ModelStructureHandle));
+            fmu->fmi2.modelStructure.initialUnknowns = NULL;
+            if(fmu->fmi2.modelStructure.numberOfInitialUnknowns > 0) {
+                fmu->fmi2.modelStructure.initialUnknowns = mallocAndRememberPointer(fmu, fmu->fmi2.modelStructure.numberOfInitialUnknowns*sizeof(fmi2ModelStructureHandle));
             }
 
             //Read initial unknowns
             int i=0;
             unknownElement = ezxml_child(initialUnknownsElement, "Unknown");
             for(;unknownElement;unknownElement = unknownElement->next) {
-                if(!parseModelStructureElementFmi2(fmu, &fmu->fmi2.modelStructureInitialUnknowns[i], &unknownElement)) {
+                if(!parseModelStructureElementFmi2(fmu, &fmu->fmi2.modelStructure.initialUnknowns[i], &unknownElement)) {
                     return false;
                 }
                 ++i;
@@ -4149,32 +4149,32 @@ bool fmi2_getSupportsModelExchange(fmiHandle *fmu)
 
 int fmi2_getNumberOfModelStructureOutputs(fmiHandle *fmu)
 {
-    return fmu->fmi2.numberOfModelStructureOutputs;
+    return fmu->fmi2.modelStructure.numberOfOutputs;
 }
 
 int fmi2_getNumberOfModelStructureDerivatives(fmiHandle *fmu)
 {
-    return fmu->fmi2.numberOfModelStructureDerivatives;
+    return fmu->fmi2.modelStructure.numberOfDerivatives;
 }
 
 int fmi2_getNumberOfModelStructureInitialUnknowns(fmiHandle *fmu)
 {
-    return fmu->fmi2.numberOfModelStructureInitialUnknowns;
+    return fmu->fmi2.modelStructure.numberOfInitialUnknowns;
 }
 
 fmi2ModelStructureHandle *fmi2_getModelStructureOutput(fmiHandle *fmu, size_t i)
 {
-    return &fmu->fmi2.modelStructureOutputs[i];
+    return &fmu->fmi2.modelStructure.outputs[i];
 }
 
 fmi2ModelStructureHandle *fmi2_getModelStructureDerivative(fmiHandle *fmu, size_t i)
 {
-    return &fmu->fmi2.modelStructureDerivatives[i];
+    return &fmu->fmi2.modelStructure.derivatives[i];
 }
 
 fmi2ModelStructureHandle *fmi2_getModelStructureInitialUnknown(fmiHandle *fmu, size_t i)
 {
-    return &fmu->fmi2.modelStructureInitialUnknowns[i];
+    return &fmu->fmi2.modelStructure.initialUnknowns[i];
 }
 
 int fmi2_getModelStructureIndex(fmi2ModelStructureHandle *handle)
