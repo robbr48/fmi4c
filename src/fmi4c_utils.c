@@ -249,12 +249,12 @@ bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, uint8_
     return false;
 }
 
-bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *element)
+bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *element, fmiHandle *fmu)
 {
     //Count number of dependencies
     output->numberOfDependencies = 0;
     const char* dependencies = NULL;
-    if(parseStringAttributeEzXml(*element, "dependencies", &dependencies)) {
+    if(parseStringAttributeEzXmlAndRememberPointer(*element, "dependencies", &dependencies, fmu)) {
 
         if(dependencies == NULL || dependencies[0] == '\0') {
             //If dependencies is empty, no need to parse further
@@ -262,8 +262,7 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
         }
 
         //Duplicate the dependencies string to make it mutable
-        char* nonConstDependencies = _strdup(dependencies);
-        free((char*)dependencies);
+        char* nonConstDependencies = duplicateAndRememberString(fmu, dependencies);
 
         if (nonConstDependencies == NULL) {
             return false; //strdup failed, handle as an error
@@ -279,7 +278,7 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
 
 
         //Allocate memory for dependencies
-        output->dependencies = malloc(output->numberOfDependencies*sizeof(fmi3ValueReference));
+        output->dependencies = mallocAndRememberPointer(fmu, output->numberOfDependencies*sizeof(fmi3ValueReference));
 
         //Read dependencies
         const char* delim = " ";
@@ -294,14 +293,12 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
 
         //Parse depenendency kinds element if present
         const char* dependencyKinds = NULL;
-        parseStringAttributeEzXml(*element, "dependencyKinds", &dependencyKinds);
+        parseStringAttributeEzXmlAndRememberPointer(*element, "dependencyKinds", &dependencyKinds, fmu);
         if(dependencyKinds) {
-            char* nonConstDependencyKinds = _strdup(dependencyKinds);
-            free((char*)dependencyKinds);
+            char* nonConstDependencyKinds = duplicateAndRememberString(fmu, dependencyKinds);
 
             //Allocate memory for dependencies (assume same number as dependencies, according to FMI3 specification)
-            output->dependencies = malloc(output->numberOfDependencies*sizeof(fmi3ValueReference));
-
+            output->dependencies = mallocAndRememberPointer(fmu, output->numberOfDependencies*sizeof(fmi3ValueReference));
             //Read dependency kinds
             for(int j=0; j<output->numberOfDependencies; ++j) {
                 const char* kind;
@@ -313,9 +310,7 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
                 }
 
                 if(!strcmp(kind, "independent")) {
-                    fmi4cErrorMessage = _strdup("Dependency kind = \"independent\" is not allowed for output dependencies.");
-                    free(nonConstDependencyKinds);
-                    free(nonConstDependencies);
+                    fmi4cErrorMessage = duplicateAndRememberString(fmu, "Dependency kind = \"independent\" is not allowed for output dependencies.");
                     return false;
                 }
                 else if(!strcmp(kind, "constant")) {
@@ -334,15 +329,11 @@ bool parseModelStructureElement(fmi3ModelStructureElement *output, ezxml_t *elem
                     output->dependencyKinds[j] = fmi3Dependent;
                 }
                 else {
-                    fmi4cErrorMessage = _strdup("Unknown dependency kind for output dependency.");
-                    free(nonConstDependencyKinds);
-                    free(nonConstDependencies);
+                    fmi4cErrorMessage = duplicateAndRememberString(fmu, "Unknown dependency kind for output dependency.");
                     return false;
                 }
             }
-            free(nonConstDependencyKinds);
         }
-        free(nonConstDependencies);
     }
 
     return true;

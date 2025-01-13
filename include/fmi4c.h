@@ -329,6 +329,7 @@ FMI4C_DLLAPI const char *fmi3_getVariableQuantity(fmi3VariableHandle* var);
 FMI4C_DLLAPI const char *fmi3_getVariableUnit(fmi3VariableHandle* var);
 FMI4C_DLLAPI const char *fmi3_getVariableDisplayUnit(fmi3VariableHandle* var);
 FMI4C_DLLAPI bool fmi3_getVariableHasStartValue(fmi3VariableHandle* var);
+FMI4C_DLLAPI int fmi3_getVariableDerivativeIndex(fmi3VariableHandle* var);
 FMI4C_DLLAPI fmi3Float64 fmi3_getVariableStartFloat64(fmi3VariableHandle* var);
 FMI4C_DLLAPI fmi3Float32 fmi3_getVariableStartFloat32(fmi3VariableHandle *var);
 FMI4C_DLLAPI fmi3Int64 fmi3_getVariableStartInt64(fmi3VariableHandle *var);
@@ -344,6 +345,7 @@ FMI4C_DLLAPI fmi3String fmi3_getVariableStartString(fmi3VariableHandle *var);
 FMI4C_DLLAPI fmi3Binary fmi3_getVariableStartBinary(fmi3VariableHandle *var);
 FMI4C_DLLAPI fmi3ValueReference fmi3_getVariableValueReference(fmi3VariableHandle* var);
 
+FMI4C_DLLAPI const char* fmi3_getFmiVersion(fmiHandle* fmu);
 FMI4C_DLLAPI const char* fmi3_modelName(fmiHandle *fmu);
 FMI4C_DLLAPI const char* fmi3_instantiationToken(fmiHandle *fmu);
 FMI4C_DLLAPI const char* fmi3_description(fmiHandle *fmu);
@@ -567,6 +569,7 @@ FMI4C_DLLAPI bool fmi3cs_getProvidesIntermediateUpdate(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi3cs_getProvidesEvaluateDiscreteStates(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi3cs_getHasEventMode(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi3cs_getRecommendedIntermediateInputSmoothness(fmiHandle* fmu);
+FMI4C_DLLAPI int fmi3cs_getMaxOutputDerivativeOrder(fmiHandle* fmu);
 
 FMI4C_DLLAPI const char* fmi3me_getModelIdentifier(fmiHandle* fmu);
 FMI4C_DLLAPI bool fmi3me_getNeedsExecutionTool(fmiHandle* fmu);

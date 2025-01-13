@@ -39,7 +39,7 @@ typedef enum { fmi3CausalityInput, fmi3CausalityOutput, fmi3CausalityParameter, 
 typedef enum { fmi3VariabilityFixed, fmi3VariabilityTunable, fmi3VariabilityConstant, fmi3VariabilityDiscrete, fmi3VariabilityContinuous } fmi3Variability;
 typedef enum { fmi3IntervalVariabilityConstant, fmi3IntervalVariabilityFixed, fmi3IntervalVariabilityCalculated, fmi3IntervalVariabilityTunable, fmi3IntervalVariabilityChanging, fmi3IntervalVariabilityCountdown, fmi3IntervalVariabilityTriggered } fmi3IntervalVariability;
 
-typedef enum { fmi3InitialExact, fmi3InitialApprox, fmi3InitialCalculated } fmi3Initial;
+typedef enum { fmi3InitialExact, fmi3InitialApprox, fmi3InitialCalculated, fmi3InitialUnknown } fmi3Initial;
 typedef enum { fmi3DataTypeFloat64, fmi3DataTypeFloat32, fmi3DataTypeInt64, fmi3DataTypeInt32, fmi3DataTypeInt16, fmi3DataTypeInt8, fmi3DataTypeUInt64, fmi3DataTypeUInt32, fmi3DataTypeUInt16, fmi3DataTypeUInt8, fmi3DataTypeBoolean, fmi3DataTypeString, fmi3DataTypeBinary, fmi3DataTypeEnumeration, fmi3DataTypeClock } fmi3DataType;
 
 #endif // FMI_TYPES_FMI3_H

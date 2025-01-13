@@ -378,18 +378,15 @@ bool parseModelDescriptionFmi1(fmiHandle *fmu)
 
 
 // table according to fmi-specification 2.2 page 51
-fmi2Initial initialDefaultTable[5][6] = {
-    /*              parameter                  calculated parameter,        input                     output                 local                  independent */
-    /* constant */  {fmi2InitialUnknown,       fmi2InitialUnknown,          fmi2InitialUnknown,       fmi2InitialExact,      fmi2InitialExact,      fmi2InitialUnknown},
-    /* fixed   */   {fmi2InitialExact,         fmi2InitialCalculated,       fmi2InitialUnknown,       fmi2InitialUnknown,    fmi2InitialCalculated, fmi2InitialUnknown},
-    /* tunable */   {fmi2InitialExact,         fmi2InitialCalculated,       fmi2InitialUnknown,       fmi2InitialUnknown,    fmi2InitialCalculated, fmi2InitialUnknown},
-    /* discrete */  {fmi2InitialUnknown,       fmi2InitialUnknown,          fmi2InitialUnknown,       fmi2InitialCalculated, fmi2InitialCalculated, fmi2InitialUnknown},
-    /* continuous */{fmi2InitialUnknown,       fmi2InitialUnknown,          fmi2InitialUnknown,       fmi2InitialCalculated, fmi2InitialCalculated, fmi2InitialUnknown}
+fmi2Initial initialDefaultTableFmi2[5][6] = {
+    /*               input                     output                    parameter                  calculated parameter       local                  independent */
+    /* fixed   */   {fmi2InitialUnknown,       fmi2InitialUnknown,       fmi2InitialExact,          fmi2InitialCalculated,     fmi2InitialCalculated, fmi2InitialUnknown},
+    /* tunable */   {fmi2InitialUnknown,       fmi2InitialUnknown,       fmi2InitialExact,          fmi2InitialCalculated,     fmi2InitialCalculated, fmi2InitialUnknown},
+    /* constant */  {fmi2InitialUnknown,       fmi2InitialExact,         fmi2InitialUnknown,        fmi2InitialExact,          fmi2InitialExact,      fmi2InitialUnknown},
+    /* discrete */  {fmi2InitialUnknown,       fmi2InitialCalculated,    fmi2InitialUnknown,        fmi2InitialCalculated,     fmi2InitialCalculated, fmi2InitialUnknown},
+    /* continuous */{fmi2InitialUnknown,       fmi2InitialCalculated,    fmi2InitialUnknown,        fmi2InitialCalculated,     fmi2InitialCalculated, fmi2InitialUnknown}
 };
 
-// mapping index for variabilty and causality for the above table
-fmi2Variability mapVariabilityIndex[5] = {fmi2VariabilityConstant,fmi2VariabilityFixed,fmi2VariabilityTunable,fmi2VariabilityDiscrete,fmi2VariabilityContinuous};
-fmi2Causality mapCausalityIndex[6] = {fmi2CausalityParameter, fmi2CausalityCalculatedParameter, fmi2CausalityInput, fmi2CausalityOutput, fmi2CausalityLocal, fmi2CausalityIndependent};
 
 
 //! @brief Parses modelDescription.xml for FMI 2
@@ -671,7 +668,8 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
             }
             else {
                 // calculate the initial value according to fmi specification 2.2 table page 51
-                var.initial = initialDefaultTable[mapVariabilityIndex[var.variability]][mapCausalityIndex[var.causality]];
+                var.initial = initialDefaultTableFmi2[var.variability][var.causality];
+                freeDuplicatedConstChar(initial);
             }
 
             var.hasStartValue = false;
@@ -744,11 +742,22 @@ bool parseModelDescriptionFmi2(fmiHandle *fmu)
 }
 
 
+// table according to https://fmi-standard.org/docs/3.0/ Table-22
+fmi3Initial initialDefaultTableFmi3[5][7] = {
+    /*               input                   output                   parameter                 calculated parameter        local                  independent            structuralParameter */
+    /* fixed   */   {fmi3InitialUnknown,     fmi3InitialUnknown,      fmi3InitialExact,         fmi3InitialCalculated,      fmi3InitialCalculated, fmi3InitialUnknown,    fmi3InitialExact},
+    /* tunable */   {fmi3InitialUnknown,     fmi3InitialUnknown,      fmi3InitialExact,         fmi3InitialCalculated,      fmi3InitialCalculated, fmi3InitialUnknown,    fmi3InitialExact},
+    /* constant */  {fmi3InitialUnknown,     fmi3InitialExact,        fmi3InitialUnknown,       fmi3InitialUnknown,         fmi3InitialExact,      fmi3InitialUnknown,    fmi3InitialUnknown},
+    /* discrete */  {fmi3InitialExact,       fmi3InitialCalculated,   fmi3InitialUnknown,       fmi3InitialUnknown,         fmi3InitialCalculated, fmi3InitialUnknown,    fmi3InitialUnknown},
+    /* continuous */{fmi3InitialExact,       fmi3InitialCalculated,   fmi3InitialUnknown,       fmi3InitialUnknown,         fmi3InitialCalculated, fmi3InitialUnknown,    fmi3InitialUnknown}
+};
+
 //! @brief Parses modelDescription.xml for FMI 3
 //! @param fmu FMU handle
 //! @returns True if parsing was successful
 bool parseModelDescriptionFmi3(fmiHandle *fmu)
 {
+    fmu->fmi3.fmiVersion_ = NULL;
     fmu->fmi3.modelName = NULL;
     fmu->fmi3.instantiationToken = NULL;
     fmu->fmi3.description = NULL;
@@ -839,6 +848,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         return false;
     }
 
+    parseStringAttributeEzXmlAndRememberPointer(rootElement, "fmiVersion",                &fmu->fmi3.fmiVersion_,                fmu);
     parseStringAttributeEzXmlAndRememberPointer(rootElement, "modelName",                 &fmu->fmi3.modelName,                  fmu);
     parseStringAttributeEzXmlAndRememberPointer(rootElement, "instantiationToken",        &fmu->fmi3.instantiationToken,         fmu);
     parseStringAttributeEzXmlAndRememberPointer(rootElement, "description",               &fmu->fmi3.description,                fmu);
@@ -1378,6 +1388,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             var.displayUnit = NULL;
             var.canHandleMultipleSetPerTimeInstant = false; //Default value if attribute not defined
             var.startBinary = NULL;
+            var.derivative = 0;
 
             parseStringAttributeEzXmlAndRememberPointer(varElement, "name", &var.name, fmu);
             parseInt64AttributeEzXml(varElement, "valueReference", &var.valueReference);
@@ -1600,36 +1611,49 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
             }
 
             //Parse arguments common to all except clock type
-            if(var.datatype == fmi3DataTypeFloat64 ||
-               var.datatype == fmi3DataTypeFloat32 ||
-               var.datatype == fmi3DataTypeInt64 ||
-               var.datatype == fmi3DataTypeInt32 ||
-               var.datatype == fmi3DataTypeInt16 ||
-               var.datatype == fmi3DataTypeInt8 ||
-               var.datatype == fmi3DataTypeUInt64 ||
-               var.datatype == fmi3DataTypeUInt32 ||
-               var.datatype == fmi3DataTypeUInt16 ||
-               var.datatype == fmi3DataTypeUInt8 ||
-               var.datatype == fmi3DataTypeBoolean ||
-               var.datatype == fmi3DataTypeBinary ||
-               var.datatype == fmi3DataTypeEnumeration) {
-                const char* initial = NULL;
-                parseStringAttributeEzXml(varElement, "initial", &initial);
-                if(initial && !strcmp(initial, "approx")) {
-                    var.initial = fmi3InitialApprox;
-                }
-                else if(initial && !strcmp(initial, "exact")) {
-                    var.initial = fmi3InitialExact;
-                }
-                else if(initial && !strcmp(initial, "calculated")) {
-                    var.initial = fmi3InitialCalculated;
-                }
-                else if(initial) {
-                    printf("Unknown initial: %s\n", initial);
+            if (var.datatype == fmi3DataTypeFloat64 ||
+                var.datatype == fmi3DataTypeFloat32 ||
+                var.datatype == fmi3DataTypeInt64 ||
+                var.datatype == fmi3DataTypeInt32 ||
+                var.datatype == fmi3DataTypeInt16 ||
+                var.datatype == fmi3DataTypeInt8 ||
+                var.datatype == fmi3DataTypeUInt64 ||
+                var.datatype == fmi3DataTypeUInt32 ||
+                var.datatype == fmi3DataTypeUInt16 ||
+                var.datatype == fmi3DataTypeUInt8 ||
+                var.datatype == fmi3DataTypeBoolean ||
+                var.datatype == fmi3DataTypeBinary ||
+                var.datatype == fmi3DataTypeEnumeration){
+                var.initial = fmi3InitialUnknown;
+                const char *initial = NULL;
+                if (parseStringAttributeEzXml(varElement, "initial", &initial))
+                {
+                    if (initial && !strcmp(initial, "approx"))
+                    {
+                        var.initial = fmi3InitialApprox;
+                    }
+                    else if (initial && !strcmp(initial, "exact"))
+                    {
+                        var.initial = fmi3InitialExact;
+                    }
+                    else if (initial && !strcmp(initial, "calculated"))
+                    {
+                        var.initial = fmi3InitialCalculated;
+                    }
+                    else if (initial)
+                    {
+                        printf("Unknown initial: %s\n", initial);
+                        freeDuplicatedConstChar(initial);
+                        return false;
+                    }
                     freeDuplicatedConstChar(initial);
-                    return false;
                 }
-                freeDuplicatedConstChar(initial);
+                else
+                {
+                    // calculate the initial value according to https://fmi-standard.org/docs/3.0/ table-22
+                    var.initial = initialDefaultTableFmi3[var.variability][var.causality];
+                    freeDuplicatedConstChar(initial);
+                }
             }
 
             //Parse arguments common to float, int and enumeration
@@ -1765,7 +1789,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         int i=0;
         outputElement = ezxml_child(modelStructureElement, "Output");
         for(;outputElement;outputElement = outputElement->next) {
-            if(!parseModelStructureElement(&fmu->fmi3.outputs[i], &outputElement)) {
+            if(!parseModelStructureElement(&fmu->fmi3.outputs[i], &outputElement, fmu)) {
                 return false;
             }
             ++i;
@@ -1775,7 +1799,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         continuousStateDerElement = ezxml_child(modelStructureElement, "ContinuousStateDerivative");
         for(;continuousStateDerElement;continuousStateDerElement = continuousStateDerElement->next) {
-            if(!parseModelStructureElement(&fmu->fmi3.continuousStateDerivatives[i], &continuousStateDerElement)) {
+            if(!parseModelStructureElement(&fmu->fmi3.continuousStateDerivatives[i], &continuousStateDerElement, fmu)) {
                 return false;
             }
             ++i;
@@ -1785,7 +1809,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         clockedStateElement = ezxml_child(modelStructureElement, "ClockedState");
         for(;clockedStateElement;clockedStateElement = clockedStateElement->next) {
-            if(!parseModelStructureElement(&fmu->fmi3.clockedStates[i], &clockedStateElement)) {
+            if(!parseModelStructureElement(&fmu->fmi3.clockedStates[i], &clockedStateElement, fmu)) {
                 return false;
             }
             ++i;
@@ -1795,7 +1819,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         initialUnknownElement = ezxml_child(modelStructureElement, "IninitalUnknown");
         for(;initialUnknownElement;initialUnknownElement = initialUnknownElement->next) {
-            if(!parseModelStructureElement(&fmu->fmi3.initialUnknowns[i], &initialUnknownElement)) {
+            if(!parseModelStructureElement(&fmu->fmi3.initialUnknowns[i], &initialUnknownElement, fmu)) {
                 return false;
             }
             ++i;
@@ -1805,7 +1829,7 @@ bool parseModelDescriptionFmi3(fmiHandle *fmu)
         i=0;
         eventIndicatorElement = ezxml_child(modelStructureElement, "EventIndicator");
         for(;eventIndicatorElement;eventIndicatorElement = eventIndicatorElement->next) {
-            if(!parseModelStructureElement(&fmu->fmi3.eventIndicators[i], &eventIndicatorElement)) {
+            if(!parseModelStructureElement(&fmu->fmi3.eventIndicators[i], &eventIndicatorElement, fmu)) {
                 return false;
             }
             ++i;
@@ -2334,6 +2358,13 @@ bool fmi3_iInstantiateModelExchange(fmiHandle *fmu,
     return (fmu->fmi3.fmi3Instance != NULL);
 }
 
+// this function returns the fmiVersion (e.g) fmiVersion = 3.0
+const char *fmi3_getFmiVersion(fmiHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi3.fmiVersion_;
+}
+
 const char* fmi3_getVersion(fmiHandle *fmu) {
 
     return fmu->fmi3.getVersion(fmu->fmi3.fmi3Instance);
@@ -2433,7 +2464,6 @@ fmi3Status fmi3_doStep(fmiHandle *fmu,
 
 const char *fmi3_modelName(fmiHandle *fmu)
 {
-    printf("fmu pointer: %p\n", fmu);
     return fmu->fmi3.modelName;
 }
 
@@ -2753,6 +2783,12 @@ bool fmi3_getVariableHasStartValue(fmi3VariableHandle *var)
 {
     TRACEFUNC
     return var->hasStartValue;
+}
+
+int fmi3_getVariableDerivativeIndex(fmi3VariableHandle *var)
+{
+    TRACEFUNC
+    return var->derivative;
 }
 
 fmi3Float64 fmi3_getVariableStartFloat64(fmi3VariableHandle *var)

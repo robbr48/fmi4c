@@ -597,6 +597,7 @@ typedef struct {
     bool supportsCoSimulation;
     bool supportsScheduledExecution;
 
+    const char* fmiVersion_;
     const char* modelName;
     const char* instantiationToken;
     const char* description;
