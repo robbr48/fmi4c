@@ -4555,11 +4555,8 @@ bool unzipFmu(const char* fmufile, const char* instanceName, const char* unzipLo
     return true;
 }
 
-//! @brief Loads an already unzippedFMU file
-//! Parses modelDescription.xml, and then loads all required FMI functions.
-//! @param fmu FMU handle
-//! @returns Handle to FMU
-fmiHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const char *unzipLocation)
+
+fmiHandle *fmi4c_loadUnzippedFmu_internal(const char *instanceName, const char *unzipLocation, bool unzippedLocationIsTemporary)
 {
     fmiHandle *fmu = calloc(1, sizeof(fmiHandle)); // Using calloc to ensure all member pointers (and data) are initialized to NULL (0)
     fmu->dll = NULL;
@@ -4567,7 +4564,13 @@ fmiHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const char *unzipLoca
     fmu->allocatedPointers = NULL;
     fmu->version = fmiVersionUnknown;
     fmu->instanceName = duplicateAndRememberString(fmu, instanceName);
-    fmu->unzippedLocation = duplicateAndRememberString(fmu, unzipLocation);
+    if (unzippedLocationIsTemporary)
+    {
+        fmu->unzippedLocation = unzipLocation;  //Already duplicated
+        rememberPointer(fmu, (void*)unzipLocation);
+    }
+    else
+        fmu->unzippedLocation = duplicateAndRememberString(fmu, unzipLocation);
 
     char cwd[FILENAME_MAX];
  #ifdef _WIN32
@@ -4831,9 +4834,18 @@ fmiHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const char *unzipLoca
         }
     }
 
-    fmu->unzippedLocationIsTemporary = false;
+    fmu->unzippedLocationIsTemporary = unzippedLocationIsTemporary;
 
     return fmu;
+}
+
+//! @brief Loads an already unzippedFMU file
+//! Parses modelDescription.xml, and then loads all required FMI functions.
+//! @param fmu FMU handle
+//! @returns Handle to FMU
+fmiHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const char *unzipLocation)
+{
+    return fmi4c_loadUnzippedFmu_internal(instanceName, unzipLocation, false);
 }
 
 //! @brief Loads the specified FMU file
@@ -4848,8 +4860,8 @@ fmiHandle *fmi4c_loadFmu(const char *fmufile, const char* instanceName)
         return NULL;
     }
 
-    fmiHandle *fmu = fmi4c_loadUnzippedFmu(instanceName, unzipLocation);
-    fmu->unzippedLocationIsTemporary = true;
+    fmiHandle *fmu = fmi4c_loadUnzippedFmu_internal(instanceName, unzipLocation, true);
+
     return fmu;
 }
 
