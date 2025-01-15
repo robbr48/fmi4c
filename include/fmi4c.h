@@ -347,6 +347,7 @@ FMI4C_DLLAPI const char *fmi3_getVariableQuantity(fmi3VariableHandle* var);
 FMI4C_DLLAPI const char *fmi3_getVariableUnit(fmi3VariableHandle* var);
 FMI4C_DLLAPI const char *fmi3_getVariableDisplayUnit(fmi3VariableHandle* var);
 FMI4C_DLLAPI bool fmi3_getVariableHasStartValue(fmi3VariableHandle* var);
+FMI4C_DLLAPI int fmi3_getVariableDerivativeIndex(fmi3VariableHandle* var);
 FMI4C_DLLAPI fmi3Float64 fmi3_getVariableStartFloat64(fmi3VariableHandle* var);
 FMI4C_DLLAPI fmi3Float32 fmi3_getVariableStartFloat32(fmi3VariableHandle *var);
 FMI4C_DLLAPI fmi3Int64 fmi3_getVariableStartInt64(fmi3VariableHandle *var);
