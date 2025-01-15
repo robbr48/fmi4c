@@ -359,14 +359,12 @@ bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureHandle *ou
     //Count number of dependencies
     output->numberOfDependencies = 0;
     const char* dependencies = NULL;
-    if(parseStringAttributeEzXml(*element, "dependencies", &dependencies)) {
+    if(parseStringAttributeEzXmlAndRememberPointer(*element, "dependencies", &dependencies, fmu)) {
 
         if(dependencies != NULL && dependencies[0] != '\0') {
 
-
             //Duplicate the dependencies string to make it mutable
-            char* nonConstDependencies = _strdup(dependencies);
-            free((char*)dependencies);
+            char* nonConstDependencies = duplicateAndRememberString(fmu, dependencies);
 
             if (nonConstDependencies == NULL) {
                 return false; //strdup failed, handle as an error
@@ -397,11 +395,10 @@ bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureHandle *ou
 
             //Parse depenendency kinds element if present
             const char* dependencyKinds = NULL;
-            parseStringAttributeEzXml(*element, "dependenciesKind", &dependencyKinds);
+            parseStringAttributeEzXmlAndRememberPointer(*element, "dependenciesKind", &dependencyKinds, fmu);
             if(dependencyKinds) {
                 output->dependencyKindsDefined = true;
-                char* nonConstDependencyKinds = _strdup(dependencyKinds);
-                free((char*)dependencyKinds);
+                char* nonConstDependencyKinds = duplicateAndRememberString(fmu, dependencyKinds);
 
                 //Allocate memory for dependencies (assume same number as dependencies, according to FMI3 specification)
                 output->dependencyKinds = mallocAndRememberPointer(fmu, output->numberOfDependencies*sizeof(fmi3ValueReference));
@@ -418,8 +415,6 @@ bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureHandle *ou
 
                     if(!strcmp(kind, "independent")) {
                         fmi4c_printMessage("Dependency kind = \"independent\" is not allowed for output dependencies.");
-                        free(nonConstDependencyKinds);
-                        free(nonConstDependencies);
                         return false;
                     }
                     else if(!strcmp(kind, "constant")) {
@@ -439,14 +434,10 @@ bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureHandle *ou
                     }
                     else {
                         fmi4c_printMessage("Unknown dependency kind for output dependency.");
-                        free(nonConstDependencyKinds);
-                        free(nonConstDependencies);
                         return false;
                     }
                 }
-                free(nonConstDependencyKinds);
             }
-            free(nonConstDependencies);
         }
     }
 
