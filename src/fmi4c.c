@@ -4576,7 +4576,9 @@ bool unzipFmu(const char* fmufile, const char* instanceName, const char* unzipLo
     // Build the command string
     snprintf(command, commandLength, "tar -xf \"%s\" -C \"%s\"", fmufile, unzipLocation);
 #else
-    const int commandLength = strlen("unzip -o \"") + strlen(fmufile) + strlen("\" -d \"") + strlen(unzipLocation) + 2;
+    const int commandLength = strlen("unzip -o \"") + strlen(fmufile) +
+                          strlen("\" -d \"") + strlen(unzipLocation) +
+                          strlen("\" > /dev/null 2>&1") + 1;
 
     // Allocate memory for the command
     char *command = malloc(commandLength * sizeof(char));
@@ -4585,7 +4587,7 @@ bool unzipFmu(const char* fmufile, const char* instanceName, const char* unzipLo
         return NULL;
     }
     // Build the command string
-    snprintf(command, commandLength, "unzip -o \"%s\" -d \"%s\"", fmufile, unzipLocation);
+    snprintf(command, commandLength, "unzip -o \"%s\" -d \"%s\" > /dev/null 2>&1", fmufile, unzipLocation);
 #endif
     const int status = system(command);
     free(command);
