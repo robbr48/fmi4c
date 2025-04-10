@@ -236,8 +236,6 @@ typedef struct {
 
     fmi1Type type;
 
-    fmi1Component_t component;
-
     fmi1CallbackFunctionsCoSimulation callbacksCoSimulation;
     fmi1CallbackFunctionsModelExchange callbacksModelExchange;
 
@@ -371,8 +369,6 @@ typedef struct {
     int variablesSize;
 
     fmi2ModelStructureData_t modelStructure;
-
-    fmi2Component component;
 
     fmi2GetTypesPlatform_t getTypesPlatform;
     fmi2GetVersion_t getVersion;
@@ -680,7 +676,6 @@ typedef struct {
     fmi3VariableHandle *variables;
     int variablesSize;
 
-    fmi3Instance fmi3Instance;
     fmi3GetVersion_t getVersion;
     fmi3SetDebugLogging_t setDebugLogging;
     fmi3InstantiateModelExchange_t instantiateModelExchange;

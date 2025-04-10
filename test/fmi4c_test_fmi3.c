@@ -45,7 +45,7 @@ void intermediateUpdate(
         double value;
         fprintf(outputFile,"%f",intermediateUpdateTime);
         for(int i=0; i<numOutputs; ++i) {
-            fmi3_getFloat64((fmiHandle *)instanceEnvironment, &outputRefs[i], 1, &value, 1);
+            fmi3_getFloat64((fmiHandle *)instanceEnvironment, NULL, &outputRefs[i], 1, &value, 1);
             fprintf(outputFile,",%f",value);
         }
         fprintf(outputFile,"\n");
@@ -58,7 +58,8 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     fmi3Status status;
 
     int nRequiredIntermediateVariables = 0;
-    if(!fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, fmu, loggerFmi3, intermediateUpdate)) {
+    fmi3Instance component = fmi3_instantiateCoSimulation(fmu, fmi3False, fmi3True, fmi3False, fmi3False, NULL, nRequiredIntermediateVariables, fmu, loggerFmi3, intermediateUpdate);
+    if(component == NULL) {
         printf("fmi3InstantiateCoSimulation() failed\n");
         exit(1);
     }
@@ -86,14 +87,14 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
     //Enter initialization mode
     double tstop = 10;
-    status = fmi3_enterInitializationMode(fmu, fmi3False, 0, startTime, fmi3True, tstop);
+    status = fmi3_enterInitializationMode(fmu, component, fmi3False, 0, startTime, fmi3True, tstop);
     if(status != fmi3OK) {
         printf("  fmi3EnterInitializationMode() failed\n");
         exit(1);
     }
 
     //Exit initialization mode
-    status = fmi3_exitInitializationMode(fmu);
+    status = fmi3_exitInitializationMode(fmu, component);
     if(status != fmi3OK) {
         printf("  fmi3ExitInitializationMode() failed\n");
         exit(1);
@@ -118,13 +119,13 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             fmi3VariableHandle *var = fmi3_getVariableByName(fmu, interpolationData[i].name);
             fmi3Float64 value = interpolate(&interpolationData[0], &interpolationData[i], time, dataSize);
             fmi3ValueReference vr = fmi3_getVariableValueReference(var);
-            fmi3_setFloat64(fmu, &vr, 1, &value, 1);
+            fmi3_setFloat64(fmu, component, &vr, 1, &value, 1);
         }
 
         //Take a step
         bool eventEncountered, terminateSimulation, earlyReturn;
         double lastT;
-        status = fmi3_doStep(fmu,  time, stepSize, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
+        status = fmi3_doStep(fmu, component, time, stepSize, fmi3True, &eventEncountered, &terminateSimulation, &earlyReturn, &lastT);
         if(status != fmi3OK) {
             printf("fmi3DoStep failed\n");
             exit(1);
@@ -135,7 +136,7 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         if(outputFile != NULL) {
             fprintf(outputFile,"%f",time);
             for(int i=0; i<numOutputs; ++i) {
-                fmi3_getFloat64(fmu, &outputRefs[i], 1, &value, 1);
+                fmi3_getFloat64(fmu, component, &outputRefs[i], 1, &value, 1);
                 fprintf(outputFile,",%f",value);
             }
             fprintf(outputFile,"\n");
@@ -148,11 +149,11 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
     printf("  Simulation finished.\n");
 
-    fmi3_terminate(fmu);
+    fmi3_terminate(fmu, component);
 
     printf("  FMU successfully terminated.\n");
 
-    fmi3_freeInstance(fmu);
+    fmi3_freeInstance(fmu, component);
 
     return 0;
 }
@@ -160,7 +161,8 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 
 int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride) {
     //Instantiate FMU
-    if(!fmi3_instantiateModelExchange(fmu, fmi2False, fmi2True, NULL, loggerFmi3)) {
+    fmi3Instance component = fmi3_instantiateModelExchange(fmu, fmi2False, fmi2True, NULL, loggerFmi3);
+    if(component == NULL) {
         printf("  fmi2Instantiate() failed\n");
         exit(1);
     }
@@ -193,7 +195,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     fmi3Status status;
 
     //Enter initialization mode
-    status = fmi3_enterInitializationMode(fmu,
+    status = fmi3_enterInitializationMode(fmu, component,
                                          fmi3_defaultToleranceDefined(fmu), tolerance,
                                          startTime,
                                          fmi3_defaultStopTimeDefined(fmu), stopTime);
@@ -203,7 +205,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     }
 
     //Exit initialization mode
-    status = fmi3_exitInitializationMode(fmu);
+    status = fmi3_exitInitializationMode(fmu, component);
     if(status != fmi3OK) {
         printf("  fmi3ExitInitializationMode() failed\n");
         exit(1);
@@ -228,12 +230,12 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     fmi3Boolean stepEvent = fmi3False;
     fmi3Int32* rootsFound;
 
-    status = fmi3_getNumberOfContinuousStates(fmu, &nStates);
+    status = fmi3_getNumberOfContinuousStates(fmu, component, &nStates);
     if(status != fmi3OK) {
         printf("  fmi3GetNumberOfContinuousStates() failed\n");
         exit(1);
     }
-    status = fmi3_getNumberOfEventIndicators(fmu, &nEventIndicators);
+    status = fmi3_getNumberOfEventIndicators(fmu, component, &nEventIndicators);
     if(status != fmi3OK) {
         printf("  fmi3GetNumberOfEventIndicators() failed\n");
         exit(1);
@@ -252,7 +254,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     }
 
     while (discreteStatesNeedUpdate) {
-        fmi3_updateDiscreteStates(fmu,
+        fmi3_updateDiscreteStates(fmu, component,
                                  &discreteStatesNeedUpdate,
                                  &terminateSimulation,
                                  &nominalsOfContinuousStatesChanged,
@@ -265,19 +267,19 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         }
     }
 
-    fmi3_enterContinuousTimeMode(fmu);
+    fmi3_enterContinuousTimeMode(fmu, component);
 
-    status = fmi3_getContinuousStates(fmu, states, nStates);
+    status = fmi3_getContinuousStates(fmu, component, states, nStates);
     if(status != fmi3OK) {
         printf("  fmi3GetContinuousStates() failed\n");
         exit(1);
     }
-    status = fmi3_getNominalsOfContinuousStates(fmu, nominalStates, nStates);
+    status = fmi3_getNominalsOfContinuousStates(fmu, component, nominalStates, nStates);
     if(status != fmi3OK) {
         printf("  fmi3GetNominalsOfContinuousStates() failed\n");
         exit(1);
     }
-    status = fmi3_getEventIndicators(fmu, eventIndicators, nEventIndicators);
+    status = fmi3_getEventIndicators(fmu, component, eventIndicators, nEventIndicators);
     if(status != fmi3OK) {
         printf("  fmi3GetEventIndicators() failed\n");
         exit(1);
@@ -303,9 +305,9 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             break;
         }
 
-        fmi3_getContinuousStateDerivatives(fmu, derivatives, nStates);
+        fmi3_getContinuousStateDerivatives(fmu, component, derivatives, nStates);
 
-        fmi3_setTime(fmu, time);
+        fmi3_setTime(fmu, component, time);
 
         //Interpolate inputs from CSV file
         for(int i=1; i<nInterpolators; ++i) {
@@ -322,7 +324,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             }
             fmi3Float64 value = interpolate(&interpolationData[0], &interpolationData[i], time, dataSize);
             fmi3ValueReference vr = fmi3_getVariableValueReference(var);
-            fmi3_setFloat64(fmu, &vr, 1, &value, 1);
+            fmi3_setFloat64(fmu, component, &vr, 1, &value, 1);
         }
 
         //Integrate one step
@@ -330,10 +332,10 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
             states[i] += stepSize*derivatives[i]; // forward Euler method
         }
 
-        fmi3_setContinuousStates(fmu, states, nStates);
+        fmi3_setContinuousStates(fmu, component, states, nStates);
 
         // get event indicators at t = time
-        fmi3_getEventIndicators(fmu, eventIndicators, nEventIndicators);
+        fmi3_getEventIndicators(fmu, component, eventIndicators, nEventIndicators);
 
         stateEvent = fmi3False;
 
@@ -359,13 +361,13 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
         if(outputFile != NULL) {
             fprintf(outputFile,"%f",time);
             for(int i=0; i<numOutputs; ++i) {
-                fmi3_getFloat64(fmu, &outputRefs[i], 1, &value, 1 );
+                fmi3_getFloat64(fmu, component, &outputRefs[i], 1, &value, 1 );
                 fprintf(outputFile,",%f",value);
             }
             fprintf(outputFile,"\n");
         }
 
-        fmi3_completedIntegratorStep(fmu, fmi3True, &stepEvent, &terminateSimulation);
+        fmi3_completedIntegratorStep(fmu, component, fmi3True, &stepEvent, &terminateSimulation);
 
         time+=stepSize;
     }
@@ -377,11 +379,11 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
     free(eventIndicators);
     printf("  Simulation finished.\n");
 
-    fmi3_terminate(fmu);
+    fmi3_terminate(fmu, component);
 
     printf("  FMU successfully terminated.\n");
 
-    fmi3_freeInstance(fmu);
+    fmi3_freeInstance(fmu, component);
 
     return 0;
 }
