@@ -2704,14 +2704,14 @@ const char *fmi2_getVersion(fmiHandle *fmu)
     return fmu->fmi2.version;
 }
 
-fmi2Status fmi2_setDebugLogging(fmiHandle *fmu, fmi2Boolean loggingOn, size_t nCategories, const fmi2String categories[])
+fmi2Status fmi2_setDebugLogging(fmiHandle *fmu, fmi2Component comp, fmi2Boolean loggingOn, size_t nCategories, const fmi2String categories[])
 {
     TRACEFUNC
 
-    return fmu->fmi2.setDebugLogging(fmu->fmi2.component, loggingOn, nCategories, categories);
+    return fmu->fmi2.setDebugLogging(comp, loggingOn, nCategories, categories);
 }
 
-bool fmi2_instantiate(fmiHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, fmi2CallbackAllocateMemory allocateMemory, fmi2CallbackFreeMemory freeMemory, fmi2StepFinished stepFinished, fmi2ComponentEnvironment componentEnvironment, fmi2Boolean visible, fmi2Boolean loggingOn)
+fmi2Component fmi2_instantiate(fmiHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, fmi2CallbackAllocateMemory allocateMemory, fmi2CallbackFreeMemory freeMemory, fmi2StepFinished stepFinished, fmi2ComponentEnvironment componentEnvironment, fmi2Boolean visible, fmi2Boolean loggingOn)
 {
     TRACEFUNC
     if(type == fmi2CoSimulation && !fmu->fmi2.supportsCoSimulation) {
@@ -2740,50 +2740,50 @@ bool fmi2_instantiate(fmiHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, 
     // printf("  unzipped location:  %s\n", fmu->unzippedLocation);
     // printf("  resources location: %s\n", fmu->resourcesLocation);
 
-    fmu->fmi2.component = fmu->fmi2.instantiate(fmu->instanceName, type, fmu->fmi2.guid, fmu->resourcesLocation, &fmu->fmi2.callbacks, visible, loggingOn);
-    return (fmu->fmi2.component != NULL);
+    fmi2Component comp = fmu->fmi2.instantiate(fmu->instanceName, type, fmu->fmi2.guid, fmu->resourcesLocation, &fmu->fmi2.callbacks, visible, loggingOn);
+    return comp;
 }
 
-void fmi2_freeInstance(fmiHandle *fmu)
+void fmi2_freeInstance(fmiHandle *fmu, fmi2Component comp)
 {
     TRACEFUNC
 
-    fmu->fmi2.freeInstance(fmu->fmi2.component);
+    fmu->fmi2.freeInstance(comp);
 }
 
-fmi2Status fmi2_setupExperiment(fmiHandle *fmu, fmi2Boolean toleranceDefined, fmi2Real tolerance, fmi2Real startTime, fmi2Boolean stopTimeDefined, fmi2Real stopTime)
+fmi2Status fmi2_setupExperiment(fmiHandle *fmu, fmi2Component comp, fmi2Boolean toleranceDefined, fmi2Real tolerance, fmi2Real startTime, fmi2Boolean stopTimeDefined, fmi2Real stopTime)
 {
     TRACEFUNC
 
-    return fmu->fmi2.setupExperiment(fmu->fmi2.component, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime);
+    return fmu->fmi2.setupExperiment(comp, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime);
 }
 
-fmi2Status fmi2_enterInitializationMode(fmiHandle *fmu)
+fmi2Status fmi2_enterInitializationMode(fmiHandle *fmu, fmi2Component comp)
 {
     TRACEFUNC
 
-    return fmu->fmi2.enterInitializationMode(fmu->fmi2.component);
+    return fmu->fmi2.enterInitializationMode(comp);
 }
 
-fmi2Status fmi2_exitInitializationMode(fmiHandle *fmu)
+fmi2Status fmi2_exitInitializationMode(fmiHandle *fmu, fmi2Component comp)
 {
     TRACEFUNC
 
-    return fmu->fmi2.exitInitializationMode(fmu->fmi2.component);
+    return fmu->fmi2.exitInitializationMode(comp);
 }
 
-fmi2Status fmi2_terminate(fmiHandle *fmu)
+fmi2Status fmi2_terminate(fmiHandle *fmu, fmi2Component comp)
 {
     TRACEFUNC
 
-    return fmu->fmi2.terminate(fmu->fmi2.component);
+    return fmu->fmi2.terminate(comp);
 }
 
-fmi2Status fmi2_reset(fmiHandle *fmu)
+fmi2Status fmi2_reset(fmiHandle *fmu, fmi2Component comp)
 {
     TRACEFUNC
 
-    return fmu->fmi2.reset(fmu->fmi2.component);
+    return fmu->fmi2.reset(comp);
 }
 
 int fmi2_getNumberOfUnits(fmiHandle *fmu)
@@ -3747,257 +3747,268 @@ fmi2DataType fmi2_getVariableDataType(fmi2VariableHandle *var)
 }
 
 fmi2Status fmi2_getReal(fmiHandle *fmu,
-                       const fmi2ValueReference valueReferences[],
-                       size_t nValueReferences,
-                       fmi2Real values[])
+                        fmi2Component comp,
+                        const fmi2ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        fmi2Real values[])
 {
-    return fmu->fmi2.getReal(fmu->fmi2.component,
-                            valueReferences,
-                            nValueReferences,
-                            values);
+    return fmu->fmi2.getReal(comp,
+                             valueReferences,
+                             nValueReferences,
+                             values);
 }
 
 fmi2Status fmi2_getInteger(fmiHandle *fmu,
-                          const fmi2ValueReference valueReferences[],
-                          size_t nValueReferences,
-                          fmi2Integer values[])
+                           fmi2Component comp,
+                           const fmi2ValueReference valueReferences[],
+                           size_t nValueReferences,
+                           fmi2Integer values[])
 {
     TRACEFUNC
 
-    return fmu->fmi2.getInteger(fmu->fmi2.component,
-                                  valueReferences,
-                                  nValueReferences,
-                                  values);
+            return fmu->fmi2.getInteger(comp,
+                                        valueReferences,
+                                        nValueReferences,
+                                        values);
 }
 
 fmi2Status fmi2_getBoolean(fmiHandle *fmu,
-                          const fmi2ValueReference valueReferences[],
-                          size_t nValueReferences,
-                          fmi2Boolean values[])
+                           fmi2Component comp,
+                           const fmi2ValueReference valueReferences[],
+                           size_t nValueReferences,
+                           fmi2Boolean values[])
 {
     TRACEFUNC
 
-    return fmu->fmi2.getBoolean(fmu->fmi2.component,
-                                  valueReferences,
-                                  nValueReferences,
-                                  values);
+            return fmu->fmi2.getBoolean(comp,
+                                        valueReferences,
+                                        nValueReferences,
+                                        values);
 }
 
 fmi2Status fmi2_getString(fmiHandle *fmu,
-                         const fmi2ValueReference valueReferences[],
-                         size_t nValueReferences,
-                         fmi2String values[])
+                          fmi2Component comp,
+                          const fmi2ValueReference valueReferences[],
+                          size_t nValueReferences,
+                          fmi2String values[])
 {
     TRACEFUNC
 
-    return fmu->fmi2.getString(fmu->fmi2.component,
-                                 valueReferences,
-                                 nValueReferences,
-                                 values);
+            return fmu->fmi2.getString(comp,
+                                       valueReferences,
+                                       nValueReferences,
+                                       values);
 }
 
 fmi2Status fmi2_setReal(fmiHandle *fmu,
-                       const fmi2ValueReference valueReferences[],
-                       size_t nValueReferences,
-                       const fmi2Real values[])
+                        fmi2Component comp,
+                        const fmi2ValueReference valueReferences[],
+                        size_t nValueReferences,
+                        const fmi2Real values[])
 {
-    return fmu->fmi2.setReal(fmu->fmi2.component,
+    return fmu->fmi2.setReal(comp,
                                valueReferences,
                                nValueReferences,
-                               values);
+                             values);
 }
 
 fmi2Status fmi2_setInteger(fmiHandle *fmu,
-                          const fmi2ValueReference valueReferences[],
-                          size_t nValueReferences,
-                          const fmi2Integer values[])
+                           fmi2Component comp,
+                           const fmi2ValueReference valueReferences[],
+                           size_t nValueReferences,
+                           const fmi2Integer values[])
 {
     TRACEFUNC
 
-    return fmu->fmi2.setInteger(fmu->fmi2.component,
+    return fmu->fmi2.setInteger(comp,
                                valueReferences,
                                nValueReferences,
                                values);
 }
 
 fmi2Status fmi2_setBoolean(fmiHandle *fmu,
-                          const fmi2ValueReference valueReferences[],
-                          size_t nValueReferences,
-                          const fmi2Boolean values[])
+                           fmi2Component comp,
+                           const fmi2ValueReference valueReferences[],
+                           size_t nValueReferences,
+                           const fmi2Boolean values[])
 {
     TRACEFUNC
 
-    return fmu->fmi2.setBoolean(fmu->fmi2.component,
+    return fmu->fmi2.setBoolean(comp,
                                valueReferences,
                                nValueReferences,
                                values);
 }
 
 fmi2Status fmi2_setString(fmiHandle *fmu,
-                         const fmi2ValueReference valueReferences[],
-                         size_t nValueReferences,
-                         const fmi2String values[])
+                          fmi2Component comp,
+                          const fmi2ValueReference valueReferences[],
+                          size_t nValueReferences,
+                          const fmi2String values[])
 {
     TRACEFUNC
 
-    return fmu->fmi2.setString(fmu->fmi2.component,
+    return fmu->fmi2.setString(comp,
                                valueReferences,
                                nValueReferences,
                                values);
 }
 
-fmi2Status fmi2_getFMUstate(fmiHandle* fmu, fmi2FMUstate* FMUstate)
+fmi2Status fmi2_getFMUstate(fmiHandle* fmu, fmi2Component comp, fmi2FMUstate* FMUstate)
 {
     TRACEFUNC
-    return fmu->fmi2.getFMUstate(fmu->fmi2.component, FMUstate);
+    return fmu->fmi2.getFMUstate(comp, FMUstate);
 }
 
-fmi2Status fmi2_setFMUstate(fmiHandle* fmu, fmi2FMUstate FMUstate)
+fmi2Status fmi2_setFMUstate(fmiHandle* fmu, fmi2Component comp, fmi2FMUstate FMUstate)
 {
     TRACEFUNC
-    return fmu->fmi2.setFMUstate(fmu->fmi2.component, FMUstate);
+    return fmu->fmi2.setFMUstate(comp, FMUstate);
 }
 
-fmi2Status fmi2_freeFMUstate(fmiHandle* fmu, fmi2FMUstate* FMUstate)
+fmi2Status fmi2_freeFMUstate(fmiHandle* fmu, fmi2Component comp, fmi2FMUstate* FMUstate)
 {
     TRACEFUNC
-    return fmu->fmi2.freeFMUstate(fmu->fmi2.component, FMUstate);
+    return fmu->fmi2.freeFMUstate(comp, FMUstate);
 }
 
-fmi2Status fmi2_serializedFMUstateSize(fmiHandle* fmu, fmi2FMUstate FMUstate, size_t* size)
+fmi2Status fmi2_serializedFMUstateSize(fmiHandle* fmu, fmi2Component comp, fmi2FMUstate FMUstate, size_t* size)
 {
     TRACEFUNC
-    return fmu->fmi2.serializedFMUstateSize(fmu->fmi2.component, FMUstate, size);
+    return fmu->fmi2.serializedFMUstateSize(comp, FMUstate, size);
 }
 
-fmi2Status fmi2_serializeFMUstate(fmiHandle* fmu, fmi2FMUstate FMUstate, fmi2Byte serializedState[], size_t size)
+fmi2Status fmi2_serializeFMUstate(fmiHandle* fmu, fmi2Component comp, fmi2FMUstate FMUstate, fmi2Byte serializedState[], size_t size)
 {
     TRACEFUNC
-    return fmu->fmi2.serializeFMUstate(fmu->fmi2.component, FMUstate, serializedState, size);
+    return fmu->fmi2.serializeFMUstate(comp, FMUstate, serializedState, size);
 }
 
-fmi2Status fmi2_deSerializeFMUstate(fmiHandle* fmu, const fmi2Byte serializedState[], size_t size, fmi2FMUstate* FMUstate)
+fmi2Status fmi2_deSerializeFMUstate(fmiHandle* fmu, fmi2Component comp, const fmi2Byte serializedState[], size_t size, fmi2FMUstate* FMUstate)
 {
     TRACEFUNC
-    return fmu->fmi2.deSerializeFMUstate(fmu->fmi2.component, serializedState, size, FMUstate);
+    return fmu->fmi2.deSerializeFMUstate(comp, serializedState, size, FMUstate);
 }
 
 fmi2Status fmi2_getDirectionalDerivative(fmiHandle* fmu,
-                                        const fmi2ValueReference unknownReferences[],
-                                        size_t nUnknown,
-                                        const fmi2ValueReference knownReferences[],
-                                        size_t nKnown,
-                                        const fmi2Real dvKnown[],
-                                        fmi2Real dvUnknown[])
+                                         fmi2Component comp,
+                                         const fmi2ValueReference unknownReferences[],
+                                         size_t nUnknown,
+                                         const fmi2ValueReference knownReferences[],
+                                         size_t nKnown,
+                                         const fmi2Real dvKnown[],
+                                         fmi2Real dvUnknown[])
 {
     TRACEFUNC
-    return fmu->fmi2.getDirectionalDerivative(fmu->fmi2.component,
-                                             unknownReferences,
-                                             nUnknown,
-                                             knownReferences,
-                                             nKnown,
-                                             dvKnown,
-                                             dvUnknown);
+        return fmu->fmi2.getDirectionalDerivative(comp,
+                                                  unknownReferences,
+                                                  nUnknown,
+                                                  knownReferences,
+                                                  nKnown,
+                                                  dvKnown,
+                                                  dvUnknown);
 }
 
-fmi2Status fmi2_enterEventMode(fmiHandle* fmu)
+fmi2Status fmi2_enterEventMode(fmiHandle* fmu, fmi2Component comp)
 {
     TRACEFUNC
-    return fmu->fmi2.enterEventMode(fmu->fmi2.component);
+    return fmu->fmi2.enterEventMode(comp);
 }
 
-fmi2Status fmi2_newDiscreteStates(fmiHandle* fmu, fmi2EventInfo* eventInfo)
+fmi2Status fmi2_newDiscreteStates(fmiHandle* fmu, fmi2Component comp, fmi2EventInfo* eventInfo)
 {
     TRACEFUNC
-            return fmu->fmi2.newDiscreteStates(fmu->fmi2.component, eventInfo);
+            return fmu->fmi2.newDiscreteStates(comp, eventInfo);
 }
 
-fmi2Status fmi2_enterContinuousTimeMode(fmiHandle* fmu)
+fmi2Status fmi2_enterContinuousTimeMode(fmiHandle* fmu, fmi2Component comp)
 {
     TRACEFUNC
-    return fmu->fmi2.enterContinuousTimeMode(fmu->fmi2.component);
+    return fmu->fmi2.enterContinuousTimeMode(comp);
 }
 
 fmi2Status fmi2_completedIntegratorStep(fmiHandle* fmu,
-                                       fmi2Boolean noSetFMUStatePriorToCurrentPoint,
-                                       fmi2Boolean* enterEventMode,
-                                       fmi2Boolean* terminateSimulation)
+                                        fmi2Component comp,
+                                        fmi2Boolean noSetFMUStatePriorToCurrentPoint,
+                                        fmi2Boolean* enterEventMode,
+                                        fmi2Boolean* terminateSimulation)
 {
     TRACEFUNC
-    return fmu->fmi2.completedIntegratorStep(fmu->fmi2.component,
-                                            noSetFMUStatePriorToCurrentPoint,
-                                            enterEventMode,
-                                            terminateSimulation);
+    return fmu->fmi2.completedIntegratorStep(comp,
+                                             noSetFMUStatePriorToCurrentPoint,
+                                             enterEventMode,
+                                             terminateSimulation);
 }
 
-fmi2Status fmi2_setTime(fmiHandle* fmu, fmi2Real time)
+fmi2Status fmi2_setTime(fmiHandle* fmu, fmi2Component comp, fmi2Real time)
 {
     TRACEFUNC
-    return fmu->fmi2.setTime(fmu->fmi2.component, time);
+    return fmu->fmi2.setTime(comp, time);
 }
 
 fmi2Status fmi2_setContinuousStates(fmiHandle* fmu,
-                                   const fmi2Real x[],
-                                   size_t nx)
+                                    fmi2Component comp,
+                                    const fmi2Real x[],
+                                    size_t nx)
 {
     TRACEFUNC
-    return fmu->fmi2.setContinuousStates(fmu->fmi2.component, x, nx);
+    return fmu->fmi2.setContinuousStates(comp, x, nx);
 }
 
-fmi2Status fmi2_getDerivatives(fmiHandle* fmu, fmi2Real derivatives[], size_t nx)
+fmi2Status fmi2_getDerivatives(fmiHandle* fmu, fmi2Component comp, fmi2Real derivatives[], size_t nx)
 {
     TRACEFUNC
-    return fmu->fmi2.getDerivatives(fmu->fmi2.component, derivatives, nx);
+    return fmu->fmi2.getDerivatives(comp, derivatives, nx);
 }
 
-fmi2Status fmi2_getEventIndicators(fmiHandle* fmu, fmi2Real eventIndicators[], size_t ni)
+fmi2Status fmi2_getEventIndicators(fmiHandle* fmu, fmi2Component comp, fmi2Real eventIndicators[], size_t ni)
 {
     TRACEFUNC
-    return fmu->fmi2.getEventIndicators(fmu->fmi2.component, eventIndicators, ni);
+    return fmu->fmi2.getEventIndicators(comp, eventIndicators, ni);
 }
 
-fmi2Status fmi2_getContinuousStates(fmiHandle* fmu, fmi2Real x[], size_t nx)
+fmi2Status fmi2_getContinuousStates(fmiHandle* fmu, fmi2Component comp, fmi2Real x[], size_t nx)
 {
     TRACEFUNC
-    return fmu->fmi2.getContinuousStates(fmu->fmi2.component, x, nx);
+    return fmu->fmi2.getContinuousStates(comp, x, nx);
 }
 
-fmi2Status fmi2_getNominalsOfContinuousStates(fmiHandle* fmu, fmi2Real x_nominal[], size_t nx)
+fmi2Status fmi2_getNominalsOfContinuousStates(fmiHandle* fmu, fmi2Component comp, fmi2Real x_nominal[], size_t nx)
 {
     TRACEFUNC
-    return fmu->fmi2.getNominalsOfContinuousStates(fmu->fmi2.component, x_nominal, nx);
+    return fmu->fmi2.getNominalsOfContinuousStates(comp, x_nominal, nx);
 }
 
-fmi2Status fmi2_setRealInputDerivatives(fmiHandle* fmu, const fmi2ValueReference [], size_t, const fmi2Integer [], const fmi2Real []);
-fmi2Status fmi2_getRealOutputDerivatives(fmiHandle* fmu, const fmi2ValueReference [], size_t, const fmi2Integer [], fmi2Real []);
 
 fmi2Status fmi2_setRealInputDerivatives(fmiHandle* fmu,
-                                       const fmi2ValueReference vr[],
-                                       size_t nvr,
-                                       const fmi2Integer order[],
-                                       const fmi2Real value[])
+                                        fmi2Component comp,
+                                        const fmi2ValueReference vr[],
+                                        size_t nvr,
+                                        const fmi2Integer order[],
+                                        const fmi2Real value[])
 {
     TRACEFUNC
-    return fmu->fmi2.setRealInputDerivatives(fmu->fmi2.component, vr, nvr, order, value);
+    return fmu->fmi2.setRealInputDerivatives(comp, vr, nvr, order, value);
 }
 
 fmi2Status fmi2_getRealOutputDerivatives (fmiHandle* fmu,
-                                         const fmi2ValueReference vr[],
-                                         size_t nvr,
-                                         const fmi2Integer order[],
-                                         fmi2Real value[])
+                                          fmi2Component comp,
+                                          const fmi2ValueReference vr[],
+                                          size_t nvr,
+                                          const fmi2Integer order[],
+                                          fmi2Real value[])
 {
     TRACEFUNC
-    return fmu->fmi2.getRealOutputDerivatives(fmu->fmi2.component, vr, nvr, order, value);
+    return fmu->fmi2.getRealOutputDerivatives(comp, vr, nvr, order, value);
 }
 
-fmi2Status fmi2_doStep(fmiHandle *fmu, fmi2Real currentCommunicationPoint, fmi2Real communicationStepSize, fmi2Boolean noSetFMUStatePriorToCurrentPoint)
+fmi2Status fmi2_doStep(fmiHandle *fmu, fmi2Component comp, fmi2Real currentCommunicationPoint, fmi2Real communicationStepSize, fmi2Boolean noSetFMUStatePriorToCurrentPoint)
 {
     TRACEFUNC
-    return fmu->fmi2.doStep(fmu->fmi2.component,
-                              currentCommunicationPoint,
-                              communicationStepSize,
-                              noSetFMUStatePriorToCurrentPoint);
+    return fmu->fmi2.doStep(comp,
+                            currentCommunicationPoint,
+                            communicationStepSize,
+                            noSetFMUStatePriorToCurrentPoint);
 }
 
 fmi2Status fmi2_cancelStep(fmiHandle* fmu)
