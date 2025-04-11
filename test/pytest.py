@@ -63,7 +63,7 @@ def verify(name, value):
     print(name+": "+str(value)+" -", end=" ")
     if value != verificationDict[name]:
         print("ERROR! Expected: "+str(verificationDict[name]))
-        print(f.fmi4c_getErrorMessages())
+        #print(f.fmi4c_getErrorMessages())
         exit(1)
     print("ok!")
 
@@ -75,7 +75,7 @@ import os
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi1cs.fmu", "testfmu")
 if not success:
     print("Failed to load fmi1cs.fmu")
-    print(f.fmi4c_getErrorMessages())
+    #print(f.fmi4c_getErrorMessages())
     exit(1)
 else:
     print("Successfully loaded fmi1cs.fmu")
@@ -307,7 +307,7 @@ verificationDict =	{
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi1me.fmu", "testfmu")
 if not success:
     print("Failed to load fmi1me.fmu")
-    print(f.fmi4c_getErrorMessages())
+    #print(f.fmi4c_getErrorMessages())
     exit(1)
 else:
     print("Successfully loaded fmi1me.fmu")
@@ -585,7 +585,7 @@ verificationDict =	{
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi2.fmu", "testfmu")
 if not success:
     print("Failed to load fmi2.fmu")
-    print(f.fmi4c_getErrorMessages())
+    #print(f.fmi4c_getErrorMessages())
     exit(1)
 else:
     print("Successfully loaded fmi2.fmu")
@@ -832,8 +832,9 @@ verify("modelStructureDependencies", modelStructureDependencies)
 verify("modelStructureDependencyKindsDefined", modelStructureDependencyKindsDefined)
 verify("modelStructureDependencyKinds", modelStructureDependencyKinds)
    
-instantiateSuccess = f.fmi2_instantiate(1, False, False)    # 1 = co-simulation
-verify("instantiateSuccess", instantiateSuccess)
+comp = 0   
+comp = f.fmi2_instantiate(1, False, False)    # 1 = co-simulation
+verify("instantiateSuccess", comp != 0)
 
 typesPlatform = f.fmi2_getTypesPlatform()
 verify("typesPlatform", typesPlatform)
@@ -841,53 +842,54 @@ verify("typesPlatform", typesPlatform)
 version = f.fmi2_getVersion()
 verify("version", version)
 
-setDebugLoggingSuccess = f.fmi2_setDebugLogging(False, 0, None)
+setDebugLoggingSuccess = f.fmi2_setDebugLogging(comp, False, 0, None)
 verify("setDebugLoggingSuccess", setDebugLoggingSuccess) 
 
-verify("setupExperimentSuccess", f.fmi2_setupExperiment(True, 1e-5, 0, True, 2))
+verify("setupExperimentSuccess", f.fmi2_setupExperiment(comp, True, 1e-5, 0, True, 2))
 
-verify("enterInitializationModeSuccess", f.fmi2_enterInitializationMode())
-verify("exitInitializationModeSuccess", f.fmi2_exitInitializationMode())
+verify("enterInitializationModeSuccess", f.fmi2_enterInitializationMode(comp))
+verify("exitInitializationModeSuccess", f.fmi2_exitInitializationMode(comp))
 
-verify("setRealSuccess", f.fmi2_setReal([1], 1, [5]))
+verify("setRealSuccess", f.fmi2_setReal(comp, [1], 1, [5]))
 
-verify("doStepSuccess", f.fmi2_doStep(0,0.1,True))
+verify("doStepSuccess", f.fmi2_doStep(comp, 0,0.1,True))
 
-verify("getRealResults", f.fmi2_getReal([1, 2],2))
+verify("getRealResults", f.fmi2_getReal(comp, [1, 2],2))
 
-verify("resetSuccess", f.fmi2_reset())
+verify("resetSuccess", f.fmi2_reset(comp))
 
-instantiateSuccess = f.fmi2_instantiate(0, False, False)    #1 = model exchange
-verify("instantiateSuccess", instantiateSuccess)
+comp = 0
+comp = f.fmi2_instantiate(0, False, False)    #1 = model exchange
+verify("instantiateSuccess", comp != 0)
 
-verify("enterInitializationModeSuccess", f.fmi2_enterInitializationMode())
-verify("exitInitializationModeSuccess", f.fmi2_exitInitializationMode())
+verify("enterInitializationModeSuccess", f.fmi2_enterInitializationMode(comp))
+verify("exitInitializationModeSuccess", f.fmi2_exitInitializationMode(comp))
 
-setTimeSuccess = f.fmi2_setTime(0.5)
+setTimeSuccess = f.fmi2_setTime(comp, 0.5)
 verify("setTimeSuccess", setTimeSuccess)
 
-getDerivativesSuccess = f.fmi2_getDerivatives(1)
+getDerivativesSuccess = f.fmi2_getDerivatives(comp, 1)
 verify("getDerivativesSuccess", getDerivativesSuccess)
 
 #getStateValueReferencesSuccess = f.fmi2_getStateValueReferences(1)
 #verify("getStateValueReferencesSuccess", getStateValueReferencesSuccess)
 
-getNominalsOfContinuousStatesSuccess = f.fmi2_getNominalsOfContinuousStates(1)
+getNominalsOfContinuousStatesSuccess = f.fmi2_getNominalsOfContinuousStates(comp, 1)
 verify("getNominalsOfContinuousStatesSuccess", getNominalsOfContinuousStatesSuccess)
 
-setContinuousStatesSuccess = f.fmi2_setContinuousStates([42], 1)
+setContinuousStatesSuccess = f.fmi2_setContinuousStates(comp, [42], 1)
 verify("setContinuousStatesSuccess", setContinuousStatesSuccess)
 
-getContinuousStatesSuccess = f.fmi2_getContinuousStates(1)
+getContinuousStatesSuccess = f.fmi2_getContinuousStates(comp, 1)
 verify("getContinuousStatesSuccess", getContinuousStatesSuccess)
 
-completedIntegratorStepSuccess = f.fmi2_completedIntegratorStep(False)
+completedIntegratorStepSuccess = f.fmi2_completedIntegratorStep(comp, False)
 verify("completedIntegratorStepSuccess", completedIntegratorStepSuccess)
 
-terminateSuccess = f.fmi2_terminate()
+terminateSuccess = f.fmi2_terminate(comp)
 verify("terminateSuccess", terminateSuccess)
 
-f.fmi2_freeInstance()
+f.fmi2_freeInstance(comp)
 
 f.fmi4c_freeFmu()
 
@@ -1032,7 +1034,7 @@ verificationDict =	{
 success = f.fmi4c_loadFmu(os.path.dirname(os.path.abspath(__file__))+"/fmi3.fmu", "testfmu")
 if not success:
     print("Failed to load fmi3.fmu")
-    print(f.fmi4c_getErrorMessages())
+    #print(f.fmi4c_getErrorMessages())
     exit(1)
 else:
     print("Successfully loaded fmi3.fmu")
