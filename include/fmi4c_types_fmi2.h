@@ -5,6 +5,8 @@
 #define fmi2True  1
 #define fmi2False 0
 
+struct fmiHandle;
+
 // Types
 typedef void* fmi2Component;
 typedef void* fmi2ComponentEnvironment;

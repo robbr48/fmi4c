@@ -372,8 +372,6 @@ typedef struct {
 
     fmi2ModelStructureData_t modelStructure;
 
-    fmi2Component component;
-
     fmi2GetTypesPlatform_t getTypesPlatform;
     fmi2GetVersion_t getVersion;
     fmi2SetDebugLogging_t setDebugLogging;
