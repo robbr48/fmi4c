@@ -858,37 +858,38 @@ verify("getRealResults", f.fmi2_getReal(comp, [1, 2],2))
 
 verify("resetSuccess", f.fmi2_reset(comp))
 
-comp = 0
-comp = f.fmi2_instantiate(0, False, False)    #1 = model exchange
-verify("instantiateSuccess", comp != 0)
+comp2 = 0
+comp2 = f.fmi2_instantiate(0, False, False)    #1 = model exchange
+verify("instantiateSuccess", comp2 != 0)
 
-verify("enterInitializationModeSuccess", f.fmi2_enterInitializationMode(comp))
-verify("exitInitializationModeSuccess", f.fmi2_exitInitializationMode(comp))
+verify("enterInitializationModeSuccess", f.fmi2_enterInitializationMode(comp2))
+verify("exitInitializationModeSuccess", f.fmi2_exitInitializationMode(comp2))
 
-setTimeSuccess = f.fmi2_setTime(comp, 0.5)
+setTimeSuccess = f.fmi2_setTime(comp2, 0.5)
 verify("setTimeSuccess", setTimeSuccess)
 
-getDerivativesSuccess = f.fmi2_getDerivatives(comp, 1)
+getDerivativesSuccess = f.fmi2_getDerivatives(comp2, 1)
 verify("getDerivativesSuccess", getDerivativesSuccess)
 
 #getStateValueReferencesSuccess = f.fmi2_getStateValueReferences(1)
 #verify("getStateValueReferencesSuccess", getStateValueReferencesSuccess)
 
-getNominalsOfContinuousStatesSuccess = f.fmi2_getNominalsOfContinuousStates(comp, 1)
+getNominalsOfContinuousStatesSuccess = f.fmi2_getNominalsOfContinuousStates(comp2, 1)
 verify("getNominalsOfContinuousStatesSuccess", getNominalsOfContinuousStatesSuccess)
 
-setContinuousStatesSuccess = f.fmi2_setContinuousStates(comp, [42], 1)
+setContinuousStatesSuccess = f.fmi2_setContinuousStates(comp2, [42], 1)
 verify("setContinuousStatesSuccess", setContinuousStatesSuccess)
 
-getContinuousStatesSuccess = f.fmi2_getContinuousStates(comp, 1)
+getContinuousStatesSuccess = f.fmi2_getContinuousStates(comp2, 1)
 verify("getContinuousStatesSuccess", getContinuousStatesSuccess)
 
-completedIntegratorStepSuccess = f.fmi2_completedIntegratorStep(comp, False)
+completedIntegratorStepSuccess = f.fmi2_completedIntegratorStep(comp2, False)
 verify("completedIntegratorStepSuccess", completedIntegratorStepSuccess)
 
-terminateSuccess = f.fmi2_terminate(comp)
+terminateSuccess = f.fmi2_terminate(comp2)
 verify("terminateSuccess", terminateSuccess)
 
+f.fmi2_freeInstance(comp2)
 f.fmi2_freeInstance(comp)
 
 f.fmi4c_freeFmu()
