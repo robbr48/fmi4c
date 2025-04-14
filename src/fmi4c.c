@@ -2779,7 +2779,10 @@ fmi2Status fmi2_terminate(fmi2InstanceHandle *instance)
 {
     TRACEFUNC
 
-    return instance->fmu->fmi2.terminate(instance->component);
+    fmi2Status status = instance->fmu->fmi2.terminate(instance->component);
+    free(instance);
+    return status;
+
 }
 
 fmi2Status fmi2_reset(fmi2InstanceHandle *instance)
@@ -5294,7 +5297,9 @@ fmi1Status fmi1_initializeSlave(fmi1InstanceHandle *instance, fmi1Real startTime
 fmi1Status fmi1_terminateSlave(fmi1InstanceHandle *instance)
 {
     TRACEFUNC
-    return instance->fmu->fmi1.terminateSlave(instance->component);
+    fmi1Status status = instance->fmu->fmi1.terminateSlave(instance->component);
+    free(instance);
+    return status;
 }
 
 fmi1Status fmi1_resetSlave(fmi1InstanceHandle *instance)
@@ -5453,7 +5458,9 @@ fmi1Status fmi1_getStateValueReferences(fmi1InstanceHandle *instance, fmi1ValueR
 fmi1Status fmi1_terminate(fmi1InstanceHandle *instance)
 {
     TRACEFUNC
-    return instance->fmu->fmi1.terminate(instance->component);
+    fmi1Status status = instance->fmu->fmi1.terminate(instance->component);
+    free(instance);
+    return status;
 }
 
 fmi1DataType fmi1_getVariableDataType(fmi1VariableHandle *var)
