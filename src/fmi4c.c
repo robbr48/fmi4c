@@ -2752,6 +2752,7 @@ void fmi2_freeInstance(fmi2InstanceHandle *instance)
     TRACEFUNC
 
     instance->fmu->fmi2.freeInstance(instance->component);
+    free(instance);
 }
 
 fmi2Status fmi2_setupExperiment(fmi2InstanceHandle *instance, fmi2Boolean toleranceDefined, fmi2Real tolerance, fmi2Real startTime, fmi2Boolean stopTimeDefined, fmi2Real stopTime)
@@ -2779,9 +2780,7 @@ fmi2Status fmi2_terminate(fmi2InstanceHandle *instance)
 {
     TRACEFUNC
 
-    fmi2Status status = instance->fmu->fmi2.terminate(instance->component);
-    free(instance);
-    return status;
+    return instance->fmu->fmi2.terminate(instance->component);
 
 }
 
@@ -5297,9 +5296,7 @@ fmi1Status fmi1_initializeSlave(fmi1InstanceHandle *instance, fmi1Real startTime
 fmi1Status fmi1_terminateSlave(fmi1InstanceHandle *instance)
 {
     TRACEFUNC
-    fmi1Status status = instance->fmu->fmi1.terminateSlave(instance->component);
-    free(instance);
-    return status;
+    return instance->fmu->fmi1.terminateSlave(instance->component);
 }
 
 fmi1Status fmi1_resetSlave(fmi1InstanceHandle *instance)
@@ -5312,6 +5309,7 @@ void fmi1_freeSlaveInstance(fmi1InstanceHandle *instance)
 {
     TRACEFUNC
     instance->fmu->fmi1.freeSlaveInstance(instance->component);
+    free(instance);
 }
 
 fmi1Status fmi1_setRealInputDerivatives(fmi1InstanceHandle *instance, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], const fmi1Real values[])
@@ -5393,6 +5391,7 @@ void fmi1_freeModelInstance(fmi1InstanceHandle *instance)
 {
     TRACEFUNC
     instance->fmu->fmi1.freeModelInstance(instance->component);
+    free(instance);
 }
 
 fmi1Status fmi1_setTime(fmi1InstanceHandle *instance, fmi1Real time)
@@ -5458,9 +5457,7 @@ fmi1Status fmi1_getStateValueReferences(fmi1InstanceHandle *instance, fmi1ValueR
 fmi1Status fmi1_terminate(fmi1InstanceHandle *instance)
 {
     TRACEFUNC
-    fmi1Status status = instance->fmu->fmi1.terminate(instance->component);
-    free(instance);
-    return status;
+    return instance->fmu->fmi1.terminate(instance->component);
 }
 
 fmi1DataType fmi1_getVariableDataType(fmi1VariableHandle *var)
