@@ -4004,7 +4004,7 @@ fmi2Status fmi2_doStep(fmi2InstanceHandle *instance, fmi2Real currentCommunicati
 fmi2Status fmi2_cancelStep(fmi2InstanceHandle *instance)
 {
     TRACEFUNC
-    return instance->fmu->fmi2.cancelStep(instance->fmu);
+    return instance->fmu->fmi2.cancelStep(instance);
 }
 
 fmi2Status fmi2_getStatus(fmi2InstanceHandle *instance, const fmi2StatusKind s, fmi2Status* value)
@@ -4874,7 +4874,7 @@ fmuHandle *fmi4c_loadUnzippedFmu_internal(const char *instanceName, const char *
 //! Parses modelDescription.xml, and then loads all required FMI functions.
 //! @param fmu FMU handle
 //! @returns Handle to FMU
-fmiHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const char *unzipLocation)
+fmuHandle *fmi4c_loadUnzippedFmu(const char *instanceName, const char *unzipLocation)
 {
     return fmi4c_loadUnzippedFmu_internal(instanceName, unzipLocation, false);
 }
