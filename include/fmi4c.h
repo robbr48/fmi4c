@@ -91,7 +91,7 @@ FMI4C_DLLAPI fmi1DataType fmi1_getVariableDataType(fmi1VariableHandle* var);
 
 FMI4C_DLLAPI const char* fmi1_getTypesPlatform(fmuHandle* fmu);
 FMI4C_DLLAPI const char* fmi1_getVersion(fmuHandle* fmu);
-FMI4C_DLLAPI fmi1Status fmi1_setDebugLogging(fmuHandle* fmu, fmi1Boolean loggingOn);
+FMI4C_DLLAPI fmi1Status fmi1_setDebugLogging(fmi1InstanceHandle *instance, fmi1Boolean loggingOn);
 
 FMI4C_DLLAPI int fmi1_getNumberOfBaseUnits(fmuHandle *fmu);
 FMI4C_DLLAPI fmi1BaseUnitHandle *fmi1_getBaseUnitByIndex(fmuHandle *fmu, int i);
@@ -99,46 +99,46 @@ FMI4C_DLLAPI const char* fmi1_getBaseUnitUnit(fmi1BaseUnitHandle *baseUnit);
 FMI4C_DLLAPI int fmi1_getNumberOfDisplayUnits(fmi1BaseUnitHandle *baseUnit);
 FMI4C_DLLAPI void fmi1_getDisplayUnitByIndex(fmi1BaseUnitHandle *baseUnit, int id, const char **displayUnit, double *gain, double *offset);
 
-FMI4C_DLLAPI fmi1Status fmi1_getReal(fmuHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Real values[]);
-FMI4C_DLLAPI fmi1Status fmi1_getInteger(fmuHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Integer values[]);
-FMI4C_DLLAPI fmi1Status fmi1_getBoolean(fmuHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Boolean values[]);
-FMI4C_DLLAPI fmi1Status fmi1_getString(fmuHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1String values[]);
+FMI4C_DLLAPI fmi1Status fmi1_getReal(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Real values[]);
+FMI4C_DLLAPI fmi1Status fmi1_getInteger(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Integer values[]);
+FMI4C_DLLAPI fmi1Status fmi1_getBoolean(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1Boolean values[]);
+FMI4C_DLLAPI fmi1Status fmi1_getString(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, fmi1String values[]);
 
-FMI4C_DLLAPI fmi1Status fmi1_setReal(fmuHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Real values[]);
-FMI4C_DLLAPI fmi1Status fmi1_setInteger(fmuHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer values[]);
-FMI4C_DLLAPI fmi1Status fmi1_setBoolean(fmuHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Boolean values[]);
-FMI4C_DLLAPI fmi1Status fmi1_setString(fmuHandle* fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1String values[]);
+FMI4C_DLLAPI fmi1Status fmi1_setReal(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Real values[]);
+FMI4C_DLLAPI fmi1Status fmi1_setInteger(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer values[]);
+FMI4C_DLLAPI fmi1Status fmi1_setBoolean(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Boolean values[]);
+FMI4C_DLLAPI fmi1Status fmi1_setString(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1String values[]);
 
-FMI4C_DLLAPI bool fmi1_instantiateSlave(fmuHandle *fmu, fmi1String mimeType, fmi1Real timeOut, fmi1Boolean visible, fmi1Boolean interactive, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi1Boolean loggingOn);
-FMI4C_DLLAPI fmi1Status fmi1_initializeSlave(fmuHandle* fmu, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime);
-FMI4C_DLLAPI fmi1Status fmi1_terminateSlave(fmuHandle* fmu);
-FMI4C_DLLAPI fmi1Status fmi1_resetSlave(fmuHandle* fmu);
-FMI4C_DLLAPI void fmi1_freeSlaveInstance(fmuHandle* fmu);
+FMI4C_DLLAPI fmi1InstanceHandle *fmi1_instantiateSlave(fmuHandle *fmu, fmi1String mimeType, fmi1Real timeOut, fmi1Boolean visible, fmi1Boolean interactive, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1StepFinished_t stepFinished, fmi1Boolean loggingOn);
+FMI4C_DLLAPI fmi1Status fmi1_initializeSlave(fmi1InstanceHandle *instance, fmi1Real startTime, fmi1Boolean stopTimeDefined, fmi1Real stopTime);
+FMI4C_DLLAPI fmi1Status fmi1_terminateSlave(fmi1InstanceHandle *instance);
+FMI4C_DLLAPI fmi1Status fmi1_resetSlave(fmi1InstanceHandle *instance);
+FMI4C_DLLAPI void fmi1_freeSlaveInstance(fmi1InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi1Status fmi1_setRealInputDerivatives(fmuHandle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], const fmi1Real values[]);
-FMI4C_DLLAPI fmi1Status fmi1_getRealOutputDerivatives(fmuHandle *fmu, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], fmi1Real values[]);
-FMI4C_DLLAPI fmi1Status fmi1_cancelStep(fmuHandle* fmu);
-FMI4C_DLLAPI fmi1Status fmi1_doStep(fmuHandle *fmu, fmi1Real currentCommunicationPoint, fmi1Real communicationStepSize, fmi1Boolean newStep);
-FMI4C_DLLAPI fmi1Status fmi1_getStatus(fmuHandle* fmu, const fmi1StatusKind statusKind, fmi1Status* value);
-FMI4C_DLLAPI fmi1Status fmi1_getRealStatus(fmuHandle* fmu, const fmi1StatusKind statusKind, fmi1Real* value);
-FMI4C_DLLAPI fmi1Status fmi1_getIntegerStatus(fmuHandle* fmu, const fmi1StatusKind statusKind, fmi1Integer* value);
-FMI4C_DLLAPI fmi1Status fmi1_getBooleanStatus(fmuHandle* fmu, const fmi1StatusKind statusKind, fmi1Boolean* value);
-FMI4C_DLLAPI fmi1Status fmi1_getStringStatus(fmuHandle* fmu, const fmi1StatusKind statusKind, fmi1String* value);
+FMI4C_DLLAPI fmi1Status fmi1_setRealInputDerivatives(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], const fmi1Real values[]);
+FMI4C_DLLAPI fmi1Status fmi1_getRealOutputDerivatives(fmi1InstanceHandle *i, const fmi1ValueReference valueReferences[], size_t nValueReferences, const fmi1Integer orders[], fmi1Real values[]);
+FMI4C_DLLAPI fmi1Status fmi1_cancelStep(fmi1InstanceHandle *instance);
+FMI4C_DLLAPI fmi1Status fmi1_doStep(fmi1InstanceHandle *i, fmi1Real currentCommunicationPoint, fmi1Real communicationStepSize, fmi1Boolean newStep);
+FMI4C_DLLAPI fmi1Status fmi1_getStatus(fmi1InstanceHandle *instance, const fmi1StatusKind statusKind, fmi1Status* value);
+FMI4C_DLLAPI fmi1Status fmi1_getRealStatus(fmi1InstanceHandle *instance, const fmi1StatusKind statusKind, fmi1Real* value);
+FMI4C_DLLAPI fmi1Status fmi1_getIntegerStatus(fmi1InstanceHandle *instance, const fmi1StatusKind statusKind, fmi1Integer* value);
+FMI4C_DLLAPI fmi1Status fmi1_getBooleanStatus(fmi1InstanceHandle *instance, const fmi1StatusKind statusKind, fmi1Boolean* value);
+FMI4C_DLLAPI fmi1Status fmi1_getStringStatus(fmi1InstanceHandle *instance, const fmi1StatusKind statusKind, fmi1String* value);
 
 FMI4C_DLLAPI const char *fmi1_getModelTypesPlatform(fmuHandle* fmu);
-FMI4C_DLLAPI bool fmi1_instantiateModel(fmuHandle *fmu, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1Boolean loggingOn);
-FMI4C_DLLAPI void fmi1_freeModelInstance(fmuHandle* fmu);
-FMI4C_DLLAPI fmi1Status fmi1_setTime(fmuHandle* fmu, fmi1Real time);
-FMI4C_DLLAPI fmi1Status fmi1_setContinuousStates(fmuHandle *fmu, const fmi1Real values[], size_t nStates);
-FMI4C_DLLAPI fmi1Status fmi1_completedIntegratorStep(fmuHandle* fmu, fmi1Boolean* callEventUpdate);
-FMI4C_DLLAPI fmi1Status fmi1_initialize(fmuHandle *fmu, fmi1Boolean toleranceControlled, fmi1Real relativeTolerance, fmi1EventInfo *eventInfo);
-FMI4C_DLLAPI fmi1Status fmi1_getDerivatives(fmuHandle *fmu, fmi1Real derivatives[], size_t nDerivatives);
-FMI4C_DLLAPI fmi1Status fmi1_getEventIndicators(fmuHandle *fmu, fmi1Real indicators[], size_t nIndicators);
-FMI4C_DLLAPI fmi1Status fmi1_eventUpdate(fmuHandle *fmu, fmi1Boolean intermediateResults, fmi1EventInfo *eventInfo);
-FMI4C_DLLAPI fmi1Status fmi1_getContinuousStates(fmuHandle *fmu, fmi1Real states[], size_t nStates);
-FMI4C_DLLAPI fmi1Status fmi1_getNominalContinuousStates(fmuHandle* fmu, fmi1Real nominals[], size_t nNominals);
-FMI4C_DLLAPI fmi1Status fmi1_getStateValueReferences(fmuHandle* fmu, fmi1ValueReference valueReferences[], size_t nValueReferences);
-FMI4C_DLLAPI fmi1Status fmi1_terminate(fmuHandle* fmu);
+FMI4C_DLLAPI fmi1InstanceHandle *fmi1_instantiateModel(fmuHandle *fmu, fmi1CallbackLogger_t logger, fmi1CallbackAllocateMemory_t allocateMemory, fmi1CallbackFreeMemory_t freeMemory, fmi1Boolean loggingOn);
+FMI4C_DLLAPI void fmi1_freeModelInstance(fmi1InstanceHandle *i);
+FMI4C_DLLAPI fmi1Status fmi1_setTime(fmi1InstanceHandle *i, fmi1Real time);
+FMI4C_DLLAPI fmi1Status fmi1_setContinuousStates(fmi1InstanceHandle *i, const fmi1Real values[], size_t nStates);
+FMI4C_DLLAPI fmi1Status fmi1_completedIntegratorStep(fmi1InstanceHandle *i, fmi1Boolean* callEventUpdate);
+FMI4C_DLLAPI fmi1Status fmi1_initialize(fmi1InstanceHandle *i, fmi1Boolean toleranceControlled, fmi1Real relativeTolerance, fmi1EventInfo *eventInfo);
+FMI4C_DLLAPI fmi1Status fmi1_getDerivatives(fmi1InstanceHandle *i, fmi1Real derivatives[], size_t nDerivatives);
+FMI4C_DLLAPI fmi1Status fmi1_getEventIndicators(fmi1InstanceHandle *i, fmi1Real indicators[], size_t nIndicators);
+FMI4C_DLLAPI fmi1Status fmi1_eventUpdate(fmi1InstanceHandle *i, fmi1Boolean intermediateResults, fmi1EventInfo *eventInfo);
+FMI4C_DLLAPI fmi1Status fmi1_getContinuousStates(fmi1InstanceHandle *i, fmi1Real states[], size_t nStates);
+FMI4C_DLLAPI fmi1Status fmi1_getNominalContinuousStates(fmi1InstanceHandle *i, fmi1Real nominals[], size_t nNominals);
+FMI4C_DLLAPI fmi1Status fmi1_getStateValueReferences(fmi1InstanceHandle *i, fmi1ValueReference valueReferences[], size_t nValueReferences);
+FMI4C_DLLAPI fmi1Status fmi1_terminate(fmi1InstanceHandle *i);
 
 // FMI 2 wrapper functions
 
