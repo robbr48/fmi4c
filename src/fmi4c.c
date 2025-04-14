@@ -2449,43 +2449,47 @@ fmiVersion_t fmi4c_getFmiVersion(fmuHandle *fmu)
 
 
 
-bool fmi3_instantiateCoSimulation(fmuHandle *fmu,
-                             fmi3Boolean                    visible,
-                             fmi3Boolean                    loggingOn,
-                             fmi3Boolean                    eventModeUsed,
-                             fmi3Boolean                    earlyReturnAllowed,
-                             const fmi3ValueReference       requiredIntermediateVariables[],
-                             size_t                         nRequiredIntermediateVariables,
-                             fmi3InstanceEnvironment        instanceEnvironment,
-                             fmi3LogMessageCallback         logMessage,
-                             fmi3IntermediateUpdateCallback intermediateUpdate)
+fmi3InstanceHandle *fmi3_instantiateCoSimulation(fmuHandle *fmu,
+                                                 fmi3Boolean                    visible,
+                                                 fmi3Boolean                    loggingOn,
+                                                 fmi3Boolean                    eventModeUsed,
+                                                 fmi3Boolean                    earlyReturnAllowed,
+                                                 const fmi3ValueReference       requiredIntermediateVariables[],
+                                                 size_t                         nRequiredIntermediateVariables,
+                                                 fmi3InstanceEnvironment        instanceEnvironment,
+                                                 fmi3LogMessageCallback         logMessage,
+                                                 fmi3IntermediateUpdateCallback intermediateUpdate)
 {
     if(!loadFunctionsFmi3(fmu, fmi3CoSimulation)) {
         printf("Failed to load functions for FMI 3 CS.");
         return false;
     }
 
-    fmu->fmi3.fmi3Instance = fmu->fmi3.instantiateCoSimulation(fmu->instanceName,
-                                                      fmu->fmi3.instantiationToken,
-                                                      fmu->resourcesLocation,
-                                                      visible,
-                                                      loggingOn,
-                                                      eventModeUsed,
-                                                      earlyReturnAllowed,
-                                                      requiredIntermediateVariables,
-                                                      nRequiredIntermediateVariables,
-                                                      instanceEnvironment,
-                                                      logMessage,
-                                                      intermediateUpdate);
+    fmi3Component* comp = fmu->fmi3.instantiateCoSimulation(fmu->instanceName,
+                                                            fmu->fmi3.instantiationToken,
+                                                            fmu->resourcesLocation,
+                                                            visible,
+                                                            loggingOn,
+                                                            eventModeUsed,
+                                                            earlyReturnAllowed,
+                                                            requiredIntermediateVariables,
+                                                            nRequiredIntermediateVariables,
+                                                            instanceEnvironment,
+                                                            logMessage,
+                                                            intermediateUpdate);
 
-    return (fmu->fmi3.fmi3Instance != NULL);
+    fmi3InstanceHandle *handle = calloc(1, sizeof(fmi3InstanceHandle));
+    handle->component = comp;
+    handle->fmu = (struct fmuHandle*)fmu;
+
+    return handle;
 }
 
-bool fmi3_instantiateModelExchange(fmuHandle *fmu,
-                                  fmi3Boolean               visible,
-                                  fmi3Boolean                loggingOn,
-                                  fmi3InstanceEnvironment    instanceEnvironment,
-                                  fmi3LogMessageCallback     logMessage)
+fmi3InstanceHandle *fmi3_instantiateModelExchange(fmuHandle *fmu,
+                                                  fmi3Boolean               visible,
+                                                  fmi3Boolean                loggingOn,
+                                                  fmi3InstanceEnvironment    instanceEnvironment,
+                                                  fmi3LogMessageCallback     logMessage)
 {
     if(!loadFunctionsFmi3(fmu, fmi3ModelExchange)) {
         printf("Failed to load functions for FMI 3 ME.");
@@ -2493,15 +2497,19 @@ bool fmi3_instantiateModelExchange(fmuHandle *fmu,
     }
 
 
-    fmu->fmi3.fmi3Instance = fmu->fmi3.instantiateModelExchange(fmu->instanceName,
-                                                           fmu->fmi3.instantiationToken,
-                                                           fmu->resourcesLocation,
-                                                           visible,
-                                                           loggingOn,
-                                                           instanceEnvironment,
-                                                           logMessage);
+    fmi3Component *comp = fmu->fmi3.instantiateModelExchange(fmu->instanceName,
+                                                             fmu->fmi3.instantiationToken,
+                                                             fmu->resourcesLocation,
+                                                             visible,
+                                                             loggingOn,
+                                                             instanceEnvironment,
+                                                             logMessage);
 
-    return (fmu->fmi3.fmi3Instance != NULL);
+    fmi3InstanceHandle *handle = calloc(1, sizeof(fmi3InstanceHandle));
+    handle->component = comp;
+    handle->fmu = (struct fmuHandle*)fmu;
+
+    return handle;
 }
 
 const char* fmi3_getVersion(fmuHandle *fmu) {
@@ -2509,22 +2517,22 @@ const char* fmi3_getVersion(fmuHandle *fmu) {
     return fmu->fmi3.getVersion();
 }
 
-fmi3Status fmi3_setDebugLogging(fmuHandle *fmu,
+fmi3Status fmi3_setDebugLogging(fmi3InstanceHandle *instance,
                                 fmi3Boolean loggingOn,
                                 size_t nCategories,
                                 const fmi3String categories[])
 {
 
-    return fmu->fmi3.setDebugLogging(fmu->fmi3.fmi3Instance, loggingOn, nCategories, categories);
+    return instance->fmu->fmi3.setDebugLogging(instance, loggingOn, nCategories, categories);
 }
 
-fmi3Status fmi3_getFloat64(fmuHandle *fmu,
+fmi3Status fmi3_getFloat64(fmi3InstanceHandle *instance,
                            const fmi3ValueReference valueReferences[],
                            size_t nValueReferences,
                            fmi3Float64 values[],
                            size_t nValues) {
 
-    return fmu->fmi3.getFloat64(fmu->fmi3.fmi3Instance,
+    return instance->fmu->fmi3.getFloat64(instance,
                                 valueReferences,
                                 nValueReferences,
                                 values,
@@ -2532,27 +2540,27 @@ fmi3Status fmi3_getFloat64(fmuHandle *fmu,
 }
 
 
-fmi3Status fmi3_setFloat64(fmuHandle *fmu,
+fmi3Status fmi3_setFloat64(fmi3InstanceHandle *instance,
                            const fmi3ValueReference valueReferences[],
                            size_t nValueReferences,
                            const fmi3Float64 values[],
                            size_t nValues) {
 
-    return fmu->fmi3.setFloat64(fmu->fmi3.fmi3Instance,
+    return instance->fmu->fmi3.setFloat64(instance,
                                 valueReferences,
                                 nValueReferences,
                                 values,
                                 nValues);
 }
 
-fmi3Status fmi3_enterInitializationMode(fmuHandle *fmu,
+fmi3Status fmi3_enterInitializationMode(fmi3InstanceHandle *instance,
                                        fmi3Boolean toleranceDefined,
                                        fmi3Float64 tolerance,
                                        fmi3Float64 startTime,
                                        fmi3Boolean stopTimeDefined,
                                        fmi3Float64 stopTime)
 {
-    return fmu->fmi3.enterInitializationMode(fmu->fmi3.fmi3Instance,
+    return instance->fmu->fmi3.enterInitializationMode(instance,
                                             toleranceDefined,
                                             tolerance,
                                             startTime,
@@ -2560,28 +2568,29 @@ fmi3Status fmi3_enterInitializationMode(fmuHandle *fmu,
                                             stopTime);
 }
 
-fmi3Status fmi3_exitInitializationMode(fmuHandle *fmu)
+fmi3Status fmi3_exitInitializationMode(fmi3InstanceHandle *instance)
 {
     TRACEFUNC
 
-    return fmu->fmi3.exitInitializationMode(fmu->fmi3.fmi3Instance);
+    return instance->fmu->fmi3.exitInitializationMode(instance);
 }
 
-fmi3Status fmi3_terminate(fmuHandle *fmu)
+fmi3Status fmi3_terminate(fmi3InstanceHandle *instance)
 {
     TRACEFUNC
 
-    return fmu->fmi3.terminate(fmu->fmi3.fmi3Instance);
+    return instance->fmu->fmi3.terminate(instance);
 }
 
-void fmi3_freeInstance(fmuHandle *fmu)
+void fmi3_freeInstance(fmi3InstanceHandle *instance)
 {
     TRACEFUNC
 
-    fmu->fmi3.freeInstance(fmu->fmi3.fmi3Instance);
+    instance->fmu->fmi3.freeInstance(instance->component);
+    free(instance);
 }
 
-fmi3Status fmi3_doStep(fmuHandle *fmu,
+fmi3Status fmi3_doStep(fmi3InstanceHandle *instance,
                        fmi3Float64 currentCommunicationPoint,
                        fmi3Float64 communicationStepSize,
                        fmi3Boolean noSetFMUStatePriorToCurrentPoint,
@@ -2591,7 +2600,7 @@ fmi3Status fmi3_doStep(fmuHandle *fmu,
                        fmi3Float64 *lastSuccessfulTime)
 {
 
-    return fmu->fmi3.doStep(fmu->fmi3.fmi3Instance,
+    return instance->fmu->fmi3.doStep(instance,
                             currentCommunicationPoint,
                             communicationStepSize,
                             noSetFMUStatePriorToCurrentPoint,
@@ -3025,370 +3034,370 @@ fmi3ValueReference fmi3_getVariableValueReference(fmi3VariableHandle *var)
     return var->valueReference;
 }
 
-fmi3Status fmi3_enterEventMode(fmuHandle *fmu)
+fmi3Status fmi3_enterEventMode(fmi3InstanceHandle *instance)
 {
-    return fmu->fmi3.enterEventMode(fmu->fmi3.fmi3Instance);
+    return instance->fmu->fmi3.enterEventMode(instance);
 }
 
-fmi3Status fmi3_reset(fmuHandle *fmu)
+fmi3Status fmi3_reset(fmi3InstanceHandle *instance)
 {
     TRACEFUNC
 
-    return fmu->fmi3.reset(fmu->fmi3.fmi3Instance);
+    return instance->fmu->fmi3.reset(instance);
 }
 
-fmi3Status fmi3_getFloat32(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float32 values[], size_t nValues)
+fmi3Status fmi3_getFloat32(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float32 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getFloat32(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getFloat32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getInt8(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int8 values[], size_t nValues)
+fmi3Status fmi3_getInt8(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int8 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getInt8(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getInt8(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getUInt8(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt8 values[], size_t nValues)
+fmi3Status fmi3_getUInt8(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt8 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getUInt8(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getUInt8(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getInt16(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int16 values[], size_t nValues)
+fmi3Status fmi3_getInt16(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int16 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getInt16(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getInt16(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getUInt16(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt16 values[], size_t nValues)
+fmi3Status fmi3_getUInt16(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt16 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getUInt16(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getUInt16(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getInt32(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int32 values[], size_t nValues)
+fmi3Status fmi3_getInt32(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int32 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getInt32(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getInt32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getUInt32(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt32 values[], size_t nValues)
+fmi3Status fmi3_getUInt32(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt32 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getUInt32(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getUInt32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getInt64(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int64 values[], size_t nValues)
+fmi3Status fmi3_getInt64(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Int64 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getInt64(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getInt64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getUInt64(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt64 values[], size_t nValues)
+fmi3Status fmi3_getUInt64(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt64 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getUInt64(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getUInt64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getBoolean(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Boolean values[], size_t nValues)
+fmi3Status fmi3_getBoolean(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Boolean values[], size_t nValues)
 {
 
-    return fmu->fmi3.getBoolean(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getBoolean(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getString(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3String values[], size_t nValues)
+fmi3Status fmi3_getString(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3String values[], size_t nValues)
 {
 
-    return fmu->fmi3.getString(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.getString(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_getBinary(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, size_t valueSizes[], fmi3Binary values[], size_t nValues)
+fmi3Status fmi3_getBinary(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, size_t valueSizes[], fmi3Binary values[], size_t nValues)
 {
 
-    return fmu->fmi3.getBinary(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, valueSizes, values, nValues);
+    return instance->fmu->fmi3.getBinary(instance, valueReferences, nValueReferences, valueSizes, values, nValues);
 }
 
-fmi3Status fmi3_getClock(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Clock values[])
+fmi3Status fmi3_getClock(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Clock values[])
 {
 
-    return fmu->fmi3.getClock(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values);
+    return instance->fmu->fmi3.getClock(instance, valueReferences, nValueReferences, values);
 }
 
-fmi3Status fmi3_setFloat32(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Float32 values[], size_t nValues)
+fmi3Status fmi3_setFloat32(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Float32 values[], size_t nValues)
 {
 
-    return fmu->fmi3.setFloat32(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setFloat32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setInt8(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int8 values[], size_t nValues)
+fmi3Status fmi3_setInt8(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int8 values[], size_t nValues)
 {
 
-    return fmu->fmi3.setInt8(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setInt8(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setUInt8(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt8 values[], size_t nValues)
+fmi3Status fmi3_setUInt8(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt8 values[], size_t nValues)
 {
 
-    return fmu->fmi3.setUInt8(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setUInt8(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setInt16(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int16 values[], size_t nValues)
+fmi3Status fmi3_setInt16(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int16 values[], size_t nValues)
 {
 
-    return fmu->fmi3.setInt16(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setInt16(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setUInt16(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt16 values[], size_t nValues)
+fmi3Status fmi3_setUInt16(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt16 values[], size_t nValues)
 {
 
-    return fmu->fmi3.setUInt16(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setUInt16(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setInt32(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int32 values[], size_t nValues)
+fmi3Status fmi3_setInt32(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int32 values[], size_t nValues)
 {
 
-    return fmu->fmi3.setInt32(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setInt32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setUInt32(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt32 values[], size_t nValues)
+fmi3Status fmi3_setUInt32(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt32 values[], size_t nValues)
 {
 
-    return fmu->fmi3.setUInt32(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setUInt32(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setInt64(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int64 values[], size_t nValues)
+fmi3Status fmi3_setInt64(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int64 values[], size_t nValues)
 {
 
-    return fmu->fmi3.setInt64(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setInt64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setUInt64(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt64 values[], size_t nValues)
+fmi3Status fmi3_setUInt64(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt64 values[], size_t nValues)
 {
 
-    return fmu->fmi3.setUInt64(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setUInt64(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setBoolean(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Boolean values[], size_t nValues)
+fmi3Status fmi3_setBoolean(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Boolean values[], size_t nValues)
 {
 
-    return fmu->fmi3.setBoolean(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setBoolean(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setString(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3String values[], size_t nValues)
+fmi3Status fmi3_setString(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3String values[], size_t nValues)
 {
 
-    return fmu->fmi3.setString(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values, nValues);
+    return instance->fmu->fmi3.setString(instance, valueReferences, nValueReferences, values, nValues);
 }
 
-fmi3Status fmi3_setBinary(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const size_t valueSizes[], const fmi3Binary values[], size_t nValues)
+fmi3Status fmi3_setBinary(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const size_t valueSizes[], const fmi3Binary values[], size_t nValues)
 {
 
-    return fmu->fmi3.setBinary(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, valueSizes, values, nValues);
+    return instance->fmu->fmi3.setBinary(instance, valueReferences, nValueReferences, valueSizes, values, nValues);
 }
 
-fmi3Status fmi3_setClock(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Clock values[])
+fmi3Status fmi3_setClock(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Clock values[])
 {
 
-    return fmu->fmi3.setClock(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, values);
+    return instance->fmu->fmi3.setClock(instance, valueReferences, nValueReferences, values);
 }
 
-fmi3Status fmi3_getNumberOfVariableDependencies(fmuHandle *fmu, fmi3ValueReference valueReference, size_t *nDependencies)
+fmi3Status fmi3_getNumberOfVariableDependencies(fmi3InstanceHandle *instance, fmi3ValueReference valueReference, size_t *nDependencies)
 {
 
-    return fmu->fmi3.getNumberOfVariableDependencies(fmu->fmi3.fmi3Instance, valueReference, nDependencies);
+    return instance->fmu->fmi3.getNumberOfVariableDependencies(instance, valueReference, nDependencies);
 }
 
-fmi3Status fmi3_getVariableDependencies(fmuHandle *fmu, fmi3ValueReference dependent, size_t elementIndicesOfDependent[], fmi3ValueReference independents[], size_t elementIndicesOfIndependents[], fmi3DependencyKind dependencyKinds[], size_t nDependencies)
+fmi3Status fmi3_getVariableDependencies(fmi3InstanceHandle *instance, fmi3ValueReference dependent, size_t elementIndicesOfDependent[], fmi3ValueReference independents[], size_t elementIndicesOfIndependents[], fmi3DependencyKind dependencyKinds[], size_t nDependencies)
 {
 
-    return fmu->fmi3.getVariableDependencies(fmu->fmi3.fmi3Instance, dependent, elementIndicesOfDependent, independents, elementIndicesOfIndependents, dependencyKinds, nDependencies);
+    return instance->fmu->fmi3.getVariableDependencies(instance, dependent, elementIndicesOfDependent, independents, elementIndicesOfIndependents, dependencyKinds, nDependencies);
 }
 
-fmi3Status fmi3_getFMUState(fmuHandle *fmu, fmi3FMUState *FMUState)
+fmi3Status fmi3_getFMUState(fmi3InstanceHandle *instance, fmi3FMUState *FMUState)
 {
 
-    return fmu->fmi3.getFMUState(fmu->fmi3.fmi3Instance, FMUState);
+    return instance->fmu->fmi3.getFMUState(instance, FMUState);
 }
 
-fmi3Status fmi3_setFMUState(fmuHandle *fmu, fmi3FMUState FMUState)
+fmi3Status fmi3_setFMUState(fmi3InstanceHandle *instance, fmi3FMUState FMUState)
 {
 
-    return fmu->fmi3.setFMUState(fmu->fmi3.fmi3Instance, FMUState);
+    return instance->fmu->fmi3.setFMUState(instance, FMUState);
 }
 
-fmi3Status fmi3_freeFMUState(fmuHandle *fmu, fmi3FMUState *FMUState)
+fmi3Status fmi3_freeFMUState(fmi3InstanceHandle *instance, fmi3FMUState *FMUState)
 {
 
-    return fmu->fmi3.freeFMUState(fmu->fmi3.fmi3Instance, FMUState);
+    return instance->fmu->fmi3.freeFMUState(instance, FMUState);
 }
 
-fmi3Status fmi3_serializedFMUStateSize(fmuHandle *fmu, fmi3FMUState FMUState, size_t *size)
+fmi3Status fmi3_serializedFMUStateSize(fmi3InstanceHandle *instance, fmi3FMUState FMUState, size_t *size)
 {
 
-    return fmu->fmi3.serializedFMUStateSize(fmu->fmi3.fmi3Instance, FMUState, size);
+    return instance->fmu->fmi3.serializedFMUStateSize(instance, FMUState, size);
 }
 
-fmi3Status fmi3_serializeFMUState(fmuHandle *fmu, fmi3FMUState FMUState, fmi3Byte serializedState[], size_t size)
+fmi3Status fmi3_serializeFMUState(fmi3InstanceHandle *instance, fmi3FMUState FMUState, fmi3Byte serializedState[], size_t size)
 {
 
-    return fmu->fmi3.serializeFMUState(fmu->fmi3.fmi3Instance, FMUState, serializedState, size);
+    return instance->fmu->fmi3.serializeFMUState(instance, FMUState, serializedState, size);
 }
 
-fmi3Status fmi3_deserializeFMUState(fmuHandle *fmu, const fmi3Byte serializedState[], size_t size, fmi3FMUState *FMUState)
+fmi3Status fmi3_deserializeFMUState(fmi3InstanceHandle *instance, const fmi3Byte serializedState[], size_t size, fmi3FMUState *FMUState)
 {
 
-    return fmu->fmi3.deserializeFMUState(fmu->fmi3.fmi3Instance, serializedState, size, FMUState);
+    return instance->fmu->fmi3.deserializeFMUState(instance, serializedState, size, FMUState);
 }
 
-fmi3Status fmi3_getDirectionalDerivative(fmuHandle *fmu, const fmi3ValueReference unknowns[], size_t nUnknowns, const fmi3ValueReference knowns[], size_t nKnowns, const fmi3Float64 seed[], size_t nSeed, fmi3Float64 sensitivity[], size_t nSensitivity)
+fmi3Status fmi3_getDirectionalDerivative(fmi3InstanceHandle *instance, const fmi3ValueReference unknowns[], size_t nUnknowns, const fmi3ValueReference knowns[], size_t nKnowns, const fmi3Float64 seed[], size_t nSeed, fmi3Float64 sensitivity[], size_t nSensitivity)
 {
 
-    return fmu->fmi3.getDirectionalDerivative(fmu->fmi3.fmi3Instance, unknowns, nUnknowns, knowns, nKnowns, seed, nSeed, sensitivity, nSensitivity);
+    return instance->fmu->fmi3.getDirectionalDerivative(instance, unknowns, nUnknowns, knowns, nKnowns, seed, nSeed, sensitivity, nSensitivity);
 }
 
-fmi3Status fmi3_getAdjointDerivative(fmuHandle *fmu, const fmi3ValueReference unknowns[], size_t nUnknowns, const fmi3ValueReference knowns[], size_t nKnowns, const fmi3Float64 seed[], size_t nSeed, fmi3Float64 sensitivity[], size_t nSensitivity)
+fmi3Status fmi3_getAdjointDerivative(fmi3InstanceHandle *instance, const fmi3ValueReference unknowns[], size_t nUnknowns, const fmi3ValueReference knowns[], size_t nKnowns, const fmi3Float64 seed[], size_t nSeed, fmi3Float64 sensitivity[], size_t nSensitivity)
 {
 
-    return fmu->fmi3.getAdjointDerivative(fmu->fmi3.fmi3Instance, unknowns, nUnknowns, knowns, nKnowns, seed, nSeed, sensitivity, nSensitivity);
+    return instance->fmu->fmi3.getAdjointDerivative(instance, unknowns, nUnknowns, knowns, nKnowns, seed, nSeed, sensitivity, nSensitivity);
 }
 
-fmi3Status fmi3_enterConfigurationMode(fmuHandle *fmu)
+fmi3Status fmi3_enterConfigurationMode(fmi3InstanceHandle *instance)
 {
 
-    return fmu->fmi3.enterConfigurationMode(fmu->fmi3.fmi3Instance);
+    return instance->fmu->fmi3.enterConfigurationMode(instance);
 }
 
-fmi3Status fmi3_exitConfigurationMode(fmuHandle *fmu)
+fmi3Status fmi3_exitConfigurationMode(fmi3InstanceHandle *instance)
 {
 
-    return fmu->fmi3.exitConfigurationMode(fmu->fmi3.fmi3Instance);
+    return instance->fmu->fmi3.exitConfigurationMode(instance);
 }
 
-fmi3Status fmi3_getIntervalDecimal(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float64 intervals[], fmi3IntervalQualifier qualifiers[])
+fmi3Status fmi3_getIntervalDecimal(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float64 intervals[], fmi3IntervalQualifier qualifiers[])
 {
 
-    return fmu->fmi3.getIntervalDecimal(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, intervals, qualifiers);
+    return instance->fmu->fmi3.getIntervalDecimal(instance, valueReferences, nValueReferences, intervals, qualifiers);
 }
 
-fmi3Status fmi3_getIntervalFraction(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt64 intervalCounters[], fmi3UInt64 resolutions[], fmi3IntervalQualifier qualifiers[])
+fmi3Status fmi3_getIntervalFraction(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt64 intervalCounters[], fmi3UInt64 resolutions[], fmi3IntervalQualifier qualifiers[])
 {
 
-    return fmu->fmi3.getIntervalFraction(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, intervalCounters, resolutions, qualifiers);
+    return instance->fmu->fmi3.getIntervalFraction(instance, valueReferences, nValueReferences, intervalCounters, resolutions, qualifiers);
 }
 
-fmi3Status fmi3_getShiftDecimal(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float64 shifts[])
+fmi3Status fmi3_getShiftDecimal(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3Float64 shifts[])
 {
 
-    return fmu->fmi3.getShiftDecimal(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, shifts);
+    return instance->fmu->fmi3.getShiftDecimal(instance, valueReferences, nValueReferences, shifts);
 }
 
-fmi3Status fmi3_getShiftFraction(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt64 shiftCounters[], fmi3UInt64 resolutions[])
+fmi3Status fmi3_getShiftFraction(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, fmi3UInt64 shiftCounters[], fmi3UInt64 resolutions[])
 {
 
-    return fmu->fmi3.getShiftFraction(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, shiftCounters, resolutions);
+    return instance->fmu->fmi3.getShiftFraction(instance, valueReferences, nValueReferences, shiftCounters, resolutions);
 }
 
-fmi3Status fmi3_setIntervalDecimal(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Float64 intervals[])
+fmi3Status fmi3_setIntervalDecimal(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Float64 intervals[])
 {
 
-    return fmu->fmi3.setIntervalDecimal(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, intervals);
+    return instance->fmu->fmi3.setIntervalDecimal(instance, valueReferences, nValueReferences, intervals);
 }
 
-fmi3Status fmi3_setIntervalFraction(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt64 intervalCounters[], const fmi3UInt64 resolutions[])
+fmi3Status fmi3_setIntervalFraction(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3UInt64 intervalCounters[], const fmi3UInt64 resolutions[])
 {
 
-    return fmu->fmi3.setIntervalFraction(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, intervalCounters, resolutions);
+    return instance->fmu->fmi3.setIntervalFraction(instance, valueReferences, nValueReferences, intervalCounters, resolutions);
 }
 
-fmi3Status fmi3_evaluateDiscreteStates(fmuHandle *fmu)
+fmi3Status fmi3_evaluateDiscreteStates(fmi3InstanceHandle *instance)
 {
 
-    return fmu->fmi3.evaluateDiscreteStates(fmu->fmi3.fmi3Instance);
+    return instance->fmu->fmi3.evaluateDiscreteStates(instance);
 }
 
-fmi3Status fmi3_updateDiscreteStates(fmuHandle *fmu, fmi3Boolean *discreteStatesNeedUpdate, fmi3Boolean *terminateSimulation, fmi3Boolean *nominalsOfContinuousStatesChanged, fmi3Boolean *valuesOfContinuousStatesChanged, fmi3Boolean *nextEventTimeDefined, fmi3Float64 *nextEventTime)
+fmi3Status fmi3_updateDiscreteStates(fmi3InstanceHandle *instance, fmi3Boolean *discreteStatesNeedUpdate, fmi3Boolean *terminateSimulation, fmi3Boolean *nominalsOfContinuousStatesChanged, fmi3Boolean *valuesOfContinuousStatesChanged, fmi3Boolean *nextEventTimeDefined, fmi3Float64 *nextEventTime)
 {
 
-    return fmu->fmi3.updateDiscreteStates(fmu->fmi3.fmi3Instance, discreteStatesNeedUpdate, terminateSimulation, nominalsOfContinuousStatesChanged, valuesOfContinuousStatesChanged, nextEventTimeDefined, nextEventTime);
+    return instance->fmu->fmi3.updateDiscreteStates(instance, discreteStatesNeedUpdate, terminateSimulation, nominalsOfContinuousStatesChanged, valuesOfContinuousStatesChanged, nextEventTimeDefined, nextEventTime);
 }
 
-fmi3Status fmi3_enterContinuousTimeMode(fmuHandle *fmu)
+fmi3Status fmi3_enterContinuousTimeMode(fmi3InstanceHandle *instance)
 {
 
-    return fmu->fmi3.enterContinuousTimeMode(fmu->fmi3.fmi3Instance);
+    return instance->fmu->fmi3.enterContinuousTimeMode(instance);
 }
 
-fmi3Status fmi3_completedIntegratorStep(fmuHandle *fmu, fmi3Boolean noSetFMUStatePriorToCurrentPoint, fmi3Boolean *enterEventMode, fmi3Boolean *terminateSimulation)
+fmi3Status fmi3_completedIntegratorStep(fmi3InstanceHandle *instance, fmi3Boolean noSetFMUStatePriorToCurrentPoint, fmi3Boolean *enterEventMode, fmi3Boolean *terminateSimulation)
 {
 
-    return fmu->fmi3.completedIntegratorStep(fmu->fmi3.fmi3Instance, noSetFMUStatePriorToCurrentPoint, enterEventMode, terminateSimulation);
+    return instance->fmu->fmi3.completedIntegratorStep(instance, noSetFMUStatePriorToCurrentPoint, enterEventMode, terminateSimulation);
 }
 
-fmi3Status fmi3_setTime(fmuHandle *fmu, fmi3Float64 time)
+fmi3Status fmi3_setTime(fmi3InstanceHandle *instance, fmi3Float64 time)
 {
 
-    return fmu->fmi3.setTime(fmu->fmi3.fmi3Instance, time);
+    return instance->fmu->fmi3.setTime(instance, time);
 }
 
-fmi3Status fmi3_setContinuousStates(fmuHandle *fmu, const fmi3Float64 continuousStates[], size_t nContinuousStates)
+fmi3Status fmi3_setContinuousStates(fmi3InstanceHandle *instance, const fmi3Float64 continuousStates[], size_t nContinuousStates)
 {
 
-    return fmu->fmi3.setContinuousStates(fmu->fmi3.fmi3Instance, continuousStates, nContinuousStates);
+    return instance->fmu->fmi3.setContinuousStates(instance, continuousStates, nContinuousStates);
 }
 
-fmi3Status fmi3_getContinuousStateDerivatives(fmuHandle *fmu, fmi3Float64 derivatives[], size_t nContinuousStates)
+fmi3Status fmi3_getContinuousStateDerivatives(fmi3InstanceHandle *instance, fmi3Float64 derivatives[], size_t nContinuousStates)
 {
 
-    return fmu->fmi3.getContinuousStateDerivatives(fmu->fmi3.fmi3Instance, derivatives, nContinuousStates);
+    return instance->fmu->fmi3.getContinuousStateDerivatives(instance, derivatives, nContinuousStates);
 }
 
-fmi3Status fmi3_getEventIndicators(fmuHandle *fmu, fmi3Float64 eventIndicators[], size_t nEventIndicators)
+fmi3Status fmi3_getEventIndicators(fmi3InstanceHandle *instance, fmi3Float64 eventIndicators[], size_t nEventIndicators)
 {
 
-    return fmu->fmi3.getEventIndicators(fmu->fmi3.fmi3Instance, eventIndicators, nEventIndicators);
+    return instance->fmu->fmi3.getEventIndicators(instance, eventIndicators, nEventIndicators);
 }
 
-fmi3Status fmi3_getContinuousStates(fmuHandle *fmu, fmi3Float64 continuousStates[], size_t nContinuousStates)
+fmi3Status fmi3_getContinuousStates(fmi3InstanceHandle *instance, fmi3Float64 continuousStates[], size_t nContinuousStates)
 {
 
-    return fmu->fmi3.getContinuousStates(fmu->fmi3.fmi3Instance, continuousStates, nContinuousStates);
+    return instance->fmu->fmi3.getContinuousStates(instance, continuousStates, nContinuousStates);
 }
 
-fmi3Status fmi3_getNominalsOfContinuousStates(fmuHandle *fmu, fmi3Float64 nominals[], size_t nContinuousStates)
+fmi3Status fmi3_getNominalsOfContinuousStates(fmi3InstanceHandle *instance, fmi3Float64 nominals[], size_t nContinuousStates)
 {
 
-    return fmu->fmi3.getNominalsOfContinuousStates(fmu->fmi3.fmi3Instance, nominals, nContinuousStates);
+    return instance->fmu->fmi3.getNominalsOfContinuousStates(instance, nominals, nContinuousStates);
 }
 
-fmi3Status fmi3_getNumberOfEventIndicators(fmuHandle *fmu, size_t *nEventIndicators)
+fmi3Status fmi3_getNumberOfEventIndicators(fmi3InstanceHandle *instance, size_t *nEventIndicators)
 {
 
-    return fmu->fmi3.getNumberOfEventIndicators(fmu->fmi3.fmi3Instance, nEventIndicators);
+    return instance->fmu->fmi3.getNumberOfEventIndicators(instance, nEventIndicators);
 }
 
-fmi3Status fmi3_getNumberOfContinuousStates(fmuHandle *fmu, size_t *nContinuousStates)
+fmi3Status fmi3_getNumberOfContinuousStates(fmi3InstanceHandle *instance, size_t *nContinuousStates)
 {
 
-    return fmu->fmi3.getNumberOfContinuousStates(fmu->fmi3.fmi3Instance, nContinuousStates);
+    return instance->fmu->fmi3.getNumberOfContinuousStates(instance, nContinuousStates);
 }
 
-fmi3Status fmi3_enterStepMode(fmuHandle *fmu)
+fmi3Status fmi3_enterStepMode(fmi3InstanceHandle *instance)
 {
 
-    return fmu->fmi3.enterStepMode(fmu->fmi3.fmi3Instance);
+    return instance->fmu->fmi3.enterStepMode(instance);
 }
 
-fmi3Status fmi3_getOutputDerivatives(fmuHandle *fmu, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int32 orders[], fmi3Float64 values[], size_t nValues)
+fmi3Status fmi3_getOutputDerivatives(fmi3InstanceHandle *instance, const fmi3ValueReference valueReferences[], size_t nValueReferences, const fmi3Int32 orders[], fmi3Float64 values[], size_t nValues)
 {
 
-    return fmu->fmi3.getOutputDerivatives(fmu->fmi3.fmi3Instance, valueReferences, nValueReferences, orders, values, nValues);
+    return instance->fmu->fmi3.getOutputDerivatives(instance, valueReferences, nValueReferences, orders, values, nValues);
 }
 
-fmi3Status fmi3_activateModelPartition(fmuHandle *fmu, fmi3ValueReference clockReference, fmi3Float64 activationTime)
+fmi3Status fmi3_activateModelPartition(fmi3InstanceHandle *instance, fmi3ValueReference clockReference, fmi3Float64 activationTime)
 {
 
-    return fmu->fmi3.activateModelPartition(fmu->fmi3.fmi3Instance, clockReference, activationTime);
+    return instance->fmu->fmi3.activateModelPartition(instance, clockReference, activationTime);
 }
 
 bool fmi3_defaultStartTimeDefined(fmuHandle *fmu)

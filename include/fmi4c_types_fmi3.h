@@ -8,8 +8,17 @@
 #define fmi3True  true
 #define fmi3False false
 
+//Forward declarations
+struct fmuHandle;
+typedef struct fmuHandle fmuHandle;
+
 // Types
-typedef void* fmi3Instance;
+typedef void* fmi3Component;
+struct fmi3InstanceHandle {
+    fmi3Component component;
+    fmuHandle *fmu;
+};
+typedef struct fmi3InstanceHandle fmi3InstanceHandle;
 typedef void* fmi3InstanceEnvironment;
 typedef void* fmi3FMUState;
 typedef uint32_t fmi3ValueReference;

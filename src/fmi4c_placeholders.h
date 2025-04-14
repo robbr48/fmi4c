@@ -818,7 +818,7 @@ const char* STDCALL placeholder_fmi3GetVersion() {
     return NULL;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetDebugLogging(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetDebugLogging(fmi3InstanceHandle *instance,
                                            fmi3Boolean loggingOn,
                                            size_t nCategories,
                                            const fmi3String categories[]) {
@@ -830,7 +830,7 @@ fmi3Status STDCALL placeholder_fmi3SetDebugLogging(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Instance STDCALL placeholder_fmi3InstantiateCoSimulation(fmi3String instanceName,
+fmi3InstanceHandle *STDCALL placeholder_fmi3InstantiateCoSimulation(fmi3String instanceName,
                                                        fmi3String instantiationToken,
                                                        fmi3String resourcePath,
                                                        fmi3Boolean visible,
@@ -858,7 +858,7 @@ fmi3Instance STDCALL placeholder_fmi3InstantiateCoSimulation(fmi3String instance
     return NULL;
 }
 
-fmi3Instance STDCALL placeholder_fmi3InstantiateModelExchange(fmi3String instanceName,
+fmi3InstanceHandle *STDCALL placeholder_fmi3InstantiateModelExchange(fmi3String instanceName,
                                                         fmi3String instantiationToken,
                                                         fmi3String resourcePath,
                                                         fmi3Boolean visible,
@@ -876,7 +876,7 @@ fmi3Instance STDCALL placeholder_fmi3InstantiateModelExchange(fmi3String instanc
     return NULL;
 }
 
-fmi3Instance STDCALL placeholder_fmi3InstantiateScheduledExecution(fmi3String instanceName,
+fmi3InstanceHandle *STDCALL placeholder_fmi3InstantiateScheduledExecution(fmi3String instanceName,
                                                              fmi3String instantiationToken,
                                                              fmi3String resourcePath,
                                                              fmi3Boolean visible,
@@ -900,12 +900,12 @@ fmi3Instance STDCALL placeholder_fmi3InstantiateScheduledExecution(fmi3String in
     return NULL;
 }
 
-void STDCALL placeholder_fmi3FreeInstance(fmi3Instance instance) {
+void STDCALL placeholder_fmi3FreeInstance(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3FreeInstance);
 }
 
-fmi3Status STDCALL placeholder_fmi3EnterInitializationMode(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3EnterInitializationMode(fmi3InstanceHandle *instance,
                                                    fmi3Boolean toleranceDefined,
                                                    fmi3Float64 tolerance,
                                                    fmi3Float64 startTime,
@@ -921,19 +921,19 @@ fmi3Status STDCALL placeholder_fmi3EnterInitializationMode(fmi3Instance instance
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3ExitInitializationMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3ExitInitializationMode(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3ExitInitializationMode);
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3Terminate(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3Terminate(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3Terminate);
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3DoStep(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3DoStep(fmi3InstanceHandle *instance,
                                   fmi3Float64 currentCommunicationPoint,
                                   fmi3Float64 communicationStepSize,
                                   fmi3Boolean noSetFMUStatePriorToCurrentPoint,
@@ -954,19 +954,19 @@ fmi3Status STDCALL placeholder_fmi3DoStep(fmi3Instance instance,
 
 }
 
-fmi3Status STDCALL placeholder_fmi3EnterEventMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EnterEventMode(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EnterEventMode);
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3Reset(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3Reset(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3Reset);
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetFloat64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetFloat64(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3Float64 values[],
@@ -980,7 +980,7 @@ fmi3Status STDCALL placeholder_fmi3GetFloat64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetFloat64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetFloat64(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3Float64 values[],
@@ -994,7 +994,7 @@ fmi3Status STDCALL placeholder_fmi3SetFloat64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetFloat32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetFloat32(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3Float32 values[],
@@ -1008,7 +1008,7 @@ fmi3Status STDCALL placeholder_fmi3GetFloat32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetInt8(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetInt8(fmi3InstanceHandle *instance,
                                    const fmi3ValueReference valueReferences[],
                                    size_t nValueReferences,
                                    fmi3Int8 values[],
@@ -1022,7 +1022,7 @@ fmi3Status STDCALL placeholder_fmi3GetInt8(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetUInt8(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetUInt8(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3UInt8 values[],
@@ -1036,7 +1036,7 @@ fmi3Status STDCALL placeholder_fmi3GetUInt8(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetInt16(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetInt16(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3Int16 values[],
@@ -1050,7 +1050,7 @@ fmi3Status STDCALL placeholder_fmi3GetInt16(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetUInt16(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetUInt16(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3UInt16 values[],
@@ -1064,7 +1064,7 @@ fmi3Status STDCALL placeholder_fmi3GetUInt16(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetInt32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetInt32(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3Int32 values[],
@@ -1078,7 +1078,7 @@ fmi3Status STDCALL placeholder_fmi3GetInt32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetUInt32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetUInt32(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3UInt32 values[],
@@ -1092,7 +1092,7 @@ fmi3Status STDCALL placeholder_fmi3GetUInt32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetInt64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetInt64(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3Int64 values[],
@@ -1106,7 +1106,7 @@ fmi3Status STDCALL placeholder_fmi3GetInt64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetUInt64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetUInt64(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3UInt64 values[],
@@ -1120,7 +1120,7 @@ fmi3Status STDCALL placeholder_fmi3GetUInt64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetBoolean(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetBoolean(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3Boolean values[],
@@ -1134,7 +1134,7 @@ fmi3Status STDCALL placeholder_fmi3GetBoolean(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetString(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetString(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3String values[],
@@ -1148,7 +1148,7 @@ fmi3Status STDCALL placeholder_fmi3GetString(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetBinary(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetBinary(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      size_t valueSizes[],
@@ -1164,7 +1164,7 @@ fmi3Status STDCALL placeholder_fmi3GetBinary(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetClock(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetClock(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3Clock values[]) {
@@ -1176,7 +1176,7 @@ fmi3Status STDCALL placeholder_fmi3GetClock(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetFloat32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetFloat32(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3Float32 values[],
@@ -1190,7 +1190,7 @@ fmi3Status STDCALL placeholder_fmi3SetFloat32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetInt8(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetInt8(fmi3InstanceHandle *instance,
                                    const fmi3ValueReference valueReferences[],
                                    size_t nValueReferences,
                                    const fmi3Int8 values[],
@@ -1204,7 +1204,7 @@ fmi3Status STDCALL placeholder_fmi3SetInt8(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetUInt8(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetUInt8(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3UInt8 values[],
@@ -1218,7 +1218,7 @@ fmi3Status STDCALL placeholder_fmi3SetUInt8(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetInt16(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetInt16(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3Int16 values[],
@@ -1232,7 +1232,7 @@ fmi3Status STDCALL placeholder_fmi3SetInt16(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetUInt16(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetUInt16(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3UInt16 values[],
@@ -1246,7 +1246,7 @@ fmi3Status STDCALL placeholder_fmi3SetUInt16(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetInt32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetInt32(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3Int32 values[],
@@ -1260,7 +1260,7 @@ fmi3Status STDCALL placeholder_fmi3SetInt32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetUInt32(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetUInt32(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3UInt32 values[],
@@ -1274,7 +1274,7 @@ fmi3Status STDCALL placeholder_fmi3SetUInt32(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetInt64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetInt64(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3Int64 values[],
@@ -1288,7 +1288,7 @@ fmi3Status STDCALL placeholder_fmi3SetInt64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetUInt64(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetUInt64(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3UInt64 values[],
@@ -1302,7 +1302,7 @@ fmi3Status STDCALL placeholder_fmi3SetUInt64(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetBoolean(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetBoolean(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3Boolean values[],
@@ -1316,7 +1316,7 @@ fmi3Status STDCALL placeholder_fmi3SetBoolean(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetString(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetString(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3String values[],
@@ -1330,7 +1330,7 @@ fmi3Status STDCALL placeholder_fmi3SetString(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetBinary(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetBinary(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const size_t valueSizes[],
@@ -1346,7 +1346,7 @@ fmi3Status STDCALL placeholder_fmi3SetBinary(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetClock(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetClock(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3Clock values[]) {
@@ -1358,7 +1358,7 @@ fmi3Status STDCALL placeholder_fmi3SetClock(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetNumberOfVariableDependencies(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetNumberOfVariableDependencies(fmi3InstanceHandle *instance,
                                                            fmi3ValueReference valueReference,
                                                            size_t* nDependencies) {
     UNUSED(instance);
@@ -1368,7 +1368,7 @@ fmi3Status STDCALL placeholder_fmi3GetNumberOfVariableDependencies(fmi3Instance 
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetVariableDependencies(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetVariableDependencies(fmi3InstanceHandle *instance,
                                                    fmi3ValueReference dependent,
                                                    size_t elementIndicesOfDependent[],
                                                    fmi3ValueReference independents[],
@@ -1386,7 +1386,7 @@ fmi3Status STDCALL placeholder_fmi3GetVariableDependencies(fmi3Instance instance
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetFMUState(fmi3InstanceHandle *instance,
                                        fmi3FMUState* FMUState) {
     UNUSED(instance);
     UNUSED(FMUState);
@@ -1394,7 +1394,7 @@ fmi3Status STDCALL placeholder_fmi3GetFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetFMUState(fmi3InstanceHandle *instance,
                                        fmi3FMUState FMUState) {
     UNUSED(instance);
     UNUSED(FMUState);
@@ -1402,7 +1402,7 @@ fmi3Status STDCALL placeholder_fmi3SetFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3FreeFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3FreeFMUState(fmi3InstanceHandle *instance,
                                         fmi3FMUState* FMUState) {
     UNUSED(instance);
     UNUSED(FMUState);
@@ -1410,7 +1410,7 @@ fmi3Status STDCALL placeholder_fmi3FreeFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SerializedFMUStateSize(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SerializedFMUStateSize(fmi3InstanceHandle *instance,
                                                   fmi3FMUState FMUState,
                                                   size_t* size) {
     UNUSED(instance);
@@ -1420,7 +1420,7 @@ fmi3Status STDCALL placeholder_fmi3SerializedFMUStateSize(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SerializeFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SerializeFMUState(fmi3InstanceHandle *instance,
                                              fmi3FMUState FMUState,
                                              fmi3Byte serializedState[],
                                              size_t size) {
@@ -1432,7 +1432,7 @@ fmi3Status STDCALL placeholder_fmi3SerializeFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3DeserializeFMUState(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3DeserializeFMUState(fmi3InstanceHandle *instance,
                                                const fmi3Byte serializedState[],
                                                size_t size,
                                                fmi3FMUState* FMUState) {
@@ -1444,7 +1444,7 @@ fmi3Status STDCALL placeholder_fmi3DeserializeFMUState(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetDirectionalDerivative(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetDirectionalDerivative(fmi3InstanceHandle *instance,
                                                     const fmi3ValueReference unknowns[],
                                                     size_t nUnknowns,
                                                     const fmi3ValueReference knowns[],
@@ -1466,7 +1466,7 @@ fmi3Status STDCALL placeholder_fmi3GetDirectionalDerivative(fmi3Instance instanc
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetAdjointDerivative(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetAdjointDerivative(fmi3InstanceHandle *instance,
                                                 const fmi3ValueReference unknowns[],
                                                 size_t nUnknowns,
                                                 const fmi3ValueReference knowns[],
@@ -1488,19 +1488,19 @@ fmi3Status STDCALL placeholder_fmi3GetAdjointDerivative(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3EnterConfigurationMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EnterConfigurationMode(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EnterConfigurationMode);
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3ExitConfigurationMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3ExitConfigurationMode(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3ExitConfigurationMode);
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetIntervalDecimal(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetIntervalDecimal(fmi3InstanceHandle *instance,
                                               const fmi3ValueReference valueReferences[],
                                               size_t nValueReferences,
                                               fmi3Float64 intervals[],
@@ -1514,7 +1514,7 @@ fmi3Status STDCALL placeholder_fmi3GetIntervalDecimal(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetIntervalFraction(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetIntervalFraction(fmi3InstanceHandle *instance,
                                                const fmi3ValueReference valueReferences[],
                                                size_t nValueReferences,
                                                fmi3UInt64 intervalCounters[],
@@ -1530,7 +1530,7 @@ fmi3Status STDCALL placeholder_fmi3GetIntervalFraction(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetShiftDecimal(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetShiftDecimal(fmi3InstanceHandle *instance,
                                            const fmi3ValueReference valueReferences[],
                                            size_t nValueReferences,
                                            fmi3Float64 shifts[]) {
@@ -1542,7 +1542,7 @@ fmi3Status STDCALL placeholder_fmi3GetShiftDecimal(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetShiftFraction(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetShiftFraction(fmi3InstanceHandle *instance,
                                             const fmi3ValueReference valueReferences[],
                                             size_t nValueReferences,
                                             fmi3UInt64 shiftCounters[],
@@ -1556,7 +1556,7 @@ fmi3Status STDCALL placeholder_fmi3GetShiftFraction(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetIntervalDecimal(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetIntervalDecimal(fmi3InstanceHandle *instance,
                                               const fmi3ValueReference valueReferences[],
                                               size_t nValueReferences,
                                               const fmi3Float64 intervals[]) {
@@ -1568,7 +1568,7 @@ fmi3Status STDCALL placeholder_fmi3SetIntervalDecimal(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetIntervalFraction(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetIntervalFraction(fmi3InstanceHandle *instance,
                                                const fmi3ValueReference valueReferences[],
                                                size_t nValueReferences,
                                                const fmi3UInt64 intervalCounters[],
@@ -1582,7 +1582,7 @@ fmi3Status STDCALL placeholder_fmi3SetIntervalFraction(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetShiftDecimal(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetShiftDecimal(fmi3InstanceHandle *instance,
                                            const fmi3ValueReference valueReferences[],
                                            size_t nValueReferences,
                                            const fmi3Float64 shifts[]) {
@@ -1594,7 +1594,7 @@ fmi3Status STDCALL placeholder_fmi3SetShiftDecimal(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetShiftFraction(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetShiftFraction(fmi3InstanceHandle *instance,
                                             const fmi3ValueReference valueReferences[],
                                             size_t nValueReferences,
                                             const fmi3UInt64 counters[],
@@ -1609,13 +1609,13 @@ fmi3Status STDCALL placeholder_fmi3SetShiftFraction(fmi3Instance instance,
 }
 
 
-fmi3Status STDCALL placeholder_fmi3EvaluateDiscreteStates(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EvaluateDiscreteStates(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EvaluateDiscreteStates);
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3UpdateDiscreteStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3UpdateDiscreteStates(fmi3InstanceHandle *instance,
                                                 fmi3Boolean* discreteStatesNeedUpdate,
                                                 fmi3Boolean* terminateSimulation,
                                                 fmi3Boolean* nominalsOfContinuousStatesChanged,
@@ -1633,13 +1633,13 @@ fmi3Status STDCALL placeholder_fmi3UpdateDiscreteStates(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3EnterContinuousTimeMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EnterContinuousTimeMode(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EnterContinuousTimeMode);
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3CompletedIntegratorStep(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3CompletedIntegratorStep(fmi3InstanceHandle *instance,
                                                    fmi3Boolean noSetFMUStatePriorToCurrentPoint,
                                                    fmi3Boolean* enterEventMode,
                                                    fmi3Boolean* terminateSimulation) {
@@ -1651,7 +1651,7 @@ fmi3Status STDCALL placeholder_fmi3CompletedIntegratorStep(fmi3Instance instance
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetTime(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetTime(fmi3InstanceHandle *instance,
                                    fmi3Float64 time) {
     UNUSED(instance);
     UNUSED(time);
@@ -1659,7 +1659,7 @@ fmi3Status STDCALL placeholder_fmi3SetTime(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3SetContinuousStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3SetContinuousStates(fmi3InstanceHandle *instance,
                                                const fmi3Float64 continuousStates[],
                                                size_t nContinuousStates) {
     UNUSED(instance);
@@ -1669,7 +1669,7 @@ fmi3Status STDCALL placeholder_fmi3SetContinuousStates(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetContinuousStateDerivatives(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetContinuousStateDerivatives(fmi3InstanceHandle *instance,
                                                          fmi3Float64 derivatives[],
                                                          size_t nContinuousStates) {
     UNUSED(instance);
@@ -1679,7 +1679,7 @@ fmi3Status STDCALL placeholder_fmi3GetContinuousStateDerivatives(fmi3Instance in
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetEventIndicators(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetEventIndicators(fmi3InstanceHandle *instance,
                                               fmi3Float64 eventIndicators[],
                                               size_t nEventIndicators) {
     UNUSED(instance);
@@ -1689,7 +1689,7 @@ fmi3Status STDCALL placeholder_fmi3GetEventIndicators(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetContinuousStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetContinuousStates(fmi3InstanceHandle *instance,
                                                fmi3Float64 continuousStates[],
                                                size_t nContinuousStates) {
     UNUSED(instance);
@@ -1699,7 +1699,7 @@ fmi3Status STDCALL placeholder_fmi3GetContinuousStates(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetNominalsOfContinuousStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetNominalsOfContinuousStates(fmi3InstanceHandle *instance,
                                                          fmi3Float64 nominals[],
                                                          size_t nContinuousStates) {
     UNUSED(instance);
@@ -1709,7 +1709,7 @@ fmi3Status STDCALL placeholder_fmi3GetNominalsOfContinuousStates(fmi3Instance in
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetNumberOfEventIndicators(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetNumberOfEventIndicators(fmi3InstanceHandle *instance,
                                                       size_t* nEventIndicators) {
     UNUSED(instance);
     UNUSED(nEventIndicators);
@@ -1717,7 +1717,7 @@ fmi3Status STDCALL placeholder_fmi3GetNumberOfEventIndicators(fmi3Instance insta
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetNumberOfContinuousStates(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetNumberOfContinuousStates(fmi3InstanceHandle *instance,
                                                        size_t* nContinuousStates) {
     UNUSED(instance);
     UNUSED(nContinuousStates);
@@ -1725,13 +1725,13 @@ fmi3Status STDCALL placeholder_fmi3GetNumberOfContinuousStates(fmi3Instance inst
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3EnterStepMode(fmi3Instance instance) {
+fmi3Status STDCALL placeholder_fmi3EnterStepMode(fmi3InstanceHandle *instance) {
     UNUSED(instance);
     NOT_IMPLEMENTED(fmi3EnterStepMode);
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3GetOutputDerivatives(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3GetOutputDerivatives(fmi3InstanceHandle *instance,
                                                 const fmi3ValueReference valueReferences[],
                                                 size_t nValueReferences,
                                                 const fmi3Int32 orders[],
@@ -1747,7 +1747,7 @@ fmi3Status STDCALL placeholder_fmi3GetOutputDerivatives(fmi3Instance instance,
     return fmi3Error;
 }
 
-fmi3Status STDCALL placeholder_fmi3ActivateModelPartition(fmi3Instance instance,
+fmi3Status STDCALL placeholder_fmi3ActivateModelPartition(fmi3InstanceHandle *instance,
                                                   fmi3ValueReference clockReference,
                                                   fmi3Float64 activationTime) {
     UNUSED(instance);
