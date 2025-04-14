@@ -678,7 +678,7 @@ typedef struct {
     fmi3VariableHandle *variables;
     int variablesSize;
 
-    fmi3Instance fmi3Instance;
+    fmi3InstanceHandle fmi3Instance;
     fmi3GetVersion_t getVersion;
     fmi3SetDebugLogging_t setDebugLogging;
     fmi3InstantiateModelExchange_t instantiateModelExchange;

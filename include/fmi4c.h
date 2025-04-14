@@ -556,56 +556,56 @@ FMI4C_DLLAPI bool fmi3se_getProvidesDirectionalDerivative(fmuHandle* fmu);
 FMI4C_DLLAPI bool fmi3se_getProvidesAdjointDerivatives(fmuHandle* fmu);
 FMI4C_DLLAPI bool fmi3se_getProvidesPerElementDependencies(fmuHandle* fmu);
 
-FMI4C_DLLAPI bool fmi3_instantiateCoSimulation(fmuHandle *fmu,
-                                              fmi3Boolean                    visible,
-                                              fmi3Boolean                    loggingOn,
-                                              fmi3Boolean                    eventModeUsed,
-                                              fmi3Boolean                    earlyReturnAllowed,
-                                              const fmi3ValueReference       requiredIntermediateVariables[],
-                                              size_t                         nRequiredIntermediateVariables,
-                                              fmi3InstanceEnvironment        instanceEnvironment,
-                                              fmi3LogMessageCallback         logMessage,
-                                              fmi3IntermediateUpdateCallback intermediateUpdate);
+FMI4C_DLLAPI fmi3InstanceHandle *fmi3_instantiateCoSimulation(fmuHandle *fmu,
+                                                              fmi3Boolean                    visible,
+                                                              fmi3Boolean                    loggingOn,
+                                                              fmi3Boolean                    eventModeUsed,
+                                                              fmi3Boolean                    earlyReturnAllowed,
+                                                              const fmi3ValueReference       requiredIntermediateVariables[],
+                                                              size_t                         nRequiredIntermediateVariables,
+                                                              fmi3InstanceEnvironment        instanceEnvironment,
+                                                              fmi3LogMessageCallback         logMessage,
+                                                              fmi3IntermediateUpdateCallback intermediateUpdate);
 
-FMI4C_DLLAPI bool fmi3_instantiateModelExchange(fmuHandle *fmu,
-                                               fmi3Boolean                visible,
-                                               fmi3Boolean                loggingOn,
-                                               fmi3InstanceEnvironment    instanceEnvironment,
-                                               fmi3LogMessageCallback     logMessage);
+FMI4C_DLLAPI fmi3InstanceHandle *fmi3_instantiateModelExchange(fmuHandle *fmu,
+                                                               fmi3Boolean                visible,
+                                                               fmi3Boolean                loggingOn,
+                                                               fmi3InstanceEnvironment    instanceEnvironment,
+                                                               fmi3LogMessageCallback     logMessage);
 
 FMI4C_DLLAPI const char* fmi3_getVersion(fmuHandle *fmu);
 
-FMI4C_DLLAPI fmi3Status fmi3_setDebugLogging(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setDebugLogging(fmi3InstanceHandle *instance,
                                             fmi3Boolean loggingOn,
                                             size_t nCategories,
                                             const fmi3String categories[]);
 
-FMI4C_DLLAPI fmi3Status fmi3_getFloat64(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getFloat64(fmi3InstanceHandle *instance,
                                        const fmi3ValueReference valueReferences[],
                                        size_t nValueReferences,
                                        fmi3Float64 values[],
                                        size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setFloat64(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setFloat64(fmi3InstanceHandle *instance,
                                        const fmi3ValueReference valueReferences[],
                                        size_t nValueReferences,
                                        const fmi3Float64 values[],
                                        size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_enterInitializationMode(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_enterInitializationMode(fmi3InstanceHandle *instance,
                                                     fmi3Boolean toleranceDefined,
                                                     fmi3Float64 tolerance,
                                                     fmi3Float64 startTime,
                                                     fmi3Boolean stopTimeDefined,
                                                     fmi3Float64 stopTime);
 
-FMI4C_DLLAPI fmi3Status fmi3_exitInitializationMode(fmuHandle *fmu);
+FMI4C_DLLAPI fmi3Status fmi3_exitInitializationMode(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi3Status fmi3_terminate(fmuHandle *fmu);
+FMI4C_DLLAPI fmi3Status fmi3_terminate(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI void fmi3_freeInstance(fmuHandle *fmu);
+FMI4C_DLLAPI void fmi3_freeInstance(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi3Status fmi3_doStep(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_doStep(fmi3InstanceHandle *instance,
                                    fmi3Float64 currentCommunicationPoint,
                                    fmi3Float64 communicationStepSize,
                                    fmi3Boolean noSetFMUStatePriorToCurrentPoint,
@@ -614,171 +614,171 @@ FMI4C_DLLAPI fmi3Status fmi3_doStep(fmuHandle *fmu,
                                    fmi3Boolean *earlyReturn,
                                    fmi3Float64 *lastSuccessfulTime);
 
-FMI4C_DLLAPI fmi3Status fmi3_enterEventMode(fmuHandle *fmu);
+FMI4C_DLLAPI fmi3Status fmi3_enterEventMode(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi3Status fmi3_reset(fmuHandle *fmu);
+FMI4C_DLLAPI fmi3Status fmi3_reset(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi3Status fmi3_getFloat32(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getFloat32(fmi3InstanceHandle *instance,
                                        const fmi3ValueReference valueReferences[],
                                        size_t nValueReferences,
                                        fmi3Float32 values[],
                                        size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getInt8(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getInt8(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     fmi3Int8 values[],
                                     size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getUInt8(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getUInt8(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3UInt8 values[],
                                      size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getInt16(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getInt16(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3Int16 values[],
                                      size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getUInt16(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getUInt16(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3UInt16 values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getInt32(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getInt32(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3Int32 values[],
                                      size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getUInt32(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getUInt32(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3UInt32 values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getInt64(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getInt64(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3Int64 values[],
                                      size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getUInt64(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getUInt64(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3UInt64 values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getBoolean(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getBoolean(fmi3InstanceHandle *instance,
                                        const fmi3ValueReference valueReferences[],
                                        size_t nValueReferences,
                                        fmi3Boolean values[],
                                        size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getString(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getString(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       fmi3String values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getBinary(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getBinary(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       size_t valueSizes[],
                                       fmi3Binary values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_getClock(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getClock(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      fmi3Clock values[]);
 
-FMI4C_DLLAPI fmi3Status fmi3_setFloat32(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setFloat32(fmi3InstanceHandle *instance,
                                        const fmi3ValueReference valueReferences[],
                                        size_t nValueReferences,
                                        const fmi3Float32 values[],
                                        size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setInt8(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setInt8(fmi3InstanceHandle *instance,
                                     const fmi3ValueReference valueReferences[],
                                     size_t nValueReferences,
                                     const fmi3Int8 values[],
                                     size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setUInt8(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setUInt8(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3UInt8 values[],
                                      size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setInt16(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setInt16(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3Int16 values[],
                                      size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setUInt16(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setUInt16(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3UInt16 values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setInt32(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setInt32(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3Int32 values[],
                                      size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setUInt32(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setUInt32(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3UInt32 values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setInt64(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setInt64(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3Int64 values[],
                                      size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setUInt64(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setUInt64(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3UInt64 values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setBoolean(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setBoolean(fmi3InstanceHandle *instance,
                                        const fmi3ValueReference valueReferences[],
                                        size_t nValueReferences,
                                        const fmi3Boolean values[],
                                        size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setString(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setString(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const fmi3String values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setBinary(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setBinary(fmi3InstanceHandle *instance,
                                       const fmi3ValueReference valueReferences[],
                                       size_t nValueReferences,
                                       const size_t valueSizes[],
                                       const fmi3Binary values[],
                                       size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_setClock(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setClock(fmi3InstanceHandle *instance,
                                      const fmi3ValueReference valueReferences[],
                                      size_t nValueReferences,
                                      const fmi3Clock values[]);
 
-FMI4C_DLLAPI fmi3Status fmi3_getNumberOfVariableDependencies(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getNumberOfVariableDependencies(fmi3InstanceHandle *instance,
                                                             fmi3ValueReference valueReference,
                                                             size_t* nDependencies);
 
-FMI4C_DLLAPI fmi3Status fmi3_getVariableDependencies(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getVariableDependencies(fmi3InstanceHandle *instance,
                                                     fmi3ValueReference dependent,
                                                     size_t elementIndicesOfDependent[],
                                                     fmi3ValueReference independents[],
@@ -786,27 +786,27 @@ FMI4C_DLLAPI fmi3Status fmi3_getVariableDependencies(fmuHandle *fmu,
                                                     fmi3DependencyKind dependencyKinds[],
                                                     size_t nDependencies);
 
-FMI4C_DLLAPI fmi3Status fmi3_getFMUState(fmuHandle *fmu, fmi3FMUState* FMUState);
+FMI4C_DLLAPI fmi3Status fmi3_getFMUState(fmi3InstanceHandle *instance, fmi3FMUState* FMUState);
 
-FMI4C_DLLAPI fmi3Status fmi3_setFMUState(fmuHandle *fmu, fmi3FMUState  FMUState);
+FMI4C_DLLAPI fmi3Status fmi3_setFMUState(fmi3InstanceHandle *instance, fmi3FMUState  FMUState);
 
-FMI4C_DLLAPI fmi3Status fmi3_freeFMUState(fmuHandle *fmu, fmi3FMUState* FMUState);
+FMI4C_DLLAPI fmi3Status fmi3_freeFMUState(fmi3InstanceHandle *instance, fmi3FMUState* FMUState);
 
-FMI4C_DLLAPI fmi3Status fmi3_serializedFMUStateSize(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_serializedFMUStateSize(fmi3InstanceHandle *instance,
                                                    fmi3FMUState  FMUState,
                                                    size_t* size);
 
-FMI4C_DLLAPI fmi3Status fmi3_serializeFMUState(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_serializeFMUState(fmi3InstanceHandle *instance,
                                               fmi3FMUState  FMUState,
                                               fmi3Byte serializedState[],
                                               size_t size);
 
-FMI4C_DLLAPI fmi3Status fmi3_deserializeFMUState(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_deserializeFMUState(fmi3InstanceHandle *instance,
                                                 const fmi3Byte serializedState[],
                                                 size_t size,
                                                 fmi3FMUState* FMUState);
 
-FMI4C_DLLAPI fmi3Status fmi3_getDirectionalDerivative(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getDirectionalDerivative(fmi3InstanceHandle *instance,
                                                      const fmi3ValueReference unknowns[],
                                                      size_t nUnknowns,
                                                      const fmi3ValueReference knowns[],
@@ -816,7 +816,7 @@ FMI4C_DLLAPI fmi3Status fmi3_getDirectionalDerivative(fmuHandle *fmu,
                                                      fmi3Float64 sensitivity[],
                                                      size_t nSensitivity);
 
-FMI4C_DLLAPI fmi3Status fmi3_getAdjointDerivative(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getAdjointDerivative(fmi3InstanceHandle *instance,
                                                  const fmi3ValueReference unknowns[],
                                                  size_t nUnknowns,
                                                  const fmi3ValueReference knowns[],
@@ -826,48 +826,48 @@ FMI4C_DLLAPI fmi3Status fmi3_getAdjointDerivative(fmuHandle *fmu,
                                                  fmi3Float64 sensitivity[],
                                                  size_t nSensitivity);
 
-FMI4C_DLLAPI fmi3Status fmi3_enterConfigurationMode(fmuHandle *fmu);
+FMI4C_DLLAPI fmi3Status fmi3_enterConfigurationMode(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi3Status fmi3_exitConfigurationMode(fmuHandle *fmu);
+FMI4C_DLLAPI fmi3Status fmi3_exitConfigurationMode(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi3Status fmi3_getIntervalDecimal(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getIntervalDecimal(fmi3InstanceHandle *instance,
                                                const fmi3ValueReference valueReferences[],
                                                size_t nValueReferences,
                                                fmi3Float64 intervals[],
                                                fmi3IntervalQualifier qualifiers[]);
 
-FMI4C_DLLAPI fmi3Status fmi3_getIntervalFraction(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getIntervalFraction(fmi3InstanceHandle *instance,
                                                 const fmi3ValueReference valueReferences[],
                                                 size_t nValueReferences,
                                                 fmi3UInt64 intervalCounters[],
                                                 fmi3UInt64 resolutions[],
                                                 fmi3IntervalQualifier qualifiers[]);
 
-FMI4C_DLLAPI fmi3Status fmi3_getShiftDecimal(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getShiftDecimal(fmi3InstanceHandle *instance,
                                             const fmi3ValueReference valueReferences[],
                                             size_t nValueReferences,
                                             fmi3Float64 shifts[]);
 
-FMI4C_DLLAPI fmi3Status fmi3_getShiftFraction(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getShiftFraction(fmi3InstanceHandle *instance,
                                              const fmi3ValueReference valueReferences[],
                                              size_t nValueReferences,
                                              fmi3UInt64 shiftCounters[],
                                              fmi3UInt64 resolutions[]);
 
-FMI4C_DLLAPI fmi3Status fmi3_setIntervalDecimal(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setIntervalDecimal(fmi3InstanceHandle *instance,
                                                const fmi3ValueReference valueReferences[],
                                                size_t nValueReferences,
                                                const fmi3Float64 intervals[]);
 
-FMI4C_DLLAPI fmi3Status fmi3_setIntervalFraction(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setIntervalFraction(fmi3InstanceHandle *instance,
                                                 const fmi3ValueReference valueReferences[],
                                                 size_t nValueReferences,
                                                 const fmi3UInt64 intervalCounters[],
                                                 const fmi3UInt64 resolutions[]);
 
-FMI4C_DLLAPI fmi3Status fmi3_evaluateDiscreteStates(fmuHandle *fmu);
+FMI4C_DLLAPI fmi3Status fmi3_evaluateDiscreteStates(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi3Status fmi3_updateDiscreteStates(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_updateDiscreteStates(fmi3InstanceHandle *instance,
                                                  fmi3Boolean* discreteStatesNeedUpdate,
                                                  fmi3Boolean* terminateSimulation,
                                                  fmi3Boolean* nominalsOfContinuousStatesChanged,
@@ -875,51 +875,51 @@ FMI4C_DLLAPI fmi3Status fmi3_updateDiscreteStates(fmuHandle *fmu,
                                                  fmi3Boolean* nextEventTimeDefined,
                                                  fmi3Float64* nextEventTime);
 
-FMI4C_DLLAPI fmi3Status fmi3_enterContinuousTimeMode(fmuHandle *fmu);
+FMI4C_DLLAPI fmi3Status fmi3_enterContinuousTimeMode(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi3Status fmi3_completedIntegratorStep(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_completedIntegratorStep(fmi3InstanceHandle *instance,
                                                     fmi3Boolean  noSetFMUStatePriorToCurrentPoint,
                                                     fmi3Boolean* enterEventMode,
                                                     fmi3Boolean* terminateSimulation);
 
-FMI4C_DLLAPI fmi3Status fmi3_setTime(fmuHandle *fmu, fmi3Float64 time);
+FMI4C_DLLAPI fmi3Status fmi3_setTime(fmi3InstanceHandle *instance, fmi3Float64 time);
 
-FMI4C_DLLAPI fmi3Status fmi3_setContinuousStates(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_setContinuousStates(fmi3InstanceHandle *instance,
                                                 const fmi3Float64 continuousStates[],
                                                 size_t nContinuousStates);
 
-FMI4C_DLLAPI fmi3Status fmi3_getContinuousStateDerivatives(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getContinuousStateDerivatives(fmi3InstanceHandle *instance,
                                                           fmi3Float64 derivatives[],
                                                           size_t nContinuousStates);
 
-FMI4C_DLLAPI fmi3Status fmi3_getEventIndicators(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getEventIndicators(fmi3InstanceHandle *instance,
                                                fmi3Float64 eventIndicators[],
                                                size_t nEventIndicators);
 
-FMI4C_DLLAPI fmi3Status fmi3_getContinuousStates(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getContinuousStates(fmi3InstanceHandle *instance,
                                                 fmi3Float64 continuousStates[],
                                                 size_t nContinuousStates);
 
-FMI4C_DLLAPI fmi3Status fmi3_getNominalsOfContinuousStates(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getNominalsOfContinuousStates(fmi3InstanceHandle *instance,
                                                           fmi3Float64 nominals[],
                                                           size_t nContinuousStates);
 
-FMI4C_DLLAPI fmi3Status fmi3_getNumberOfEventIndicators(fmuHandle *fmu,
-                                                       size_t* nEventIndicators);
+FMI4C_DLLAPI fmi3Status fmi3_getNumberOfEventIndicators(fmi3InstanceHandle *instance,
+                                                        size_t* nEventIndicators);
 
-FMI4C_DLLAPI fmi3Status fmi3_getNumberOfContinuousStates(fmuHandle *fmu,
-                                                        size_t* nContinuousStates);
+FMI4C_DLLAPI fmi3Status fmi3_getNumberOfContinuousStates(fmi3InstanceHandle *instance,
+                                                         size_t* nContinuousStates);
 
-FMI4C_DLLAPI fmi3Status fmi3_enterStepMode(fmuHandle *fmu);
+FMI4C_DLLAPI fmi3Status fmi3_enterStepMode(fmi3InstanceHandle *instance);
 
-FMI4C_DLLAPI fmi3Status fmi3_getOutputDerivatives(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_getOutputDerivatives(fmi3InstanceHandle *instance,
                                                  const fmi3ValueReference valueReferences[],
                                                  size_t nValueReferences,
                                                  const fmi3Int32 orders[],
                                                  fmi3Float64 values[],
                                                  size_t nValues);
 
-FMI4C_DLLAPI fmi3Status fmi3_activateModelPartition(fmuHandle *fmu,
+FMI4C_DLLAPI fmi3Status fmi3_activateModelPartition(fmi3InstanceHandle *instance,
                                                    fmi3ValueReference clockReference,
                                                    fmi3Float64 activationTime);
 
