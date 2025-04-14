@@ -2707,7 +2707,7 @@ const char *fmi2_getVersion(fmuHandle *fmu)
 fmi2Status fmi2_setDebugLogging(fmi2InstanceHandle *instance, fmi2Boolean loggingOn, size_t nCategories, const fmi2String categories[])
 {
     TRACEFUNC
-    return instance->fmu->fmi2.setDebugLogging(instance, loggingOn, nCategories, categories);
+    return instance->fmu->fmi2.setDebugLogging(instance->component, loggingOn, nCategories, categories);
 }
 
 fmi2InstanceHandle *fmi2_instantiate(fmuHandle *fmu, fmi2Type type, fmi2CallbackLogger logger, fmi2CallbackAllocateMemory allocateMemory, fmi2CallbackFreeMemory freeMemory, fmi2StepFinished stepFinished, fmi2ComponentEnvironment componentEnvironment, fmi2Boolean visible, fmi2Boolean loggingOn)
