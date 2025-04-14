@@ -137,7 +137,7 @@ class fmi4c:
         self.hdll.fmi1_setBoolean.argtypes = ct.c_void_p,ct.POINTER(ct.c_uint),ct.c_size_t,ct.POINTER(ct.c_bool),
         self.hdll.fmi1_setString.restype = ct.c_int
         self.hdll.fmi1_setString.argtypes = ct.c_void_p,ct.POINTER(ct.c_uint),ct.c_size_t,ct.POINTER(ct.c_char_p),
-        self.hdll.fmi1_instantiateSlave.restype = ct.c_bool
+        self.hdll.fmi1_instantiateSlave.restype = ct.c_void_p
         self.hdll.fmi1_instantiateSlave.argtypes = ct.c_void_p,ct.c_char_p,ct.c_double,ct.c_bool,ct.c_bool,ct.c_void_p,ct.c_void_p,ct.c_void_p,ct.c_void_p, ct.c_bool,
         self.hdll.fmi1_initializeSlave.restype = ct.c_int
         self.hdll.fmi1_initializeSlave.argtypes = ct.c_void_p,ct.c_double,ct.c_bool,ct.c_double,
@@ -167,7 +167,7 @@ class fmi4c:
         self.hdll.fmi1_getStringStatus.argtypes = ct.c_void_p,ct.c_int,ct.POINTER(ct.c_char_p),
         self.hdll.fmi1_getModelTypesPlatform.restype = ct.c_char_p
         self.hdll.fmi1_getModelTypesPlatform.argtypes = ct.c_void_p,
-        self.hdll.fmi1_instantiateModel.restype = ct.c_bool
+        self.hdll.fmi1_instantiateModel.restype = ct.c_void_p
         self.hdll.fmi1_instantiateModel.argtypes = ct.c_void_p,ct.c_void_p,ct.c_void_p,ct.c_bool,
         self.hdll.fmi1_freeModelInstance.restype = None
         self.hdll.fmi1_freeModelInstance.argtypes = ct.c_void_p,
@@ -1125,132 +1125,132 @@ class fmi4c:
     def fmi1_getVersion(self):
         return self.hdll.fmi1_getVersion(self.fmu).decode();
 
-    def fmi1_setDebugLogging(self, loggingOn):
-        return self.hdll.fmi1_setDebugLogging(self.fmu, loggingOn);
+    def fmi1_setDebugLogging(self, instance, loggingOn):
+        return self.hdll.fmi1_setDebugLogging(instance, loggingOn);
 
-    def fmi1_getReal(self, valueReferences, nValueReferences):
+    def fmi1_getReal(self, instance, valueReferences, nValueReferences):
         uint_array_type = ct.c_uint * nValueReferences
         double_array_type = ct.c_double * nValueReferences
         valueReferencesArray = uint_array_type(1,2)
         valuesArray = double_array_type()
-        success = self.hdll.fmi1_getReal(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        success = self.hdll.fmi1_getReal(instance, valueReferencesArray, nValueReferences, valuesArray)
         return [success, list(valuesArray)]
 
-    def fmi1_getInteger(self, valueReferences, nValueReferences):
+    def fmi1_getInteger(self, instance, valueReferences, nValueReferences):
         uint_array_type = ct.c_uint * nValueReferences
         double_array_type = ct.c_int * nValueReferences
         valueReferencesArray = uint_array_type(*valueReferences)
         valuesArray = double_array_type(*[1]*nValueReferences)
-        success = self.hdll.fmi1_getInteger(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        success = self.hdll.fmi1_getInteger(instance, valueReferencesArray, nValueReferences, valuesArray)
         return [success, list(valuesArray)]
 
-    def fmi1_getBoolean(self, valueReferences, nValueReferences):
+    def fmi1_getBoolean(self, instance, valueReferences, nValueReferences):
         uint_array_type = ct.c_uint * nValueReferences
         double_array_type = ct.c_bool * nValueReferences
         valueReferencesArray = uint_array_type(*valueReferences)
         valuesArray = double_array_type(*[1]*nValueReferences)
-        success = self.hdll.fmi1_getBoolean(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        success = self.hdll.fmi1_getBoolean(instance, valueReferencesArray, nValueReferences, valuesArray)
         return [success, list(valuesArray)]
 
-    def fmi1_getString(self, valueReferences, nValueReferences):
+    def fmi1_getString(self, instance, valueReferences, nValueReferences):
         uint_array_type = ct.c_uint * nValueReferences
         double_array_type = ct.c_char_p * nValueReferences
         valueReferencesArray = uint_array_type(*valueReferences)
         valuesArray = double_array_type(*[1]*nValueReferences)
-        success = self.hdll.fmi1_getString(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        success = self.hdll.fmi1_getString(instance, valueReferencesArray, nValueReferences, valuesArray)
         return [success, list(valuesArray)]
 
-    def fmi1_setReal(self, valueReferences, nValueReferences, values):
+    def fmi1_setReal(self, instance, valueReferences, nValueReferences, values):
         uint_array_type = ct.c_uint * nValueReferences
         double_array_type = ct.c_double * nValueReferences
         valueReferencesArray = uint_array_type(*valueReferences)
         valuesArray = double_array_type(*values)
-        return self.hdll.fmi1_setReal(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        return self.hdll.fmi1_setReal(instance, valueReferencesArray, nValueReferences, valuesArray)
 
-    def fmi1_setInteger(self, valueReferences, nValueReferences, values):
+    def fmi1_setInteger(self, instance, valueReferences, nValueReferences, values):
         uint_array_type = ct.c_uint * nValueReferences
         double_array_type = ct.c_int * nValueReferences
         valueReferencesArray = uint_array_type(*valueReferences)
         valuesArray = double_array_type(*values)
-        return self.hdll.fmi1_setInteger(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        return self.hdll.fmi1_setInteger(instance, valueReferencesArray, nValueReferences, valuesArray)
 
-    def fmi1_setBoolean(self, valueReferences, nValueReferences, values):
+    def fmi1_setBoolean(self, instance, valueReferences, nValueReferences, values):
         uint_array_type = ct.c_uint * nValueReferences
         double_array_type = ct.c_bool * nValueReferences
         valueReferencesArray = uint_array_type(*valueReferences)
         valuesArray = double_array_type(*values)
-        return self.hdll.fmi1_setBoolean(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        return self.hdll.fmi1_setBoolean(instance, valueReferencesArray, nValueReferences, valuesArray)
 
-    def fmi1_setString(self, valueReferences, nValueReferences, values):
+    def fmi1_setString(self, instance, valueReferences, nValueReferences, values):
         uint_array_type = ct.c_uint * nValueReferences
         double_array_type = ct.c_char_p * nValueReferences
         valueReferencesArray = uint_array_type(*valueReferences)
         valuesArray = double_array_type(*values)
-        return self.hdll.fmi1_setString(self.fmu, valueReferencesArray, nValueReferences, valuesArray)
+        return self.hdll.fmi1_setString(instance, valueReferencesArray, nValueReferences, valuesArray)
 
     def fmi1_instantiateSlave(self, mimeType, timeOut, visible, interactive, loggingOn):
         return self.hdll.fmi1_instantiateSlave(self.fmu, mimeType, timeOut, visible, interactive, None, None, None, None, loggingOn)
 
-    def fmi1_initializeSlave(self, startTime, stopTimeDefined, stopTime):
-        return self.hdll.fmi1_initializeSlave(self.fmu, startTime, stopTimeDefined, stopTime)
+    def fmi1_initializeSlave(self, instance, startTime, stopTimeDefined, stopTime):
+        return self.hdll.fmi1_initializeSlave(instance, startTime, stopTimeDefined, stopTime)
 
-    def fmi1_resetSlave(self):
-        return self.hdll.fmi1_resetSlave(self.fmu)
+    def fmi1_resetSlave(self, instance):
+        return self.hdll.fmi1_resetSlave(instance)
 
-    def fmi1_terminateSlave(self):
-        return self.hdll.fmi1_terminateSlave(self.fmu)
+    def fmi1_terminateSlave(self, instance):
+        return self.hdll.fmi1_terminateSlave(instance)
 
-    def fmi1_freeSlaveInstance(self):
-        self.hdll.fmi1_freeSlaveInstance(self.fmu)
+    def fmi1_freeSlaveInstance(self, instance):
+        self.hdll.fmi1_freeSlaveInstance(instance)
 
-    def fmi1_setRealInputDerivatives(self, valueReferences, nValueReferences, orders, values):
+    def fmi1_setRealInputDerivatives(self, instance, valueReferences, nValueReferences, orders, values):
         uint_array_type = ct.c_uint * nValueReferences
         int_array_type = ct.c_int * nValueReferences
         double_array_type = ct.c_double * nValueReferences
         valueReferencesArray = uint_array_type(*valueReferences)
         ordersArray = int_array_type(*orders)
         valuesArray = double_array_type(*values)
-        return self.hdll.fmi1_setRealInputDerivatives(self.fmu, valueReferencesArray, nValueReferences, ordersArray, valuesArray)
+        return self.hdll.fmi1_setRealInputDerivatives(instance, valueReferencesArray, nValueReferences, ordersArray, valuesArray)
 
-    def fmi1_getRealOutputDerivatives(self, valueReferences, nValueReferences, orders):
+    def fmi1_getRealOutputDerivatives(self, instance, valueReferences, nValueReferences, orders):
         uint_array_type = ct.c_uint * nValueReferences
         int_array_type = ct.c_int * nValueReferences
         double_array_type = ct.c_double * nValueReferences
         valueReferencesArray = uint_array_type(*valueReferences)
         ordersArray = int_array_type(*orders)
         valuesArray = double_array_type(*[1]*nValueReferences)
-        success = self.hdll.fmi1_getRealOutputDerivatives(self.fmu, valueReferencesArray, nValueReferences, ordersArray, valuesArray)
+        success = self.hdll.fmi1_getRealOutputDerivatives(instance, valueReferencesArray, nValueReferences, ordersArray, valuesArray)
         return [success, list(valuesArray)]
 
-    def fmi1_cancelStep(self):
-        return self.hdll.fmi1_cancelStep(self.fmu)
+    def fmi1_cancelStep(self, instance):
+        return self.hdll.fmi1_cancelStep(instance)
 
-    def fmi1_doStep(self, currentCommunicationPoint, communicationStepSize, newStep):
-        return self.hdll.fmi1_doStep(self.fmu, currentCommunicationPoint, communicationStepSize, newStep)
+    def fmi1_doStep(self, instance, currentCommunicationPoint, communicationStepSize, newStep):
+        return self.hdll.fmi1_doStep(instance, currentCommunicationPoint, communicationStepSize, newStep)
 
-    def fmi1_getStatus(self, statusKind):
+    def fmi1_getStatus(self, instance, statusKind):
         value = ct.c_int()
-        success = self.hdll.fmi1_getStatus(self.fmu, statusKind, ct.byref(value))
+        success = self.hdll.fmi1_getStatus(instance, statusKind, ct.byref(value))
         return [success, value]
 
-    def fmi1_getRealStatus(self, statusKind):
+    def fmi1_getRealStatus(self, instance, statusKind):
         value = ct.c_double()
-        success = self.hdll.fmi1_getRealStatus(self.fmu, statusKind, ct.byref(value))
+        success = self.hdll.fmi1_getRealStatus(instance, statusKind, ct.byref(value))
         return [success, value]
 
-    def fmi1_getIntegerStatus(self, statusKind):
+    def fmi1_getIntegerStatus(self, instance, statusKind):
         value = ct.c_int()
-        success = self.hdll.fmi1_getIntegerStatus(self.fmu, statusKind, ct.byref(value))
+        success = self.hdll.fmi1_getIntegerStatus(instance, statusKind, ct.byref(value))
         return [success, value]
 
-    def fmi1_getBooleanStatus(self, statusKind):
+    def fmi1_getBooleanStatus(self, instance, statusKind):
         value = ct.c_bool()
-        success = self.hdll.fmi1_getBooleanStatus(self.fmu, statusKind, ct.byref(value))
+        success = self.hdll.fmi1_getBooleanStatus(instance, statusKind, ct.byref(value))
         return [success, value]
 
-    def fmi1_getStringStatus(self, statusKind):
+    def fmi1_getStringStatus(self, instance, statusKind):
         value = ct.c_char_p()
-        success = self.hdll.fmi1_getStringStatus(self.fmu, statusKind, ct.byref(value))
+        success = self.hdll.fmi1_getStringStatus(instance, statusKind, ct.byref(value))
         return [success, value.decode()]
 
     def fmi1_getModelTypesPlatform(self):
@@ -1259,59 +1259,59 @@ class fmi4c:
     def fmi1_instantiateModel(self, loggingOn):
         return self.hdll.fmi1_instantiateModel(self.fmu, None, None, None, loggingOn)
 
-    def fmi1_freeModelInstance(self):
-        return self.hdll.fmi1_freeModelInstance(self.fmu)
+    def fmi1_freeModelInstance(self, instance):
+        return self.hdll.fmi1_freeModelInstance(instance)
 
-    def fmi1_setTime(self, time):
-        return self.hdll.fmi1_setTime(self.fmu, time)
+    def fmi1_setTime(self, instance, time):
+        return self.hdll.fmi1_setTime(instance, time)
 
-    def fmi1_setContinuousStates(self, continuousStates, nContinuousStates):
+    def fmi1_setContinuousStates(self, instance, continuousStates, nContinuousStates):
         double_array_type = ct.c_double * nContinuousStates
         continuousStatesArray = double_array_type(*continuousStates)
-        return self.hdll.fmi1_setContinuousStates(self.fmu, continuousStatesArray, nContinuousStates)
+        return self.hdll.fmi1_setContinuousStates(instance, continuousStatesArray, nContinuousStates)
 
-    def fmi1_completedIntegratorStep(self, callEventUpdate):
-        return self.hdll.fmi1_completedIntegratorStep(self.fmu, callEventUpdate)
+    def fmi1_completedIntegratorStep(self, instance, callEventUpdate):
+        return self.hdll.fmi1_completedIntegratorStep(instance, callEventUpdate)
 
-    def fmi1_initialize(self, toleranceControlled, relativeTolerance, eventInfo):
-        return self.hdll.fmi1_initialize(self.fmu, toleranceControlled, relativeTolerance, eventInfo)
+    def fmi1_initialize(self, instance, toleranceControlled, relativeTolerance, eventInfo):
+        return self.hdll.fmi1_initialize(instance, toleranceControlled, relativeTolerance, eventInfo)
 
-    def fmi1_getDerivatives(self, nDerivatives):
+    def fmi1_getDerivatives(self, instance, nDerivatives):
         double_array_type = ct.c_double * nDerivatives
         derivativesArray = double_array_type()
-        success = self.hdll.fmi1_getDerivatives(self.fmu, derivativesArray, nDerivatives)
+        success = self.hdll.fmi1_getDerivatives(instance, derivativesArray, nDerivatives)
         return [success, list(derivativesArray)]
 
-    def fmi1_getEventIndicators(self, indicators, nIndicators):
+    def fmi1_getEventIndicators(self, instance, indicators, nIndicators):
         double_array_type = ct.c_double * nIndicators
         indicatorsArray = double_array_type(*indicators)
-        success = self.hdll.fmi1_getEventIndicators(self.fmu, indicatorsArray, nIndicators)
+        success = self.hdll.fmi1_getEventIndicators(instance, indicatorsArray, nIndicators)
         return [success, list(indicatorsArray)]
 
-    def fmi1_eventUpdate(self, intermediateResults, eventInfo):
-        return self.hdll.fmi1_eventUpdate(self.fmu, intermediateResults, eventInfo)
+    def fmi1_eventUpdate(self, instance, intermediateResults, eventInfo):
+        return self.hdll.fmi1_eventUpdate(instance, intermediateResults, eventInfo)
 
-    def fmi1_getContinuousStates(self, nStates):
+    def fmi1_getContinuousStates(self, instance, nStates):
         double_array_type = ct.c_double * nStates
         statesArray = double_array_type()
-        success = self.hdll.fmi1_getContinuousStates(self.fmu, statesArray, nStates)
+        success = self.hdll.fmi1_getContinuousStates(instance, statesArray, nStates)
         return [success, list(statesArray)]
 
-    def fmi1_getNominalContinuousStates(self, nNominals):
+    def fmi1_getNominalContinuousStates(self, instance, nNominals):
         double_array_type = ct.c_double * nNominals
         nominalsArray = double_array_type()
-        success = self.hdll.fmi1_getNominalContinuousStates(self.fmu, nominalsArray, nNominals)
+        success = self.hdll.fmi1_getNominalContinuousStates(instance, nominalsArray, nNominals)
         return [success, list(nominalsArray)]
 
 
-    def fmi1_getStateValueReferences(self, nValueReferences):
+    def fmi1_getStateValueReferences(self, instance, nValueReferences):
         uint_array_type = ct.c_uint * nValueReferences
         valueReferencesArray = uint_array_type(*[1]*nValueReferences)
-        success = self.hdll.fmi1_getStateValueReferences(self.fmu, valueReferencesArray, nValueReferences)
+        success = self.hdll.fmi1_getStateValueReferences(instance, valueReferencesArray, nValueReferences)
         return [success, list(valueReferencesArray)]
 
-    def fmi1_terminate(self):
-        return self.hdll.fmi1_terminate(self.fmu)
+    def fmi1_terminate(self, instance):
+        return self.hdll.fmi1_terminate(instance)
 
     def fmi2_defaultStartTimeDefined(self):
         return self.hdll.fmi2_defaultStartTimeDefined(self.fmu)

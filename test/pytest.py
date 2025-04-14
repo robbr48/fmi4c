@@ -209,31 +209,32 @@ verify("typesPlatform", typesPlatform)
 version = f.fmi1_getVersion()
 verify("version", version)
 
-instantiateSuccess = f.fmi1_instantiateSlave(b"application/x-fmu-sharedlibrary", 1.0, False, False, False)
-verify("instantiateSuccess", instantiateSuccess)
+instance = 0   
+instance = instantiateSuccess = f.fmi1_instantiateSlave(b"application/x-fmu-sharedlibrary", 1.0, False, False, False)
+verify("instantiateSuccess", instance != 0)
 
-setDebugLoggingSuccess = f.fmi1_setDebugLogging(True)
+setDebugLoggingSuccess = f.fmi1_setDebugLogging(instance, True)
 verify("setDebugLoggingSuccess", setDebugLoggingSuccess) 
 
-initializeSuccess = f.fmi1_initializeSlave(0, True, 1)
+initializeSuccess = f.fmi1_initializeSlave(instance, 0, True, 1)
 verify("initializeSuccess", initializeSuccess)
     
-setRealSuccess = f.fmi1_setReal([1], 1, [5])
+setRealSuccess = f.fmi1_setReal(instance, [1], 1, [5])
 verify("setRealSuccess", setRealSuccess)
 
-doStepSuccess = f.fmi1_doStep(0,0.1,True)
+doStepSuccess = f.fmi1_doStep(instance, 0,0.1,True)
 verify("doStepSuccess", doStepSuccess)
 
-getRealResults = f.fmi1_getReal([1, 2],2)
+getRealResults = f.fmi1_getReal(instance, [1, 2],2)
 verify("getRealResults", getRealResults)
     
-terminateSuccess = f.fmi1_terminateSlave()
+terminateSuccess = f.fmi1_terminateSlave(instance)
 verify("terminateSuccess", terminateSuccess)
 
-resetSuccess = f.fmi1_resetSlave()
+resetSuccess = f.fmi1_resetSlave(instance)
 verify("resetSuccess", resetSuccess)
 
-f.fmi1_freeSlaveInstance()
+f.fmi1_freeSlaveInstance(instance)
 
 f.fmi4c_freeFmu()
 
@@ -442,42 +443,43 @@ verify("typesPlatform", typesPlatform)
 version = f.fmi1_getVersion()
 verify("version", version)
 
-instantiateSuccess = f.fmi1_instantiateModel(False)
-verify("instantiateSuccess", instantiateSuccess)
+instance = 0
+instance = f.fmi1_instantiateModel(False)
+verify("instantiateSuccess", instance != 0)
 
-setDebugLoggingSuccess = f.fmi1_setDebugLogging(False)
+setDebugLoggingSuccess = f.fmi1_setDebugLogging(instance, False)
 verify("setDebugLoggingSuccess", setDebugLoggingSuccess) 
 
-initializeSuccess = f.fmi1_initialize(False, 0, ct.pointer(eventInfo))
+initializeSuccess = f.fmi1_initialize(instance, False, 0, ct.pointer(eventInfo))
 verify("initializeSuccess", initializeSuccess)
 
 #
 
-setTimeSuccess = f.fmi1_setTime(0.5)
+setTimeSuccess = f.fmi1_setTime(instance, 0.5)
 verify("setTimeSuccess", setTimeSuccess)
 
-getDerivativesSuccess = f.fmi1_getDerivatives(1)
+getDerivativesSuccess = f.fmi1_getDerivatives(instance, 1)
 verify("getDerivativesSuccess", getDerivativesSuccess)
 
-getStateValueReferencesSuccess = f.fmi1_getStateValueReferences(1)
+getStateValueReferencesSuccess = f.fmi1_getStateValueReferences(instance, 1)
 verify("getStateValueReferencesSuccess", getStateValueReferencesSuccess)
 
-getNominalContinuousStatesSuccess = f.fmi1_getNominalContinuousStates(1)
+getNominalContinuousStatesSuccess = f.fmi1_getNominalContinuousStates(instance, 1)
 verify("getNominalContinuousStatesSuccess", getNominalContinuousStatesSuccess)
 
-setContinuousStatesSuccess = f.fmi1_setContinuousStates([42], 1)
+setContinuousStatesSuccess = f.fmi1_setContinuousStates(instance, [42], 1)
 verify("setContinuousStatesSuccess", setContinuousStatesSuccess)
 
-getContinuousStatesSuccess = f.fmi1_getContinuousStates(1)
+getContinuousStatesSuccess = f.fmi1_getContinuousStates(instance, 1)
 verify("getContinuousStatesSuccess", getContinuousStatesSuccess)
 
-completedIntegratorStepSuccess = f.fmi1_completedIntegratorStep(False)
+completedIntegratorStepSuccess = f.fmi1_completedIntegratorStep(instance, False)
 verify("completedIntegratorStepSuccess", completedIntegratorStepSuccess)
 
-terminateSuccess = f.fmi1_terminate()
+terminateSuccess = f.fmi1_terminate(instance)
 verify("terminateSuccess", terminateSuccess)
 
-f.fmi1_freeModelInstance()
+f.fmi1_freeModelInstance(instance)
 
 f.fmi4c_freeFmu()
      

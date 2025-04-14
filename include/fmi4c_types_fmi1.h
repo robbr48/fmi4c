@@ -5,8 +5,18 @@
 #define fmi1True  1
 #define fmi1False 0
 
+//Forward declarations
+struct fmuHandle;
+typedef struct fmuHandle fmuHandle;
+
 // Types
 typedef void* fmi1Component_t;
+struct fmi1InstanceHandle {
+    fmi1Component_t component;
+    fmuHandle *fmu;
+};
+typedef struct fmi1InstanceHandle fmi1InstanceHandle;
+
 typedef unsigned int fmi1ValueReference;
 typedef double fmi1Real;
 typedef int fmi1Integer;
