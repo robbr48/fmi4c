@@ -796,7 +796,7 @@ typedef struct {
 } fmi3Data_t;
 
 
-typedef struct {
+struct fmuHandle {
     fmiVersion_t version;
     bool unzippedLocationIsTemporary;
     const char* unzippedLocation;
@@ -814,14 +814,15 @@ typedef struct {
 
     void** allocatedPointers;
     int numAllocatedPointers;
-} fmiHandle;
+};
+typedef struct fmuHandle fmuHandle;
 
-bool parseModelDescriptionFmi1(fmiHandle *fmuFile);
-bool parseModelDescriptionFmi2(fmiHandle *fmuFile);
-bool parseModelDescriptionFmi3(fmiHandle *fmuFile);
+bool parseModelDescriptionFmi1(fmuHandle *fmuFile);
+bool parseModelDescriptionFmi2(fmuHandle *fmuFile);
+bool parseModelDescriptionFmi3(fmuHandle *fmuFile);
 
-bool loadFunctionsFmi1(fmiHandle *contents);
-bool loadFunctionsFmi2(fmiHandle *contents, fmi2Type fmuType);
-bool loadFunctionsFmi3(fmiHandle *contents, fmi3Type fmuType);
+bool loadFunctionsFmi1(fmuHandle *contents);
+bool loadFunctionsFmi2(fmuHandle *contents, fmi2Type fmuType);
+bool loadFunctionsFmi3(fmuHandle *contents, fmi3Type fmuType);
 
 #endif // FMIC_PRIVATE_H

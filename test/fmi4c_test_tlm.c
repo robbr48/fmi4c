@@ -21,12 +21,12 @@ pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct {
-    fmiHandle *fmu1;
+    fmuHandle *fmu1;
     double table1[2][TABLE_SIZE];
     size_t table1start;
     size_t table1end;
 
-    fmiHandle *fmu2;
+    fmuHandle *fmu2;
     double table2[2][TABLE_SIZE];
     size_t table2start;
     size_t table2end;
@@ -121,7 +121,7 @@ void intermediateUpdateTLM(
     fmi3ValueReference vr_v = 0;    //Connection velocity (output)
     fmi3ValueReference vr_f = 1;    //Connection force (input)
 
-    fmiHandle *fmu = (fmiHandle*)instanceEnvironment;
+    fmuHandle *fmu = (fmuHandle*)instanceEnvironment;
     if(intermediateVariableGetAllowed) {
         double v;
         fmi3_getFloat64(fmu, &vr_v, 1, &v, 1);
@@ -176,7 +176,7 @@ void intermediateUpdateTLM(
 
 //Argument struct for doStep thread
 struct doStepArgs {
-    fmiHandle *fmu;
+    fmuHandle *fmu;
     fmi3Float64 tcur;
     fmi3Float64 tstep;
 };
@@ -193,7 +193,7 @@ void* doStepInThread(void* argsptr)
 }
 
 
-int testFMI3TLM(fmiHandle *fmua, fmiHandle *fmub, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
+int testFMI3TLM(fmuHandle *fmua, fmuHandle *fmub, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //TLM coupling parameters
     fmi3Float64 mtlm = 1;       //Distributed inertia [kg]

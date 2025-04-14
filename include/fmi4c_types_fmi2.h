@@ -5,10 +5,16 @@
 #define fmi2True  1
 #define fmi2False 0
 
-struct fmiHandle;
+struct fmuHandle;
+typedef struct fmuHandle fmuHandle;
 
 // Types
 typedef void* fmi2Component;
+struct fmi2InstanceHandle {
+    fmi2Component component;
+    fmuHandle *fmu;
+};
+typedef struct fmi2InstanceHandle fmi2InstanceHandle;
 typedef void* fmi2ComponentEnvironment;
 typedef void* fmi2FMUstate;
 typedef unsigned int fmi2ValueReference;
