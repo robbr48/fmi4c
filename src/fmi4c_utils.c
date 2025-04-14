@@ -21,21 +21,21 @@
 #endif
 
 
-void rememberPointer(fmiHandle *fmu, void* ptr)
+void rememberPointer(fmuHandle *fmu, void* ptr)
 {
     fmu->numAllocatedPointers++;
     fmu->allocatedPointers = realloc(fmu->allocatedPointers, fmu->numAllocatedPointers * sizeof(void*));
     fmu->allocatedPointers[fmu->numAllocatedPointers-1] = ptr;
 }
 
-void* mallocAndRememberPointer(fmiHandle *fmu, size_t size)
+void* mallocAndRememberPointer(fmuHandle *fmu, size_t size)
 {
     void* ptr = malloc(size);
     rememberPointer(fmu, ptr);
     return ptr;
 }
 
-void *reallocAndRememberPointer(fmiHandle *fmu, void *org, size_t size)
+void *reallocAndRememberPointer(fmuHandle *fmu, void *org, size_t size)
 {
     int i=0;
     while (i < fmu->numAllocatedPointers && org != fmu->allocatedPointers[i])
@@ -48,7 +48,7 @@ void *reallocAndRememberPointer(fmiHandle *fmu, void *org, size_t size)
     return ptr;
 }
 
-char* duplicateAndRememberString(fmiHandle *fmu, const char* str)
+char* duplicateAndRememberString(fmuHandle *fmu, const char* str)
 {
     char* ret = _strdup(str);
     rememberPointer(fmu, (void*)ret);
@@ -77,7 +77,7 @@ const char* getFunctionName(const char* modelName, const char* functionName, cha
 //! @param attributeName Attribute name
 //! @param target Pointer to target variable
 //! @returns True if attribute was found, else false
-bool parseStringAttributeEzXmlAndRememberPointer(ezxml_t element, const char *attributeName, const char **target, fmiHandle *fmu)
+bool parseStringAttributeEzXmlAndRememberPointer(ezxml_t element, const char *attributeName, const char **target, fmuHandle *fmu)
 {
     if(ezxml_attr(element, attributeName)) {
         (*target) = duplicateAndRememberString(fmu, ezxml_attr(element, attributeName));
@@ -249,7 +249,7 @@ bool parseUInt8AttributeEzXml(ezxml_t element, const char *attributeName, uint8_
     return false;
 }
 
-bool parseModelStructureElementFmi2(fmiHandle *fmu, fmi2ModelStructureHandle *output, ezxml_t *element)
+bool parseModelStructureElementFmi2(fmuHandle *fmu, fmi2ModelStructureHandle *output, ezxml_t *element)
 {
     parseInt32AttributeEzXml(*element, "index", &output->index);
 
@@ -350,7 +350,7 @@ bool parseModelStructureElementFmi2(fmiHandle *fmu, fmi2ModelStructureHandle *ou
     return true;
 }
 
-bool parseModelStructureElementFmi3(fmiHandle *fmu, fmi3ModelStructureHandle *output, ezxml_t *element)
+bool parseModelStructureElementFmi3(fmuHandle *fmu, fmi3ModelStructureHandle *output, ezxml_t *element)
 {
     parseUInt32AttributeEzXml(*element, "valueReference", &output->valueReference);
 

@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
     }
 
     fmi4c_setMessageFunction(&messageCallback);
-    fmiHandle *fmu = fmi4c_loadFmu(fmuPath, "testfmu");
+    fmuHandle *fmu = fmi4c_loadFmu(fmuPath, "testfmu");
 
     if(fmu == NULL) {
         printf("Failed to load FMU\n");
@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
         }
 
         //Load second FMU
-        fmiHandle *fmu2 = fmi4c_loadFmu(fmuPath2, "testfmu2");
+        fmuHandle *fmu2 = fmi4c_loadFmu(fmuPath2, "testfmu2");
 
         if(fmu2 == NULL) {
             printf("Failed to load second FMU\n");

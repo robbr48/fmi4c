@@ -45,7 +45,7 @@ void intermediateUpdate(
         double value;
         fprintf(outputFile,"%f",intermediateUpdateTime);
         for(int i=0; i<numOutputs; ++i) {
-            fmi3_getFloat64((fmiHandle *)instanceEnvironment, &outputRefs[i], 1, &value, 1);
+            fmi3_getFloat64((fmuHandle *)instanceEnvironment, &outputRefs[i], 1, &value, 1);
             fprintf(outputFile,",%f",value);
         }
         fprintf(outputFile,"\n");
@@ -53,7 +53,7 @@ void intermediateUpdate(
 }
 
 
-int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
+int testFMI3CS(fmuHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     fmi3Status status;
 
@@ -158,7 +158,7 @@ int testFMI3CS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 }
 
 
-int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride) {
+int testFMI3ME(fmuHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride) {
     //Instantiate FMU
     if(!fmi3_instantiateModelExchange(fmu, fmi2False, fmi2True, NULL, loggerFmi3)) {
         printf("  fmi2Instantiate() failed\n");
@@ -387,7 +387,7 @@ int testFMI3ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 }
 
 
-int testFMI3(fmiHandle *fmu, bool forceModelExchange, bool forceCosimulation, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
+int testFMI3(fmuHandle *fmu, bool forceModelExchange, bool forceCosimulation, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Loop through variables in FMU
     for(size_t i=0; i<fmi3_getNumberOfVariables(fmu); ++i)

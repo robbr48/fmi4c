@@ -34,7 +34,7 @@ void loggerFmi1(fmi1Component_t component,
     va_end(args);
 }
 
-int testFMI1ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride) {
+int testFMI1ME(fmuHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride) {
     //Instantiate FMU
     if(!fmi1_instantiateModel(fmu, loggerFmi1, calloc, free, fmi1True)) {
         printf("  fmi2Instantiate() failed\n");
@@ -245,7 +245,7 @@ int testFMI1ME(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, b
 }
 
 
-int testfmi1_cS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
+int testfmi1_cS(fmuHandle *fmu, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Instantiate FMU
     if(!fmi1_instantiateSlave(fmu, "application/x-fmu-sharedlibrary", 1000, fmi1False, fmi1False, loggerFmi1, calloc, free, NULL, fmi1True)) {
@@ -340,7 +340,7 @@ int testfmi1_cS(fmiHandle *fmu, bool overrideStopTime, double stopTimeOverride, 
 }
 
 
-int testFMI1(fmiHandle *fmu, bool forceModelExchange, bool forceCosimulation, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
+int testFMI1(fmuHandle *fmu, bool forceModelExchange, bool forceCosimulation, bool overrideStopTime, double stopTimeOverride, bool overrideTimeStep, double timeStepOverride)
 {
     //Loop through variables in FMU
     for(size_t i=0; i<fmi1_getNumberOfVariables(fmu); ++i)
