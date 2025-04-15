@@ -5,7 +5,7 @@
 #include "fmi4c_test.h"
 #include "fmi4c_test_fmi1.h"
 
-void loggerFmi1(fmi1Component_t component,
+void loggerFmi1(fmi1Component *component,
                 fmi1String instanceName,
                 fmi1Status status,
                 fmi1String category,

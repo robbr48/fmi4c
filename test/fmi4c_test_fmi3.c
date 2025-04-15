@@ -45,7 +45,7 @@ void intermediateUpdate(
         double value;
         fprintf(outputFile,"%f",intermediateUpdateTime);
         for(int i=0; i<numOutputs; ++i) {
-            fmi3_getFloat64((fmuHandle *)instanceEnvironment, &outputRefs[i], 1, &value, 1);
+            fmi3_getFloat64((fmi3InstanceHandle *)instanceEnvironment, &outputRefs[i], 1, &value, 1);
             fprintf(outputFile,",%f",value);
         }
         fprintf(outputFile,"\n");

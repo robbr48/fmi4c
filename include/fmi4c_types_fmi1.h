@@ -10,9 +10,9 @@ struct fmuHandle;
 typedef struct fmuHandle fmuHandle;
 
 // Types
-typedef void* fmi1Component_t;
+typedef void* fmi1Component;
 struct fmi1InstanceHandle {
-    fmi1Component_t component;
+    fmi1Component component;
     fmuHandle *fmu;
 };
 typedef struct fmi1InstanceHandle fmi1InstanceHandle;
