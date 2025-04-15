@@ -236,7 +236,7 @@ typedef struct {
 
     fmi1Type type;
 
-    fmi1Component_t component;
+    fmi1Component component;
 
     fmi1CallbackFunctionsCoSimulation callbacksCoSimulation;
     fmi1CallbackFunctionsModelExchange callbacksModelExchange;

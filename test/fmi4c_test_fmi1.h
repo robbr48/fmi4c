@@ -4,7 +4,7 @@
 #include "fmi4c_types_fmi1.h"
 #include <stdbool.h>
 
-void loggerFmi1(fmi1Component_t component,
+void loggerFmi1(fmi1Component *component,
                 fmi1String instanceName,
                 fmi1Status status,
                 fmi1String category,

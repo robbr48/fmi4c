@@ -1295,34 +1295,38 @@ verify("providesAdjointDerivatives", f.fmi3se_getProvidesAdjointDerivatives())
 verify("providesPerElementDependencies", f.fmi3se_getProvidesPerElementDependencies())
 
 #Test co-simualtion
-verify("instantiateSuccess", f.fmi3_instantiateCoSimulation(False, False, False, False, [], 0))
+instance = 0
+instance = f.fmi3_instantiateCoSimulation(False, False, False, False, [], 0)
+verify("instantiateSuccess", instance != 0)
 verify("fmiVersionNumber", f.fmi3_getVersion())
 verify("version", f.fmi3_version())
-verify("setDebugLoggingSuccess", f.fmi3_setDebugLogging(True, 0, None))
-verify("enterInitializationModeSuccess", f.fmi3_enterInitializationMode(True, 1e-5, 0, True, 2))
-verify("exitInitializationModeSuccess", f.fmi3_exitInitializationMode())
-verify("setFloat64Success", f.fmi3_setFloat64([1], 1, [5], 1))
-verify("doStepResults", f.fmi3_doStep(0, 0.001, True))
-verify("getFloat64Results", f.fmi3_getFloat64([1, 2],2,2))
-verify("resetSuccess", f.fmi3_reset())
+verify("setDebugLoggingSuccess", f.fmi3_setDebugLogging(instance, True, 0, None))
+verify("enterInitializationModeSuccess", f.fmi3_enterInitializationMode(instance, True, 1e-5, 0, True, 2))
+verify("exitInitializationModeSuccess", f.fmi3_exitInitializationMode(instance))
+verify("setFloat64Success", f.fmi3_setFloat64(instance, [1], 1, [5], 1))
+verify("doStepResults", f.fmi3_doStep(instance, 0, 0.001, True))
+verify("getFloat64Results", f.fmi3_getFloat64(instance, [1, 2],2,2))
+verify("resetSuccess", f.fmi3_reset(instance))
 
 #Test model exchange
-verify("instantiateSuccess", f.fmi3_instantiateModelExchange(False, False))
-verify("setTimeSuccess", f.fmi3_setTime(0.5))
-verify("numberOfEventIndicators", f.fmi3_getNumberOfEventIndicators()[1])
-numberOfContinuousStates = f.fmi3_getNumberOfContinuousStates()[1]
+instance = 0
+instance = f.fmi3_instantiateModelExchange(False, False)
+verify("instantiateSuccess", instance != 0)
+verify("setTimeSuccess", f.fmi3_setTime(instance, 0.5))
+verify("numberOfEventIndicators", f.fmi3_getNumberOfEventIndicators(instance)[1])
+numberOfContinuousStates = f.fmi3_getNumberOfContinuousStates(instance)[1]
 verify("numberOfContinuousStates", numberOfContinuousStates)
-verify("getContinousStateDerivativesSuccess", f.fmi3_getContinuousStateDerivatives(numberOfContinuousStates))
-verify("getNominalsOfContinuousStatesSuccess", f.fmi3_getNominalsOfContinuousStates(numberOfContinuousStates))
-verify("setContinuousStatesSuccess", f.fmi3_setContinuousStates([42], numberOfContinuousStates))
-verify("getContinuousStatesSuccess", f.fmi3_getContinuousStates(numberOfContinuousStates))
-verify("completedIntegratorStepSuccess", f.fmi3_completedIntegratorStep(False))
-verify("enterStepModeSuccess", f.fmi3_enterStepMode())
-verify("enterContinuousTimeModeSuccess", f.fmi3_enterContinuousTimeMode())
+verify("getContinousStateDerivativesSuccess", f.fmi3_getContinuousStateDerivatives(instance, numberOfContinuousStates))
+verify("getNominalsOfContinuousStatesSuccess", f.fmi3_getNominalsOfContinuousStates(instance, numberOfContinuousStates))
+verify("setContinuousStatesSuccess", f.fmi3_setContinuousStates(instance, [42], numberOfContinuousStates))
+verify("getContinuousStatesSuccess", f.fmi3_getContinuousStates(instance, numberOfContinuousStates))
+verify("completedIntegratorStepSuccess", f.fmi3_completedIntegratorStep(instance, False))
+verify("enterStepModeSuccess", f.fmi3_enterStepMode(instance))
+verify("enterContinuousTimeModeSuccess", f.fmi3_enterContinuousTimeMode(instance))
 
-verify("terminateSuccess", f.fmi3_terminate())
+verify("terminateSuccess", f.fmi3_terminate(instance))
 
-f.fmi3_freeInstance()
+f.fmi3_freeInstance(instance)
 
 f.fmi4c_freeFmu()
 
