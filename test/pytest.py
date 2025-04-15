@@ -213,8 +213,17 @@ instance = 0
 instance = instantiateSuccess = f.fmi1_instantiateSlave(b"application/x-fmu-sharedlibrary", 1.0, False, False, False)
 verify("instantiateSuccess", instance != 0)
 
+instance2 = 0   
+instance2 = instantiateSuccess = f.fmi1_instantiateSlave(b"application/x-fmu-sharedlibrary", 1.0, False, False, False)
+verify("instantiateSuccess", instance2 != 0)
+
 setDebugLoggingSuccess = f.fmi1_setDebugLogging(instance, True)
 verify("setDebugLoggingSuccess", setDebugLoggingSuccess) 
+
+setDebugLoggingSuccess = f.fmi1_setDebugLogging(instance2, True)
+verify("setDebugLoggingSuccess", setDebugLoggingSuccess) 
+
+f.fmi1_freeSlaveInstance(instance2)
 
 initializeSuccess = f.fmi1_initializeSlave(instance, 0, True, 1)
 verify("initializeSuccess", initializeSuccess)
@@ -447,13 +456,20 @@ instance = 0
 instance = f.fmi1_instantiateModel(False)
 verify("instantiateSuccess", instance != 0)
 
+instance2 = 0
+instance2 = f.fmi1_instantiateModel(False)
+verify("instantiateSuccess", instance2 != 0)
+
 setDebugLoggingSuccess = f.fmi1_setDebugLogging(instance, False)
 verify("setDebugLoggingSuccess", setDebugLoggingSuccess) 
 
+setDebugLoggingSuccess = f.fmi1_setDebugLogging(instance2, False)
+verify("setDebugLoggingSuccess", setDebugLoggingSuccess) 
+
+f.fmi1_freeModelInstance(instance2)
+
 initializeSuccess = f.fmi1_initialize(instance, False, 0, ct.pointer(eventInfo))
 verify("initializeSuccess", initializeSuccess)
-
-#
 
 setTimeSuccess = f.fmi1_setTime(instance, 0.5)
 verify("setTimeSuccess", setTimeSuccess)
@@ -1296,23 +1312,32 @@ verify("providesPerElementDependencies", f.fmi3se_getProvidesPerElementDependenc
 
 #Test co-simualtion
 instance = 0
+instance2 = 0
 instance = f.fmi3_instantiateCoSimulation(False, False, False, False, [], 0)
+instance2 = f.fmi3_instantiateCoSimulation(False, False, False, False, [], 0)
 verify("instantiateSuccess", instance != 0)
+verify("instantiateSuccess", instance2 != 0)
 verify("fmiVersionNumber", f.fmi3_getVersion())
 verify("version", f.fmi3_version())
 verify("setDebugLoggingSuccess", f.fmi3_setDebugLogging(instance, True, 0, None))
+verify("setDebugLoggingSuccess", f.fmi3_setDebugLogging(instance2, True, 0, None))
 verify("enterInitializationModeSuccess", f.fmi3_enterInitializationMode(instance, True, 1e-5, 0, True, 2))
 verify("exitInitializationModeSuccess", f.fmi3_exitInitializationMode(instance))
 verify("setFloat64Success", f.fmi3_setFloat64(instance, [1], 1, [5], 1))
 verify("doStepResults", f.fmi3_doStep(instance, 0, 0.001, True))
 verify("getFloat64Results", f.fmi3_getFloat64(instance, [1, 2],2,2))
 verify("resetSuccess", f.fmi3_reset(instance))
+f.fmi3_freeInstance(instance2)
 
 #Test model exchange
 instance = 0
+instance2 = 0
 instance = f.fmi3_instantiateModelExchange(False, False)
+instance2 = f.fmi3_instantiateModelExchange(False, False)
 verify("instantiateSuccess", instance != 0)
+verify("instantiateSuccess", instance2 != 0)
 verify("setTimeSuccess", f.fmi3_setTime(instance, 0.5))
+verify("setTimeSuccess", f.fmi3_setTime(instance2, 1.5))
 verify("numberOfEventIndicators", f.fmi3_getNumberOfEventIndicators(instance)[1])
 numberOfContinuousStates = f.fmi3_getNumberOfContinuousStates(instance)[1]
 verify("numberOfContinuousStates", numberOfContinuousStates)
@@ -1327,6 +1352,7 @@ verify("enterContinuousTimeModeSuccess", f.fmi3_enterContinuousTimeMode(instance
 verify("terminateSuccess", f.fmi3_terminate(instance))
 
 f.fmi3_freeInstance(instance)
+f.fmi3_freeInstance(instance2)
 
 f.fmi4c_freeFmu()
 
