@@ -65,7 +65,7 @@ jobs:
         
   cmake-ubuntu:
     timeout-minutes: 5
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/setup-python@v5
         with:
@@ -95,7 +95,7 @@ jobs:
         
   cmake-ubuntu-python:
     timeout-minutes: 5
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/setup-python@v5
         with:
