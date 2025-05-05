@@ -4675,7 +4675,7 @@ fmuHandle *fmi4c_loadUnzippedFmu_internal(const char *instanceName, const char *
     }
     else {
         char resourcesLocation[FILENAME_MAX] = "";
-        strncat(resourcesLocation, unzipLocation, FILENAME_MAX);
+        strncat(resourcesLocation, unzipLocation, FILENAME_MAX-1);
         strncat(resourcesLocation, "/resources/", FILENAME_MAX-strlen(unzipLocation)-1);
         fmu->resourcesLocation = duplicateAndRememberString(fmu, resourcesLocation);
     }
