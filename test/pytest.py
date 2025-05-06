@@ -210,11 +210,11 @@ version = f.fmi1_getVersion()
 verify("version", version)
 
 instance = 0   
-instance = instantiateSuccess = f.fmi1_instantiateSlave(b"application/x-fmu-sharedlibrary", 1.0, False, False, False)
+instance = f.fmi1_instantiateSlave(b"application/x-fmu-sharedlibrary", 1.0, False, False, False)
 verify("instantiateSuccess", instance != 0)
 
 instance2 = 0   
-instance2 = instantiateSuccess = f.fmi1_instantiateSlave(b"application/x-fmu-sharedlibrary", 1.0, False, False, False)
+instance2 = f.fmi1_instantiateSlave(b"application/x-fmu-sharedlibrary", 1.0, False, False, False)
 verify("instantiateSuccess", instance2 != 0)
 
 setDebugLoggingSuccess = f.fmi1_setDebugLogging(instance, True)

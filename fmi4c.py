@@ -168,7 +168,7 @@ class fmi4c:
         self.hdll.fmi1_getModelTypesPlatform.restype = ct.c_char_p
         self.hdll.fmi1_getModelTypesPlatform.argtypes = ct.c_void_p,
         self.hdll.fmi1_instantiateModel.restype = ct.c_void_p
-        self.hdll.fmi1_instantiateModel.argtypes = ct.c_void_p,ct.c_void_p,ct.c_void_p,ct.c_bool,
+        self.hdll.fmi1_instantiateModel.argtypes = ct.c_void_p,ct.c_void_p,ct.c_void_p,ct.c_void_p,ct.c_bool,
         self.hdll.fmi1_freeModelInstance.restype = None
         self.hdll.fmi1_freeModelInstance.argtypes = ct.c_void_p,
         self.hdll.fmi1_setTime.restype = ct.c_int
