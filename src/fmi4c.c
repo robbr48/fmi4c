@@ -22,7 +22,6 @@
 #include <dlfcn.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <windows.h>
 #endif
 
 #if defined(__x86_64__) || defined(_M_X64)
