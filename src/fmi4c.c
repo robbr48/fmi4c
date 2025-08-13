@@ -22,6 +22,7 @@
 #include <dlfcn.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <windows.h>
 #endif
 
 #if defined(__x86_64__) || defined(_M_X64)
@@ -4484,7 +4485,16 @@ const char* generateTempPath(const char *instanceName)
 
      // Create a unique name for the temp folder
      char tempFileName[11] = "\0\0\0\0\0\0\0\0\0\0\0";
-     srand(getpid());
+     struct timeval tv;
+     FILETIME ft;
+
+    //Seed the random generator
+     GetSystemTimeAsFileTime(&ft);
+     unsigned long long time64 = (((unsigned long long)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+     unsigned int seed = (unsigned int)(time64 ^ GetCurrentProcessId());
+     srand(seed);
+
+     //Append random string
      for(int i=0; i<10; ++i) {
          tempFileName[i] = rand() % 26 + 65;
      }
