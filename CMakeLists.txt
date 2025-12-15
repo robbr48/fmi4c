@@ -115,7 +115,9 @@ target_include_directories(fmi4c
 )
 
 if(NOT FMI4C_USE_EXTERNAL_MINIZIP)
-    target_include_directories(fmi4c PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty>/minizip")
+    if (NOT FMI4C_USE_SYSTEM_ZIP)
+        target_include_directories(fmi4c PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/minizip>")
+    endif()
 endif()
 
 # Internal dependency (PRIVATE) on libdl on Linux
