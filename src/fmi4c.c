@@ -1729,6 +1729,7 @@ bool parseModelDescriptionFmi3(fmuHandle *fmu)
                var.datatype == fmi3DataTypeUInt16 ||
                var.datatype == fmi3DataTypeUInt8 ||
                var.datatype == fmi3DataTypeBoolean ||
+               var.datatype == fmi3DataTypeString ||
                var.datatype == fmi3DataTypeBinary ||
                var.datatype == fmi3DataTypeEnumeration) {
                const char* initial = NULL;
