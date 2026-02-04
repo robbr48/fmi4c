@@ -5,6 +5,16 @@ if (NOT MSVC)
   set(libmath m)
 endif()
 
+if(APPLE)
+  if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64")
+    message(STATUS "Apple Silicon detected")
+    set(APPLE_ARCH aarch64)
+  elseif(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "x86_64")
+    message(STATUS "Intel Mac detected")
+    set(APPLE_ARCH x86_64)
+  endif()
+endif()
+
 set(fmi4ctest_src fmi4c_test.c
                   fmi4c_test_fmi1.c
                   fmi4c_test_fmi2.c
