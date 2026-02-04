@@ -71,8 +71,7 @@ void printUsage() {
 
 void messageCallback(const char* msg)
 {
-    printf(msg);
-    printf("\n");
+    printf("%s\n", msg);
 }
 
 int main(int argc, char *argv[])
