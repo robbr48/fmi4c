@@ -26,6 +26,9 @@
 
 #if defined(__x86_64__) || defined(_M_X64) || defined(__aarch64__) || defined(__arm64__) || defined(_M_ARM64)
     #define bits_str "64"
+#elif defined(__arm64__) || defined(__aarch64__)
+    #define arch_str "aarch64"
+    #define bits_str "64"
 #else
     #define bits_str "32"
 #endif
