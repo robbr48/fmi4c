@@ -43,9 +43,12 @@ set(sundials ${3rdparty}/sundials)
 # Test FMU (FMI 1.0 for co-simulation)
 if(WIN32 OR CYGWIN)
   set(binfolder win64)
+elseif(APPLE)
+  set(binfolder darwin64)
 else()
   set(binfolder linux64)
 endif()
+
 
 add_library(fmi1cs SHARED fmi1cs/fmi1cs.c)
 set_target_properties(fmi1cs PROPERTIES PREFIX "")
