@@ -91,11 +91,15 @@ add_test(NAME fmi2me COMMAND $<TARGET_FILE_NAME:fmi4ctest> --mode me -o fmi2.out
 
 # Test FMU (FMI 3.0 for co-simulation and model exchange)
 if(WIN32 OR CYGWIN)
-  set(binfolder "windows-x86_64")
+  set(binfolder "${CMAKE_HOST_SYSTEM_PROCESSOR}-windows")
 elseif(APPLE)
-  set(binfolder "darwin-${APPLE_ARCH}")
+  if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64")
+    set(binfolder "aarch64-darwin")
+  elseif(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "x86_64")
+    set(binfolder "x86_64-darwin")
+  endif()
 else()
-  set(binfolder "linux-x86_64")
+  set(binfolder "${CMAKE_HOST_SYSTEM_PROCESSOR}-linux")
 endif()
 
 add_library(fmi3 SHARED fmi3/fmi3.c)
