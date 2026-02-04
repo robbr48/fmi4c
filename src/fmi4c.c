@@ -27,6 +27,9 @@
 #if defined(__x86_64__) || defined(_M_X64)
     #define arch_str "x86_64"
     #define bits_str "64"
+#elif defined(__arm64__) || defined(__aarch64__)
+    #define arch_str "aarch64"
+    #define bits_str "64"
 #else
     #define arch_str "x86"
     #define bits_str "32"
@@ -44,6 +47,10 @@
     #define dllext_str ".dll"
     #define fmi12_system_str "win"
     #define fmi3_system_str "windows"
+#elif defined(__APPLE__)
+    #define dllext_str ".dylib"
+    #define fmi12_system_str "darwin"
+    #define fmi3_system_str "darwin"
 #else
     #define dllext_str ".so"
     #define fmi12_system_str "linux"
