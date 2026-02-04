@@ -49,6 +49,7 @@ else()
   set(binfolder linux64)
 endif()
 
+
 add_library(fmi1cs SHARED fmi1cs/fmi1cs.c)
 set_target_properties(fmi1cs PROPERTIES PREFIX "")
 set_target_properties(fmi1cs PROPERTIES DEBUG_POSTFIX "")
