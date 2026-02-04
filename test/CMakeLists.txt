@@ -15,6 +15,9 @@ if(APPLE)
   endif()
 endif()
 
+# Set default debug postfix
+set(CMAKE_DEBUG_POSTFIX "")
+
 set(fmi4ctest_src fmi4c_test.c
                   fmi4c_test_fmi1.c
                   fmi4c_test_fmi2.c
