@@ -2336,8 +2336,6 @@ bool loadFunctionsFmi3(fmuHandle *fmu, fmi3Type fmuType)
 
     fmu->dll = dll;
 
-    printf("Loading FMI version 3...\n");
-
     //Load all common functions
 
 
