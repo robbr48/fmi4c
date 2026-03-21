@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 project(fmi4c C)
 set(CMAKE_C_STANDARD 99)
 
-include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
@@ -10,9 +9,19 @@ option(FMI4C_BUILD_DOCUMENTATION "Build Doxygen documentation" OFF)
 option(FMI4C_BUILD_TEST "Build test executable" OFF)
 option(FMI4C_BUILD_SHARED "Build as shared library (DLL)" ON)
 option(FMI4C_USE_SYSTEM_ZIP "Use system utilities for unzipping" ON)
+option(FMI4C_USE_INCLUDED_ZLIB "Use the included zlib (statically linked) even if a system version is available" OFF)
 option(FMI4C_USE_EXTERNAL_MINIZIP "Use minizip target provided by FMI4C_EXTERNAL_MINIZIP" OFF)
-#this option is only enabled when FMI4C_USE_SYSTEM_ZIP=OFF
-cmake_dependent_option(FMI4C_USE_INCLUDED_ZLIB "Use the included zlib (statically linked) even if a system version is available" OFF "NOT FMI4C_USE_SYSTEM_ZIP" OFF)
+
+# Ensure that zlib and minizip options should only be allowed ON when FMI4C_USE_SYSTEM_ZIP=OFF
+if (FMI4C_USE_SYSTEM_ZIP AND FMI4C_USE_INCLUDED_ZLIB)
+    message(FATAL_ERROR "FMI4C_USE_INCLUDED_ZLIB must be OFF when FMI4C_USE_SYSTEM_ZIP is ON")
+endif()
+if (FMI4C_USE_SYSTEM_ZIP AND FMI4C_USE_EXTERNAL_MINIZIP)
+    message(FATAL_ERROR "FMI4C_USE_EXTERNAL_MINIZIP must be OFF when FMI4C_USE_SYSTEM_ZIP is ON")
+endif()
+if (FMI4C_USE_INCLUDED_ZLIB AND FMI4C_USE_EXTERNAL_MINIZIP)
+    message(FATAL_ERROR "FMI4C_USE_INCLUDED_ZLIB must be OFF when FMI4C_USE_EXTERNAL_MINIZIP is ON")
+endif()
 
 if (NOT DEFINED FMI4C_EXTERNAL_MINIZIP)
     set(FMI4C_EXTERNAL_MINIZIP "" CACHE STRING "Defines an external target for minizip.")
@@ -27,8 +36,8 @@ if (FMI4C_BUILD_DOCUMENTATION)
     add_subdirectory(doc)
 endif()
 
-if(NOT FMI4C_USE_EXTERNAL_MINIZIP)
-    if (NOT FMI4C_USE_SYSTEM_ZIP)
+if(NOT FMI4C_USE_SYSTEM_ZIP)
+    if (NOT FMI4C_USE_EXTERNAL_MINIZIP)
         if(NOT FMI4C_USE_INCLUDED_ZLIB)
             find_package(ZLIB MODULE)
             message(STATUS "ZLIB_FOUND: ${ZLIB_FOUND}")
@@ -36,15 +45,16 @@ if(NOT FMI4C_USE_EXTERNAL_MINIZIP)
             message(STATUS "ZLIB_VERSION: ${ZLIB_VERSION} ${ZLIB_VERSION_STRING}")
             message(STATUS "ZLIB_LIBRARIES: ${ZLIB_LIBRARIES}")
         endif()
-        # If zlib can not be found in the system, then build local version
+        # If zlib can not be found in the system, then build bundled version
         if (NOT ZLIB_FOUND)
             set(zlib_dir "3rdparty/zlib")
             message(STATUS "Building and using included ZLIB: ${zlib_dir}")
             # Must use position independent code if intend to include static zlib into shared (dll) fmi4c lib
             set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-            # Add bundled sources, (EXCLUDE_FROM_ALL prevents zlib from being installed with fmi4c)
+            # Add bundled source code, (EXCLUDE_FROM_ALL prevents zlib from being installed with fmi4c)
+            set(ZLIB_BUILD_TESTING OFF CACHE BOOL "prevent including zlib tests" FORCE)
             add_subdirectory(${zlib_dir} EXCLUDE_FROM_ALL)
-            # We highjack the zlibstatic target from the original build system, but it does not have the include directory properties set, so lets add them here
+            # We hijack the zlibstatic target from the original build system, but it does not have the include directory properties set, so lets add them here
             set_target_properties(zlibstatic
                     PROPERTIES
                     INTERFACE_INCLUDE_DIRECTORIES
@@ -71,20 +81,18 @@ set(SRCFILES
     include/fmi4c_functions_fmi3.h
     src/fmi4c_private.h)
 
-if(NOT FMI4C_USE_EXTERNAL_MINIZIP)
-    if (NOT FMI4C_USE_SYSTEM_ZIP)
-
+if(NOT FMI4C_USE_SYSTEM_ZIP)
+    if (NOT FMI4C_USE_EXTERNAL_MINIZIP)
         list(APPEND SRCFILES
                 3rdparty/minizip/miniunz.c
+                3rdparty/minizip/miniunz.h
                 3rdparty/minizip/ioapi.c
                 3rdparty/minizip/mztools.c
                 3rdparty/minizip/unzip.c
         )
-
         if (WIN32)
             list(APPEND SRCFILES 3rdparty/minizip/iowin32.c)
         endif()
-
     endif ()
 endif()
 
@@ -114,8 +122,8 @@ target_include_directories(fmi4c
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
-if(NOT FMI4C_USE_EXTERNAL_MINIZIP)
-    if (NOT FMI4C_USE_SYSTEM_ZIP)
+if(NOT FMI4C_USE_SYSTEM_ZIP)
+    if (NOT FMI4C_USE_EXTERNAL_MINIZIP)
         target_include_directories(fmi4c PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/minizip>")
     endif()
 endif()
@@ -123,13 +131,13 @@ endif()
 # Internal dependency (PRIVATE) on libdl on Linux
 target_link_libraries(fmi4c PRIVATE ${CMAKE_DL_LIBS})
 
-if(FMI4C_USE_EXTERNAL_MINIZIP)
-    message(STATUS "Using external MINIZIP: ${FMI4C_EXTERNAL_MINIZIP}")
-    target_link_libraries(fmi4c PUBLIC ${FMI4C_EXTERNAL_MINIZIP})
-    target_compile_definitions(fmi4c PRIVATE FMI4C_WITH_MINIZIP)
-else()
-    message(STATUS "NOT using external MINIZIP")
-    if (NOT FMI4C_USE_SYSTEM_ZIP)
+if(NOT FMI4C_USE_SYSTEM_ZIP)
+    if(FMI4C_USE_EXTERNAL_MINIZIP)
+        message(STATUS "Using external MINIZIP: ${FMI4C_EXTERNAL_MINIZIP}")
+        target_link_libraries(fmi4c PUBLIC ${FMI4C_EXTERNAL_MINIZIP})
+        target_compile_definitions(fmi4c PRIVATE FMI4C_WITH_MINIZIP)
+    else()
+        message(STATUS "Using internal bundled MINIZIP")
         # Internal dependency (PRIVATE) on zlib
         target_link_libraries(fmi4c PRIVATE ZLIB::ZLIB)
         target_compile_definitions(fmi4c PRIVATE FMI4C_WITH_MINIZIP)
@@ -157,12 +165,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/fmi4c-config.cmake"
 
 if(NOT FMI4C_USE_EXTERNAL_MINIZIP)
     install(TARGETS fmi4c EXPORT "fmi4c-targets")
-endif()
 
-install(DIRECTORY "include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
-install(DIRECTORY "3rdparty/fmi" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
-
-if(NOT FMI4C_USE_EXTERNAL_MINIZIP)
     # If building a static library, also include the local static zlib if it was built
     if (NOT FMI4C_USE_SYSTEM_ZIP AND NOT FMI4C_BUILD_SHARED AND TARGET zlibstatic)
         install(TARGETS zlibstatic EXPORT "fmi4c-targets")
@@ -172,3 +175,6 @@ if(NOT FMI4C_USE_EXTERNAL_MINIZIP)
             NAMESPACE "fmi4c::"
             DESTINATION "${CMAKE_INSTALL_DATADIR}/fmi4c")
 endif()
+
+install(DIRECTORY "include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+install(DIRECTORY "3rdparty/fmi" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
