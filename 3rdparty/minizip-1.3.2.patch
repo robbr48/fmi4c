@@ -1,0 +1,1442 @@
+diff -urN minizip-1.3.2/CMakeLists.txt minizip/CMakeLists.txt
+--- minizip-1.3.2/CMakeLists.txt	2026-03-21 15:50:45.619488730 +0100
++++ minizip/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
+@@ -1,387 +0,0 @@
+-cmake_minimum_required(VERSION 3.12...3.31)
+-
+-project(
+-    minizip
+-    VERSION 1.0.0
+-    LANGUAGES C
+-    DESCRIPTION "A library for creating zipfiles based in zlib"
+-    HOMEPAGE_URL "https://www.winimage.com/zLibDll/minizip.html")
+-
+-if(CMAKE_SIZEOF_VOID_P LESS 8 AND NOT MINGW)
+-    message(WARNING "libminizip needs 64bit - stopping here")
+-    return()
+-endif(CMAKE_SIZEOF_VOID_P LESS 8 AND NOT MINGW)
+-
+-# ============================================================================
+-# CPack
+-# ============================================================================
+-set(CPACK_PACKAGE_VENDOR "zlib-Project")
+-set(CPACK_PACKAGE_DESCRIPTION_FILE ${minizip_SOURCE_DIR}/MiniZip64_info.txt)
+-set(CPACK_RESOURCE_FILE_LICENSE ${minizip_SOURCE_DIR}/../../LICENSE)
+-set(CPACK_RESOURCE_FILE_README ${minizip_SOURCE_DIR}/MiniZip64_info.txt)
+-
+-# ============================================================================
+-# set options if build from zlib
+-# ============================================================================
+-if(ZLIB_BUILD_MINIZIP)
+-    set(MINIZIP_BUILD_SHARED ${ZLIB_MINIZIP_BUILD_SHARED} CACHE BOOL "")
+-    set(MINIZIP_BUILD_STATIC ${ZLIB_MINIZIP_BUILD_STATIC} CACHE BOOL "")
+-    set(MINIZIP_BUILD_TESTING ${ZLIB_MINIZIP_INSTALL} CACHE BOOL "")
+-    set(MINIZIP_INSTALL ${ZLIB_MINIZIP_INSTALL} CACHE BOOL "")
+-endif(ZLIB_BUILD_MINIZIP)
+-
+-# ============================================================================
+-# configuration
+-# ============================================================================
+-option(MINIZIP_BUILD_SHARED "Enable building minizip shared library" ON)
+-option(MINIZIP_BUILD_STATIC "Enable building minizip static library" ON)
+-option(MINIZIP_BUILD_TESTING "Enable testing of minizip" ON)
+-option(MINIZIP_ENABLE_BZIP2 "Build minizip with bzip2 support" OFF)
+-option(MINIZIP_INSTALL "Enable installation of minizip" ON)
+-
+-include(CheckCSourceCompiles)
+-include(CheckFunctionExists)
+-include(CheckIncludeFile)
+-include(CMakePackageConfigHelpers)
+-include(CheckTypeSize)
+-include(GNUInstallDirs)
+-
+-if(NOT CPACK_INCLUDED)
+-    include(CPack)
+-endif(NOT CPACK_INCLUDED)
+-
+-if(NOT DEFINED ZLIB_BUILD_MINIZIP)
+-    if(MINIZIP_BUILD_SHARED)
+-        list(APPEND REQUIRED_COMPONENTS "shared")
+-    endif(MINIZIP_BUILD_SHARED)
+-
+-    if(MINIZIP_BUILD_STATIC)
+-        list(APPEND REQUIRED_COMPONENTS "static")
+-    endif(MINIZIP_BUILD_STATIC)
+-
+-    find_package(ZLIB REQUIRED COMPONENTS ${REQUIRED_COMPONENTS} CONFIG)
+-endif(NOT DEFINED ZLIB_BUILD_MINIZIP)
+-
+-if(MINIZIP_ENABLE_BZIP2)
+-    find_package(BZip2 REQUIRED)
+-endif(MINIZIP_ENABLE_BZIP2)
+-
+-#
+-# Check for fopen64
+-#
+-check_function_exists(fopen64 HAVE_FOPEN64)
+-
+-#
+-# Check for fseeko
+-#
+-check_function_exists(fseeko HAVE_FSEEKO)
+-
+-#
+-# Check for unistd.h
+-#
+-check_include_file(unistd.h HAVE_UNISTD_H)
+-
+-#
+-# Check to see if we have large file support
+-#
+-set(CMAKE_REQUIRED_DEFINITIONS -D_LARGEFILE64_SOURCE=1)
+-check_type_size(off64_t OFF64_T)
+-unset(CMAKE_REQUIRED_DEFINITIONS) # clear variable
+-
+-#
+-# Check visibility attribute is supported
+-#
+-if(MSVC)
+-    set(CMAKE_REQUIRED_FLAGS "-WX")
+-else(MSVC)
+-    set(CMAKE_REQUIRED_FLAGS "-WError")
+-endif(MSVC)
+-
+-check_c_source_compiles(
+-    "
+-        #include <stdlib.h>
+-        static void f(void) __attribute__ ((visibility(\"hidden\")));
+-        int main(void) {return 0;}
+-    "
+-    HAVE___ATTR__VIS_HIDDEN)
+-
+-unset(CMAKE_REQUIRED_FLAGS)
+-
+-set(LIBMINIZIP_SRCS ioapi.c mztools.c unzip.c zip.c)
+-
+-set(LIBMINIZIP_HDRS crypt.h ints.h ioapi.h mztools.h unzip.h zip.h)
+-
+-set(MINIZIP_SRCS ioapi.c $<$<BOOL:${WIN32}>:iowin32.c> minizip.c zip.c)
+-
+-set(MINIZIP_HDRS crypt.h ints.h ioapi.h $<$<BOOL:${WIN32}>:iowin32.h> skipset.h
+-                 zip.h)
+-
+-set(MINIUNZIP_SRCS ioapi.c $<$<BOOL:${WIN32}>:iowin32.c> miniunz.c unzip.c
+-                   zip.c)
+-
+-set(MINIUNZIP_HDRS
+-    crypt.h
+-    ints.h
+-    ioapi.h
+-    $<$<BOOL:${WIN32}>:iowin32.h>
+-    skipset.h
+-    unzip.h
+-    zip.h)
+-
+-if(WIN32 OR CYGWIN)
+-    set(minizip_static_suffix "s")
+-    set(CMAKE_DEBUG_POSTFIX "d")
+-endif(WIN32 OR CYGWIN)
+-
+-if(MINIZIP_BUILD_SHARED)
+-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+-    add_library(libminizip SHARED ${LIBMINIZIP_SRCS} ${LIBMINIZIP_HDRS})
+-    add_library(MINIZIP::minizip ALIAS libminizip)
+-    target_include_directories(
+-        libminizip PUBLIC $<BUILD_INTERFACE:${minizip_SOURCE_DIR}>
+-                          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+-    target_compile_definitions(
+-        libminizip
+-        PRIVATE $<$<BOOL:${MSVC}>:_CRT_SECURE_NO_WARNINGS>
+-                $<$<BOOL:${HAVE___ATTR__VIS_HIDDEN}>:HAVE_HIDDEN>
+-                $<$<BOOL:${HAVE_UNISTD_H}>:HAVE_UNISTD_H=1>
+-        PUBLIC $<$<BOOL:${HAVE_OFF64_T}>:_LARGEFILE64_SOURCE=1>
+-                $<$<BOOL:${BZIP2_FOUND}>:HAVE_BZIP2=1>
+-                $<$<BOOL:NOT:${HAVE_FOPEN64}>:USE_FILE32API=1>)
+-
+-    if(NOT CYGWIN)
+-        set_target_properties(libminizip PROPERTIES SOVERSION
+-                                                    ${minizip_VERSION_MAJOR})
+-    endif(NOT CYGWIN)
+-
+-    set_target_properties(
+-        libminizip
+-        PROPERTIES EXPORT_NAME minizip
+-                   OUTPUT_NAME minizip
+-                   VERSION ${minizip_VERSION}
+-                   SOVERSION ${minizip_VERSION_MAJOR})
+-
+-    target_link_libraries(libminizip
+-        PUBLIC ZLIB::ZLIB
+-            $<$<BOOL:${BZIP2_FOUND}>:BZip2::BZip2>)
+-
+-    add_executable(minizip ${MINIZIP_SRCS} ${MINIZIP_HDRS})
+-    set_target_properties(minizip PROPERTIES EXPORT_NAME minizip_executable)
+-    target_compile_definitions(
+-        minizip PRIVATE $<$<BOOL:${MSVC}>:_CRT_SECURE_NO_WARNINGS>)
+-    target_link_libraries(minizip PRIVATE MINIZIP::minizip)
+-    add_executable(miniunzip ${MINIUNZIP_SRCS} ${MINIUNZIP_HDRS})
+-    set_target_properties(miniunzip PROPERTIES EXPORT_NAME miniunzip_executable)
+-    target_compile_definitions(
+-        miniunzip PRIVATE $<$<BOOL:${MSVC}>:_CRT_SECURE_NO_WARNINGS>)
+-    target_link_libraries(miniunzip PRIVATE MINIZIP::minizip)
+-endif(MINIZIP_BUILD_SHARED)
+-
+-if(MINIZIP_BUILD_STATIC)
+-    add_library(libminizipstatic STATIC ${LIBMINIZIP_SRCS} ${LIBMINIZIP_HDRS})
+-    add_library(MINIZIP::minizipstatic ALIAS libminizipstatic)
+-    target_include_directories(
+-        libminizipstatic
+-        PUBLIC $<BUILD_INTERFACE:${minizip_SOURCE_DIR}>
+-               $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+-    target_compile_definitions(
+-        libminizipstatic
+-        PRIVATE $<$<BOOL:${MSVC}>:_CRT_SECURE_NO_WARNINGS>
+-                $<$<BOOL:${HAVE___ATTR__VIS_HIDDEN}>:HAVE_HIDDEN>
+-                $<$<BOOL:${HAVE_UNISTD_H}>:HAVE_UNISTD_H=1>
+-        PUBLIC $<$<BOOL:${HAVE_OFF64_T}>:_LARGEFILE64_SOURCE=1>
+-                $<$<BOOL:${BZIP2_FOUND}>:HAVE_BZIP2=1>
+-                $<$<BOOL:NOT:${HAVE_FOPEN64}>:USE_FILE32API=1>)
+-    set_target_properties(
+-        libminizipstatic PROPERTIES EXPORT_NAME minizipstatic
+-                                    OUTPUT_NAME minizip${minizip_static_suffix})
+-
+-    if(CYGWIN)
+-        set_target_properties(libminizipstatic PROPERTIES SUFFIX ".dll.a")
+-    endif(CYGWIN)
+-
+-    target_link_libraries(libminizipstatic PUBLIC ZLIB::ZLIBSTATIC
+-        $<$<BOOL:${BZIP2_FOUND}>:BZip2::BZip2>)
+-
+-    add_executable(minizipstatic ${MINIZIP_SRCS} ${MINIZIP_HDRS})
+-    set_target_properties(minizipstatic PROPERTIES EXPORT_NAME
+-                                                   minizip_static_executable)
+-    target_compile_definitions(
+-        minizipstatic PRIVATE $<$<BOOL:${MSVC}>:_CRT_SECURE_NO_WARNINGS>)
+-    target_link_libraries(minizipstatic PRIVATE MINIZIP::minizipstatic)
+-    add_executable(miniunzipstatic ${MINIUNZIP_SRCS} ${MINIUNZIP_HDRS})
+-    set_target_properties(miniunzipstatic
+-                          PROPERTIES EXPORT_NAME miniunzip_static_executable)
+-    target_compile_definitions(
+-        miniunzipstatic PRIVATE $<$<BOOL:${MSVC}>:_CRT_SECURE_NO_WARNINGS>)
+-    target_link_libraries(miniunzipstatic PRIVATE MINIZIP::minizipstatic)
+-endif(MINIZIP_BUILD_STATIC)
+-
+-if(MINIZIP_INSTALL)
+-    if(MINIZIP_BUILD_SHARED)
+-        install(
+-            TARGETS libminizip minizip miniunzip
+-            COMPONENT Runtime
+-            EXPORT minizipSharedExport
+-            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+-            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+-            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+-        install(
+-            EXPORT minizipSharedExport
+-            FILE minizip-shared.cmake
+-            NAMESPACE MINIZIP::
+-            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/minizip)
+-
+-        if(MSVC)
+-            install(
+-                FILES $<TARGET_PDB_FILE:libminizip>
+-                COMPONENT Runtime
+-                DESTINATION ${CMAKE_INSTALL_BINDIR}
+-                CONFIGURATIONS Debug OR RelWithDebInfo
+-                OPTIONAL)
+-        endif(MSVC)
+-    endif(MINIZIP_BUILD_SHARED)
+-
+-    if(MINIZIP_BUILD_STATIC)
+-        install(
+-            TARGETS libminizipstatic
+-            COMPONENT Development
+-            TARGETS minizipstatic miniunzipstatic
+-            COMPONENT Runtime
+-            EXPORT minizipStaticExport
+-            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+-            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+-            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+-        install(
+-            EXPORT minizipStaticExport
+-            FILE minizip-static.cmake
+-            NAMESPACE MINIZIP::
+-            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/minizip)
+-    endif(MINIZIP_BUILD_STATIC)
+-
+-    configure_package_config_file(
+-        ${minizip_SOURCE_DIR}/minizipConfig.cmake.in
+-        ${minizip_BINARY_DIR}/minizipConfig.cmake
+-        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/minizip)
+-    write_basic_package_version_file(
+-        "${minizip_BINARY_DIR}/minizipConfigVersion.cmake"
+-        VERSION "${minizip_VERSION}"
+-        COMPATIBILITY AnyNewerVersion)
+-    install(FILES ${minizip_BINARY_DIR}/minizipConfig.cmake
+-                  ${minizip_BINARY_DIR}/minizipConfigVersion.cmake
+-            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/minizip)
+-    install(
+-        FILES ${LIBMINIZIP_HDRS}
+-        COMPONENT Development
+-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+-endif(MINIZIP_INSTALL)
+-
+-if(MINIZIP_BUILD_TESTING)
+-    enable_testing()
+-
+-    if(MINIZIP_BUILD_SHARED AND NOT ${CMAKE_SHARED_LIBRARY_SUFFIX} STREQUAL
+-                                ".dll")
+-        add_test(
+-            NAME minizip_prepare_shared_zip
+-            COMMAND ${CMAKE_COMMAND} -DCREATE_SHARED=ON -P
+-                    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_helper.cm
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_zipping_test_file_shared
+-            COMMAND minizip test_file_shared.zip test_file_shared.txt
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_prepare_shared_unzip
+-            COMMAND ${CMAKE_COMMAND} -DMOVE_SHARED=ON -P
+-                    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_helper.cm
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_miniunzipping_test_file_shared.zip
+-            COMMAND miniunzip test_file_shared.zip
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_compare_shared
+-            COMMAND ${CMAKE_COMMAND} -E compare_files test_file_shared.txt
+-                    test_file_shared.orig
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_clean_shared_zip
+-            COMMAND ${CMAKE_COMMAND} -DDELETE_SHARED=ON -P
+-                    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_helper.cm
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        set_tests_properties(minizip_prepare_shared_zip
+-                             PROPERTIES FIXTURES_SETUP prepare_shared)
+-        set_tests_properties(
+-            minizip_zipping_test_file_shared
+-            PROPERTIES FIXTURES_REQUIRED prepare_shared FIXTURES_SETUP
+-                       zip_shared)
+-        set_tests_properties(
+-            minizip_prepare_shared_unzip
+-            PROPERTIES FIXTURES_REQUIRED zip_shared FIXTURES_SETUP
+-                       prepare_unzip_shared)
+-        set_tests_properties(
+-            minizip_miniunzipping_test_file_shared.zip
+-            PROPERTIES FIXTURES_REQUIRED prepare_unzip_shared FIXTURES_SETUP
+-                       prepare_compare_shared)
+-        set_tests_properties(
+-            minizip_compare_shared
+-            PROPERTIES FIXTURES_REQUIRED prepare_compare_shared FIXTURES_SETUP
+-                       compared_shared)
+-        set_tests_properties(minizip_clean_shared_zip
+-                             PROPERTIES FIXTURES_CLEANUP compared_shared)
+-    endif(MINIZIP_BUILD_SHARED AND NOT ${CMAKE_SHARED_LIBRARY_SUFFIX} STREQUAL
+-                                   ".dll")
+-
+-    if(MINIZIP_BUILD_STATIC)
+-        add_test(
+-            NAME minizip_prepare_static_zip
+-            COMMAND ${CMAKE_COMMAND} -DCREATE_STATIC=ON -P
+-                    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_helper.cm
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_zipping_test_file_static
+-            COMMAND minizipstatic test_file_static.zip test_file_static.txt
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_prepare_static_unzip
+-            COMMAND ${CMAKE_COMMAND} -DMOVE_STATIC=ON -P
+-                    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_helper.cm
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_miniunzipping_test_file_static.zip
+-            COMMAND miniunzipstatic test_file_static.zip
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_compare_static
+-            COMMAND ${CMAKE_COMMAND} -E compare_files test_file_static.txt
+-                    test_file_static.orig
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        add_test(
+-            NAME minizip_clean_static_zip
+-            COMMAND ${CMAKE_COMMAND} -DDELETE_STATIC=ON -P
+-                    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_helper.cm
+-            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/test)
+-        set_tests_properties(minizip_prepare_static_zip
+-                             PROPERTIES FIXTURES_SETUP prepare_static)
+-        set_tests_properties(
+-            minizip_zipping_test_file_static
+-            PROPERTIES FIXTURES_REQUIRED prepare_static FIXTURES_SETUP
+-                       zip_static)
+-        set_tests_properties(
+-            minizip_prepare_static_unzip
+-            PROPERTIES FIXTURES_REQUIRED zip_static FIXTURES_SETUP
+-                       prepare_unzip_static)
+-        set_tests_properties(
+-            minizip_miniunzipping_test_file_static.zip
+-            PROPERTIES FIXTURES_REQUIRED prepare_unzip_static FIXTURES_SETUP
+-                       prepare_compare_static)
+-        set_tests_properties(
+-            minizip_compare_static
+-            PROPERTIES FIXTURES_REQUIRED prepare_compare_static FIXTURES_SETUP
+-                       compared_static)
+-        set_tests_properties(minizip_clean_static_zip
+-                             PROPERTIES FIXTURES_CLEANUP compared_static)
+-    endif(MINIZIP_BUILD_STATIC)
+-
+-    add_subdirectory(test)
+-endif(MINIZIP_BUILD_TESTING)
+diff -urN minizip-1.3.2/configure.ac minizip/configure.ac
+--- minizip-1.3.2/configure.ac	2026-03-21 15:50:45.619488730 +0100
++++ minizip/configure.ac	1970-01-01 01:00:00.000000000 +0100
+@@ -1,32 +0,0 @@
+-#                                               -*- Autoconf -*-
+-# Process this file with autoconf to produce a configure script.
+-
+-AC_INIT([minizip], [1.3.2], [bugzilla.redhat.com])
+-AC_CONFIG_SRCDIR([minizip.c])
+-AM_INIT_AUTOMAKE([foreign])
+-LT_INIT
+-
+-AC_MSG_CHECKING([whether to build example programs])
+-AC_ARG_ENABLE([demos], AS_HELP_STRING([--enable-demos], [build example programs]))
+-AM_CONDITIONAL([COND_DEMOS], [test "$enable_demos" = yes])
+-if test "$enable_demos" = yes
+-then
+-	AC_MSG_RESULT([yes])
+-else
+-	AC_MSG_RESULT([no])
+-fi
+-
+-case "${host}" in
+-	*-mingw* | mingw*)
+-		WIN32="yes"
+-		;;
+-	*)
+-		;;
+-esac
+-AM_CONDITIONAL([WIN32], [test "${WIN32}" = "yes"])
+-
+-
+-AC_SUBST([HAVE_UNISTD_H], [0])
+-AC_CHECK_HEADER([unistd.h], [HAVE_UNISTD_H=1], [])
+-AC_CONFIG_FILES([Makefile minizip.pc])
+-AC_OUTPUT
+diff -urN minizip-1.3.2/Makefile minizip/Makefile
+--- minizip-1.3.2/Makefile	2026-03-21 15:50:45.620488744 +0100
++++ minizip/Makefile	1970-01-01 01:00:00.000000000 +0100
+@@ -1,33 +0,0 @@
+-CPPFLAGS = -I../..
+-
+-UNZ_OBJS = miniunz.o unzip.o ioapi.o ../../libz.a
+-ZIP_OBJS = minizip.o zip.o   ioapi.o ../../libz.a
+-
+-all: miniunz minizip
+-
+-miniunz.o: miniunz.c unzip.h iowin32.h
+-minizip.o: minizip.c zip.h iowin32.h ints.h
+-unzip.o: unzip.c unzip.h crypt.h
+-zip.o: zip.c zip.h crypt.h skipset.h ints.h
+-ioapi.o: ioapi.c ioapi.h ints.h
+-iowin32.o: iowin32.c iowin32.h ioapi.h
+-mztools.o: mztools.c unzip.h
+-
+-miniunz: $(UNZ_OBJS)
+-	${CC} ${LDFLAGS} -o $@ $(UNZ_OBJS)
+-
+-minizip: $(ZIP_OBJS)
+-	${CC} ${LDFLAGS} -o $@ $(ZIP_OBJS)
+-
+-test: miniunz minizip
+-	@rm -f test.*
+-	@echo hello hello hello > test.txt
+-	./minizip test test.txt
+-	./miniunz -l test.zip
+-	@mv test.txt test.old
+-	./miniunz test.zip
+-	@cmp test.txt test.old
+-	@rm -f test.*
+-
+-clean:
+-	/bin/rm -f *.o *~ minizip miniunz test.*
+diff -urN minizip-1.3.2/Makefile.am minizip/Makefile.am
+--- minizip-1.3.2/Makefile.am	2026-03-21 15:50:45.620488744 +0100
++++ minizip/Makefile.am	1970-01-01 01:00:00.000000000 +0100
+@@ -1,45 +0,0 @@
+-lib_LTLIBRARIES = libminizip.la
+-
+-if COND_DEMOS
+-bin_PROGRAMS = miniunzip minizip
+-endif
+-
+-zlib_top_srcdir = $(top_srcdir)/../..
+-zlib_top_builddir = $(top_builddir)/../..
+-
+-AM_CPPFLAGS = -I$(zlib_top_srcdir)
+-AM_LDFLAGS = -L$(zlib_top_builddir)
+-
+-if WIN32
+-iowin32_src = iowin32.c
+-iowin32_h = iowin32.h
+-endif
+-
+-libminizip_la_SOURCES = \
+-	ioapi.c \
+-	mztools.c \
+-	unzip.c \
+-	zip.c \
+-	${iowin32_src}
+-
+-libminizip_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0 -lz
+-
+-minizip_includedir = $(includedir)/minizip
+-minizip_include_HEADERS = \
+-	crypt.h \
+-	ioapi.h \
+-	mztools.h \
+-	unzip.h \
+-	zip.h \
+-	${iowin32_h}
+-
+-pkgconfigdir = $(libdir)/pkgconfig
+-pkgconfig_DATA = minizip.pc
+-
+-EXTRA_PROGRAMS = miniunzip minizip
+-
+-miniunzip_SOURCES = miniunz.c
+-miniunzip_LDADD = libminizip.la
+-
+-minizip_SOURCES = minizip.c
+-minizip_LDADD = libminizip.la -lz
+diff -urN minizip-1.3.2/make_vms.com minizip/make_vms.com
+--- minizip-1.3.2/make_vms.com	2026-03-21 15:50:45.620488744 +0100
++++ minizip/make_vms.com	1970-01-01 01:00:00.000000000 +0100
+@@ -1,25 +0,0 @@
+-$ if f$search("ioapi.h_orig") .eqs. "" then copy ioapi.h ioapi.h_orig
+-$ open/write zdef vmsdefs.h
+-$ copy sys$input: zdef
+-$ deck
+-#define __unix__
+-#define fill_zlib_filefunc64_32_def_from_filefunc32 fillzffunc64from
+-#define Write_Zip64EndOfCentralDirectoryLocator Write_Zip64EoDLocator
+-#define Write_Zip64EndOfCentralDirectoryRecord Write_Zip64EoDRecord
+-#define Write_EndOfCentralDirectoryRecord Write_EoDRecord
+-$ eod
+-$ close zdef
+-$ copy vmsdefs.h,ioapi.h_orig ioapi.h
+-$ cc/include=[--]/prefix=all ioapi.c
+-$ cc/include=[--]/prefix=all miniunz.c
+-$ cc/include=[--]/prefix=all unzip.c
+-$ cc/include=[--]/prefix=all minizip.c
+-$ cc/include=[--]/prefix=all zip.c
+-$ link miniunz,unzip,ioapi,[--]libz.olb/lib
+-$ link minizip,zip,ioapi,[--]libz.olb/lib
+-$ mcr []minizip test minizip_info.txt
+-$ mcr []miniunz -l test.zip
+-$ rename minizip_info.txt; minizip_info.txt_old
+-$ mcr []miniunz test.zip
+-$ delete test.zip;*
+-$exit
+diff -urN minizip-1.3.2/miniunz.c minizip/miniunz.c
+--- minizip-1.3.2/miniunz.c	2026-03-21 15:50:45.627488840 +0100
++++ minizip/miniunz.c	2026-03-21 15:42:32.963364770 +0100
+@@ -48,6 +48,7 @@
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <sys/stat.h>
++#include <stdarg.h>
+ 
+ #ifdef _WIN32
+ # include <direct.h>
+@@ -68,6 +69,14 @@
+ #define USEWIN32IOAPI
+ #include "iowin32.h"
+ #endif
++
++/* MODIFICATION Replace all stdout prints with this function for better control */
++static int minizip_printf( const char * format, ... ) {
++  //printf(format);
++  (void)format;
++  return 1;
++}
++
+ /*
+   mini unzip, demo of unzip package
+ 
+@@ -147,7 +156,7 @@
+   buffer = (char*)malloc(len+1);
+         if (buffer==NULL)
+         {
+-                printf("Error allocating memory\n");
++                minizip_printf("Error allocating memory\n");
+                 return UNZ_INTERNALERROR;
+         }
+   memcpy(buffer,newdir,len+1);
+@@ -172,7 +181,7 @@
+       *p = 0;
+       if ((mymkdir(buffer) == -1) && (errno == ENOENT))
+         {
+-          printf("couldn't create directory %s\n",buffer);
++          minizip_printf("couldn't create directory %s\n",buffer);
+           free(buffer);
+           return 0;
+         }
+@@ -185,12 +194,14 @@
+ }
+ 
+ static void do_banner(void) {
++    /*
+     printf("MiniUnz 1.1, demo of zLib + Unz package written by Gilles Vollant\n");
+     printf("more info at https://www.winimage.com/zLibDll/unzip.html\n\n");
++    */
+ }
+ 
+ static void do_help(void) {
+-    printf("Usage : miniunz [-e] [-x] [-v] [-l] [-o] [-p password] file.zip [file_to_extr.] [-d extractdir]\n\n" \
++    minizip_printf("Usage : miniunz [-e] [-x] [-v] [-l] [-o] [-p password] file.zip [file_to_extr.] [-d extractdir]\n\n" \
+            "  -e  Extract without pathname (junk paths)\n" \
+            "  -x  Extract with pathname\n" \
+            "  -v  list files\n" \
+@@ -220,11 +231,11 @@
+       while (size_char > size_display_string)
+       {
+           size_char--;
+-          printf(" ");
++          minizip_printf(" ");
+       }
+   }
+ 
+-  printf("%s",&number[pos_string]);
++  minizip_printf("%s",&number[pos_string]);
+ }
+ 
+ static int do_list(unzFile uf) {
+@@ -234,9 +245,9 @@
+ 
+     err = unzGetGlobalInfo64(uf,&gi);
+     if (err!=UNZ_OK)
+-        printf("error %d with zipfile in unzGetGlobalInfo\n",err);
+-    printf("  Length  Method     Size Ratio   Date    Time   CRC-32     Name\n");
+-    printf("  ------  ------     ---- -----   ----    ----   ------     ----\n");
++        minizip_printf("error %d with zipfile in unzGetGlobalInfo\n",err);
++    minizip_printf("  Length  Method     Size Ratio   Date    Time   CRC-32     Name\n");
++    minizip_printf("  ------  ------     ---- -----   ----    ----   ------     ----\n");
+     for (i=0;i<gi.number_entry;i++)
+     {
+         char filename_inzip[65536+1];
+@@ -247,7 +258,7 @@
+         err = unzGetCurrentFileInfo64(uf,&file_info,filename_inzip,sizeof(filename_inzip),NULL,0,NULL,0);
+         if (err!=UNZ_OK)
+         {
+-            printf("error %d with zipfile in unzGetCurrentFileInfo\n",err);
++            minizip_printf("error %d with zipfile in unzGetCurrentFileInfo\n",err);
+             break;
+         }
+         if (file_info.uncompressed_size>0)
+@@ -279,9 +290,9 @@
+             string_method="Unkn. ";
+ 
+         Display64BitsSize(file_info.uncompressed_size,7);
+-        printf("  %6s%c",string_method,charCrypt);
++        minizip_printf("  %6s%c",string_method,charCrypt);
+         Display64BitsSize(file_info.compressed_size,7);
+-        printf(" %3lu%%  %2.2lu-%2.2lu-%2.2lu  %2.2lu:%2.2lu  %8.8lx   %s\n",
++        minizip_printf(" %3lu%%  %2.2lu-%2.2lu-%2.2lu  %2.2lu:%2.2lu  %8.8lx   %s\n",
+                 ratio,
+                 (uLong)file_info.tmu_date.tm_mon + 1,
+                 (uLong)file_info.tmu_date.tm_mday,
+@@ -293,7 +304,7 @@
+             err = unzGoToNextFile(uf);
+             if (err!=UNZ_OK)
+             {
+-                printf("error %d with zipfile in unzGoToNextFile\n",err);
++                minizip_printf("error %d with zipfile in unzGoToNextFile\n",err);
+                 break;
+             }
+         }
+@@ -317,7 +328,7 @@
+ 
+     if (err!=UNZ_OK)
+     {
+-        printf("error %d with zipfile in unzGetCurrentFileInfo\n",err);
++        minizip_printf("error %d with zipfile in unzGetCurrentFileInfo\n",err);
+         return err;
+     }
+ 
+@@ -325,7 +336,7 @@
+     buf = (void*)malloc(size_buf);
+     if (buf==NULL)
+     {
+-        printf("Error allocating memory\n");
++        minizip_printf("Error allocating memory\n");
+         return UNZ_INTERNALERROR;
+     }
+ 
+@@ -341,7 +352,7 @@
+     {
+         if ((*popt_extract_without_path)==0)
+         {
+-            printf("creating directory: %s\n",filename_inzip);
++            minizip_printf("creating directory: %s\n",filename_inzip);
+             mymkdir(filename_inzip);
+         }
+     }
+@@ -372,7 +383,7 @@
+         err = unzOpenCurrentFilePassword(uf,password);
+         if (err!=UNZ_OK)
+         {
+-            printf("error %d with zipfile in unzOpenCurrentFilePassword\n",err);
++            minizip_printf("error %d with zipfile in unzOpenCurrentFilePassword\n",err);
+         }
+ 
+         if (((*popt_overwrite)==0) && (err==UNZ_OK))
+@@ -388,11 +399,11 @@
+                     char answer[128];
+                     int ret;
+ 
+-                    printf("The file %s exists. Overwrite ? [y]es, [n]o, [A]ll: ",write_filename);
++                    minizip_printf("The file %s exists. Overwrite ? [y]es, [n]o, [A]ll: ",write_filename);
+                     ret = scanf("%1s",answer);
+                     if (ret != 1)
+                     {
+-                       exit(EXIT_FAILURE);
++                        return -1; //exit(EXIT_FAILURE);
+                     }
+                     rep = answer[0] ;
+                     if ((rep>='a') && (rep<='z'))
+@@ -424,26 +435,26 @@
+ 
+             if (fout==NULL)
+             {
+-                printf("error opening %s\n",write_filename);
++                minizip_printf("error opening %s\n",write_filename);
+             }
+         }
+ 
+         if (fout!=NULL)
+         {
+-            printf(" extracting: %s\n",write_filename);
++            minizip_printf(" extracting: %s\n",write_filename);
+ 
+             do
+             {
+                 err = unzReadCurrentFile(uf,buf,size_buf);
+                 if (err<0)
+                 {
+-                    printf("error %d with zipfile in unzReadCurrentFile\n",err);
++                    minizip_printf("error %d with zipfile in unzReadCurrentFile\n",err);
+                     break;
+                 }
+                 if (err>0)
+                     if (fwrite(buf,(unsigned)err,1,fout)!=1)
+                     {
+-                        printf("error in writing extracted file\n");
++                        minizip_printf("error in writing extracted file\n");
+                         err=UNZ_ERRNO;
+                         break;
+                     }
+@@ -462,7 +473,7 @@
+             err = unzCloseCurrentFile (uf);
+             if (err!=UNZ_OK)
+             {
+-                printf("error %d with zipfile in unzCloseCurrentFile\n",err);
++                minizip_printf("error %d with zipfile in unzCloseCurrentFile\n",err);
+             }
+         }
+         else
+@@ -482,7 +493,7 @@
+     err = unzGetGlobalInfo64(uf,&gi);
+     if (err!=UNZ_OK)
+     {
+-        printf("error %d with zipfile in unzGetGlobalInfo\n",err);
++        minizip_printf("error %d with zipfile in unzGetGlobalInfo\n",err);
+         return err;
+     }
+ 
+@@ -499,7 +510,7 @@
+             err = unzGoToNextFile(uf);
+             if (err!=UNZ_OK)
+             {
+-                printf("error %d with zipfile in unzGoToNextFile\n",err);
++                minizip_printf("error %d with zipfile in unzGoToNextFile\n",err);
+                 break;
+             }
+         }
+@@ -511,7 +522,7 @@
+ static int do_extract_onefile(unzFile uf, const char* filename, int opt_extract_without_path, int opt_overwrite, const char* password) {
+     if (unzLocateFile(uf,filename,CASESENSITIVITY)!=UNZ_OK)
+     {
+-        printf("file %s not found in the zipfile\n",filename);
++        minizip_printf("file %s not found in the zipfile\n",filename);
+         return 2;
+     }
+ 
+@@ -521,7 +532,7 @@
+ }
+ 
+ 
+-int main(int argc, char *argv[]) {
++int miniunz(int argc, char *argv[]) {
+     const char *zipfilename=NULL;
+     const char *filename_to_extract=NULL;
+     const char *password=NULL;
+@@ -616,10 +627,10 @@
+ 
+     if (uf==NULL)
+     {
+-        printf("Cannot open %s or %s.zip\n",zipfilename,zipfilename);
++        minizip_printf("Cannot open %s or %s.zip\n",zipfilename,zipfilename);
+         return 1;
+     }
+-    printf("%s opened\n",filename_try);
++    minizip_printf("%s opened\n",filename_try);
+ 
+     if (opt_do_list==1)
+         ret_value = do_list(uf);
+@@ -631,8 +642,8 @@
+         if (opt_extractdir && chdir(dirname))
+ #endif
+         {
+-          printf("Error changing into %s, aborting\n", dirname);
+-          exit(-1);
++          minizip_printf("Error changing into %s, aborting\n", dirname);
++          return -1; //exit(-1);
+         }
+ 
+         if (filename_to_extract == NULL)
+diff -urN minizip-1.3.2/miniunz.h minizip/miniunz.h
+--- minizip-1.3.2/miniunz.h	1970-01-01 01:00:00.000000000 +0100
++++ minizip/miniunz.h	2026-03-21 15:52:43.548088322 +0100
+@@ -0,0 +1,11 @@
++#ifndef MINIUNZ_H
++#define MINIUNZ_H
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++int miniunz(int argc , char *argv[]); /* Renamed the main function */
++#ifdef __cplusplus
++}
++#endif
++#endif /* End of header file MINIUNZ_H */
+diff -urN minizip-1.3.2/minizip.c minizip/minizip.c
+--- minizip-1.3.2/minizip.c	2026-03-21 15:50:45.627488840 +0100
++++ minizip/minizip.c	2026-03-21 15:45:47.448286996 +0100
+@@ -49,6 +49,7 @@
+ #include <time.h>
+ #include <errno.h>
+ #include <fcntl.h>
++#include <stdarg.h>
+ 
+ #ifdef _WIN32
+ # include <direct.h>
+@@ -73,6 +74,13 @@
+ #define WRITEBUFFERSIZE (16384)
+ #define MAXFILENAME (256)
+ 
++/* MODIFICATION Replace all stdout prints with this function for better control */
++static int minizip_printf( const char * format, ... ) {
++  //printf(format);
++  (void)format;
++  return 1;
++}
++
+ #ifdef _WIN32
+ /* f: name of file to get info on, tmzip: return value: access,
+    modification and creation times, dt: dostime */
+@@ -162,12 +170,14 @@
+ }
+ 
+ static void do_banner(void) {
++    /*
+     printf("MiniZip 1.1, demo of zLib + MiniZip64 package, written by Gilles Vollant\n");
+     printf("more info on MiniZip at https://www.winimage.com/zLibDll/minizip.html\n\n");
++    */
+ }
+ 
+ static void do_help(void) {
+-    printf("Usage : minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]\n\n" \
++    minizip_printf("Usage : minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]\n\n" \
+            "  -o  Overwrite existing file.zip\n" \
+            "  -a  Append to existing file.zip\n" \
+            "  -0  Store only\n" \
+@@ -198,7 +208,7 @@
+             if (size_read < size_buf)
+                 if (feof(fin)==0)
+             {
+-                printf("error in reading %s\n",filenameinzip);
++                minizip_printf("error in reading %s\n",filenameinzip);
+                 err = ZIP_ERRNO;
+             }
+ 
+@@ -212,7 +222,7 @@
+         fclose(fin);
+ 
+     *result_crc=calculate_crc;
+-    printf("file %s crc %lx\n", filenameinzip, calculate_crc);
++    minizip_printf("file %s crc %lx\n", filenameinzip, calculate_crc);
+     return err;
+ }
+ 
+@@ -226,7 +236,7 @@
+     FSEEKO_FUNC(pFile, 0, SEEK_END);
+     pos = (ZPOS64_T)FTELLO_FUNC(pFile);
+ 
+-                printf("File : %s is %"PUI64" bytes\n", filename, pos);
++                minizip_printf("File : %s is %"PUI64" bytes\n", filename, pos);
+ 
+     if(pos >= 0xffffffff)
+      largeFile = 1;
+@@ -237,7 +247,7 @@
+  return largeFile;
+ }
+ 
+-int main(int argc, char *argv[]) {
++int minizip(int argc, char *argv[]) {
+     int i;
+     int opt_overwrite=0;
+     int opt_compress_level=Z_DEFAULT_COMPRESSION;
+@@ -298,7 +308,7 @@
+     buf = (void*)malloc(size_buf);
+     if (buf==NULL)
+     {
+-        printf("Error allocating memory\n");
++        minizip_printf("Error allocating memory\n");
+         return ZIP_INTERNALERROR;
+     }
+ 
+@@ -339,11 +349,11 @@
+                 {
+                     char answer[128];
+                     int ret;
+-                    printf("The file %s exists. Overwrite ? [y]es, [n]o, [a]ppend : ",filename_try);
++                    minizip_printf("The file %s exists. Overwrite ? [y]es, [n]o, [a]ppend : ",filename_try);
+                     ret = scanf("%1s",answer);
+                     if (ret != 1)
+                     {
+-                       exit(EXIT_FAILURE);
++                        return -1; //exit(EXIT_FAILURE);
+                     }
+                     rep = answer[0] ;
+                     if ((rep>='a') && (rep<='z'))
+@@ -371,11 +381,11 @@
+ 
+         if (zf == NULL)
+         {
+-            printf("error opening %s\n",filename_try);
++            minizip_printf("error opening %s\n",filename_try);
+             err= ZIP_ERRNO;
+         }
+         else
+-            printf("creating %s\n",filename_try);
++            minizip_printf("creating %s\n",filename_try);
+ 
+         for (i=zipfilenamearg+1;(i<argc) && (err==ZIP_OK);i++)
+         {
+@@ -448,14 +458,14 @@
+                                  password,crcFile, zip64);
+ 
+                 if (err != ZIP_OK)
+-                    printf("error in opening %s in zipfile\n",filenameinzip);
++                    minizip_printf("error in opening %s in zipfile\n",filenameinzip);
+                 else
+                 {
+                     fin = FOPEN_FUNC(filenameinzip,"rb");
+                     if (fin==NULL)
+                     {
+                         err=ZIP_ERRNO;
+-                        printf("error in opening %s for reading\n",filenameinzip);
++                        minizip_printf("error in opening %s for reading\n",filenameinzip);
+                     }
+                 }
+ 
+@@ -467,7 +477,7 @@
+                         if (size_read < size_buf)
+                             if (feof(fin)==0)
+                         {
+-                            printf("error in reading %s\n",filenameinzip);
++                            minizip_printf("error in reading %s\n",filenameinzip);
+                             err = ZIP_ERRNO;
+                         }
+ 
+@@ -476,7 +486,7 @@
+                             err = zipWriteInFileInZip (zf,buf,(unsigned)size_read);
+                             if (err<0)
+                             {
+-                                printf("error in writing %s in the zipfile\n",
++                                minizip_printf("error in writing %s in the zipfile\n",
+                                                  filenameinzip);
+                             }
+ 
+@@ -492,14 +502,14 @@
+                 {
+                     err = zipCloseFileInZip(zf);
+                     if (err!=ZIP_OK)
+-                        printf("error in closing %s in the zipfile\n",
++                        minizip_printf("error in closing %s in the zipfile\n",
+                                     filenameinzip);
+                 }
+             }
+         }
+         errclose = zipClose(zf,NULL);
+         if (errclose != ZIP_OK)
+-            printf("error in closing %s\n",filename_try);
++            minizip_printf("error in closing %s\n",filename_try);
+     }
+     else
+     {
+diff -urN minizip-1.3.2/minizipConfig.cmake.in minizip/minizipConfig.cmake.in
+--- minizip-1.3.2/minizipConfig.cmake.in	2026-03-21 15:50:45.619488730 +0100
++++ minizip/minizipConfig.cmake.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,27 +0,0 @@
+-@PACKAGE_INIT@
+-
+-set(_MINIZIP_supported_components "shared" "static")
+-include(CMakeFindDependencyMacro)
+-
+-if(@MINIZIP_ENABLE_BZIP2@)
+-    find_dependency(BZip2)
+-endif(@MINIZIP_ENABLE_BZIP2@)
+-
+-if(minizip_FIND_COMPONENTS)
+-    find_dependency(ZLIB CONFIG COMPONENTS ${minizip_FIND_COMPONENTS})
+-
+-    foreach(_comp ${minizip_FIND_COMPONENTS})
+-        if(NOT _comp IN_LIST _MINIZIP_supported_components)
+-            set(minizip_FOUND False)
+-            set(minizip_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
+-        endif(NOT _comp IN_LIST _MINIZIP_supported_components)
+-
+-        include("${CMAKE_CURRENT_LIST_DIR}/minizip-${_comp}.cmake")
+-    endforeach(_comp ${ZLIB_FIND_COMPONENTS})
+-else(minizip_FIND_COMPONENTS)
+-    find_dependency(ZLIB CONFIG)
+-
+-    foreach(_component_config IN LISTS _MINIZIP_supported_components)
+-        include("${CMAKE_CURRENT_LIST_DIR}/minizip-${_component_config}.cmake")
+-    endforeach(_component_config IN LISTS _MINIZIP_supported_components)
+-endif(minizip_FIND_COMPONENTS)
+diff -urN minizip-1.3.2/minizip.h minizip/minizip.h
+--- minizip-1.3.2/minizip.h	1970-01-01 01:00:00.000000000 +0100
++++ minizip/minizip.h	2026-03-21 15:52:53.680224525 +0100
+@@ -0,0 +1,12 @@
++#ifndef MINIZIP_H
++#define MINIZIP_H
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++int minizip(int argc , char *argv[]); /* Renamed the main function */
++
++#ifdef __cplusplus
++}
++#endif
++#endif /* End of header file MINIZIP_H */
+diff -urN minizip-1.3.2/minizip.pc.in minizip/minizip.pc.in
+--- minizip-1.3.2/minizip.pc.in	2026-03-21 15:50:45.620488744 +0100
++++ minizip/minizip.pc.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,13 +0,0 @@
+-prefix=@prefix@
+-exec_prefix=@exec_prefix@
+-libdir=@libdir@
+-includedir=@includedir@
+-
+-Name: minizip
+-Description: Minizip zip file manipulation library
+-Requires:
+-Version: @PACKAGE_VERSION@
+-License: Zlib
+-Libs: -L${libdir} -lminizip
+-Libs.private: -lz
+-Cflags: -I${includedir}
+diff -urN minizip-1.3.2/minizip.pc.txt minizip/minizip.pc.txt
+--- minizip-1.3.2/minizip.pc.txt	2026-03-21 15:50:45.619488730 +0100
++++ minizip/minizip.pc.txt	1970-01-01 01:00:00.000000000 +0100
+@@ -1,13 +0,0 @@
+-prefix=@CMAKE_INSTALL_PREFIX@
+-exec_prefix=@CMAKE_INSTALL_PREFIX@
+-libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+-sharedlibdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+-includedir=${exec_prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+-
+-Name: minizip
+-Description: minizip compression library
+-Version: @minizip_VERSION@
+-
+-Requires:
+-Libs: -L${libdir} -L${sharedlibdir} -lz -lminizip
+-Cflags: -I${includedir}
+diff -urN minizip-1.3.2/test/add_subdirectory_exclude_test.cmake.in minizip/test/add_subdirectory_exclude_test.cmake.in
+--- minizip-1.3.2/test/add_subdirectory_exclude_test.cmake.in	2026-03-21 15:50:45.619488730 +0100
++++ minizip/test/add_subdirectory_exclude_test.cmake.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,29 +0,0 @@
+-cmake_minimum_required(VERSION 3.12...3.31)
+-
+-project(
+-    minizip_add_subdirectory_exclude_from_all
+-    LANGUAGES C
+-    VERSION @minizip_VERSION@)
+-
+-option(MINIZIP_BUILD_TESTING "" OFF)
+-option(MINIZIP_BUILD_SHARED "" @MINIZIP_BUILD_SHARED@)
+-option(MINIZIP_BUILD_STATIC "" @MINIZIP_BUILD_STATIC@)
+-option(MINIZIP_ENABLE_BZIP2 "" @MINIZIP_ENABLE_BZIP2@)
+-
+-add_subdirectory(@minizip_SOURCE_DIR@ ${CMAKE_CURRENT_BINARY_DIR}/minizip
+-                 EXCLUDE_FROM_ALL)
+-
+-set(MINIZIP_SRCS
+-    @minizip_SOURCE_DIR@/ioapi.c
+-    $<$<BOOL:${WIN32}>:@minizip_SOURCE_DIR@/iowin32.c>
+-    @minizip_SOURCE_DIR@/minizip.c @minizip_SOURCE_DIR@/zip.c)
+-
+-if(MINIZIP_BUILD_SHARED)
+-    add_executable(test_example ${MINIZIP_SRCS})
+-    target_link_libraries(test_example MINIZIP::minizip)
+-endif(MINIZIP_BUILD_SHARED)
+-
+-if(MINIZIP_BUILD_STATIC)
+-    add_executable(test_example_static ${MINIZIP_SRCS})
+-    target_link_libraries(test_example_static MINIZIP::minizipstatic)
+-endif(MINIZIP_BUILD_STATIC)
+diff -urN minizip-1.3.2/test/add_subdirectory_test.cmake.in minizip/test/add_subdirectory_test.cmake.in
+--- minizip-1.3.2/test/add_subdirectory_test.cmake.in	2026-03-21 15:50:45.619488730 +0100
++++ minizip/test/add_subdirectory_test.cmake.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,28 +0,0 @@
+-cmake_minimum_required(VERSION 3.12...3.31)
+-
+-project(
+-    minizip_add_subdirectory_exclude_from_all
+-    LANGUAGES C
+-    VERSION @minizip_VERSION@)
+-
+-option(MINIZIP_BUILD_TESTING "" OFF)
+-option(MINIZIP_BUILD_SHARED "" @MINIZIP_BUILD_SHARED@)
+-option(MINIZIP_BUILD_STATIC "" @MINIZIP_BUILD_STATIC@)
+-option(MINIZIP_ENABLE_BZIP2 "" @MINIZIP_ENABLE_BZIP2@)
+-
+-add_subdirectory(@minizip_SOURCE_DIR@ ${CMAKE_CURRENT_BINARY_DIR}/minizip)
+-
+-set(MINIZIP_SRCS
+-    @minizip_SOURCE_DIR@/ioapi.c
+-    $<$<BOOL:${WIN32}>:@minizip_SOURCE_DIR@/iowin32.c>
+-    @minizip_SOURCE_DIR@/minizip.c @minizip_SOURCE_DIR@/zip.c)
+-
+-if(MINIZIP_BUILD_SHARED)
+-    add_executable(test_example ${MINIZIP_SRCS})
+-    target_link_libraries(test_example MINIZIP::minizip)
+-endif(MINIZIP_BUILD_SHARED)
+-
+-if(MINIZIP_BUILD_STATIC)
+-    add_executable(test_example_static ${MINIZIP_SRCS})
+-    target_link_libraries(test_example_static MINIZIP::minizipstatic)
+-endif(MINIZIP_BUILD_STATIC)
+diff -urN minizip-1.3.2/test/CMakeLists.txt minizip/test/CMakeLists.txt
+--- minizip-1.3.2/test/CMakeLists.txt	2026-03-21 15:50:45.619488730 +0100
++++ minizip/test/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
+@@ -1,176 +0,0 @@
+-# if we are built from with zlib, use this path's)
+-if(DEFINED ZLIB_BUILD_MINIZIP)
+-    set(WORK_DIR ${zlib_BINARY_DIR})
+-    set(inst_setup zlib_install)
+-else(DEFINED ZLIB_BUILD_MINIZIP)
+-    set(WORK_DIR ${minizip_BINARY_DIR})
+-    set(inst_setup minizip_install)
+-    set(ZLIB_ARG "-DZLIB_DIR=${ZLIB_DIR}")
+-
+-    add_test(
+-        NAME minizip_install
+-        COMMAND ${CMAKE_COMMAND} --install ${minizip_BINARY_DIR} --prefix
+-                ${CMAKE_CURRENT_BINARY_DIR}/test_install --config $<CONFIG>
+-        WORKING_DIRECTORY ${minizip_BINARY_DIR})
+-
+-    set_tests_properties(minizip_install
+-        PROPERTIES
+-            FIXTURES_SETUP minizip_install)
+-endif(DEFINED ZLIB_BUILD_MINIZIP)
+-
+-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/findpackage_test)
+-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/findpackage_no_componentstest)
+-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/findpackage_wrong_components_test)
+-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_test)
+-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_exclude_test)
+-
+-configure_file(
+-    ${CMAKE_CURRENT_SOURCE_DIR}/find_package_test.cmake.in
+-    ${CMAKE_CURRENT_BINARY_DIR}/findpackage_test/CMakeLists.txt @ONLY)
+-
+-configure_file(
+-    ${CMAKE_CURRENT_SOURCE_DIR}/find_package_no_components_test.cmake.in
+-    ${CMAKE_CURRENT_BINARY_DIR}/findpackage_no_components_test/CMakeLists.txt
+-    @ONLY)
+-
+-configure_file(
+-    ${CMAKE_CURRENT_SOURCE_DIR}/find_package_wrong_components_test.cmake.in
+-    ${CMAKE_CURRENT_BINARY_DIR}/findpackage_wrong_components_test/CMakeLists.txt
+-    @ONLY)
+-
+-configure_file(
+-    ${CMAKE_CURRENT_SOURCE_DIR}/add_subdirectory_test.cmake.in
+-    ${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_test/CMakeLists.txt @ONLY)
+-
+-configure_file(
+-    ${CMAKE_CURRENT_SOURCE_DIR}/add_subdirectory_exclude_test.cmake.in
+-    ${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_exclude_test/CMakeLists.txt
+-    @ONLY)
+-
+-# CMAKE_GENERATOR_PLATFORM doesn't work in the if
+-set(GENERATOR ${CMAKE_GENERATOR_PLATFORM})
+-
+-if(GENERATOR)
+-    set(PLATFORM "-A ${GENERATOR}")
+-endif(GENERATOR)
+-
+-#
+-# findpackage_test
+-#
+-add_test(
+-    NAME minizip_find_package_configure
+-    COMMAND
+-        ${CMAKE_COMMAND} ${PLATFORM}
+-        -B${CMAKE_CURRENT_BINARY_DIR}/findpackage_test_build
+-        -DCMAKE_BUILD_TYPE=$<CONFIG> -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+-        -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/test/test_install ${ZLIB_ARG}
+-        --fresh -G "${CMAKE_GENERATOR}"
+-        -S${CMAKE_CURRENT_BINARY_DIR}/findpackage_test)
+-
+-add_test(
+-    NAME minizip_find_package_build
+-    COMMAND ${CMAKE_COMMAND} --build . --config $<CONFIG>
+-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/findpackage_test_build)
+-
+-set_tests_properties(
+-    minizip_find_package_configure PROPERTIES FIXTURES_REQUIRED ${inst_setup}
+-                                              FIXTURES_SETUP mzfp_config)
+-
+-set_tests_properties(minizip_find_package_build PROPERTIES FIXTURES_REQUIRED
+-                                                           mzfp_config)
+-
+-#
+-# findpackage_no_components_test
+-#
+-add_test(
+-    NAME minizip_find_package_no_components_configure
+-    COMMAND
+-        ${CMAKE_COMMAND} ${PLATFORM}
+-        -B${CMAKE_CURRENT_BINARY_DIR}/findpackage_no_components_test_build
+-        -DCMAKE_BUILD_TYPE=$<CONFIG> -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+-        -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/test/test_install ${ZLIB_ARG}
+-        --fresh -G "${CMAKE_GENERATOR}"
+-        -S${CMAKE_CURRENT_BINARY_DIR}/findpackage_no_components_test)
+-
+-set_tests_properties(
+-   minizip_find_package_no_components_configure PROPERTIES FIXTURES_REQUIRED ${inst_setup})
+-
+-if(NOT MINIZIP_BUILD_SHARED OR NOT MINIZIP_BUILD_STATIC)
+-    set_tests_properties(
+-        minizip_find_package_no_components_configure PROPERTIES WILL_FAIL TRUE)
+-endif(NOT MINIZIP_BUILD_SHARED OR NOT MINIZIP_BUILD_STATIC)
+-
+-#
+-# findpackage_no_components_test
+-#
+-add_test(
+-    NAME minizip_find_package_wrong_components_configure
+-    COMMAND
+-        ${CMAKE_COMMAND} ${PLATFORM}
+-        -B${CMAKE_CURRENT_BINARY_DIR}/findpackage_wrong_components_test_build
+-        -DCMAKE_BUILD_TYPE=$<CONFIG> -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+-        -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/test/test_install ${ZLIB_ARG}
+-        --fresh -G "${CMAKE_GENERATOR}"
+-        -S${CMAKE_CURRENT_BINARY_DIR}/findpackage_wrong_components_test)
+-
+-set_tests_properties(
+-   minizip_find_package_wrong_components_configure
+-    PROPERTIES
+-        FIXTURES_REQUIRED ${inst_setup}
+-        WILL_FAIL TRUE)
+-
+-#
+-# add_subdirectory_test
+-#
+-add_test(
+-    NAME minizip_add_subdirectory_configure
+-    COMMAND
+-        ${CMAKE_COMMAND} ${PLATFORM}
+-        -B${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_test_build
+-        -DCMAKE_BUILD_TYPE=$<CONFIG> -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+-        -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/test/test_install ${ZLIB_ARG}
+-        --fresh -G "${CMAKE_GENERATOR}"
+-        -S${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_test)
+-
+-add_test(
+-    NAME minizip_add_subdirectory_build
+-    COMMAND ${CMAKE_COMMAND} --build . --config $<CONFIG>
+-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_test_build)
+-
+-set_tests_properties(
+-    minizip_add_subdirectory_configure
+-    PROPERTIES FIXTURES_REQUIRED ${inst_setup} FIXTURES_SETUP mzas_config)
+-
+-set_tests_properties(minizip_add_subdirectory_build PROPERTIES FIXTURES_REQUIRED
+-                                                               mzas_config)
+-
+-#
+-# add_subdirectory_exclude_test
+-#
+-add_test(
+-    NAME minizip_add_subdirectory_exclude_configure
+-    COMMAND
+-        ${CMAKE_COMMAND} ${PLATFORM}
+-        -B${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_exclude_test_build
+-        -DCMAKE_BUILD_TYPE=$<CONFIG> -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+-        -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+-        -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/test/test_install ${ZLIB_ARG}
+-        --fresh -G "${CMAKE_GENERATOR}"
+-        -S${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_exclude_test)
+-
+-add_test(
+-    NAME minizip_add_subdirectory_exclude_build
+-    COMMAND ${CMAKE_COMMAND} --build . --config $<CONFIG>
+-    WORKING_DIRECTORY
+-        ${CMAKE_CURRENT_BINARY_DIR}/add_subdirectory_exclude_test_build)
+-
+-set_tests_properties(
+-    minizip_add_subdirectory_exclude_configure
+-    PROPERTIES FIXTURES_REQUIRED ${inst_setup} FIXTURES_SETUP mzasx_config)
+-
+-set_tests_properties(minizip_add_subdirectory_exclude_build
+-                     PROPERTIES FIXTURES_REQUIRED mzasx_config)
+diff -urN minizip-1.3.2/test/find_package_no_components_test.cmake.in minizip/test/find_package_no_components_test.cmake.in
+--- minizip-1.3.2/test/find_package_no_components_test.cmake.in	2026-03-21 15:50:45.619488730 +0100
++++ minizip/test/find_package_no_components_test.cmake.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,26 +0,0 @@
+-cmake_minimum_required(VERSION 3.12...3.31)
+-
+-project(
+-    minizip_find_package
+-    LANGUAGES C
+-    VERSION @minizip_VERSION@)
+-
+-option(MINIZIP_BUILD_SHARED "" @MINIZIP_BUILD_SHARED@)
+-option(MINIZIP_BUILD_STATIC "" @MINIZIP_BUILD_STATIC@)
+-
+-find_package(minizip ${minizip_VERSION} CONFIG REQUIRED)
+-
+-set(MINIZIP_SRCS
+-    @minizip_SOURCE_DIR@/ioapi.c
+-    $<$<BOOL:${WIN32}>:@minizip_SOURCE_DIR@/iowin32.c>
+-    @minizip_SOURCE_DIR@/minizip.c @minizip_SOURCE_DIR@/zip.c)
+-
+-if(MINIZIP_BUILD_SHARED)
+-    add_executable(test_example ${MINIZIP_SRCS})
+-    target_link_libraries(test_example MINIZIP::minizip)
+-endif(MINIZIP_BUILD_SHARED)
+-
+-if(MINIZIP_BUILD_STATIC)
+-    add_executable(test_example_static ${MINIZIP_SRCS})
+-    target_link_libraries(test_example_static MINIZIP::minizipstatic)
+-endif(MINIZIP_BUILD_STATIC)
+diff -urN minizip-1.3.2/test/find_package_test.cmake.in minizip/test/find_package_test.cmake.in
+--- minizip-1.3.2/test/find_package_test.cmake.in	2026-03-21 15:50:45.619488730 +0100
++++ minizip/test/find_package_test.cmake.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,26 +0,0 @@
+-cmake_minimum_required(VERSION 3.12...3.31)
+-
+-project(
+-    minizip_find_package
+-    LANGUAGES C
+-    VERSION @minizip_VERSION@)
+-
+-option(MINIZIP_BUILD_SHARED "" @MINIZIP_BUILD_SHARED@)
+-option(MINIZIP_BUILD_STATIC "" @MINIZIP_BUILD_STATIC@)
+-
+-set(MINIZIP_SRCS
+-    @minizip_SOURCE_DIR@/ioapi.c
+-    $<$<BOOL:${WIN32}>:@minizip_SOURCE_DIR@/iowin32.c>
+-    @minizip_SOURCE_DIR@/minizip.c @minizip_SOURCE_DIR@/zip.c)
+-
+-if(MINIZIP_BUILD_SHARED)
+-    find_package(minizip ${minizip_VERSION} CONFIG COMPONENTS shared REQUIRED)
+-    add_executable(test_example ${MINIZIP_SRCS})
+-    target_link_libraries(test_example MINIZIP::minizip)
+-endif(MINIZIP_BUILD_SHARED)
+-
+-if(MINIZIP_BUILD_STATIC)
+-    find_package(minizip ${minizip_VERSION} CONFIG COMPONENTS static REQUIRED)
+-    add_executable(test_example_static ${MINIZIP_SRCS})
+-    target_link_libraries(test_example_static MINIZIP::minizipstatic)
+-endif(MINIZIP_BUILD_STATIC)
+diff -urN minizip-1.3.2/test/find_package_wrong_components_test.cmake.in minizip/test/find_package_wrong_components_test.cmake.in
+--- minizip-1.3.2/test/find_package_wrong_components_test.cmake.in	2026-03-21 15:50:45.619488730 +0100
++++ minizip/test/find_package_wrong_components_test.cmake.in	1970-01-01 01:00:00.000000000 +0100
+@@ -1,26 +0,0 @@
+-cmake_minimum_required(VERSION 3.12...3.31)
+-
+-project(
+-    minizip_find_package
+-    LANGUAGES C
+-    VERSION @minizip_VERSION@)
+-
+-option(MINIZIP_BUILD_SHARED "" @MINIZIP_BUILD_SHARED@)
+-option(MINIZIP_BUILD_STATIC "" @MINIZIP_BUILD_STATIC@)
+-
+-find_package(minizip ${minizip_VERSION} CONFIG COMPONENTS wrong REQUIRED)
+-
+-set(MINIZIP_SRCS
+-    @minizip_SOURCE_DIR@/ioapi.c
+-    $<$<BOOL:${WIN32}>:@minizip_SOURCE_DIR@/iowin32.c>
+-    @minizip_SOURCE_DIR@/minizip.c @minizip_SOURCE_DIR@/zip.c)
+-
+-if(MINIZIP_BUILD_SHARED)
+-    add_executable(test_example ${MINIZIP_SRCS})
+-    target_link_libraries(test_example MINIZIP::minizip)
+-endif(MINIZIP_BUILD_SHARED)
+-
+-if(MINIZIP_BUILD_STATIC)
+-    add_executable(test_example_static ${MINIZIP_SRCS})
+-    target_link_libraries(test_example_static MINIZIP::minizipstatic)
+-endif(MINIZIP_BUILD_STATIC)
+diff -urN minizip-1.3.2/test/test_helper.cm minizip/test/test_helper.cm
+--- minizip-1.3.2/test/test_helper.cm	2026-03-21 15:50:45.619488730 +0100
++++ minizip/test/test_helper.cm	1970-01-01 01:00:00.000000000 +0100
+@@ -1,32 +0,0 @@
+-if(CREATE_SHARED)
+-    file(REMOVE ./test_file_shared.orig ./test_file_shared.zip)
+-    file(WRITE ./test_file_shared.txt "Hello Hello Hello")
+-endif(CREATE_SHARED)
+-
+-if(MOVE_SHARED)
+-    file(RENAME ./test_file_shared.txt ./test_file_shared.orig)
+-endif(MOVE_SHARED)
+-
+-if(DELETE_SHARED)
+-    file(REMOVE
+-        ./test_file_shared.txt
+-        ./test_file_shared.orig
+-        ./test_file_shared.zip)
+-endif(DELETE_SHARED)
+-
+-if(CREATE_STATIC)
+-    file(REMOVE ./test_file_static.orig ./test_file_static.zip)
+-    file(WRITE ./test_file_static.txt "Hello Hello Hello")
+-endif(CREATE_STATIC)
+-
+-if(MOVE_STATIC)
+-    file(RENAME ./test_file_static.txt ./test_file_static.orig)
+-endif(MOVE_STATIC)
+-
+-if(DELETE_STATIC)
+-    file(REMOVE
+-        ./test_file_static.txt
+-        ./test_file_static.orig
+-        ./test_file_static.zip)
+-endif(DELETE_STATIC)
+-
