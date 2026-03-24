@@ -5,6 +5,19 @@ if (NOT MSVC)
   set(libmath m)
 endif()
 
+if(APPLE)
+  if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64")
+    message(STATUS "Apple Silicon detected")
+    set(APPLE_ARCH aarch64)
+  elseif(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "x86_64")
+    message(STATUS "Intel Mac detected")
+    set(APPLE_ARCH x86_64)
+  endif()
+endif()
+
+# Set default debug postfix
+set(CMAKE_DEBUG_POSTFIX "")
+
 set(fmi4ctest_src fmi4c_test.c
                   fmi4c_test_fmi1.c
                   fmi4c_test_fmi2.c
@@ -33,9 +46,12 @@ set(sundials ${3rdparty}/sundials)
 # Test FMU (FMI 1.0 for co-simulation)
 if(WIN32 OR CYGWIN)
   set(binfolder win64)
+elseif(APPLE)
+  set(binfolder darwin64)
 else()
   set(binfolder linux64)
 endif()
+
 
 add_library(fmi1cs SHARED fmi1cs/fmi1cs.c)
 set_target_properties(fmi1cs PROPERTIES PREFIX "")
@@ -81,9 +97,15 @@ add_test(NAME fmi2me COMMAND $<TARGET_FILE_NAME:fmi4ctest> --mode me -o fmi2.out
 
 # Test FMU (FMI 3.0 for co-simulation and model exchange)
 if(WIN32 OR CYGWIN)
-  set(binfolder x86_64-windows)
+  set(binfolder "${CMAKE_HOST_SYSTEM_PROCESSOR}-windows")
+elseif(APPLE)
+  if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64")
+    set(binfolder "aarch64-darwin")
+  elseif(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "x86_64")
+    set(binfolder "x86_64-darwin")
+  endif()
 else()
-  set(binfolder x86_64-linux)
+  set(binfolder "${CMAKE_HOST_SYSTEM_PROCESSOR}-linux")
 endif()
 
 add_library(fmi3 SHARED fmi3/fmi3.c)
