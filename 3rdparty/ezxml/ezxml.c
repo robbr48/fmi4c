@@ -787,44 +787,48 @@ char *ezxml_toxml(ezxml_t xml)
 // free the memory allocated for the ezxml structure
 void ezxml_free(ezxml_t xml)
 {
-    ezxml_root_t root = (ezxml_root_t)xml;
+    ezxml_root_t root;
     int i, j;
     char **a, *s;
 
-    if (! xml) return;
-    ezxml_free(xml->child);
-    ezxml_free(xml->ordered);
+    while (xml) {
+        ezxml_t ordered = xml->ordered;
+        root = (ezxml_root_t)xml;
 
-    if (! xml->parent) { // free root tag allocations
-        for (i = 10; root->ent[i]; i += 2) // 0 - 9 are default entites (<>&"')
-            if ((s = root->ent[i + 1]) < root->s || s > root->e) free(s);
-        free(root->ent); // free list of general entities
+        ezxml_free(xml->child);
 
-        for (i = 0; (a = root->attr[i]); i++) {
-            for (j = 1; a[j++]; j += 2) // free malloced attribute values
-                if (a[j] && (a[j] < root->s || a[j] > root->e)) free(a[j]);
-            free(a);
-        }
-        if (root->attr[0]) free(root->attr); // free default attribute list
+        if (! xml->parent) { // free root tag allocations
+            for (i = 10; root->ent[i]; i += 2) // 0 - 9 are default entites (<>&"')
+                if ((s = root->ent[i + 1]) < root->s || s > root->e) free(s);
+            free(root->ent); // free list of general entities
 
-        for (i = 0; root->pi[i]; i++) {
-            for (j = 1; root->pi[i][j]; j++);
-            free(root->pi[i][j + 1]);
-            free(root->pi[i]);
-        }            
-        if (root->pi[0]) free(root->pi); // free processing instructions
+            for (i = 0; (a = root->attr[i]); i++) {
+                for (j = 1; a[j++]; j += 2) // free malloced attribute values
+                    if (a[j] && (a[j] < root->s || a[j] > root->e)) free(a[j]);
+                free(a);
+            }
+            if (root->attr[0]) free(root->attr); // free default attribute list
 
-        if (root->len == -1) free(root->m); // malloced xml data
+            for (i = 0; root->pi[i]; i++) {
+                for (j = 1; root->pi[i][j]; j++);
+                free(root->pi[i][j + 1]);
+                free(root->pi[i]);
+            }
+            if (root->pi[0]) free(root->pi); // free processing instructions
+
+            if (root->len == -1) free(root->m); // malloced xml data
 #ifndef EZXML_NOMMAP
-        else if (root->len) munmap(root->m, root->len); // mem mapped xml data
+            else if (root->len) munmap(root->m, root->len); // mem mapped xml data
 #endif // EZXML_NOMMAP
-        if (root->u) free(root->u); // utf8 conversion
-    }
+            if (root->u) free(root->u); // utf8 conversion
+        }
 
-    ezxml_free_attr(xml->attr); // tag attributes
-    if ((xml->flags & EZXML_TXTM)) free(xml->txt); // character content
-    if ((xml->flags & EZXML_NAMEM)) free(xml->name); // tag name
-    free(xml);
+        ezxml_free_attr(xml->attr); // tag attributes
+        if ((xml->flags & EZXML_TXTM)) free(xml->txt); // character content
+        if ((xml->flags & EZXML_NAMEM)) free(xml->name); // tag name
+        free(xml);
+        xml = ordered;
+    }
 }
 
 // return parser error message or empty string if none
