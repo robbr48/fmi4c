@@ -103,6 +103,10 @@ else()
 endif()
 
 target_compile_definitions(fmi4c PUBLIC HAVE_MEMMOVE=1 EZXML_NOMMAP USE_FILE32API)
+if (WIN32)
+    # Don't depend on declarations only available from the full windows.h (e.g. winsock)
+    target_compile_definitions(fmi4c PRIVATE WIN32_LEAN_AND_MEAN)
+endif()
 if (FMI4C_BUILD_SHARED)
     # Only set DLLEXPORT when producing the library, when consumed dllimport will be assumed
     target_compile_definitions(fmi4c PRIVATE FMI4C_DLLEXPORT)

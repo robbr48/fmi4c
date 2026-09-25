@@ -4496,7 +4496,6 @@ const char* generateTempPath(const char *instanceName)
 
      // Create a unique name for the temp folder
      char tempFileName[11] = "\0\0\0\0\0\0\0\0\0\0\0";
-     struct timeval tv;
      FILETIME ft;
 
     //Seed the random generator
