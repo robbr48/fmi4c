@@ -12,10 +12,20 @@ class fmi4c:
     def __init__(self):
         import ctypes
         import os
-        if os.name == "posix":
-            self.hdll = ctypes.cdll.LoadLibrary(os.path.dirname(os.path.abspath(__file__)) + "/../libfmi4c.so")
-        elif os.name == "nt":
-            self.hdll = ctypes.cdll.LoadLibrary(os.path.dirname(os.path.abspath(__file__)) + "/../libfmi4c.dll")
+        import sys
+        if os.name == "nt":
+            names = ["libfmi4c.dll", "fmi4c.dll"]  # MinGW, MSVC
+        elif sys.platform == "darwin":
+            names = ["libfmi4c.dylib"]
+        else:
+            names = ["libfmi4c.so"]
+        # Look in the build directory and next to this file (Windows copies the DLL there)
+        here = os.path.dirname(os.path.abspath(__file__))
+        candidates = [os.path.join(d, n) for d in (os.path.join(here, ".."), here) for n in names]
+        path = next((c for c in candidates if os.path.isfile(c)), None)
+        if path is None:
+            raise FileNotFoundError("fmi4c library not found, tried: " + ", ".join(candidates))
+        self.hdll = ctypes.cdll.LoadLibrary(path)
         self.hdll.fmi4c_getFmiVersion.restype = ct.c_int
         self.hdll.fmi4c_getFmiVersion.argtypes = ct.c_void_p,
         self.hdll.fmi4c_loadFmu.restype = ct.c_void_p

@@ -1,123 +1,157 @@
 ---
 name: ghactions-ci-build
-on: [pull_request]
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  cmake-mingw:
-    timeout-minutes: 5
-    runs-on: windows-2025
-    steps:
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          
-      - name: Checkout
-        uses: actions/checkout@v3
+  build:
+    name: ${{ matrix.platform }}-${{ matrix.config }}
+    timeout-minutes: 15
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - ubuntu
+          - ubuntu-asan
+          - alpine
+          - almalinux10
+          - fedora
+          - macos-arm64
+          - macos-x86_64
+          - windows-msvc
+          - windows-mingw
+          - windows-msys2-ucrt64
+          - windows-msys2-clang64
+        # shared: shared library, unzip via system utilities (default options)
+        # static: static library, bundled minizip + zlib
+        config: [shared, static]
+        include:
+          - config: shared
+            cmake_options: -DFMI4C_BUILD_SHARED=ON -DFMI4C_USE_SYSTEM_ZIP=ON
+          - config: static
+            cmake_options: -DFMI4C_BUILD_SHARED=OFF -DFMI4C_USE_SYSTEM_ZIP=OFF
 
-      - name: Create build dir
-        shell: cmd
-        run: mkdir fmi4c-build
+          # Linux, in containers unless noted otherwise
+          - platform: ubuntu
+            os: ubuntu-latest
+            container: ubuntu:24.04
+            shell: sh
+            pytest: true
+          - platform: ubuntu-asan
+            os: ubuntu-latest
+            shell: bash
+            cmake_extra: -DCMAKE_C_FLAGS=-fsanitize=address
+          - platform: alpine
+            os: ubuntu-latest
+            container: alpine:latest
+            shell: sh
+            pytest: true
+          - platform: almalinux10
+            os: ubuntu-latest
+            container: almalinux:10
+            shell: sh
+            pytest: true
+          - platform: fedora
+            os: ubuntu-latest
+            container: fedora:latest
+            shell: sh
+            pytest: true
+
+          # macOS
+          - platform: macos-arm64
+            os: macos-latest
+            shell: bash
+            pytest: true
+          - platform: macos-x86_64
+            os: macos-15-intel
+            shell: bash
+            pytest: true
+
+          # Windows
+          - platform: windows-msvc
+            os: windows-latest
+            shell: pwsh
+            cmake_extra: -A x64
+            setup_python: '3.12'
+            pytest: true
+          - platform: windows-mingw
+            os: windows-latest
+            shell: pwsh
+            cmake_extra: -G "MinGW Makefiles"
+            setup_python: '3.12'
+            pytest: true
+          - platform: windows-msys2-ucrt64
+            os: windows-latest
+            shell: msys2 {0}
+            msystem: UCRT64
+            cmake_extra: -G Ninja
+            pytest: true
+          - platform: windows-msys2-clang64
+            os: windows-latest
+            shell: msys2 {0}
+            msystem: CLANG64
+            cmake_extra: -G Ninja
+            pytest: true
+    steps:
+      - name: Install dependencies
+        if: matrix.container != ''
+        shell: sh
+        run: |
+          if command -v apt-get > /dev/null; then
+            apt-get update
+            DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+              build-essential cmake unzip python3 zlib1g-dev
+          elif command -v apk > /dev/null; then
+            apk add --no-cache bash build-base cmake linux-headers unzip python3 zlib-dev
+          elif command -v dnf > /dev/null; then
+            dnf install -y gcc make cmake unzip python3 zlib-devel
+          fi
+
+      - name: Setup MSYS2
+        if: matrix.msystem != ''
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2.32.0
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          pacboy: >-
+            cc:p
+            cmake:p
+            ninja:p
+            python:p
+            zlib:p
+
+      - name: Setup Python
+        if: matrix.setup_python != ''
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.setup_python }}
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Configure
-        working-directory: fmi4c-build
-        shell: cmd
-        run: cmake -DFMI4C_BUILD_TEST=ON -DCMAKE_BUILD_TYPE=Release -G"MinGW Makefiles" ..
+        run: cmake -S . -B fmi4c-build -DFMI4C_BUILD_TEST=ON -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake_extra }} ${{ matrix.cmake_options }}
 
       - name: Build
-        working-directory: fmi4c-build
-        shell: cmd
-        run: cmake --build . --config Release --parallel 4
+        run: cmake --build fmi4c-build --config Release --parallel 4
 
       - name: Test
         working-directory: fmi4c-build
-        shell: cmd
         run: ctest -C Release --output-on-failure --parallel 4
-        
-      - name: PythonTest
+
+      - name: Python test
+        if: matrix.pytest && matrix.config == 'shared'
         working-directory: fmi4c-build/test
-        run: python pytest.py
-        
-  cmake-msvc2019:
-    timeout-minutes: 5
-    runs-on: windows-2025
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Create build dir
-        shell: cmd
-        run: mkdir fmi4c-build
-
-      - name: Configure
-        working-directory: fmi4c-build
-        shell: cmd
-        run: cmake -DFMI4C_BUILD_TEST=ON -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 17 2022" ..
-
-      - name: Build
-        working-directory: fmi4c-build
-        shell: cmd
-        run: cmake --build . --config Release --parallel 4
-
-      - name: Test
-        working-directory: fmi4c-build
-        shell: cmd
-        run: ctest -C Release --output-on-failure --parallel 4
-        
-  cmake-ubuntu:
-    timeout-minutes: 5
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Create build dir
-        shell: bash
-        run: mkdir fmi4c-build
-
-      - name: Configure
-        working-directory: fmi4c-build
-        shell: bash
-        run: cmake -D CMAKE_CXX_FLAGS="-fsanitize=address" -D CMAKE_C_FLAGS="-fsanitize=address" -DFMI4C_BUILD_TEST=ON -DCMAKE_BUILD_TYPE=Release ..
-
-      - name: Build
-        working-directory: fmi4c-build
-        shell: bash
-        run: cmake --build . --config Release --parallel 4
-
-      - name: Test
-        working-directory: fmi4c-build
-        shell: bash
-        run: ctest --output-on-failure --parallel 4
-        
-  cmake-ubuntu-python:
-    timeout-minutes: 5
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Create build dir
-        shell: bash
-        run: mkdir fmi4c-build
-
-      - name: Configure
-        working-directory: fmi4c-build
-        shell: bash
-        run: cmake -DFMI4C_BUILD_TEST=ON -DCMAKE_BUILD_TYPE=Release ..
-
-      - name: Build
-        working-directory: fmi4c-build
-        shell: bash
-        run: cmake --build . --config Release --parallel 4
-                  
-      - name: Test
-        working-directory: fmi4c-build/test
-        run: python pytest.py
+        run: ${{ runner.os == 'Windows' && 'python' || 'python3' }} pytest.py

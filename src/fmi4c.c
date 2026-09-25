@@ -4585,7 +4585,15 @@ bool unzipFmu(const char* fmufile, const char* instanceName, const char* unzipLo
     chdir(cwd);
 #else
 #ifdef _WIN32
-    const int commandLength = strlen("tar -xf \"") + strlen(fmufile) + strlen("\" -C \"") + strlen(unzipLocation) + 2;
+    // Use tar from Windows (bsdtar), which can extract zip files. The first tar in PATH
+    // may not be able to, e.g. GNU tar in MSYS2.
+    const char *systemRoot = getenv("SystemRoot");
+    if (systemRoot == NULL) {
+        systemRoot = "C:\\Windows";
+    }
+    // cmd.exe removes the outermost quotes, so the whole command is quoted once more
+    const char *format = "\"\"%s\\System32\\tar.exe\" -xf \"%s\" -C \"%s\"\"";
+    const int commandLength = snprintf(NULL, 0, format, systemRoot, fmufile, unzipLocation) + 1;
 
     // Allocate memory for the command
     char *command = malloc(commandLength * sizeof(char));
@@ -4594,7 +4602,7 @@ bool unzipFmu(const char* fmufile, const char* instanceName, const char* unzipLo
         return false;
     }
     // Build the command string
-    snprintf(command, commandLength, "tar -xf \"%s\" -C \"%s\"", fmufile, unzipLocation);
+    snprintf(command, commandLength, format, systemRoot, fmufile, unzipLocation);
 #else
     const int commandLength = strlen("unzip -o \"") + strlen(fmufile) +
                           strlen("\" -d \"") + strlen(unzipLocation) +
