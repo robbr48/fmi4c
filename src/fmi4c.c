@@ -4305,6 +4305,12 @@ bool fmi3cs_getHasEventMode(fmuHandle *fmu)
     return fmu->fmi3.cs.hasEventMode;
 }
 
+bool fmi3cs_getMightReturnEarlyFromDoStep(fmuHandle *fmu)
+{
+    TRACEFUNC
+    return fmu->fmi3.cs.mightReturnEarlyFromDoStep;
+}
+
 bool fmi3cs_getNeedsExecutionTool(fmuHandle *fmu)
 {
     TRACEFUNC
