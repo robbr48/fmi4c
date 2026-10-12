@@ -530,6 +530,7 @@ FMI4C_DLLAPI bool fmi3cs_getProvidesPerElementDependencies(fmuHandle* fmu);
 FMI4C_DLLAPI bool fmi3cs_getProvidesIntermediateUpdate(fmuHandle* fmu);
 FMI4C_DLLAPI bool fmi3cs_getProvidesEvaluateDiscreteStates(fmuHandle* fmu);
 FMI4C_DLLAPI bool fmi3cs_getHasEventMode(fmuHandle* fmu);
+FMI4C_DLLAPI bool fmi3cs_getMightReturnEarlyFromDoStep(fmuHandle* fmu);
 FMI4C_DLLAPI bool fmi3cs_getRecommendedIntermediateInputSmoothness(fmuHandle* fmu);
 FMI4C_DLLAPI int fmi3cs_getMaxOutputDerivativeOrder(fmuHandle* fmu);
 FMI4C_DLLAPI bool fmi3cs_getCanHandleVariableCommunicationStepSize(fmuHandle* fmu);

@@ -690,6 +690,8 @@ class fmi4c:
         self.hdll.fmi3cs_getProvidesEvaluateDiscreteStates.argtypes = ct.c_void_p,
         self.hdll.fmi3cs_getHasEventMode.restype = ct.c_bool 
         self.hdll.fmi3cs_getHasEventMode.argtypes = ct.c_void_p,
+        self.hdll.fmi3cs_getMightReturnEarlyFromDoStep.restype = ct.c_bool
+        self.hdll.fmi3cs_getMightReturnEarlyFromDoStep.argtypes = ct.c_void_p,
         self.hdll.fmi3cs_getRecommendedIntermediateInputSmoothness.restype = ct.c_bool 
         self.hdll.fmi3cs_getRecommendedIntermediateInputSmoothness.argtypes = ct.c_void_p,
         self.hdll.fmi3cs_getMaxOutputDerivativeOrder.restype = ct.c_int
@@ -2272,6 +2274,9 @@ class fmi4c:
         
     def fmi3cs_getHasEventMode(self):
         return self.hdll.fmi3cs_getHasEventMode(self.fmu)
+
+    def fmi3cs_getMightReturnEarlyFromDoStep(self):
+        return self.hdll.fmi3cs_getMightReturnEarlyFromDoStep(self.fmu)
         
     def fmi3cs_getRecommendedIntermediateInputSmoothness(self):
         return self.hdll.fmi3cs_getRecommendedIntermediateInputSmoothness(self.fmu)
