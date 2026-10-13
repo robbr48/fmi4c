@@ -2421,6 +2421,12 @@ bool loadFunctionsFmi3(fmuHandle *fmu, fmi3Type fmuType)
         fmu->fmi3.enterStepMode = (fmi3EnterStepMode_t)loadDllFunction(dll, "fmi3EnterStepMode", &ok);
         fmu->fmi3.getOutputDerivatives = (fmi3GetOutputDerivatives_t)loadDllFunction(dll, "fmi3GetOutputDerivatives", &ok);
         fmu->fmi3.doStep = (fmi3DoStep_t)loadDllFunction(dll, "fmi3DoStep", &ok);
+
+        //Co-simulation with event mode drives the event iteration through fmi3UpdateDiscreteStates,
+        //so it is needed also for FMUs that do not support model exchange
+        if(fmu->fmi3.cs.hasEventMode) {
+            fmu->fmi3.updateDiscreteStates = (fmi3UpdateDiscreteStates_t)loadDllFunction(dll, "fmi3UpdateDiscreteStates", &ok);
+        }
     }
 
     if(fmu->fmi3.supportsModelExchange) {
